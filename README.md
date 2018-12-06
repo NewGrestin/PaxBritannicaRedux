@@ -29,6 +29,7 @@ INSTALLATION GUIDE:
 	
 	
 FAQ:
+
 	Q: Help I'm having trouble installing it!
 	A: Read each step again slowly. If you're sure you've followed everything exactly, talk to Clawstrider, Grestin or Luey.
 	
