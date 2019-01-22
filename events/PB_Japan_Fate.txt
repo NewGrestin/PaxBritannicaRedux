@@ -1,0 +1,407 @@
+﻿add_namespace = japan_fate
+# assassination: february 2 
+	# option one instates martial law, sets japan to authoritarian and leads to sasebo conventions months later
+	# option two keeps japan democratic (conservative), triggers a civil war and leads to elections upon democratic victory
+country_event = {
+	id = japan_fate.1
+	title = japan_fate.1.t
+	desc = japan_fate.1.d
+	picture = GFX_report_event_japanese_infantry2
+	fire_only_once = yes
+	major = yes
+
+	trigger = {
+		tag = JAP
+		focus_progress = { focus = JAP_our_fate progress > 0.25 }
+	}
+
+	mean_time_to_happen = { hours = 6 }
+
+	option = {
+		name = japan_fate.1.a
+		set_politics = {
+			ruling_party = authoritarianism
+			elections_allowed = no
+		}
+		hidden_effect = {
+			set_global_flag = sasebo_conventions
+			create_country_leader = {
+				name = "Hideki Tojo"
+				picture = "Portrait_PB_JAP_Hideki_Tojo.dds"
+				ideology = nazism
+			} 
+		}
+		JAP = { country_event = japan_fl.2 }
+	}
+
+	option = {
+		name = japan_fate.1.b
+		ai_chance = { factor = 0 }
+		hidden_effect = {
+			set_global_flag = japan_coup
+			create_country_leader = {
+				name = "Sadao Araki"
+				picture = "Portrait_PB_JAP_Sadao_Araki.dds"
+				ideology = nazism
+			}
+		}
+		kill_country_leader = yes
+		create_country_leader = {
+			name = "National Diet"
+			picture = "Portrait_PB_JAP_National_Diet.dds"
+			ideology = conservatistic
+		}
+		JAP = { country_event = japan_fl.3 }
+	}
+}
+
+
+######################################SASEBO CONVENTION - TOJO RULES
+country_event = {
+	id = japan_fate.2
+	title = japan_fate.2.t
+	desc = japan_fate.2.d
+	picture = GFX_report_event_sasebo_convention
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = JAP
+		NOT = {
+			AND = {
+				has_country_flag = shrines
+				has_country_flag = riches
+				has_country_flag = speech
+			}
+		}
+		has_global_flag = sasebo_conventions
+		focus_progress = { focus = JAP_our_fate progress > 0.95 }
+	}
+
+	mean_time_to_happen = { hours = 6 }
+	option = {
+		name = japan_fate.2.a
+		set_politics = {
+			ruling_party = ultranationalism
+			elections_allowed = no
+		}
+		add_popularity = {
+			ideology = ultranationalism
+			popularity = 0.40
+		}
+		set_global_flag = sasebo_over
+		JAP = { news_event = { id = japan_fl.4 hours = 6 }} 
+	}
+}
+
+######################################SASEBO CONVENTION - HIROHITO RULES
+country_event = {
+	id = japan_fate.3
+	title = japan_fate.3.t
+	desc = japan_fate.3.d
+	picture = GFX_report_event_hirohito_victory
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = JAP
+		has_global_flag = sasebo_conventions
+		JAP = {
+			has_country_flag = shrines
+			has_country_flag = riches
+			has_country_flag = speech
+		}
+		focus_progress = { focus = JAP_our_fate progress > 0.95 }
+	}
+
+	mean_time_to_happen = { hours = 6 }
+	option = {
+		name = japan_fate.3.a
+		set_politics = {
+			ruling_party = monarchism
+			elections_allowed = no
+		}
+		add_popularity = {
+			ideology = monarchism
+			popularity = 0.40
+		}
+		set_global_flag = sasebo_over
+		JAP = { news_event = { id = japan_fl.5 hours = 6 }} 
+	}
+}
+
+
+
+#####################################POST-COUP-FAILURE ELECTIONS
+#election 
+country_event = {
+	id = japan_fate.4
+	title = japan_fate.4.t
+	desc = japan_fate.4.d
+	picture = GFX_report_event_jap_election
+
+	trigger = {
+		tag = JAP
+		OR  = {
+			has_global_flag = jcw_dem
+			has_global_flag = sadao_arrested
+			has_global_flag = coup_averted
+		}
+	}
+
+	mean_time_to_happen = { days = 21 }
+
+	option = {
+		name = japan_fate.4.a
+		JAP = { country_event = { id = japan_fl.6 hours = 6 }}
+		retire_country_leader = yes
+		create_country_leader = {
+			name = "Ichirō Hatoyama"
+			picture = "Portrait_PB_JAP_Ichiro_Hatoyama.dds"
+			ideology = conservatistic
+		}
+	}
+	option = {
+		name = japan_fate.4.b
+		JAP = { country_event = { id = japan_fl.7 hours = 6 }}
+		set_politics = {
+			ruling_party = social_liberal
+		}
+	}
+}
+
+#sadao coup succeeds
+country_event = {
+	id = japan_fate.5
+	hidden = yes
+	fire_only_once = yes 
+
+	trigger = {
+		JAP = { 
+			NOT = {
+				OR = {
+					AND = {
+						has_country_flag = army_purged
+						has_country_flag = loyal_navy
+						has_country_flag = officers_shuffled
+					}
+					AND = {
+						has_country_flag = military_drills
+						has_country_flag = loyal_navy
+						has_country_flag = officers_shuffled
+					}
+					has_country_flag = sadao_arrested
+					has_country_flag = sasebo_conventions
+				}
+			}
+		} 
+		focus_progress = { focus = JAP_our_fate progress > 0.95 }
+	}
+
+	mean_time_to_happen = { hours = 6 }
+
+	option = {
+		set_politics = {
+			ruling_party = ultranationalism
+			elections_allowed = no
+		}
+		clr_global_flag = japan_coup
+		set_global_flag = sadao_in_power
+		news_event = { id = japan_fl.8 hours = 6 }
+	}
+}
+	
+#sadao coup fails
+country_event = {
+	id = japan_fate.6
+	hidden = yes
+	fire_only_once = yes 
+
+	trigger = {
+		JAP = { 
+			OR = {
+				AND = {
+					has_country_flag = army_purged
+					NOT = { has_country_flag = second_am }
+					has_country_flag = loyal_navy
+					has_country_flag = officers_shuffled
+				}
+				AND = {
+					has_country_flag = military_drills
+					has_country_flag = loyal_navy
+					has_country_flag = officers_shuffled
+				}
+			}
+		}
+		has_completed_focus = JAP_our_fate
+	}
+
+	mean_time_to_happen = { hours = 6 }
+
+	option = {
+		clr_global_flag = japan_coup
+		set_global_flag = coup_averted
+		JAP = { news_event = { id = japan_fl.9 hours = 6 }} 
+	}
+}
+
+###########JAPANESE CIVIL WAR
+country_event = {
+	id = japan_fate.7
+	title = japan_fate.7.t
+	desc = japan_fate.7.d
+	picture = GFX_report_event_jap_civil_war
+	
+	fire_only_once = yes
+	
+	trigger = {
+		tag = JAP
+		JAP = {
+			has_country_flag = army_purged
+			has_country_flag = second_am
+			has_country_flag = loyal_navy
+			has_country_flag = officers_shuffled
+		} 
+		has_completed_focus = JAP_our_fate
+	}
+
+	mean_time_to_happen = {
+		hours = 6
+	}
+	option = { # Support Democratics
+		name = japan_fate.7.a
+		hidden_effect = {
+			start_civil_war = {
+				ideology = ultranationalism
+				size = 0.5
+				capital = 408
+				states = { 555 408 409 537 655 536 533 534 }
+			}
+			random_other_country = {
+				limit = {
+					original_tag = JAP
+					has_government = ultranationalism
+				}
+				set_equipment_fraction = 0.5
+				load_oob = "JPE_Civil_War"
+				add_popularity = {
+					ideology = monarchism
+					popularity = .25
+				}
+				add_popularity = {
+					ideology = authoritarianism
+					popularity = .1
+				}
+			}
+			news_event = { hours = 6 id = japan_fl.11 }
+			set_global_flag = japanese_civil_war
+
+			load_oob = "JAP_Civil_War"
+			set_equipment_fraction = 0.5
+
+			add_popularity = {
+				ideology = authoritarianism
+				popularity = -1
+			}
+			add_popularity = {
+				ideology = monarchism
+				popularity = -1
+			}
+			add_popularity = {
+				ideology = ultranationalism
+				popularity = -1
+			}
+		}
+	}
+	option = { # Support Ultranationalists aa
+		name = japan_fate.7.b
+		trigger = { is_ai = no }
+		hidden_effect = {
+			set_capital = 408
+			start_civil_war = {
+				ideology = conservative
+				size = 0.5
+				capital = 528
+				states = { 528 529 530 531 532 535 282 526 645 }
+			}
+			random_other_country = {
+				limit = {
+					original_tag = JAP
+					has_government = conservative
+				}
+				load_oob = "JAP_Civil_War"
+				set_equipment_fraction = 0.5
+				#JAP = { country_event = { id = japan_fate.3 hours = 6 }
+				add_popularity = {
+					ideology = social_liberal
+					popularity = 0.38
+				}
+				add_popularity = {
+					ideology = social_democracy
+					popularity = 0.12
+				}
+				add_popularity = {
+					ideology = socialism
+					popularity = 0.05
+				}
+				add_popularity = {
+					ideology = authsoc
+					popularity = 0.02
+				}
+			}
+			news_event = { hours = 6 id = japan_fl.11 }
+			set_global_flag = japanese_civil_war
+			set_equipment_fraction = 0.5
+
+			set_ruling_party = ultranationalist
+
+			add_popularity = {
+				ideology = conservative
+				popularity = -1
+			}
+			add_popularity = {
+				ideology = social_democracy
+				popularity = -1
+			}
+			add_popularity = {
+				ideology = social_liberal
+				popularity = -1
+			}
+			add_popularity = {
+				ideology = socialism
+				popularity = -1
+			}
+			add_popularity = {
+				ideology = ultranationalism
+				popularity = .65
+			}
+			add_popularity = {
+				ideology = monarchism
+				popularity = .25
+			}
+			add_popularity = {
+				ideology = authoritarianism
+				popularity = .1
+			}
+		}
+	}	
+}
+#returns capital, triggers news events
+country_event = {
+	id = japan_fate.8
+	hidden = yes
+	trigger = {
+		original_tag = JAP
+		has_global_flag = japanese_civil_war
+		has_civil_war = no
+	}
+
+	fire_only_once = yes
+
+	option = {
+		set_capital = 282
+		set_global_flag = jcw_over
+	}
+}
+
+###gay fucking news event fuck nigger cunt shit fuck faggot balls fuck fuckers

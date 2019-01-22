@@ -1,0 +1,131 @@
+RUS_foreign_policy = {
+	
+	RUS_puppet_target = {
+		icon = generic_nationalism
+		target_trigger = {
+			FROM = {	
+				has_country_flag = RUS_allywar_target
+			}
+		}
+		available = {
+			FROM = {
+				NOT = {
+					has_country_flag = RUS_targetted_war
+				}
+			}
+		}
+		visible = {
+
+		}
+		ai_will_do = {
+			factor = 2
+		}
+		fire_only_once = yes
+		cost = 150
+		complete_effect = {
+			FROM = { country_event = { id = russia_dc.1 days = 1 }}
+		}
+	}
+
+	RUS_war_target = {
+		icon = generic_ignite_civil_war
+		target_trigger = {
+			FROM = {	
+				has_country_flag = RUS_allywar_target
+			}
+		}
+		available = {
+			FROM = {
+				NOT = {
+					has_country_flag = RUS_targetted_ally
+				}
+			}
+		}
+		visible = {
+		}
+		ai_will_do = {
+			factor = 3
+		}
+		fire_only_once = yes
+		cost = 150
+		complete_effect = {
+			SOV = {
+				declare_war_on = {
+					type = annex_everything
+					target = FROM
+				}
+			}
+			FROM = {
+				set_country_flag = RUS_targetted_war
+			}
+		}
+	}
+
+	RUS_test_blockade = {
+		icon = generic_naval
+		target_trigger = {
+			FROM = {	
+				tag = JAP
+			}
+		}
+		available = {
+			has_global_flag = jap_rus_blockade
+		}
+		visible = {
+			tag = SOV
+			has_global_flag = jap_rus_blockade
+		}
+		fire_only_once = yes
+		cost = 25
+		complete_effect = {
+			random_list = {
+				50 = {
+					news_event = { id = japan_fl.27 days = 6 }
+					SOV = { add_political_power = 75 }
+				}
+				50 = {
+					news_event = { id = japan_fl.28 days = 6 }
+					SOV = { add_political_power = -75 }
+					JAP = { add_political_power = 75 }
+				}
+			}	
+		}
+	}
+
+
+	RUS_engage_ijn = {
+		icon = generic_ignite_civil_war
+		target_trigger = {
+			FROM = {	
+				tag = JAP
+			}
+		}
+		available = {
+			has_global_flag = jap_rus_blockade
+		}
+		visible = {
+			tag = SOV
+			has_global_flag = jap_rus_blockade
+		}
+		fire_only_once = yes
+		cost = 200
+		complete_effect = {
+			add_named_threat = { threat = 15 name = russia_retaliates_threat }
+			set_global_flag = russian_navy_escalates
+			SOV = {
+				declare_war_on = {
+					type = annex_everything
+					target = JAP
+				}	
+				remove_ideas = jap_blockade
+			}
+			news_event = { id = japan_fl.29 hours = 6 }
+
+			hidden_effect = {
+				JAP = { destroy_ships = { type = destroyer count = 2 } }
+				SOV = { destroy_ships = { type = destroyer count = 4 } }
+			}
+
+		}
+	}
+}

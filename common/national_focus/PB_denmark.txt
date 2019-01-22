@@ -1,0 +1,3953 @@
+focus_tree = {
+	id = 'den_tree'
+	country = {
+		factor=0
+		modifier = {
+			add = 10
+			tag = DEN
+		}
+	}
+	
+	default = no
+	continuous_focus_position = { x = 1600 y = 1900 }
+	
+	#For the Nation
+	focus = { 
+		id = DEN_rightwing_1 
+		icon = GFX_focus_generic_strike_at_democracy1
+		ai_will_do = { factor = 0.5 } 
+		x = 13 
+		y = 0
+		cost = 10
+		available_if_capitulated = yes  
+		completion_reward = { 
+			add_political_power = 50
+			add_ideas = DEN_conservative
+		}
+	}
+	
+	#The Old Guard 
+	focus = {
+		id = DEN_rightwing_2 
+		icon = GFX_focus_generic_military_mission
+		ai_will_do = { factor = 1 } 
+		x = 13
+		y = 1
+		prerequisite = { focus = DEN_rightwing_1 } 
+		cost = 10
+		available_if_capitulated = yes  
+		completion_reward = { 
+			add_ideas = DEN_old_guard
+			add_tech_bonus = { bonus = 0.5 category = infantry_weapons }
+		}
+	}
+ 
+	#Elections Cancelled
+	focus = {
+		id = DEN_rightwing_final 
+		icon = GFX_focus_renounce_the_treaty_of_trianon
+		ai_will_do = { factor = 1 } 
+		x = 13
+		y = 2
+		mutually_exclusive = { focus = DEN_leftwing_final } 
+		prerequisite = { focus = DEN_rightwing_2 }
+		bypass = { has_government = ultranationalism
+				   has_government = monarchism
+				   has_government = authoritarianism }
+		cost = 10
+		available_if_capitulated = yes  
+		completion_reward = {
+			add_stability = -0.05
+			add_political_power = 100
+			country_event = { id = denmark.3 }
+		}
+	}
+
+	#Danmark for Danskerne
+	focus = {
+		id = DEN_go_nationalist
+		icon = GFX_goal_support_ultranationalism
+		ai_will_do = { factor = 0.5 }
+		x = 8
+		y = 3
+		mutually_exclusive = { focus = DEN_go_monarchist }
+		prerequisite = { focus = DEN_rightwing_final }
+		cost = 20
+		available_if_capitulated = yes
+		completion_reward = {
+			set_politics = {
+				ruling_party = ultranationalism
+				elections_allowed = no
+			}
+			remove_ideas = DEN_conservative
+			add_timed_idea = {
+				idea = DEN_nationalist
+				days = 360
+			}
+			add_political_power = 50
+			add_stability = 0.05
+			hidden_effect = {
+				country_event = { id = denmark.8 }
+			}
+		}
+	}
+	
+	#Return to Royalty
+	focus = { 
+		id = DEN_go_monarchist
+		icon = GFX_goal_tfv_strengthen_commonwealth_ties
+		ai_will_do = { factor = 0.5 }
+		x = 17
+		y = 3
+		mutually_exclusive = { focus = DEN_go_nationalist }
+		prerequisite = { focus = DEN_rightwing_final }
+		cost = 20
+		available_if_capitulated = yes
+		completion_reward = {
+			remove_ideas = DEN_conservative
+			add_timed_idea = {
+				idea = DEN_monarchist
+				days = 360
+			}
+			add_political_power = 100
+			hidden_effect = {
+				country_event = { id = denmark.12 }
+			}
+		}
+	}
+	
+	#Public Rallies 
+	focus = { 
+		id = DEN_nat_rallies 
+		icon = GFX_focus_generic_support_the_left_right 
+		ai_will_do = { factor = } 
+		x = 7
+		y = 4
+		prerequisite = { focus = DEN_go_nationalist } 
+		cost = 10
+		available_if_capitulated = no  
+		completion_reward = {
+			add_political_power = 50
+			add_popularity = {
+				ideology = ultranationalism
+				popularity = 0.05
+			}
+		}
+	}
+	
+	#Man of the People 
+	focus = { 
+		id = DEN_nat_rallies_2 
+		icon = GFX_goal_generic_wolf_pack 
+		ai_will_do = { factor = } 
+		x = 7
+		y = 5
+		prerequisite = { focus = DEN_nat_rallies }
+		cost = 10
+		available_if_capitulated = no  
+		completion_reward = {
+			random_owned_controlled_state = {
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 0
+						include_locked = yes
+					}
+				}
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = industrial_complex
+					level = 2
+					instant_build = yes
+				}
+			}
+		}
+	}
+	
+	#Skåne Tilbage til Danmark 
+	focus = {
+		id = DEN_nat_scania 
+		icon = GFX_goal_generic_forceful_treaty 
+		ai_will_do = { factor = }
+		x = 4
+		y = 4
+		prerequisite = { focus = DEN_go_nationalist }
+		cost = 10
+		available = {
+			NOT = { ROOT = { has_war_with = SWE } }
+			#no nonaggression pact with Sweden
+		}
+		completion_reward = { 
+			SWE = { 
+				add_opinion_modifier = {
+					target = DEN
+					modifier = SWE_den_demand_scania
+				}
+				country_event = { id = sweden.101 }	
+			}
+		}
+	}
+	
+	#Reinforce Scania
+	focus = {
+		id = DEN_nat_fort_scania
+		icon = GFX_goal_generic_build_tank
+		ai_will_do = { factor = }
+		x = 4
+		y = 5
+		prerequisite = { focus = DEN_nat_scania }
+		cost = 10
+		available = {
+			ROOT = { owns_state = 138 }
+			ROOT = { has_full_control_of_state = 138 }
+		}
+		completion_reward = { 
+			138 = {
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 3307
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 6412
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 9362
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 9300
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 11160
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 11327
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 11215
+					instant_build = yes
+				}
+			}
+			
+		}
+	}
+	
+	#Greater Copenhagen 
+	focus = { 
+		id = DEN_nat_core_scania 
+		icon = GFX_goal_generic_military_sphere
+		ai_will_do = { factor = } 
+		x = 6
+		y = 6
+		prerequisite = { focus = DEN_nat_fort_scania }
+		cost = 10
+		available = {
+			ROOT = { owns_state = 138 }
+			ROOT = { has_full_control_of_state = 138 }
+		}
+		completion_reward = { 
+			138 = { add_core_of = ROOT }
+			138 = {
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 0
+						include_locked = yes
+					}
+				}
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = industrial_complex
+					level = 2
+					instant_build = yes
+				}
+			}
+		} 
+	}
+	
+	#Seal the Border 
+	focus = { 
+		id = DEN_nat_seal_border 
+		icon = GFX_goal_generic_fortify_city
+		ai_will_do = { factor = } 
+		x = 6
+		y = 7
+		mutually_exclusive = { focus = DEN_nat_sweden_peace }
+		prerequisite = { focus = DEN_nat_core_scania }
+		cost = 10
+		available = {
+			is_neighbor_of = SWE
+		}
+		completion_reward = {
+			SWE = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = SWE_den_closed_borders
+				}
+			}
+			add_ideas = DEN_nat_influence
+		}
+	}
+	
+	#Even Greater Copenhagen 
+	focus = { 
+		id = DEN_nat_sweden_war 
+		icon = GFX_goal_generic_navy_carrier
+		ai_will_do = { factor = }
+		x = 6
+		y = 8
+		prerequisite = { focus = DEN_nat_seal_border }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = SWE
+			NOT = { has_war_with = SWE }
+			#no nonaggression pact with Sweden
+		}
+		completion_reward = { 
+			declare_war_on = {
+				target = SWE
+				type = annex_everything
+			}
+			FIN = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = FIN_den_aggressive_swe
+				}
+			}
+		} 
+	}
+ 
+	#Ban Socialism 
+	focus = { 
+		id = DEN_nat_anti_socialism_1 
+		icon = GFX_goal_anti_comintern_pact 
+		ai_will_do = { factor = } 
+		x = 12
+		y = 4
+		prerequisite = { focus = DEN_go_nationalist }
+		cost = 10
+		available_if_capitulated = yes  
+		completion_reward = {
+			add_stability = -0.05
+			add_popularity = {
+				ideology = authsoc
+				popularity = -0.05
+			}
+			add_popularity = {
+				ideology = socialist
+				popularity = -0.05
+			}
+			SWE = {
+				if = {
+					limit = { has_idea = DEN_nat_influence }
+					remove_ideas = DEN_nat_influence
+					add_opinion_modifier = {
+						target = DEN
+						modifier = SWE_den_backstabber
+					}
+					diplomatic_relation = {
+						country = DEN
+						relation = non_aggression_pact
+						active = no
+					}
+				}
+			}
+		}
+	}
+	
+	#Public Executions 
+	focus = { 
+		id = DEN_nat_anti_socialism_2 
+		icon = GFX_goal_continuous_def_against_influence 
+		ai_will_do = { factor = } 
+		x = 12
+		y = 5
+		prerequisite = { focus = DEN_nat_anti_socialism_1 }
+		cost = 10
+		available_if_capitulated = no  
+		completion_reward = {
+			add_political_power = 50
+			add_popularity = {
+				ideology = authsoc
+				popularity = -0.10
+			}
+			add_popularity = {
+				ideology = socialist
+				popularity = -0.10
+			}
+			SWE = { 
+				add_opinion_modifier = {
+					target = DEN
+					modifier = SWE_den_executions
+				}
+			}
+		}
+	}
+	
+	#Blackshirts 
+	focus = { 
+		id = DEN_nat_anti_socialism_3 
+		icon = GFX_focus_generic_little_entente 
+		ai_will_do = { factor = } 
+		x = 12
+		y = 6
+		prerequisite = { focus = DEN_nat_anti_socialism_2 }
+		cost = 10
+		available_if_capitulated = no  
+		completion_reward = { 
+			add_ideas = DEN_blackshirts
+		}
+	}
+	
+	#Secret Police 
+	focus = { 
+		id = DEN_right_secret_police 
+		icon = GFX_goal_secret_police
+		ai_will_do = { factor = } 
+		x = 13
+		y = 7
+		prerequisite = { focus = DEN_nat_anti_socialism_3
+						 focus = DEN_mon_justice_3 }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = { 
+			add_tech_bonus = {
+				bonus = 0.5
+				uses = 2
+				category = encryption_tech
+			}
+		} 
+	}
+	
+	#Spiders on the Wall 
+	focus = { 
+		id = DEN_right_spies 
+		icon = GFX_goal_generic_intelligence_exchange
+		ai_will_do = { factor = } 
+		x = 13
+		y = 8
+		prerequisite = { focus = DEN_right_secret_police}
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_tech_bonus = {
+				bonus = 1
+				uses = 1
+				category = decryption_tech
+			}
+			add_tech_bonus = {
+				bonus = 0.5
+				uses = 1
+				category = decryption_tech
+			}
+		} 
+	}
+	
+	#Fellow Northmen 
+	focus = { 
+		id = DEN_nat_scan_opinion 
+		icon = GFX_goal_generic_propaganda 
+		ai_will_do = { factor = }
+		x = 9
+		y = 4
+		prerequisite = { focus = DEN_go_nationalist }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = SWE
+			country_exists = NOR
+		}
+		completion_reward = {
+			add_political_power = 100
+			SWE = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = SWE_den_norse_identity
+				}
+			}
+			NOR = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = NOR_den_norse_identity
+				}
+			}
+			hidden_effect = {
+				add_opinion_modifier = {
+					target = SWE
+					modifier = SWE_den_norse_identity
+				}
+				add_opinion_modifier = {
+					target = NOR
+					modifier = NOR_den_norse_identity
+				}
+			}
+		}
+	}
+	
+	#Pack for Winter 
+	focus = { 
+		id = DEN_nat_puppet_norway 
+		icon = GFX_goal_generic_trade 
+		ai_will_do = { factor = } 
+		x = 9
+		y = 5
+		prerequisite = { focus = DEN_nat_scan_opinion }
+		cost = 100
+		available = {
+			country_exists = ROOT
+			country_exists = NOR
+			NOT = { has_war_with = NOR }
+		}
+		completion_reward = { 
+			country_event = { id = norway.101 }
+		}
+	}
+	
+	#Oslo Accords 
+	focus = { 
+		id = DEN_nat_sweden_peace
+		icon = GFX_goal_anschluss 
+		ai_will_do = { factor = } 
+		x = 8
+		y = 7
+		mutually_exclusive = { focus = DEN_nat_seal_border }
+		prerequisite = { focus = DEN_nat_puppet_norway} 
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = SWE
+			NOT = { has_war_with = SWE }
+		}
+		bypass = {
+			#nonaggression pact with sweden
+		}
+		completion_reward = { 
+			SWE = { country_event = sweden.104 }
+		}
+	}
+	
+	#Peace in the East 
+	focus = { 
+		id = DEN_nat_finland_peace
+		icon = GFX_goal_continuous_increase_nu 
+		ai_will_do = { factor = } 
+		x = 8
+		y = 8
+		prerequisite = { focus = DEN_nat_sweden_peace }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = FIN
+			NOT = { has_war_with = FIN }
+		}
+		completion_reward = { 
+			FIN = { country_event = finland.101 }
+		}
+	}
+	
+	#Who Can Say Norway is not Danish? 
+	focus = { 
+		id = DEN_nat_annex_norway
+		icon = GFX_goal_generic_special_forces 
+		ai_will_do = { factor = } 
+		x = 10
+		y = 7
+		prerequisite = { focus = DEN_nat_puppet_norway }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = NOR
+			NOT = { has_war_with = NOR }
+		}
+		completion_reward = {
+			if = {
+				limit = { NOR = { is_puppet_of = DEN } }
+				annex_country = { target = NOR }
+				country_event = { id = denmark.31 }
+			}
+			if = {
+				limit = { NOT = { NOR = { is_puppet_of = DEN } } }
+				create_wargoal = {
+					type = annex_everything
+					target = NOR
+				}
+			}
+		}
+	}
+	
+	#All For Scandinavia! 
+	focus = {
+		id = DEN_nat_faction 
+		icon = GFX_focus_generic_diplomatic_treaty 
+		ai_will_do = { factor = }
+		x = 10
+		y = 8
+		prerequisite = { focus = DEN_nat_annex_norway 
+						 focus = DEN_nat_sweden_peace } 
+		cost = 10
+		available = {
+			country_exists = DEN
+			is_in_faction = no
+		}
+		completion_reward = {
+			create_faction = "skagerrak_forening"
+			add_political_power = 100
+		} 
+	}
+	
+	#Treaty of Kalmar 
+	focus = { 
+		id = DEN_nat_invite_sweden 
+		icon = GFX_goal_generic_improve_relations 
+		ai_will_do = { factor = } 
+		x = 10
+		y = 9
+		prerequisite = { focus = DEN_nat_faction }
+		cost = 10
+		available = {
+			country_exists = DEN
+			NOT = { has_war_with = SWE }
+			OR = { SWE = { has_government = ultranationalism }
+				   SWE = { has_government = monarchism }
+				   SWE = { has_government = authoritarianism }
+			}
+		}
+		completion_reward = { 
+			SWE = { country_event = { id = sweden.105 } }
+		}
+	}
+	
+	#Embrace Sisu 
+	focus = { 
+		id = DEN_nat_invite_finland 
+		icon = GFX_goal_generic_military_deal 
+		ai_will_do = { factor = } 
+		x = 10
+		y = 10
+		mutually_exclusive = { focus = DEN_nat_claim_finland }
+		prerequisite = { focus = DEN_nat_invite_sweden }
+		cost = 10
+		available = {
+			country_exists = DEN
+			NOT = { has_war_with = FIN }
+			OR = { FIN = { has_government = ultranationalism }
+				   FIN = { has_government = monarchism }
+				   FIN = { has_government = authoritarianism }
+			}
+		}
+		completion_reward = { 
+			FIN = { country_event = { id = finland.102 } }
+		}
+	}
+	
+	#Full Snow Jacket 
+	focus = { 
+		id = DEN_nat_claim_finland 
+		icon = GFX_goal_AUS_winter 
+		ai_will_do = { factor = } 
+		x = 8
+		y = 10
+		mutually_exclusive = { focus = DEN_nat_invite_finland } 
+		prerequisite = { focus = DEN_nat_invite_sweden 
+						 focus = DEN_nat_sweden_war }
+		cost = 10
+		available = {
+			country_exists = DEN
+			country_exists = FIN
+			NOT = { has_war_with = FIN }
+		}
+		bypass = {
+			FIN = { is_puppet_of = DEN }
+			FIN = { has_capitulated = yes }
+		}
+		completion_reward = {
+			create_wargoal = {
+				type = puppet_wargoal_focus
+				target = NOR
+			}
+			add_timed_idea = {
+				idea = DEN_fin_snow_jacket
+				days = 180
+			}
+		}
+	}
+	
+	#North Sea Empire 
+		focus = { 
+		id = DEN_nat_north_sea 
+		icon = GFX_goal_generic_navy_battleship
+		ai_will_do = { factor = } 
+		x = 8
+		y = 11
+		prerequisite = { focus = DEN_nat_claim_finland
+						 focus = DEN_nat_invite_finland }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = { 
+			add_stability = 0.10
+			add_popularity = {
+				ideology = ultranationalism
+				popularity = 0.08
+			}
+			add_opinion_modifier = {
+				target = ENG
+				modifier = DEN_eng_building_fleet
+			}
+			ENG = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = ENG_den_building_fleet
+				}
+			}
+			99 = {
+				limit = {
+					free_building_slots = {
+						building = dockyard
+						size > 0
+						include_locked = yes
+					}
+				}
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = {
+					type = dockyard
+					level = 3
+					instant_build = yes
+				}
+			}
+		}
+	}
+	
+	#Extra Footing in Holsten 
+	focus = { 
+		id = DEN_nat_germany
+		icon = GFX_goal_generic_position_armies
+		ai_will_do = { factor = }
+		x = 2
+		y = 6
+		prerequisite = { focus = DEN_nat_fort_scania }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			NOT = { ROOT = { has_full_control_of_state = 58 } }
+		}
+		completion_reward = {
+			add_state_claim = 58
+			add_popularity = {
+				ideology = ultranationalism
+				popularity = 0.04
+			}
+		}
+	}
+ 
+	#Break Bread with Westphalia 
+	focus = { 
+		id = DEN_nat_wph_peace 
+		icon = GFX_goal_tripartite_pact
+		ai_will_do = { factor = } 
+		x = 0
+		y = 7
+		prerequisite = { focus = DEN_nat_germany }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = WSP
+			#not in nep with wsp
+			NOT = { ROOT = { owns_state = 58 } }
+		}
+		bypass = {
+			ROOT = { owns_state = 58 }
+		}
+		completion_reward = { 
+			WSP = { country_event = { id = westphalia.101 } }
+		} 
+	}
+	
+	#Victories of Valdemar 
+	focus = { 
+		id = DEN_nat_wph_pra_war 
+		icon = GFX_goal_generic_territory_or_war
+		ai_will_do = { factor = } 
+		x = 0
+		y = 8
+		mutually_exclusive = { focus = DEN_nat_aus_wph_war
+							   focus = DEN_nat_pra_wph_war } 
+		prerequisite = { focus = DEN_nat_wph_peace }
+		cost = 10
+		available = {
+			country_exists = PRS
+			country_exists = WSP
+			NOT = { has_war_with = PRS }
+			NOT = { has_war_with = WSP }
+			NOT = { ROOT = { owns_state = 61 } }
+			NOT = { ROOT = { owns_state = 62 } }
+		}
+		completion_reward = { 
+			add_state_claim = 61
+			add_state_claim = 62
+			WSP = { country_event = { id = westphalia.102 } }
+		}
+	}
+	
+	#Reclaim the Baltic Coast 
+	focus = { 
+		id = DEN_nat_wph_core_baltic 
+		icon = GFX_focus_generic_coastal_fort 
+		ai_will_do = { factor = }
+		x = 0
+		y = 9
+		prerequisite = { focus = DEN_nat_wph_pra_war }
+		cost = 10
+		available = {
+			ROOT = { owns_state = 61 }
+			ROOT = { owns_state = 62 }
+		}
+		completion_reward = { 
+			add_state_core = 61
+			add_state_core = 62
+			add_political_power = 30
+			add_stability = -0.05
+		}
+	}
+	
+	#Treaty of Berlin
+	focus = { 
+		id = DEN_nat_wph_pact 
+		icon = GFX_goal_generic_alliance
+		ai_will_do = { factor = } 
+		x = 0
+		y = 10
+		prerequisite = { focus = DEN_nat_wph_core_baltic }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = WSP
+			NOT = { has_war_with = WSP }
+		}
+		completion_reward = { 
+			add_opinion_modifier = {
+				target = DEN
+				modifier = DEN_wsp_defense_treaty
+			}
+			add_political_power = 50
+			WSP = { country_event = { id = westphalia.103 } }
+		}
+	}
+	
+	#For Westphalia! 
+	focus = { 
+		id = DEN_nat_wph_final 
+		icon = GFX_goal_generic_dangerous_deal
+		ai_will_do = { factor = }
+		x = 0
+		y = 11
+		prerequisite = { focus = DEN_nat_wph_pact }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = WSP
+			NOT = { has_war_with = WSP }
+		}
+		completion_reward = {
+			if = {
+				limit = { WSP = { is_faction_leader = yes } }
+				WSP = { country_event = { id = westphalia.104 } }
+			}
+			if = {
+				limit = { NOT = { is_faction_leader = no } }
+				WSP = { country_event = { id = westphalia.105 } }
+			}
+		}
+	}
+	
+	#Break Bread with Prussia 
+	focus = { 
+		id = DEN_nat_pra_peace
+		icon = GFX_goal_tripartite_pact
+		ai_will_do = { factor = }
+		x = 2
+		y = 7
+		prerequisite = { focus = DEN_nat_germany } 
+		cost = 10
+		available = {
+			country_exists = DEN
+			country_exists = PRS
+			NOT = { has_war_with = PRS }
+			# no nap
+		}
+		completion_reward = {
+			PRS = { country_event = prussia.101 }
+		}
+	}
+	
+	#War from the East 
+	focus = {
+		id = DEN_nat_pra_wph_war 
+		icon = GFX_goal_rhineland
+		ai_will_do = { factor = } 
+		x = 2
+		y = 8
+		mutually_exclusive = { focus = DEN_nat_wph_pra_war  
+							   focus = DEN_nat_aus_wph_war }
+		prerequisite = { focus = DEN_nat_pra_peace}
+		cost = 10
+		available = {
+			country_exists = DEN
+			country_exists = WSP
+			country_exists = PRS
+			NOT = { has_war_with = WSP }
+		}
+		completion_reward = { 
+			PRS = { country_event = prussia.102 }
+		} 
+	}
+	 
+	#Expel Germans 
+	focus = { 
+		id = DEN_nat_deport 
+		icon = GFX_goal_generic_defence
+		ai_will_do = { factor = } 
+		x = 3
+		y = 9
+		prerequisite = { focus = DEN_nat_pra_wph_war  
+						 focus = DEN_nat_aus_wph_war }
+		cost = 10
+		available = {
+			has_full_control_of_state = 58
+		}
+		completion_reward = { 
+			add_state_core = 58
+		} 
+	}
+ 
+	#Treaty of Dresden 
+	focus = {
+		id = DEN_nat_pra_pact 
+		icon = GFX_focus_rom_abdicate
+		ai_will_do = { factor = } 
+		x = 2
+		y = 10
+		prerequisite = { focus = DEN_nat_pra_wph_war }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = PRS
+			NOT = { has_war_with = PRS }
+		}
+		completion_reward = {
+			add_political_power = 50
+			PRS = { country_event = prussia.103 }
+		} 
+	}
+	
+	#Speak in Danzig 
+	focus = { 
+		id = DEN_nat_pra_idea 
+		icon = GFX_goal_generic_propaganda
+		ai_will_do = { factor = } 
+		x = 2
+		y = 11
+		prerequisite = { focus = DEN_nat_pra_pact }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = { 
+			PRS = { 
+				add_timed_idea = {
+					idea = DEN_nat_influence
+					days = 180
+				}
+			}
+		} 
+	}
+ 
+	#Share the Baltic 
+	focus = { 
+		id = DEN_nat_pra_trade_states 
+		icon = GFX_goal_continuous_increase_nu
+		ai_will_do = { factor = } 
+		x = 2
+		y = 12
+		prerequisite = { focus = DEN_nat_pra_idea }
+		cost = 10
+		available = {
+			ROOT = { has_full_control_of_state = 58 }
+			PRS = { has_full_control_of_state = 61 }
+			PRS = { has_full_control_of_state = 62 }
+		}
+		completion_reward = { 
+			PRS = { country_event = prussia.104 }
+		} 
+	}
+	
+	#Break Bread with Austria 
+	focus = { 
+		id = DEN_nat_aus_peace 
+		icon = GFX_goal_tripartite_pact 
+		ai_will_do = { factor = } 
+		x = 4
+		y = 7
+		prerequisite = { focus = DEN_nat_germany} 
+		cost = 10
+		available = {
+			#no nap
+			NOT = { has_war_with = AUS }
+		}
+		completion_reward = { 
+			AUS = { country_event = austria.101 }
+		}
+	}
+	
+	#War from the South 
+	focus = { 
+		id = DEN_nat_aus_wph_war 
+		icon = GFX_focus_generic_license_production
+		ai_will_do = { factor = }
+		x = 4
+		y = 8
+		mutually_exclusive = { focus = DEN_nat_pra_wph_war  
+							   focus = DEN_nat_wph_pra_war }
+		prerequisite = { focus = DEN_nat_aus_peace }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = WSP
+			country_exists = AUS
+			NOT = { has_war_with = WSP }
+			NOT = { has_war_with = AUS }
+		}
+		completion_reward = { 
+			AUS = { country_event = austria.102 }
+		} 
+	}
+	
+	#Treaty of Vienna 
+	focus = { 
+		id = DEN_nat_aus_pact
+		icon = GFX_goal_generic_improve_relations
+		ai_will_do = { factor = } 
+		x = 4
+		y = 10
+		prerequisite = { focus = DEN_nat_aus_wph_war }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = AUS
+			NOT = { has_war_with = AUS }
+		}
+		completion_reward = { 
+			add_political_power = 50
+			AUS = { country_event = austria.103 }
+		} 
+	}
+ 
+	#Broadcasts in Austria 
+	focus = {
+		id = DEN_nat_aus_idea 
+		icon = GFX_goal_generic_radar
+		ai_will_do = { factor = } 
+		x = 4
+		y = 11
+		prerequisite = { focus = DEN_nat_aus_pact }
+		cost = 10
+		available_if_capitulated = yes  
+		completion_reward = {
+			AUS = { 
+				add_timed_idea = {
+					idea = DEN_nat_influence
+					days = 180
+				}
+			} 
+		} 
+	}
+ 
+	#Make Germany Great Again 
+	focus = { 
+		id = DEN_nat_aus_join_faction
+		icon = GFX_focus_generic_diplomatic_treaty
+		ai_will_do = { factor = } 
+		x = 4
+		y = 12
+		prerequisite = { focus = DEN_nat_aus_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = { 
+			add_political_power = 100
+			AUS = { country_event = austria.104 }
+		}
+	}
+	
+	#Loyalty Before All
+	focus = { 
+		id = DEN_mon_justice_1
+		icon = GFX_goal_generic_political_pressure
+		ai_will_do = { factor = }
+		x = 14
+		y = 4
+		prerequisite = { focus = DEN_go_monarchist }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_popularity = {
+				ideology = monarchism
+				popularity = 0.05
+			}
+		}
+	}
+	
+	#Justice in the Courts
+	focus = { 
+		id = DEN_mon_justice_2
+		icon = GFX_goal_government
+		ai_will_do = { factor = }
+		x = 14
+		y = 5
+		prerequisite = { focus = DEN_mon_justice_1 }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_ideas = DEN_mon_courts
+		}
+	}
+	
+	#Royal Guard
+	focus = { 
+		id = DEN_mon_justice_3
+		icon = GFX_goal_generic_special_forces
+		ai_will_do = { factor = }
+		x = 14
+		y = 6
+		prerequisite = { focus = DEN_mon_justice_2 }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_country_leader_trait = army_chief_drill_2
+		}
+	}
+	
+	#The Grand Tour
+	focus = {
+		id = DEN_mon_diplomatic_tour
+		icon = GFX_goal_continuous_increase_nu
+		ai_will_do = { factor = }
+		x = 20
+		y = 4
+		prerequisite = { focus = DEN_go_monarchist }
+		cost = 10
+		available = {
+			NOT = { has_war_with = NOR }
+			country_exists = NOR
+		}
+		completion_reward = {
+			NOR = {
+				add_popularity = {
+					ideology = monarchism
+					popularity = 0.10
+				}
+			}
+			add_political_power = 50
+		}
+	}
+	
+	#King Beyond the Skagerrak
+	focus = {
+		id = DEN_mon_puppet_norway
+		icon = GFX_focus_CZE_german_puppet
+		ai_will_do = { factor = }
+		x = 20
+		y = 5
+		prerequisite = { focus = DEN_mon_diplomatic_tour }
+		cost = 10
+		available = {
+			NOT = { has_war_with = NOR }
+			country_exists = NOR
+		}
+		completion_reward = {
+			NOR = { country_event = { id = norway.101 } }
+		}
+	}
+	
+	#Imperial Administration
+	focus = {
+		id = DEN_mon_annex_norway
+		icon = GFX_focus_generic_home_defense
+		ai_will_do = { factor = }
+		x = 20
+		y = 6
+		prerequisite = { focus = DEN_mon_puppet_norway }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = {
+			annex_country = { target = NOR }
+			add_popularity = {
+				ideology = monarchism
+				popularity = 0.05
+			}
+			if = {
+				limit = { NOT = { has_government = monarchism } }
+				set_politics = {
+					ruling_party = monarchism
+					elections_allowed = no
+				}
+			}
+		}
+	}
+	
+	#I Am Your Brother
+	focus = {
+		id = DEN_mon_core_norway
+		icon = GFX_focus_rom_abdicate
+		ai_will_do = { factor = }
+		x = 20
+		y = 7
+		prerequisite = { focus = DEN_mon_annex_norway }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = {
+			add_state_core = 110
+			add_state_core = 142
+			add_state_core = 143
+			add_state_core = 144
+		}
+	}
+	
+	#Margaretian Ambitions
+	focus = {
+		id = DEN_mon_press_sweden
+		icon = GFX_focus_rom_royal_dictatorship
+		ai_will_do = { factor = }
+		x = 17
+		y = 4
+		prerequisite = { focus = DEN_go_monarchist }
+		cost = 10
+		available = {
+			NOT = { has_war_with = SWE }
+			country_exists = SWE
+		}
+		completion_reward = {
+			SWE = { add_ideas = DEN_mon_influence }
+		}
+	}
+	
+	#Stormkrig
+	focus = {
+		id = DEN_mon_war_sweden
+		icon = GFX_goal_generic_army_tanks
+		ai_will_do = { factor = }
+		x = 16
+		y = 5
+		mutually_exclusive = { focus = DEN_mon_claim_sweden }
+		prerequisite = { focus = DEN_mon_press_sweden }
+		cost = 10
+		available = {
+			NOT = { has_war_with = SWE }
+			country_exists = SWE
+		}
+		completion_reward = {
+			declare_war_on = {
+				target = SWE
+				type = annex_everything
+			}
+		}
+	}
+	
+	#Tensions on the Peninsula
+	focus = {
+		id = DEN_mon_claim_sweden
+		icon = GFX_goal_continuous_suppression
+		ai_will_do = { factor = }
+		x = 18
+		y = 5
+		mutually_exclusive = { focus = DEN_mon_war_sweden }
+		prerequisite = { focus = DEN_mon_press_sweden }
+		cost = 10
+		available = {
+			country_exists = SWE
+		}
+		completion_reward = {
+			add_state_core = 138
+			add_state_claim = 139
+			add_state_claim = 140
+			add_state_claim = 141
+			add_state_claim = 38
+			add_state_claim = 666
+		}
+	}
+	
+	#Coronation of the Emperor
+	focus = {
+		id = DEN_mon_coronation
+		icon = GFX_focus_generic_home_defense
+		ai_will_do = { factor = }
+		x = 17
+		y = 6
+		prerequisite = { focus = DEN_mon_war_sweden
+						 focus = DEN_mon_claim_sweden }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = {
+			add_popularity = {
+				ideology = monarchism
+				popularity = 0.10
+			}
+			add_stability = 0.05
+			if = {
+				limit = { NOT = { has_government = monarchism } }
+				set_politics = {
+					ruling_party = monarchism
+					elections_allowed = no
+				}
+			}
+		}
+	}
+	
+	#Dissolve Rigsdag
+	focus = {
+		id = DEN_mon_dissolve_rigsdag
+		icon = GFX_goal_continuous_restrict_freedom
+		ai_will_do = { factor = }
+		x = 16
+		y = 7
+		mutually_exclusive = { focus = DEN_mon_burn_rigsdag }
+		prerequisite = { focus = DEN_mon_coronation }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = {
+			country_event = { id = denmark.3 }
+		}
+	}
+	
+	#Rewrite Constitution
+	focus = {
+		id = DEN_mon_restructure_gov
+		icon = GFX_goal_generic_forceful_treaty
+		ai_will_do = { factor = }
+		x = 16
+		y = 8
+		prerequisite = { focus = DEN_mon_dissolve_rigsdag }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = {
+			add_stability = 0.05
+			add_country_leader_trait = dictator
+		}
+	}
+	
+	#Candle in the Night
+	focus = {
+		id = DEN_mon_burn_rigsdag
+		icon = GFX_goal_generic_dangerous_deal
+		ai_will_do = { factor = }
+		x = 18
+		y = 7
+		mutually_exclusive = { focus = DEN_mon_dissolve_rigsdag }
+		prerequisite = { focus = DEN_mon_coronation }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = {
+			add_popularity = {
+				ideology = monarchism
+				popularity = 0.10
+			}
+			add_stability = -0.10
+		}
+	}
+	
+	#Court Invitations
+	focus = {
+		id = DEN_mon_noble_court
+		icon = GFX_focus_rom_parties_end
+		ai_will_do = { factor = }
+		x = 18
+		y = 8
+		prerequisite = { focus = DEN_mon_burn_rigsdag }
+		cost = 10
+		available_if_capitulated = no
+		completion_reward = {
+			add_ideas = DEN_courtiers
+		}
+	}
+	
+	#Peninsular Lords
+	focus = {
+		id = DEN_mon_feudalism_cores
+		icon = GFX_goal_tfv_sever_ties_with_uk
+		ai_will_do = { factor = }
+		x = 17
+		y = 9
+		prerequisite = { focus = DEN_mon_restructure_gov
+						 focus = DEN_mon_noble_court }
+		cost = 10
+		available = {
+			has_full_control_of_state = 110
+			has_full_control_of_state = 138
+			has_full_control_of_state = 141
+		}
+		completion_reward = {
+			add_state_core = 110
+			add_state_core = 138
+			add_state_core = 141
+			110 = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = arms_factory
+					level = 2
+					instant_build = yes
+				}
+			}
+			138 = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = arms_factory
+					level = 2
+					instant_build = yes
+				}
+			}
+			141 = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = arms_factory
+					level = 2
+					instant_build = yes
+				}
+			}
+		}
+	}
+	
+	#The Scepter Turns West
+	focus = {
+		id = DEN_mon_west
+		icon = GFX_goal_national_mobilization
+		ai_will_do = { factor = }
+		x = 13
+		y = 10
+		prerequisite = { focus = DEN_mon_feudalism_cores }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_opinion_modifier = {
+				target = ENG
+				modifier = DEN_target
+			}
+			ENG = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_out_is_target
+				}
+				add_ideas = DEN_mon_threat
+			}
+			FIN = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_out_not_target
+				}
+			}
+		}
+	}
+	
+	#Revitalize the Orlogsværftet
+	focus = {
+		id = DEN_mon_west_navy
+		icon = GFX_goal_generic_construct_naval_dockyard
+		ai_will_do = { factor = }
+		x = 13
+		y = 11
+		prerequisite = { focus = DEN_mon_west }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = ENG
+			has_full_control_of_state = 99
+			NOT = { has_war_with = ENG }
+			NOT = { is_in_faction_with = ENG }
+		}
+		completion_reward = {
+			add_opinion_modifier = {
+				target = ENG
+				modifier = DEN_eng_building_fleet
+			}
+			add_ideas = DEN_master_warships
+			99 = {
+				limit = {
+					free_building_slots = {
+						building = dockyard
+						size > 0
+						include_locked = yes
+					}
+				}
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = {
+					type = dockyard
+					level = 3
+					instant_build = yes
+				}
+			}
+			ENG = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = ENG_den_building_fleet
+				}
+			}
+		}
+	}
+	
+	#Viking Raiders
+	focus = {
+		id = DEN_mon_west_vikings
+		icon = GFX_goal_generic_navy_submarine
+		ai_will_do = { factor = }
+		x = 12
+		y = 12
+		mutually_exclusive = { focus = DEN_mon_west_commonwealth }
+		prerequisite = { focus = DEN_mon_west_navy
+						 focus = DEN_nat_north_sea }
+		cost = 10
+		available = {
+			NOT = { has_war_with = ENG }
+			country_exists = ROOT
+			country_exists = ENG
+		}
+		completion_reward = {
+			add_timed_idea = {
+				idea = DEN_eng_raids
+				days = 90
+			}
+			ENG = {
+				create_wargoal = {
+					type = puppet_wargoal_focus
+					target = DEN
+				}
+				add_timed_idea = {
+					idea = ENG_den_raids
+					days = 90
+				}
+			}
+		}
+	}
+	
+	#Kejser-Kommander
+	focus = {
+		id = DEN_mon_west_empire
+		icon = GFX_goal_imperial_cult
+		ai_will_do = { factor = }
+		x = 12
+		y = 13
+		prerequisite = { focus = DEN_mon_west_vikings }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = ENG
+		}
+		completion_reward = {
+			add_country_leader_trait = naval_theorist
+			create_wargoal = {
+				type = annex_everything
+				target = ENG
+			}
+		}
+	}
+	
+	#North Sea Union
+	focus = {
+		id = DEN_mon_west_commonwealth
+		icon = GFX_goal_white_doves
+		ai_will_do = { factor = }
+		x = 14
+		y = 12
+		mutually_exclusive = { focus = DEN_mon_west_vikings }
+		prerequisite = { focus = DEN_mon_west_navy }
+		cost = 10
+		available = {
+			NOT = { has_war_with = ENG }
+			country_exists = ROOT
+			country_exists = ENG
+		}
+		completion_reward = {
+			ENG = { country_event = { id = britainexternal.26 } }
+		}
+	}
+	
+	#Invite Westphalia
+	focus = {
+		id = DEN_mon_west_westphalia
+		icon = GFX_goal_commonwealth_cooperation
+		ai_will_do = { factor = }
+		x = 14
+		y = 13
+		prerequisite = { focus = DEN_mon_west_commonwealth }
+		cost = 10
+		available = {
+			is_in_faction_with = ENG
+		}
+		completion_reward = {
+			WSP = { country_event = { id = westphalia.106 } }
+		}
+	}
+	
+	#The Scepter Turns South
+	focus = {
+		id = DEN_mon_south
+		icon = GFX_goal_national_mobilization
+		ai_will_do = { factor = }
+		x = 17
+		y = 10
+		prerequisite = { focus = DEN_mon_feudalism_cores }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_opinion_modifier = {
+				target = AUS
+				modifier = DEN_target
+			}
+			add_opinion_modifier = {
+				target = PRS
+				modifier = DEN_target
+			}
+			AUS = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_out_is_target
+				}
+				add_ideas = DEN_mon_threat
+			}
+			PRS = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_out_is_target
+				}
+				add_ideas = DEN_mon_threat
+			}
+			ENG = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_out_not_target
+				}
+			}
+		}
+	}
+	
+	#Rustle the German Lords
+	focus = {
+		id = DEN_mon_south_idea
+		icon = GFX_focus_generic_anti_fascist_diplomacy
+		ai_will_do = { factor = }
+		x = 17
+		y = 11
+		prerequisite = { focus = DEN_mon_south }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			PRS = { remove_ideas = PRS_den_mon_threat }
+			WSP = {
+				add_ideas = DEN_mon_influence
+				add_stability = -0.05
+			}
+		}
+	}
+	
+	#War for Greater Denmark
+	focus = {
+		id = DEN_mon_south_war
+		icon = GFX_goal_anschluss
+		ai_will_do = { factor = }
+		x = 16
+		y = 12
+		mutually_exclusive = { focus = DEN_mon_south_peace }
+		prerequisite = { focus = DEN_mon_south_idea }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = WSP
+			country_exists = PRS
+			NOT = { has_war_with = WSP }
+			NOT = { has_war_with = PRS }
+		}
+		completion_reward = {
+			create_wargoal = {
+				type = take_state_focus
+				target = WSP
+				generator = { 58 }
+			}
+			create_wargoal = {
+				type = take_state_focus
+				target = PRS
+				generator = { 61 62 }
+			}
+		}
+	}
+	
+	#Blood Alliance
+	focus = {
+		id = DEN_mon_south_peace
+		icon = GFX_goal_tripartite_pact
+		ai_will_do = { factor = }
+		x = 18
+		y = 12
+		mutually_exclusive = { focus = DEN_mon_south_war }
+		prerequisite = { focus = DEN_mon_south_idea }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = WSP
+			country_exists = PRS
+			NOT = { has_war_with = WSP }
+			NOT = { has_war_with = PRS }
+		}
+		completion_reward = {
+			create_wargoal = {
+				type = take_state_focus
+				target = PRS
+				generator = { 58 }
+			}
+			WSP = { country_event = { id = westphalia.102 } }
+		}
+	}
+	
+	#The Scepter Turns East
+	focus = {
+		id = DEN_mon_east
+		icon = GFX_goal_national_mobilization
+		ai_will_do = { factor = }
+		x = 21
+		y = 10
+		prerequisite = { focus = DEN_mon_feudalism_cores }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_opinion_modifier = {
+				target = FIN
+				modifier = DEN_target
+			}
+			FIN = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_out_is_target
+				}
+				add_ideas = DEN_mon_threat
+			}
+			WSP = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_out_not_target
+				}
+			}
+		}
+	}
+	
+	#Challenge Sisu
+	focus = {
+		id = DEN_mon_east_sisu
+		icon = GFX_goal_continuous_def_against_influence
+		ai_will_do = { factor = }
+		x = 21
+		y = 11
+		prerequisite = { focus = DEN_mon_east }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = FIN
+			NOT = { has_war_with = FIN }
+		}
+		completion_reward = {
+			FIN = { country_event = { id = finland.103 } }
+		}
+	}
+	
+	#Finland or War
+	focus = {
+		id = DEN_mon_east_demand
+		icon = GFX_goal_globalism
+		ai_will_do = { factor = }
+		x = 20
+		y = 12
+		mutually_exclusive = { focus = DEN_mon_east_idea }
+		prerequisite = { focus = DEN_mon_east_sisu }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = FIN
+			NOT = { has_war_with = FIN }
+		}
+		completion_reward = {
+			add_state_claim = 111
+			add_state_claim = 146
+			add_state_claim = 147
+			add_state_claim = 148
+			add_state_claim = 149
+			add_state_claim = 150
+		}
+	}
+	
+	#Promote Dissidents
+	focus = {
+		id = DEN_mon_east_idea
+		icon = GFX_goal_generic_small_arms
+		ai_will_do = { factor = }
+		x = 22
+		y = 12
+		mutually_exclusive = { focus = DEN_mon_east_demand }
+		prerequisite = { focus = DEN_mon_east_sisu }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = FIN
+		}
+		completion_reward = {
+			add_political_power = 50
+			add_opinion_modifier = {
+				target = FIN
+				modifier = DEN_fin_dissidents
+			}
+			FIN = {
+				add_opinion_modifier = {
+					target = DEN
+					modifier = DEN_fin_dissidents
+				}
+			}
+		}
+	}
+	
+	#Install Grand Prince
+	focus = {
+		id = DEN_mon_east_coup
+		icon = GFX_focus_generic_self_management
+		ai_will_do = { factor = }
+		x = 22
+		y = 13
+		prerequisite = { focus = DEN_mon_east_idea }
+		cost = 10
+		available = {
+			country_exists = ROOT
+			country_exists = FIN
+		}
+		completion_reward = {
+			start_civil_war = {
+				ideology = monarchism
+				size = 0.5
+			}
+		}
+	}
+	
+	#Exporting Democracy
+	#focus = {
+		id = DEN_dem_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 24
+		y = 4
+		prerequisite = { focus = DEN_go_democratic }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Southern Negotiations
+	#focus = {
+		id = DEN_dem_south
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 24
+		y = 5
+		prerequisite = { focus = DEN_dem_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Gulerødder for Westphalia
+	#focus = {
+		id = DEN_dem_wph_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 23
+		y = 6
+		mutually_exclusive = { focus = DEN_dem_wph_war }
+		prerequisite = { focus = DEN_dem_south }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Bøg for Westphalia
+	#focus = {
+		id = DEN_dem_wph_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 25
+		y = 6
+		mutually_exclusive = { focus = DEN_dem_wph_peace }
+		prerequisite = { focus = DEN_dem_south }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Dusseldorf Accord
+	#focus = {
+		id = DEN_dem_wph_peace_2
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 23
+		y = 7
+		prerequisite = { focus = DEN_dem_wph_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Brothers in Arms
+	#focus = {
+		id = DEN_dem_wph_war_2
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 25
+		y = 7
+		prerequisite = { focus = DEN_dem_wph_war }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Constitutional Monarchy
+	#focus = {
+		id = DEN_dem_wph_pact
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 23
+		y = 8
+		prerequisite = { focus = DEN_dem_wph_peace_2 }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Treaty of Copenhagen
+	#focus = {
+		id = DEN_dem_wph_core
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 25
+		y = 8
+		prerequisite = { focus = DEN_dem_wph_war_2 }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Befriend the Dutch
+	#focus = {
+		id = DEN_dem_dutch_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 24
+		y = 9
+		mutually_exclusive = { focus = DEN_dem_rhn_faction
+							   focus = DEN_dem_baltic_navy }
+		prerequisite = { focus = DEN_dem_wph_pact
+						 focus = DEN_dem_wph_core }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	
+	#North Sea Pact
+	#focus = {
+		id = DEN_dem_dutch_pact
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 24
+		y = 10
+		prerequisite = { focus = DEN_dem_dutch_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Liga Nova
+	#focus = {
+		id = DEN_dem_dutch_faction
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 24
+		y = 11
+		prerequisite = { focus = DEN_dem_dutch_pact }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Invite Rhinish Republic
+	#focus = {
+		id = DEN_dem_invite_rhine
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 24
+		y = 12
+		prerequisite = { focus = DEN_dem_dutch_faction }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Networking
+	#focus = {
+		id = DEN_dem_poltical_power
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 31
+		y = 4
+		prerequisite = { focus = DEN_go_democratic }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Merchant Republic
+	#focus = {
+		id = DEN_dem_econ
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 31
+		y = 5
+		prerequisite = { focus = DEN_dem_poltical_power }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#German Investors
+	#focus = {
+		id = DEN_dem_invest_german
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 27
+		y = 6
+		prerequisite = { focus = DEN_dem_econ }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Defend the Rhineland
+	#focus = {
+		id = DEN_dem_rhn_pact
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 27
+		y = 7
+		prerequisite = { focus = DEN_dem_invest_german }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Mobilize the Peninsula
+	#focus = {
+		id = DEN_dem_mobilize
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 27
+		y = 8
+		prerequisite = { focus = DEN_dem_rhn_pact }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Münster Agreement
+	#focus = {
+		id = DEN_dem_rhn_faction
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 26
+		y = 9
+		mutually_exclusive = { focus = DEN_dem_dutch_peace
+							   focus = DEN_dem_baltic_navy }
+		prerequisite = { focus = DEN_dem_mobilize }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Smuggle Democratic Propaganda
+	#focus = {
+		id = DEN_dem_bav_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 26
+		y = 10
+		prerequisite = { focus = DEN_dem_rhn_faction }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Bavarian Referendum
+	#focus = {
+		id = DEN_dem_bav_election
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 26
+		y = 11
+		prerequisite = { focus = DEN_dem_bav_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Invite Bavarians
+	#focus = {
+		id = DEN_dem_invite_bav
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 26
+		y = 12
+		prerequisite = { focus = DEN_dem_bav_election
+						 focus = DEN_dem_dutch_faction }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#New Baltic Navy
+	#focus = {
+		id = DEN_dem_baltic_navy
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 28
+		y = 9
+		mutually_exclusive = { focus = DEN_dem_dutch_peace
+							   focus = DEN_dem_rhn_faction }
+		prerequisite = { focus = DEN_dem_mobilize }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Seize the Baltic
+	#focus = {
+		id = DEN_dem_baltic_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 28
+		y = 10
+		prerequisite = { focus = DEN_dem_baltic_navy }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Wiemar Resurgence
+	#focus = {
+		id = DEN_dem_wiemar
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 28
+		y = 11
+		prerequisite = { focus = DEN_dem_baltic_war }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#The Great German Experiment
+	#focus = {
+		id = DEN_dem_continental_faction
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 28
+		y = 12
+		prerequisite = { focus = DEN_dem_wiemar }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Invite France
+	#focus = {
+		id = DEN_dem_invite_france
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 28
+		y = 13
+		prerequisite = { focus = DEN_dem_continental_faction }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#American Investors
+	#focus = {
+		id = DEN_dem_invest_american
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 34
+		y = 6
+		prerequisite = { focus = DEN_dem_econ }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Eureka!
+	#focus = {
+		id = DEN_dem_tacoma_trade
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 34
+		y = 7
+		mutually_exclusive = { focus = DEN_dem_tacoma_embargo }
+		prerequisite = { focus = DEN_dem_invest_american }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Fund Revolutionaries
+	#focus = {
+		id = DEN_dem_america_troops
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 34
+		y = 8
+		prerequisite = { focus = DEN_dem_tacoma_trade }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Guarnantee Self-Determination
+	#focus = {
+		id = DEN_dem_america_pact
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 34
+		y = 9
+		prerequisite = { focus = DEN_dem_america_troops }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Congress of New York
+	#focus = {
+		id = DEN_dem_america_faction
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 34
+		y = 10
+		prerequisite = { focus = DEN_dem_america_pact }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#British Investors
+	#focus = {
+		id = DEN_dem_invest_british
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 31
+		y = 6
+		prerequisite = { focus = DEN_dem_econ }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Open the Ports
+	#focus = {
+		id = DEN_dem_british_trade
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 30
+		y = 7
+		prerequisite = { focus = DEN_dem_invest_british }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Frederikshavn Shipyards
+	#focus = {
+		id = DEN_dem_shipyards
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 30
+		y = 8
+		prerequisite = { focus = DEN_dem_british_trade }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#North Sea Dominance
+	#focus = {
+		id = DEN_dem_north_sea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 30
+		y = 9
+		prerequisite = { focus = DEN_dem_shipyards }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Union with Norway
+	#focus = {
+		id = DEN_dem_annex_norway
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 30
+		y = 10
+		mutually_exclusive = { focus = DEN_dem_invite_norway }
+		prerequisite = { focus = DEN_dem_north_sea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Cut Supplies to Tacoma
+	#focus = {
+		id = DEN_dem_tacoma_embargo
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 32
+		y = 7
+		mutually_exclusive = { focus = DEN_dem_tacoma_trade }
+		prerequisite = { focus = DEN_dem_invest_british }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#London Conference
+	#focus = {
+		id = DEN_dem_british_pact
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 32
+		y = 8
+		prerequisite = { focus = DEN_dem_tacoma_embargo }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Join the Western Pact
+	#focus = {
+		id = DEN_dem_commonwealth
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 32
+		y = 9
+		prerequisite = { focus = DEN_dem_british_pact }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Invite Norway
+	#focus = {
+		id = DEN_dem_invite_norway
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 32
+		y = 10
+		mutually_exclusive = { focus = DEN_dem_annex_norway }
+		prerequisite = { focus = DEN_dem_british_pact }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Befriend the Swedes
+	#focus = {
+		id = DEN_dem_sweden_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 31
+		y = 11
+		prerequisite = { focus = DEN_dem_annex_norway
+						 focus = DEN_dem_invite_norway }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#North Baltic Conference
+	#focus = {
+		id = DEN_dem_sweden_pact
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 31
+		y = 12
+		prerequisite = { focus = DEN_dem_sweden_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Scanian Referendum
+	#focus = {
+		id = DEN_dem_sweden_scania
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 31
+		y = 13
+		prerequisite = { focus = DEN_dem_sweden_pact }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Champion of Denmark
+	#focus = {
+		id = DEN_soc_domestic
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 39
+		y = 4
+		prerequisite = { focus = DEN_go_socialist }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Wages and Workplace Safety
+	#focus = {
+		id = DEN_soc_workplace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 40
+		y = 5
+		prerequisite = { focus = DEN_soc_domestic }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Nationalize Industry
+	#focus = {
+		id = DEN_soc_nationalize
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 40
+		y = 6
+		prerequisite = { focus = DEN_soc_workplace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Women in the Factories
+	#focus = {
+		id = DEN_soc_women_workers
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 40
+		y = 7
+		prerequisite = { focus = DEN_soc_nationalize }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#People of the Baltic
+	#focus = {
+		id = DEN_soc_baltic_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 37
+		y = 4
+		prerequisite = { focus = DEN_go_socialist }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Stockholm Conference
+	#focus = {
+		id = DEN_soc_sweden_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 36
+		y = 5
+		prerequisite = { focus = DEN_soc_baltic_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Scanian Exchange
+	#focus = {
+		id = DEN_soc_annex_scania
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 36
+		y = 6
+		prerequisite = { focus = DEN_soc_sweden_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Publish Manifesto
+	#focus = {
+		id = DEN_soc_manifesto
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 38
+		y = 5
+		prerequisite = { focus = DEN_soc_baltic_idea
+						 focus = DEN_soc_domestic }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Seize the Estates
+	#focus = {
+		id = DEN_soc_seize_wealth
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 38
+		y = 6
+		prerequisite = { focus = DEN_soc_manifesto }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#A Gun in Every Household
+	#focus = {
+		id = DEN_soc_arm_citizens
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 37
+		y = 7
+		prerequisite = { focus = DEN_soc_annex_scania
+						 focus = DEN_soc_seize_wealth }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Liberation of Norway
+	#focus = {
+		id = DEN_soc_annex_norway
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 36
+		y = 8
+		prerequisite = { focus = DEN_soc_arm_citizens }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Scandinavian Identity
+	#focus = {
+		id = DEN_soc_core_norway
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 36
+		y = 9
+		prerequisite = { focus = DEN_soc_annex_norway }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Liberation of Finland
+	#focus = {
+		id = DEN_soc_puppet_finland
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 38
+		y = 8
+		prerequisite = { focus = DEN_soc_arm_citizens }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Revolutionary Zeal
+	#focus = {
+		id = DEN_soc_finland_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 38
+		y = 9
+		prerequisite = { focus = DEN_soc_puppet_finland }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Breaker of Shackles
+	#focus = {
+		id = DEN_soc_scandinavia_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 37
+		y = 10
+		prerequisite = { focus = DEN_soc_core_norway
+						 focus = DEN_soc_finland_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Russian Sympathizers
+	#focus = {
+		id = DEN_soc_russia_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 37
+		y = 11
+		prerequisite = { focus = DEN_soc_scandinavia_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Bolshevik Renaissance
+	#focus = {
+		id = DEN_soc_russia_coup
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 37
+		y = 12
+		prerequisite = { focus = DEN_soc_russia_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Internationalism
+	#focus = {
+		id = DEN_soc_internationalism
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 46
+		y = 4
+		prerequisite = { focus = DEN_go_socialist }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+		}
+	}
+	
+	#Befriend the Netherlands
+	#focus = {
+		id = DEN_soc_dutch_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 46
+		y = 5
+		prerequisite = { focus = DEN_soc_internationalism }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Befriend France
+	#focus = {
+		id = DEN_soc_france_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 46
+		y = 6
+		prerequisite = { focus = DEN_soc_dutch_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Bavarian Agreement
+	#focus = {
+		id = DEN_soc_bav_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 48
+		y = 5
+		prerequisite = { focus = DEN_soc_internationalism }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Fortify the Continent
+	#focus = {
+		id = DEN_soc_fortify
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 48
+		y = 6
+		prerequisite = { focus = DEN_soc_bav_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Central European Alliance
+	#focus = {
+		id = DEN_soc_germany_faction
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 48
+		y = 7
+		prerequisite = { focus = DEN_soc_fortify }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Depose the Westphalian King
+	#focus = {
+		id = DEN_soc_wph_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 47
+		y = 8
+		prerequisite = { focus = DEN_soc_germany_faction }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Assert the Danish Culture
+	#focus = {
+		id = DEN_soc_wph_core
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 47
+		y = 9
+		prerequisite = { focus = DEN_soc_wph_war }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Fate of the Rhinish Republic
+	#focus = {
+		id = DEN_soc_rhn_target
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 47
+		y = 10
+		prerequisite = { focus = DEN_soc_wph_core }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#War with Prussia
+	#focus = {
+		id = DEN_soc_pra_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 49
+		y = 8
+		prerequisite = { focus = DEN_soc_germany_faction }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Warsaw Pact
+	#focus = {
+		id = DEN_soc_poland_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 49
+		y = 9
+		prerequisite = { focus = DEN_soc_pra_war }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Befriend the Czechs
+	#focus = {
+		id = DEN_soc_czech_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 49
+		y = 10
+		prerequisite = { focus = DEN_soc_poland_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#War for the Eastern Kingdom
+	#focus = {
+		id = DEN_soc_austria_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 48
+		y = 11
+		prerequisite = { focus = DEN_soc_rhn_target }
+		prerequisite = { focus = DEN_soc_czech_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Rally German Revolutionaries
+	#focus = {
+		id = DEN_soc_germany_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 48
+		y = 12
+		prerequisite = { focus = DEN_soc_austria_war }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Negotiations with Brazil
+	#focus = {
+		id = DEN_soc_brazil_peace
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 5
+		prerequisite = { focus = DEN_soc_internationalism }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Attend the World Congress
+	#focus = {
+		id = DEN_soc_world_congress
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 6
+		prerequisite = { focus = DEN_soc_brazil_peace }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Join the Comintern
+	#focus = {
+		id = DEN_soc_join_fac
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 7
+		prerequisite = { focus = DEN_soc_world_congress }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Blood of the Lion
+	#focus = {
+		id = DEN_soc_target_britain
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 8
+		prerequisite = { focus = DEN_soc_join_fac }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#London Underground
+	#focus = {
+		id = DEN_soc_britain_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 40
+		y = 9
+		prerequisite = { focus = DEN_soc_target_britain }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Fireworks in Parliament
+	#focus = {
+		id = DEN_soc_britain_terror
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 40
+		y = 10
+		prerequisite = { focus = DEN_soc_britain_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Disturb the Peace
+	#focus = {
+		id = DEN_soc_britain_coup
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 39
+		y = 11
+		mutually_exclusive = { focus = DEN_soc_britain_war }
+		prerequisite = { focus = DEN_soc_britain_terror }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#March to London
+	#focus = {
+		id = DEN_soc_britain_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 41
+		y = 11
+		mutually_exclusive = { focus = DEN_soc_britain_coup }
+		prerequisite = { focus = DEN_soc_britain_terror }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Carve up the Isles
+	#focus = {
+		id = DEN_soc_britain_cores
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 40
+		y = 12
+		prerequisite = { focus = DEN_soc_britain_coup 
+						 focus = DEN_soc_britain_war }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Global Dominion
+	#focus = {
+		id = DEN_soc_britain_dominion
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 40
+		y = 13
+		prerequisite = { focus = DEN_soc_britain_cores }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Allies in Ireland
+	#focus = {
+		id = DEN_soc_ally_ireland
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 9
+		mutually_exclusive = { focus = DEN_soc_ally_america }
+		prerequisite = { focus = DEN_soc_target_britain }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Arm Insurrectionists
+	#focus = {
+		id = DEN_soc_arm_ireland
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 10
+		prerequisite = { focus = DEN_soc_ally_ireland }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Independence or Death
+	#focus = {
+		id = DEN_soc_ire_brt_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 11
+		prerequisite = { focus = DEN_soc_arm_ireland }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Fracture the Four Kingdoms
+	#focus = {
+		id = DEN_soc_britain_shatter
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 43
+		y = 12
+		prerequisite = { focus = DEN_soc_ire_brt_war }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Allies in America
+	#focus = {
+		id = DEN_soc_ally_america
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 45
+		y = 9
+		mutually_exclusive = { focus = DEN_soc_ally_ireland }
+		prerequisite = { focus = DEN_soc_target_britain }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Deep Trade Connections
+	#focus = {
+		id = DEN_soc_america_trade
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 45
+		y = 10
+		prerequisite = { focus = DEN_soc_ally_america }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Common Property
+	#focus = {
+		id = DEN_soc_america_idea
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 45
+		y = 11
+		prerequisite = { focus = DEN_soc_america_trade }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Guarantee American Independence
+	#focus = {
+		id = DEN_soc_america_pact
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 45
+		y = 12
+		prerequisite = { focus = DEN_soc_america_idea }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#We the People
+	#focus = {
+		id = DEN_soc_usa_brt_war
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 45
+		y = 13
+		prerequisite = { focus = DEN_soc_america_pact }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			
+		}
+	}
+	
+	#Land Expertise
+	#focus = {
+		id = DEN_army
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 1
+		y = 14
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#New Standard Rifles
+	#focus = {
+		id = DEN_army_equipment
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 0
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_army }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Advanced Training Techniques
+	#focus = {
+		id = DEN_army_training
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 0
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_army_equipment }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Seasoned Commanders
+	#focus = {
+		id = DEN_army_leaders
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 0
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_army_training }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Suppy Lines
+	#focus = {
+		id = DEN_army_supply
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 0
+		y = 18
+		cost = 10
+		prerequisite = { focus = DEN_army_leaders }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Infantry Support
+	#focus = {
+		id = DEN_army_inf_support
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 2
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_army }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Mechanized Units
+	#focus = {
+		id = DEN_army_mechanized
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 2
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_army_inf_support }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Armor Development
+	#focus = {
+		id = DEN_army_armor
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 2
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_army_mechanized }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Mobile Warfare
+	#focus = {
+		id = DEN_army_mobile
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 2
+		y = 18
+		cost = 10
+		prerequisite = { focus = DEN_army_armor }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Amphibious Drills
+	#focus = {
+		id = DEN_army_amphib
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 2
+		y = 19
+		cost = 10
+		prerequisite = { focus = DEN_army_mobile }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Sea Expertise
+	#focus = {
+		id = DEN_navy
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 5
+		y = 14
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Overhaul Shipyards
+	#focus = {
+		id = DEN_navy_shipyards
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 4
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_navy }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Destroyer Specialists
+	#focus = {
+		id = DEN_navy_destroyers
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 4
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_navy_shipyards }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Submarine Warfare
+	#focus = {
+		id = DEN_navy_submarines
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 4
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_navy_destroyers }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#The Carrier Project
+	#focus = {
+		id = DEN_navy_carrier
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 4
+		y = 18
+		cost = 10
+		prerequisite = { focus = DEN_navy_submarines }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Naval Academies
+	#focus = {
+		id = DEN_navy_leaders
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 6
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_navy }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Merchant Marine
+	#focus = {
+		id = DEN_navy_merchants
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 6
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_navy_leaders }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Enhanced Communications
+	#focus = {
+		id = DEN_navy_comm
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 6
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_navy_merchants }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Reinforced Hull Plating
+	#focus = {
+		id = DEN_navy_armor
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 6
+		y = 18
+		cost = 10
+		prerequisite = { focus = DEN_navy_comm }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Air Expertise
+	#focus = {
+		id = DEN_air
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 9
+		y = 14
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Revitalize the Air Force
+	#focus = {
+		id = DEN_air_reform
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 8
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_air }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Agile Fighters
+	#focus = {
+		id = DEN_air_fighter
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 8
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_air_reform }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Bombing Strategies
+	#focus = {
+		id = DEN_air_bomber
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 8
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_air_fighter }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Close Air Support
+	#focus = {
+		id = DEN_air_support
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 8
+		y = 18
+		cost = 10
+		prerequisite = { focus = DEN_air_bomber }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Jet Program
+	#focus = {
+		id = DEN_air_jets
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 8
+		y = 19
+		cost = 10
+		prerequisite = { focus = DEN_air_support }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Engineering Consultants
+	#focus = {
+		id = DEN_air_engineers
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 10
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_air }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Ace Commanders
+	#focus = {
+		id = DEN_air_leaders
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 10
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_air_engineers }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Squadron Tactics
+	#focus = {
+		id = DEN_air_squad
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 10
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_air_leaders }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Rockets
+	#focus = {
+		id = DEN_air_rockets
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 10
+		y = 18
+		cost = 10
+		prerequisite = { focus = DEN_air_squad }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Harness the Atom
+	#focus = {
+		id = DEN_air_nuclear
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 10
+		y = 19
+		cost = 10
+		prerequisite = { focus = DEN_air_rockets }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Danish Commerce Authority
+	#focus = {
+		id = DEN_econ
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 13
+		y = 14
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Efficient Machinery
+	#focus = {
+		id = DEN_econ_mechanization
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 12
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_econ }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Revitalized Industrial Districts
+	#focus = {
+		id = DEN_econ_industry
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 12
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_econ_mechanization }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Resource Conservation
+	#focus = {
+		id = DEN_econ_efficiency
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 12
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_econ_industry }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Fight the Slump
+	#focus = {
+		id = DEN_econ_recession
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 14
+		y = 15
+		cost = 10
+		prerequisite = { focus = DEN_econ }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Business Subsidies
+	#focus = {
+		id = DEN_econ_subsidize
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 14
+		y = 16
+		cost = 10
+		prerequisite = { focus = DEN_econ_recession }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Diversified Trade Routes
+	#focus = {
+		id = DEN_econ_trade_routes
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 14
+		y = 17
+		cost = 10
+		prerequisite = { focus = DEN_econ_subsidize }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#Maritime Economy
+	#focus = {
+		id = DEN_econ_maritime
+		icon = goal_unknown
+		ai_will_do = { factor = }
+		x = 14
+		y = 18
+		cost = 10
+		prerequisite = { focus = DEN_econ_trade_routes }
+		available_if_capitulated = yes
+		completion_reward = {
+		
+		}
+	}
+	
+	#For the People 
+	#focus = {
+		id = DEN_leftwing_1 
+		icon = GFX_goal_generic_support_democracy 
+		ai_will_do = { factor = 0.5 } 
+		x = 35
+		y = 0
+		cost = 10
+		available_if_capitulated = yes  
+		completion_reward = { 
+			add_political_power = 50
+			add_ideas = DEN_liberal
+		} 
+	}
+	
+	#Public Appearances 
+	#focus = {
+		id = DEN_leftwing_2a
+		icon = GFX_goal_molotov_ribbentrop_pact 
+		ai_will_do = { factor = 0.5 } 
+		x = 34
+		y = 1 
+		prerequisite = { focus = DEN_leftwing_1 } 
+		cost = 10
+		available_if_capitulated = no  
+		completion_reward = { 
+			add_country_leader_trait = charismatic_speaker
+			add_political_power = 50
+		} 
+	}
+	
+	#Ripples in the Øresund 
+	#focus = { 
+		id = DEN_leftwing_2b 
+		icon = GFX_goal_generic_war_with_comintern 
+		ai_will_do = { factor = 0.5 } 
+		x = 36
+		y = 1
+		prerequisite = { focus = DEN_leftwing_1 } 
+		cost = 10
+		available_if_capitulated = yes  
+		completion_reward = {
+			hidden_effect = {
+				country_event = { id = denmark.4 }
+			}
+			add_timed_idea = {
+				idea = DEN_swe_soc
+				days = 180
+			}
+			add_opinion_modifier = {
+				target = SWE
+				modifier = SWE_den_sympathies
+			}
+		}
+	}
+	
+	#Election Reforms 
+	#focus = { 
+		id = DEN_leftwing_final
+		icon = GFX_focus_generic_self_management
+		ai_will_do = { factor = 0.9 }
+		x = 35
+		y = 2
+		mutually_exclusive = { focus = DEN_rightwing_final }
+		prerequisite = { focus = DEN_leftwing_2a
+						 focus = DEN_leftwing_2b }
+		cost = 10
+		available_if_capitulated = yes
+		completion_reward = {
+			add_political_power = 100
+			country_event = { id = denmark.7 }
+		}
+	}
+	
+	#Democracy is Non-Negotiable
+	#focus = {
+		id = DEN_go_democratic
+		icon = GFX_goal_tfv_strengthen_commonwealth_ties
+		ai_will_do = { factor = 0.5 }
+		x = 27
+		y = 3
+		mutually_exclusive = { focus = DEN_go_socialist }
+		prerequisite = { focus = DEN_leftwing_final }
+		cost = 20
+		available_if_capitulated = yes
+		completion_reward = {
+			remove_ideas = DEN_liberal
+			add_timed_idea = {
+				idea = DEN_democratic
+				days = 360
+			}
+			hidden_effect = {
+				country_event = { id = denmark.16 }
+			}
+		}
+	}
+	
+	#Workers, Unite!
+	#focus = {
+		id = DEN_go_socialist
+		icon = GFX_goal_generic_political_pressure
+		ai_will_do = { factor = 0.5 }
+		x = 43
+		y = 3
+		mutually_exclusive = { focus = DEN_go_democratic }
+		prerequisite = { focus = DEN_leftwing_final }
+		cost = 20
+		available_if_capitulated = yes
+		completion_reward = {
+			remove_ideas = DEN_liberal
+			add_timed_idea = {
+				idea = DEN_autarchist
+				days = 360
+			}
+			add_political_power = 50
+			hidden_effect = {
+				country_event = { id = denmark.21 }
+			}
+		}
+	}
+}
