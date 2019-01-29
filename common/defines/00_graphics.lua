@@ -749,6 +749,7 @@ NGraphics = {
 	
 	TRAIT_LINE_ASSIGNED_COLOR = { 0.47, 0.93, 0.65 },
 	TRAIT_LINE_NON_ASSIGNED_COLOR = { 0.67, 0.75, 0.93 },
+	TRAIT_INVALID_FOR_ASSIGNMENT_COLOR = { 0.8, 0.3, 0.3 },
 	
 	-- unit on-map interface modulate colors
 	FRIEND_COLOR  = {0.7, 0.9, 0.7},
