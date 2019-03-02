@@ -7,6 +7,9 @@ tags={
 	"Gameplay"
 }
 
+replace_path = "common/national_focus"
+replace_path = "common/ideas"
+replace_path="events"
 replace_path="history"
 replace_path="units"
 replace_path="map/strategicregions"
