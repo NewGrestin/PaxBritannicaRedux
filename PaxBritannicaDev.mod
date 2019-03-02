@@ -6,5 +6,9 @@ tags={
 	"Events"
 	"Gameplay"
 }
+
+replace_path="history"
+replace_path="map/strategicregions"
+replace_path="map/supplyareas"
 picture="paxbrit.png"
-supported_version="1.5.4"
+supported_version="1.6.0"
