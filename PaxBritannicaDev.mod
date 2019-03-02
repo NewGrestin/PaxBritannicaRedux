@@ -7,6 +7,7 @@ tags={
 	"Gameplay"
 }
 
+replace_path = "replace_path = "common/ai_strategy_plans"
 replace_path = "common/national_focus"
 replace_path = "common/ideas"
 replace_path="events"
