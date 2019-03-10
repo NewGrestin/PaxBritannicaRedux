@@ -1,5 +1,5 @@
 ﻿name="PaxBritannicaRedux Dev Build"
-path="mod/PaxBritannicaRedux/PaxBritannicaTwoElectricBoogaloo"
+path="mod/PaxBritannicaRedux/"
 tags={
 	"Alternative History"
 	"National Focuses"
@@ -40,4 +40,4 @@ replace_path = "music"
 replace_path = "tests"
 
 picture="paxbrit.png"
-supported_version="1.6.0"
+supported_version="1.6.0" 
