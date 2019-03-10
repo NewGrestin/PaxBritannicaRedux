@@ -1,5 +1,5 @@
 ﻿name="PaxBritannicaRedux Dev Build"
-path="mod/PaxBritannicaRedux/PaxBritannicaTwoElectricBoogaloo"
+path="mod/PaxBritannicaRedux/"
 tags={
 	"Alternative History"
 	"National Focuses"
