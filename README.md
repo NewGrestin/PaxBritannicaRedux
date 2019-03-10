@@ -12,10 +12,10 @@ INSTALLATION GUIDE:
 	
 	4. After you've been added to the GitHub by Clawstrider, go to your GitHub Desktop
 	Click file, then clone respository. 
-	Select "clawstrider/PaxBritannicaTwoElectricBoogaloo"
+	Select "clawstrider/PaxBritannicaTwoRedux"
 	
 	5. In the Local Path box, type:
-	C:\User\YOUR NAME\Documents\Paradox Interactive\Hearts of Iron IV\mod\PaxBritannicaTwoElectricBoogaloo
+	C:\User\YOUR NAME\Documents\Paradox Interactive\Hearts of Iron IV\mod\PaxBritannicaTwoRedux
 	NOTE: THIS WILL BE DIFFERENT ON MAC/LINUX. IF YOU'RE USING MAC/LINUX AND YOU'RE UNSURE PLEASE ASK.
 	
 	6. Click clone and wait for it to download
