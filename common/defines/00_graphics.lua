@@ -964,6 +964,8 @@ NInterface = {
 	
 	PRODUCTION_SHIP_FILTERS_ROLE_SELECTION_WINDOW_OFFSET_X = 4,	-- offset of the role icon selection window shown in the filters of ship design in the production tab
 	PRODUCTION_SHIP_FILTERS_ROLE_SELECTION_WINDOW_OFFSET_Y = -8,
+
+	SHIP_FUEL_EFFICIENCY_WARNING_THRESHOLD = 60.0,			-- Fuel usage threshold above which a ship is considered fuel inefficient for always on missions
 },
 
 
