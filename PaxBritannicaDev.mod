@@ -40,4 +40,4 @@ replace_path = "music"
 replace_path = "tests"
 
 picture="paxbrit.png"
-supported_version="1.6.1" 
+supported_version="1.6.*" 
