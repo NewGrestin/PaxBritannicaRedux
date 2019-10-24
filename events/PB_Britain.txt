@@ -104,6 +104,8 @@ country_event = {		#King George V Dies
 		hidden_effect = {
 			ENG = { 
 				country_event = { id = britain.2 days = 30 } 
+			
+				country_event = { id = britain.24 days = 180 } 
 			}
 
 			sound_effect = "super_george_dies"
@@ -648,6 +650,8 @@ country_event = {		#General Election Chain - Tory Victory
 		    popularity = 0.05
 		}
 
+		PB_clear_all_ministers = yes
+
 		hidden_effect = {
 			set_country_flag = ENG_General_Election_Completed
 			clr_country_flag = ENG_Election_Tories_Popularity
@@ -690,6 +694,8 @@ country_event = {		#General Election Chain - Whig Victory
 		    ideology = lb
 		    popularity = 0.15
 		}
+
+		PB_clear_all_ministers = yes
 
 		hidden_effect = {
 			set_country_flag = ENG_General_Election_Completed
@@ -734,6 +740,8 @@ country_event = {		#General Election Chain - WUP Victory
 		    popularity = 0.15
 		}
 
+		PB_clear_all_ministers = yes
+
 		hidden_effect = {
 			set_country_flag = ENG_General_Election_Completed
 			clr_country_flag = ENG_Election_Tories_Popularity
@@ -776,6 +784,8 @@ country_event = {		#General Election Chain - NPP Victory
 		    ideology = rc
 		    popularity = 0.15
 		}
+
+		PB_clear_all_ministers = yes
 
 		hidden_effect = {
 			set_country_flag = ENG_General_Election_Completed
@@ -1114,7 +1124,7 @@ country_event = {		#The National Recovery Act Fails - Military Coup
 	}
 }
 
-country_event = {		#Collapse of the Absolutist Government
+country_event = {		#1933 Imperial Conference
 	id = britain.24
 	title = britain.24.t
 	desc = britain.24.d
@@ -1124,59 +1134,276 @@ country_event = {		#Collapse of the Absolutist Government
 
 	fire_only_once = yes
 
-	option = { #
+	immediate = {
+		# set up the flag starting values
+		set_country_flag = { flag = ENG_Imperialist_Conference value = 0 }
+		set_country_flag = { flag = ENG_Anti_Imperialist_Conference value = 0 }
+	}
+
+	option = {
 		name = britain.24.a
 
-		ai_chance = {
-			factor = 70
-		}
+		add_political_power = 50
 
-		set_politics = { 
-			ruling_party = ds 
-			elections_allowed = no 
+		ENG = { 
+			country_event = { id = britain.25 days = 3 } 
 		}
+	}
+}
 
-		add_popularity = {
-		    ideology = ds
-		    popularity = 0.05
+country_event = {		#1933 Imperial Conference - Debates on Dominion Reform
+	id = britain.25
+	title = britain.25.t
+	desc = britain.25.d
+	picture = GFX_report_event_diplomatic_message
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Dominions should be brought under further crown authority
+		name = britain.25.a
+
+		add_political_power = -50
+
+		ENG = { 
+			country_event = { id = britain.26 days = 3 }
+
+			modify_country_flag = { flag = ENG_Imperialist_Conference value = 1 }
+
+			set_country_flag = ENG_Chosen_Dominion_Policy
 		}
+	}
 
-		create_country_leader = {
-			name = "J. F. C. Fuller"
-			desc = "JFCFuller_Desc"
-			picture = "Portrait_ENG_JFC_Fuller.dds"
-			exire = "1965.1.1"
-			ideology = DS_VARIANT_01
+	option = { #Dominions should have greater autonomy within the Confederation
+		name = britain.25.b
+
+		add_political_power = -25
+
+		ENG = { 
+			country_event = { id = britain.26 days = 3 }
+
+			modify_country_flag = { flag = ENG_Anti_Imperialist_Conference value = 1 }
+
+			set_country_flag = ENG_Chosen_Dominion_Policy
 		}
+	}
+}
 
-		set_cosmetic_tag = ENG_Commonwealth
+country_event = {		#1933 Imperial Conference - Debates on Economic Reform
+	id = britain.26
+	title = britain.26.t
+	desc = britain.26.d
+	picture = GFX_report_event_diplomatic_message
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Work on Centralizing the Imperial Economy around Britain
+		name = britain.26.a
+
+		add_political_power = -60
+
+		ENG = { 
+			country_event = { id = britain.26 days = 3 }
+
+			modify_country_flag = { flag = ENG_Imperialist_Conference value = 1 }
+
+			set_country_flag = ENG_Chosen_Economic_Policy
+		}
+	}
+
+	option = { #Decentralize the Imperial Economy
+		name = britain.26.b
+
+		add_political_power = -15
+
+		ENG = { 
+			country_event = { id = britain.26 days = 3 }
+
+			modify_country_flag = { flag = ENG_Anti_Imperialist_Conference value = 1 }
+
+			set_country_flag = ENG_Chosen_Economic_Policy
+		}
+	}
+}
+
+country_event = {		#1933 Imperial Conference - Debates on Military Reform
+	id = britain.27
+	title = britain.27.t
+	desc = britain.27.d
+	picture = GFX_report_event_diplomatic_message
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Work on building a unified Imperial Army
+		name = britain.27.a
+
+		add_political_power = -25
+
+		ENG = {
+			modify_country_flag = { flag = ENG_Imperialist_Conference value = 1 }
+
+			set_country_flag = ENG_Chosen_Military_Policy
+
+			hidden_effect = {
+				if = {
+					limit = {
+						original_tag = ENG
+						ENG = {
+							has_country_flag = { flag = ENG_Imperialist_Conference value > 2 }
+						}
+					}
+					country_event = { id = britain.28 } # Imperialism
+				}
+
+				if = {
+					limit = {
+						original_tag = ENG
+						ENG = {
+							has_country_flag = { flag = ENG_Anti_Imperialist_Conference value > 2 }
+						}
+					}
+					country_event = { id = britain.29 } # Anti-Imperialism
+				}
+
+				if = {
+					limit = {
+						original_tag = ENG
+						ENG = {
+							has_country_flag = { flag = ENG_Imperialist_Conference value < 2 }
+							has_country_flag = { flag = ENG_Anti_Imperialist_Conference value < 2 }
+						}
+					}
+					country_event = { id = britain.30 } # No Clear Winner 
+				}
+			}
+		}
+	}
+
+	option = { #Focus on local militaries
+		name = britain.27.b
+
+		add_political_power = -40
+
+		ENG = { 
+			modify_country_flag = { flag = ENG_Anti_Imperialist_Conference value = 1 }
+
+			set_country_flag = ENG_Chosen_Military_Policy
+
+			hidden_effect = {
+				if = {
+					limit = {
+						original_tag = ENG
+						ENG = {
+							has_country_flag = { flag = ENG_Imperialist_Conference value > 2 }
+						}
+					}
+					country_event = { id = britain.28 } # Imperialism
+				}
+
+				if = {
+					limit = {
+						original_tag = ENG
+						ENG = {
+							has_country_flag = { flag = ENG_Anti_Imperialist_Conference value > 2 }
+						}
+					}
+					country_event = { id = britain.29 } # Anti-Imperialism
+				}
+
+				if = {
+					limit = {
+						original_tag = ENG
+						ENG = {
+							has_country_flag = { flag = ENG_Imperialist_Conference value < 2 }
+							has_country_flag = { flag = ENG_Anti_Imperialist_Conference value < 2 }
+						}
+					}
+					country_event = { id = britain.30 } # No Clear Winner 
+				}
+			}
+		}
+	}
+}
+
+country_event = {		#1933 Imperial Conference - Imperialist Direction
+	id = britain.28
+	title = britain.28.t
+	desc = britain.28.d
+	picture = GFX_report_event_diplomatic_message
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = britain.28.a
+
+		ENG = { 
+			clr_country_flag = ENG_Imperialist_Conference
+			clr_country_flag = ENG_Anti_Imperialist_Conference
+
+			set_country_flag = ENG_Chosen_Imperialist_Policy
+		}
+	}
+}
+
+country_event = {		#1933 Imperial Conference - Anti-Imperialist Direction
+	id = britain.29
+	title = britain.29.t
+	desc = britain.29.d
+	picture = GFX_report_event_diplomatic_message
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = britain.29.a
+
+		ENG = { 
+			clr_country_flag = ENG_Imperialist_Conference
+			clr_country_flag = ENG_Anti_Imperialist_Conference
+
+			set_country_flag = ENG_Chosen_Anti_Imperialist_Policy
+		}
+	}
+}
+
+
+country_event = {		#1933 Imperial Conference - No Clear Direction
+	id = britain.30
+	title = britain.30.t
+	desc = britain.30.d
+	picture = GFX_report_event_diplomatic_message
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = britain.28.a
+
+		ENG = { 
+			clr_country_flag = ENG_Imperialist_Conference
+			clr_country_flag = ENG_Anti_Imperialist_Conference
+
+			set_country_flag = ENG_Chosen_Imperialist_Policy
+		}
 	}
 
 	option = { #
-		name = britain.24.b
+		name = britain.30.b
 
-		ai_chance = {
-			factor = 70
+		ENG = { 
+			clr_country_flag = ENG_Imperialist_Conference
+			clr_country_flag = ENG_Anti_Imperialist_Conference
+
+			set_country_flag = ENG_Chosen_Anti_Imperialist_Policy
 		}
-
-		set_politics = { 
-			ruling_party = ss 
-			elections_allowed = no 
-		}
-
-		add_popularity = {
-		    ideology = ss
-		    popularity = 0.05
-		}
-
-		create_country_leader = {
-			name = "Transitional Parliament"
-			desc = "TransParm_Desc"
-			picture = "Portrait_ENG_TransParm.dds"
-			exire = "1965.1.1"
-			ideology = SS_VARIANT_01
-		}
-
-		set_cosmetic_tag = ENG_Republic
 	}
 }

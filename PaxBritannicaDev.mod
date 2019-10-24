@@ -9,7 +9,6 @@ tags={
 
 replace_path = "common/ai_equipment"
 replace_path = "common/ai_focuses"
-replace_path = "common/ai_peace"
 replace_path = "common/ai_strategy"
 replace_path = "common/ai_strategy_plans"
 replace_path = "common/ai_templates"
