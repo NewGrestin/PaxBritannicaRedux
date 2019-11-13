@@ -4,99 +4,545 @@
 
 add_namespace = French
 
-country_event = {#Aftermath of Doriot Coup
+country_event = {#Beginnings of the Doriot Coup
 	id = French.6
 	title = French.6.t
 	desc = French.6.d
-	picture = GFX_report_event_Generic_Violent_Coup
+	picture = GFX_report_PB_Paris_Event
 
 	is_triggered_only = yes
 
-	option = { #Doriot assumes control
+	fire_only_once = yes
+
+	immediate = {
+		set_country_flag = { flag = FRA_Doriot_Plot_Power value = 0 }
+	}
+
+	option = { #Don't investigate
 		name = French.6.a
 
-		add_political_power = 150
-		set_cosmetic_tag = FRA_Dorito
-		set_politics = {
-			ruling_party = ni
-			last_election = "1936.1.1"
-			election_frequency = 48
-			elections_allowed = no
+		ai_chance = {
+			factor = 50
 		}
 
-		add_popularity = {
-			ideology = ni
-			popularity = 0.51
+		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
+
+		add_political_power = -50
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 1 }
+
+		hidden_effect = { 
+			country_event = { id = French.7 days = 5 }
 		}
 	}
 
-	option = { #Darnand assumes control
+	option = { #Begin Investigation
 		name = French.6.b
 
+		ai_chance = {
+			factor = 50
+		}
+
+		add_political_power = -80
+
+		hidden_effect = { 
+			country_event = { id = French.7 days = 5 }
+		}
+	}
+}
+
+country_event = {#The SP begins mobilizing
+	id = French.7
+	title = French.7.t
+	desc = French.7.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Demand they end their mobilization
+		name = French.7.a
+
+		ai_chance = {
+			factor = 50
+		}
+
+		add_political_power = -100
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
+
+		hidden_effect = { 
+			country_event = { id = French.8 days = 3 }
+		}
+	}
+
+	option = { #Issue a minor protest
+		name = French.7.b
+
+		ai_chance = {
+			factor = 50
+		}
+
+		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
+
+		add_political_power = -50
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 1 }
+
+		hidden_effect = { 
+			country_event = { id = French.8 days = 3 }
+		}
+	}
+}
+
+country_event = {#Doriot begins issuing orders
+	id = French.8
+	title = French.8.t
+	desc = French.8.d
+	picture = GFX_report_PB_Secret_Documents
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #The orders are intercepted!
+		name = French.8.a
+
+		ai_chance = {
+			factor = 50
+		}
+
+		add_political_power = -100
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
+
+		hidden_effect = { 
+			country_event = { id = French.9 days = 3 }
+		}
+	}
+
+	option = { #The orders remain secret
+		name = French.8.b
+
+		ai_chance = {
+			factor = 50
+		}
+
+		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
+
+		add_political_power = -25
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 2 }
+
+		hidden_effect = { 
+			country_event = { id = French.9 days = 3 }
+		}
+	}
+}
+
+country_event = {#The Final Hour - which faction to arm
+	id = French.9
+	title = French.9.t
+	desc = French.9.d
+	picture = GFX_report_PB_Gala_Dinner
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Neither, rely on the police
+		name = French.9.a
+
+		ai_chance = {
+			factor = 50
+		}
+
+		add_political_power = 25
+
+		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 5 }
+
+		hidden_effect = { 
+			if = {
+				limit = {
+					original_tag = FRA
+					FRA = {
+						has_country_flag = { flag = FRA_Doriot_Plot_Power value > 3 }
+					}
+				}
+				country_event = { id = French.10 } # Doriot Wins
+			}
+
+			if = {
+				limit = {
+					original_tag = FRA
+					FRA = {
+						has_country_flag = { flag = FRA_Doriot_Plot_Power value < 3 }
+					}
+				}
+				country_event = { id = French.11 } # Muarras Wins
+			}				
+		}
+	}
+
+	option = { #Arm the restorationists
+		name = French.9.b
+
+		ai_chance = {
+			factor = 30
+		}
+
+		add_political_power = -50
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
+
+		hidden_effect = {
+			if = {
+				limit = {
+					original_tag = FRA
+					FRA = {
+						has_country_flag = { flag = FRA_Doriot_Plot_Power value > 3 }
+					}
+				}
+				country_event = { id = French.10 } # Doriot Wins
+			}
+
+			if = {
+				limit = {
+					original_tag = FRA
+					FRA = {
+						has_country_flag = { flag = FRA_Doriot_Plot_Power value < 3 }
+					}
+				}
+				country_event = { id = French.11 } # Muarras Wins
+			}
+		}
+	}
+
+	option = { #Arm the Armandists
+		name = French.9.c
+
+		ai_chance = {
+			factor = 20
+		}
+
+		add_political_power = -50
+
+		set_country_flag = FRA_Armandists_Armed
+
+		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
+
+		hidden_effect = { 
+			if = {
+				limit = {
+					original_tag = FRA
+					FRA = {
+						has_country_flag = { flag = FRA_Doriot_Plot_Power value > 3 }
+					}
+				}
+				country_event = { id = French.10 } # Doriot Wins
+			}
+
+			if = {
+				limit = {
+					original_tag = FRA
+					FRA = {
+						has_country_flag = { flag = FRA_Doriot_Plot_Power value < 3 }
+					}
+				}
+				country_event = { id = French.11 } # Muarras Wins
+			}
+		}
+	}
+}
+
+country_event = {#Doriot Coup Success
+	id = French.10
+	title = French.10.t
+	desc = French.10.d
+	picture = GFX_report_event_fascists
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.10.a
+
+		ai_chance = {
+			factor = 100
+		}
+
 		add_political_power = 150
+
 		set_cosmetic_tag = FRA_Dorito
 
-		create_country_leader = {
-			name = "Joseph Darnand"
-			desc = "POLITICS_MOHAMMED_ZAHIR_SHAH_DESC"
-			picture = "Portrait_PB_FRA_Joseph_Darmand.dds"
-			ideology = NI_VARIANT_01
-		}
+		set_country_flag = PB_FRA_Muarras_Died_Coup_Success
+		clr_country_flag = FRA_Doriot_Plot_Power
+
 		set_politics = {
 			ruling_party = ni
-			last_election = "1936.1.1"
-			election_frequency = 48
-			elections_allowed = no
 		}
 
 		add_popularity = {
 			ideology = ni
-			popularity = 0.51
+			popularity = 0.1
+		}
+
+		add_popularity = {
+			ideology = ds
+			popularity = -0.1
 		}
 	}
+}
 
-	option = { #Maurras assumes control
-		name = French.6.c
+country_event = {#Doriot Coup Failure
+	id = French.11
+	title = French.11.t
+	desc = French.11.d
+	picture = GFX_report_event_fascists
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.11.a
+
+		ai_chance = {
+			factor = 100
+		}
 
 		add_political_power = 150
-		set_cosmetic_tag = FRA_Monarchy
+
+		clr_country_flag = FRA_Doriot_Plot_Power
 
 		create_country_leader = {
-			name = "Charles Maurras"
-			desc = "POLITICS_MOHAMMED_ZAHIR_SHAH_DESC"
+			name = "Charles Muarras"
+			desc = "NA_DESC"
 			picture = "Portrait_PB_FRA_Charles_Maurras.dds"
+			exire = "1965.1.1"
 			ideology = DS_VARIANT_01
 		}
 
 		add_popularity = {
 			ideology = ni
-			popularity = 0.51
+			popularity = -0.1
+		}
+
+		add_popularity = {
+			ideology = ds
+			popularity = 0.1
+		}
+
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = FRA_Armandists_Armed
+				}
+			}
+			set_country_flag = PB_FRA_Muarras_Survives
+		}
+
+		if = {
+			limit = {
+				has_country_flag = FRA_Armandists_Armed
+			}
+			country_event = { id = French.12 } 
 		}
 	}
+}
 
-	option = { #Armand assumes control
-		name = French.6.f
+country_event = {#Doriot Coup Failure - Armandists turn on Muarras
+	id = French.12
+	title = French.12.t
+	desc = French.12.d
+	picture = GFX_report_event_fascist_gathering
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.12.a
+
+		ai_chance = {
+			factor = 100
+		}
 
 		add_political_power = 150
-		set_cosmetic_tag = FRA_Armand
+
+		kill_country_leader = yes
 
 		create_country_leader = {
 			name = "Inessa Armand"
-			desc = "POLITICS_MOHAMMED_ZAHIR_SHAH_DESC"
+			desc = "NA_DESC"
 			picture = "Portrait_PB_FRA_Inessa_Armand.dds"
+			exire = "1965.1.1"
 			ideology = NI_VARIANT_01
 		}
+
 		set_politics = {
 			ruling_party = ni
-			last_election = "1936.1.1"
-			election_frequency = 48
-			elections_allowed = no
 		}
 
 		add_popularity = {
 			ideology = ni
-			popularity = 0.51
+			popularity = 0.1
 		}
+
+		add_popularity = {
+			ideology = ds
+			popularity = -0.1
+		}
+
+		set_country_flag = FRA_Armand
+	}
+}
+
+country_event = {#Muarras restores the monarchy
+	id = French.13
+	title = French.13.t
+	desc = French.13.d
+	picture = GFX_report_PB_Crowning
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.13.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		add_political_power = 150
+
+		create_country_leader = {
+			name = "Jean I"
+			desc = "NA_DESC"
+			picture = "Portrait_FRA_Jean_I.dds"
+			exire = "1965.1.1"
+			ideology = DS_VARIANT_01
+		}
+
+		add_popularity = {
+			ideology = ds
+			popularity = 0.1
+		}
+
+		set_cosmetic_tag = FRA_Monarchy
+		set_country_flag = DS_Subideology_Absolutism
+		add_ideas = PB_Absolute_Monarchy
+	}
+}
+
+country_event = {#Muarras purges the Armandists
+	id = French.14
+	title = French.14.t
+	desc = French.14.d
+	picture = GFX_report_PB_Gas_Mask_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.14.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		add_political_power = -50
+	}
+}
+
+country_event = {#Cultural Revolution - Edict on Degenerate Art
+	id = French.15
+	title = French.15.t
+	desc = French.15.d
+	picture = GFX_report_PB_Vichy_Prop
+
+	trigger = { 
+		tag = FRA
+		focus_progress = {
+			focus = PB_FRA_Year_Zero
+			progress > 0.1
+		}
+	}
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.15.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		add_political_power = -100
+	}
+}
+
+country_event = {#Cultural Revolution - Edict on the Past
+	id = French.16
+	title = French.16.t
+	desc = French.16.d
+	picture = GFX_report_PB_Nazi_Propaganda
+
+	trigger = { 
+		tag = FRA
+		focus_progress = {
+			focus = PB_FRA_Year_Zero
+			progress > 0.4
+		}
+	}
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.16.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		add_political_power = -50
+
+		add_manpower = -1500
+	}
+}
+
+country_event = {#Cultural Revolution - Edict on the Future
+	id = French.17
+	title = French.17.t
+	desc = French.17.d
+	picture = GFX_report_PB_Nazi_Family
+
+	trigger = { 
+		tag = FRA
+		focus_progress = {
+			focus = PB_FRA_Year_Zero
+			progress > 0.7
+		}
+	}
+
+	fire_only_once = yes
+
+	option = { #
+		name = French.17.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		add_political_power = -50
+
+		add_manpower = -15000
 	}
 }
 
