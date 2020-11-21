@@ -1,0 +1,126 @@
+on_actions = {
+	#### PEACE/WAR VICTORY ON_CAPITULATION BLOCK ####
+	#### PUT YOUR SHIT HERE
+	# At the end of each global block, set the skip_default_capitulation GLOBAL flag
+	# go away stinky vanilla peace
+
+	# FROM = winner 
+	# ROOT = country being capitulated/loser
+				#TURKEY CIVIL WAR EXAMPLE
+				# if = {
+				# 	limit = {
+				# 		FROM = {
+				# 			OR = {
+				# 				original_tag = NTR
+				# 				original_tag = TUR
+				# 				original_tag = KRD
+				# 			}
+				# 		}
+				# 		ROOT = {
+				# 			OR = {
+				# 				original_tag = NTR
+				# 				original_tag = TUR
+				# 				original_tag = KRD
+				# 			}
+				# 		}
+				# 	}
+
+				# 	FROM = {
+				# 		white_peace = ROOT
+				# 		annex_country = {
+				# 	 		target = ROOT
+				# 	 		transfer_troops = no
+				# 	 	}
+				# 	}
+				# 	set_global_flag = skip_default_capitulation
+				# }
+	on_capitulation = {
+		effect = {
+			log = "[GetDateText]: FROM: [From.GetName] ROOT: [Root.GetName] on_capitulation"
+
+			set_global_flag = show_peace_popup_alert
+			FROM = {
+				save_global_event_target_as = winning_country
+			}
+			ROOT = {
+				save_global_event_target_as = losing_country
+			}
+
+			log = "[GetDateText]: winner/loser: FROM: [winning_country.GetName] ROOT: [losing_country.GetName] on_capitulation"
+
+			if = {
+				limit = {
+					event_target:losing_country = {
+						any_allied_country = {
+							has_war_together_with = event_target:losing_country
+						}
+					}
+				}
+				set_global_flag = losing_country_multiple
+			}
+
+			if = {
+				limit = {
+					event_target:winning_country = {
+						any_allied_country = {
+							has_war_together_with = event_target:winning_country
+						}
+					}
+				}
+				set_global_flag = winning_country_multiple
+			}
+			#Annexation block
+			# this will only trigger ROOT (the loser) is in a faction and is NOT the only survivor of said faction
+			# if ROOT is the only survivor then it will trigger the proper effects below
+			if = {
+				limit = {
+					NOT = {
+						ROOT = {
+							is_in_faction = yes
+							any_other_country = {
+								is_in_faction_with = PREV
+								has_capitulated = no
+							}
+						}
+					}
+				}
+				# normal peace stuff
+				set_global_flag = war_won
+				if = { # Malaysian insurguncy 
+					limit = {
+						FROM = {
+							OR = {
+								original_tag = KAL
+								original_tag = MAL
+							}
+						}
+						ROOT = {
+							OR = {
+								original_tag = KAL
+								original_tag = MAL
+							}
+						}
+					}
+
+					FROM = {
+						white_peace = ROOT
+						annex_country = {
+					 		target = ROOT
+					 		transfer_troops = no
+					 	}
+					}
+					set_global_flag = skip_default_capitulation
+				}				
+				#Capitulation block
+				set_global_flag = war_continuing
+			}
+			clr_global_flag = skip_default_capitulation
+		}
+	}
+	#Armchair historian of wars
+	on_declare_war = {
+		effect = {
+			log="[GetDateText]: [Root.GetName] declared war on [From.GetName]"
+		}
+	}
+}
