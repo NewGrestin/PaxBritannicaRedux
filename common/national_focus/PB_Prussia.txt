@@ -1652,7 +1652,7 @@ focus_tree = {
 
         focus = {
                 id = PRS_suicidal_pilots
-                icon = GFX_focus_ITA_Centralize
+                icon = GFX_goal_Focus_Generic_Irridentism
                 x = 0
                 y = 2
                 cost = 5
@@ -3276,7 +3276,7 @@ focus_tree = {
                 y = 3
                 cost = 7.2
                 available_if_capitulated = no 
-                available = { has_global_flag = Pacte_Won_WW2 }
+                available = { has_global_flag = Pacte_Won_WW2 NOT = { has_completed_focus = PRS_The_National_Redoubt } }
                 search_filters = {FOCUS_FILTER_POLITICAL}
                 relative_position_id = PRS_The_Brothers_War
                 prerequisite = { focus = PRS_German_Scientists }
@@ -3524,7 +3524,8 @@ focus_tree = {
                 y = 15
                 cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                available = { PRS = { OR = { is_in_faction_with = RUS is_in_faction_with = FRA } } OR = { RUS = { OR = { exists = no has_capitulated = yes } } FRA = { OR = { exists = no has_capitulated = yes } } } ENG = { OR = { has_war_with = FRA has_war_with = RUS } } }
+                search_filters = {FOCUS_FILTER_POLITICAL}
                 ai_will_do = {
 			factor = 1
 	        }
@@ -3559,7 +3560,15 @@ focus_tree = {
                 y = 2
                 cost = 1
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                available = { 
+                has_war_with = ENG 
+                surrender_progress > 0.3
+                has_country_leader = {
+                   name = "Philipp Bouhler"
+                   ruling_only = yes
+                }
+                }
+                search_filters = {FOCUS_FILTER_INTERNAL_AFFAIRS}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_Fund_Underground_Facilities }
                 ai_will_do = {
@@ -3576,15 +3585,18 @@ focus_tree = {
                 icon = GFX_goal_Generic_German_Soldiers
                 x = 2
                 y = 1
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                search_filters = {FOCUS_FILTER_MANPOWER}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_The_National_Redoubt }
                 ai_will_do = {
 			factor = 1
 	        }
                 completion_reward = { 
+                        add_manpower = 50000
+                        add_stability = -0.1
+                        PB_Economy_Moderate_Regression = yes
                 }
         }
 
@@ -3593,15 +3605,18 @@ focus_tree = {
                 icon = GFX_goal_Generic_German_Soldiers2
                 x = 4
                 y = 1
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                search_filters = {FOCUS_FILTER_MANPOWER}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_The_National_Redoubt }
                 ai_will_do = {
 			factor = 1
 	        }
                 completion_reward = { 
+                        add_manpower = 50000
+                        add_stability = -0.1
+                        PB_Economy_Moderate_Regression = yes
                 }
         }
 
@@ -3610,9 +3625,9 @@ focus_tree = {
                 icon = GFX_goal_Generic_Guns
                 x = 3
                 y = 2
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                search_filters = {FOCUS_FILTER_POLITICAL}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_Conscript_The_Old }
                 prerequisite = { focus = PRS_Conscript_The_Young }
@@ -3620,6 +3635,27 @@ focus_tree = {
 			factor = 1
 	        }
                 completion_reward = { 
+                        add_stability = -0.05
+                        add_equipment_to_stockpile = {
+                          type = gw_tank_equipment
+                          amount = 250
+                          producer = PRS
+                        }
+                        add_equipment_to_stockpile = {
+                          type = infantry_equipment
+                          amount = 1500
+                          producer = PRS
+                       }
+                       add_equipment_to_stockpile = {
+                          type = support_equipment
+                          amount = 200
+                          producer = PRS
+                       }
+                       add_equipment_to_stockpile = {
+                          type = artillery_equipment
+                          amount = 100
+                          producer = PRS
+                       }
                 }
         }
 
@@ -3628,15 +3664,19 @@ focus_tree = {
                 icon = GFX_goal_Generic_Guerilla_Infiltration
                 x = 6
                 y = 1
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                search_filters = {FOCUS_FILTER_POLITICAL}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_The_National_Redoubt }
                 ai_will_do = {
 			factor = 1
 	        }
                 completion_reward = { 
+                        swap_ideas = { 
+                        remove_idea = PB_PRS_The_National_Redoubt
+                        add_idea = PB_PRS_The_National_Redoubt_2
+                        }
                 }
         }
 
@@ -3645,15 +3685,37 @@ focus_tree = {
                 icon = GFX_goal_nested_fortifications
                 x = -2
                 y = 1
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                search_filters = {FOCUS_FILTER_POLITICAL}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_The_National_Redoubt }
                 ai_will_do = {
 			factor = 1
 	        }
-                completion_reward = { 
+                completion_reward = {  
+                        85 = {
+                            add_building_construction = {
+			         type = bunker
+			         level = 4
+			         province = 362
+			         instant_build = yes
+		            }
+                            add_building_construction = {
+			         type = bunker
+			         level = 2
+			         province = 3295
+			         instant_build = yes
+		            } 
+                        }
+                        5 = {
+                            add_building_construction = {
+			         type = bunker
+			         level = 2
+			         province = 3380
+			         instant_build = yes
+		            }
+                        }
                 }
         }
 
@@ -3662,15 +3724,35 @@ focus_tree = {
                 icon = GFX_goal_nested_fortifications
                 x = -4
                 y = 1
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                search_filters = {FOCUS_FILTER_POLITICAL}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_The_National_Redoubt }
                 ai_will_do = {
 			factor = 1
 	        }
                 completion_reward = { 
+                        763 = {
+                            add_building_construction = {
+			         type = bunker
+			         level = 4
+			         province = 6332
+			         instant_build = yes
+		            } 
+                            add_building_construction = {
+			         type = bunker
+			         level = 2
+			         province = 11265
+			         instant_build = yes
+		            }
+                            add_building_construction = {
+			         type = bunker
+			         level = 2
+			         province = 348
+			         instant_build = yes
+		            }
+                        }
                 }
         }
 
@@ -3679,9 +3761,9 @@ focus_tree = {
                 icon = GFX_goal_Generic_Esoteric_Fascism
                 x = -3
                 y = 2
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                search_filters = {FOCUS_FILTER_POLITICAL}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_Fortress_Konigsberg }
                 prerequisite = { focus = PRS_Fortress_Danzig  }
@@ -3689,6 +3771,7 @@ focus_tree = {
 			factor = 1
 	        }
                 completion_reward = { 
+                        add_ideas = { PB_PRS_Sons_Of_Germania }
                 }
         }
 
@@ -3697,21 +3780,35 @@ focus_tree = {
                 icon = GFX_goal_gas_mask_generic
                 x = -6
                 y = 1
-                cost = 1
+                cost = 2
                 available_if_capitulated = no
-                search_filters = {FOCUS_FILTER_INDUSTRY}
+                available = {
+			has_war = yes
+				custom_trigger_tooltip = {
+					tooltip = PB_PB_Has_Developed_Choking_Chemicals_Tooltip
+					has_country_flag = PB_Has_Noxious_ChemicalsII				
+			        }
+			NOT = {
+					has_idea = PB_Choking_Agents_Deployed
+			}
+		}
+                search_filters = {FOCUS_FILTER_POLITICAL}
                 relative_position_id = PRS_The_National_Redoubt
                 prerequisite = { focus = PRS_The_National_Redoubt }
                 ai_will_do = {
 			factor = 1
 	        }
                 completion_reward = { 
+                        add_timed_idea = {
+					idea = PB_Choking_Agents_Deployed
+					days = 60
+				}
                 }
         }
 }
 
 # End Of The Prussian Focus Tree. I have poured endless hours into this tree so you better enjoy it.
-# ~ 143 focuses in total 
+# ~ 154 focuses in total 
 
 
 
