@@ -35,6 +35,6 @@ replace_path = "map/supplyareas"
 replace_path = "music"
 replace_path = "tests"
 replace_path = "gfx/fonts"
-
+path="mod/PaxBritannicaRedux"
 picture="paxbrit.png"
-supported_version="1.9.*"
+supported_version="1.10.*"
