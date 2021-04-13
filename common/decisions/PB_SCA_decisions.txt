@@ -67,7 +67,7 @@ PB_SCA_The_Sleeping_Giant = {
 
 		icon = GFX_decision_generic_operation
 
-		available = { has_active_mission = SCA_With_Open_Eyes }
+		available = { OR = { has_active_mission = SCA_With_Open_Eyes has_active_mission = SCA_With_Open_Eyes_2 } }
 
 		visible = {
                 has_country_flag = SCA_In_Exile
@@ -98,7 +98,12 @@ PB_SCA_The_Sleeping_Giant = {
                                  }
                                  activate_mission = SCA_With_Open_Eyes_2
                             }
-                            activate_mission = SCA_With_Open_Eyes
+                            if = {
+                                 limit = { 
+                                       NOT = { has_completed_focus = SCA_Hush_Campaigns }
+                                 }
+                                 activate_mission = activate_mission = SCA_With_Open_Eyes
+                            }
                      }
                 }
 	}
@@ -132,7 +137,18 @@ PB_SCA_The_Sleeping_Giant = {
                      }
                      custom_effect_tooltip = SCA28tooltip
                      hidden_effect = {
-                            activate_mission = SCA_With_Open_Eyes
+                            if = {
+                                 limit = { 
+                                       has_completed_focus = SCA_Hush_Campaigns
+                                 }
+                                 activate_mission = SCA_With_Open_Eyes_2
+                            }
+                            if = {
+                                 limit = { 
+                                       NOT = { has_completed_focus = SCA_Hush_Campaigns }
+                                 }
+                                 activate_mission = activate_mission = SCA_With_Open_Eyes
+                            }
                      }
                 }
 	}
@@ -144,7 +160,6 @@ PB_SCA_The_Sleeping_Giant = {
 		available = { 
                      num_divisions > 5
                      has_manpower > 2000
-                     has_political_power < 10
                      has_active_mission = SCA_With_Open_Eyes
 		}
 
@@ -387,7 +402,7 @@ PB_SCA_The_Second_Revolution = {
 
         SCA_Soon_To_Come = {
 
-		icon = GFX_decision_infiltrate_state
+		icon = GFX_decision_generic_nationalism
 
 		available = {
                         SCA = { has_war_with = AME }
@@ -406,6 +421,11 @@ PB_SCA_The_Second_Revolution = {
 
 		timeout_effect = {
                         hidden_effect = {
+                        set_global_flag = Super_Event_Visible
+			set_global_flag = SCA_American_War_visible	
+                        hidden_effect = {
+			        play_song = "SPEVNT_SCA_American_War"
+		        }
                         SCA = {
                              declare_war_on = {
                                   target = AME
@@ -1289,113 +1309,6 @@ PB_SCA_Prepare_For_War = {
                 }
          }
 
-         SCA_Recruit_New_Generals = {
-
-		icon = GFX_decision_generic_army_support
-
-		available = {
-		}  
-
-                visible = {
-                tag = SCA
-                }
-
-                cost = 40
-
-                ai_will_do = {
-			factor = 1000
-		}
-
-		fire_only_once = yes
-
-		complete_effect = {
-                     custom_effect_tooltip = SCA21tooltip
-                     hidden_effect = { 
-                          if = {
-                                limit = {
-                                     check_variable = { SCA_Prep_Cal = 100 }
-                                }
-                          }
-                          if = {
-                                limit = {
-                                     check_variable = { SCA_Prep_Cal < 100 }
-                                }
-                                add_to_variable = {
-	                               var = SCA_Prep_Cal
-	                               value = 10
-                                }
-                          }
-                     }
-                     create_corps_commander = {
-				name = "Alvah Bessie"
-				portrait_path = "gfx/leaders/SCA/Portrait_SCA_Alvah_Bessie.dds"
-				traits = { }
-				skill = 2
-				attack_skill = 2
-				defense_skill = 2
-				planning_skill = 2
-				logistics_skill = 2
-		     }   
-                     create_corps_commander = {
-				name = "Patrick Read"
-				portrait_path = "gfx/leaders/SCA/Portrait_SCA_Patrick_Read.dds"
-				traits = { superior_tactician }
-				skill = 3
-				attack_skill = 4
-				defense_skill = 2
-				planning_skill = 3
-				logistics_skill = 2
-		     } 
- 
-                }
-         }
-
-         SCA_Send_Settlers_To_Brigham = {
-
-		icon = GFX_decision_generic_upgrade_colony
-
-		available = {
-                      WWW = { exists = yes owns_state = 906  }
-		}  
-
-                visible = {
-                tag = SCA
-                }
-
-                cost = 100
-
-                ai_will_do = {
-			factor = 4000
-		}
-
-		fire_only_once = yes
-                   
-                days_remove = 14
-
-		remove_effect = {
-                     custom_effect_tooltip = SCA21tooltip
-                     hidden_effect = { 
-                          if = {
-                                limit = {
-                                     check_variable = { SCA_Prep_Cal = 100 }
-                                }
-                          }
-                          if = {
-                                limit = {
-                                     check_variable = { SCA_Prep_Cal < 100 }
-                                }
-                                add_to_variable = {
-	                               var = SCA_Prep_Cal
-	                               value = 10
-                                }
-                          }
-                     }
-                     transfer_state = 906
-                     add_state_core = 906
-                     WWW = { remove_state_core = 906 }
-                }
-         }
-
          SCA_Recruit_Native_Scouts = {
 
 		icon = GFX_decision_generic_prepare_civil_war
@@ -1731,48 +1644,6 @@ PB_SCA_Prepare_For_War = {
                                  popularity = 0.05
                           }
                      }
-                }
-         }
-
-         SCA_Officialise_A_Friendship_Pact_With_Mexico = {
-
-		icon = GFX_decision_generic_form_nation
-
-		available = {
-                MEX = { exists = yes has_government = jc NOT = { has_war_with = SCA } }
-		}  
-
-                visible = {
-                tag = SCA
-                }
-
-                cost = 30
-
-                ai_will_do = {
-			factor = 4000
-		}
-
-		fire_only_once = yes
-                  
-		complete_effect = {
-                     custom_effect_tooltip = SCA21tooltip
-                     hidden_effect = { 
-                          if = {
-                                limit = {
-                                     check_variable = { SCA_Prep_Cal = 100 }
-                                }
-                          }
-                          if = {
-                                limit = {
-                                     check_variable = { SCA_Prep_Cal < 100 }
-                                }
-                                add_to_variable = {
-	                               var = SCA_Prep_Cal
-	                               value = 10
-                                }
-                          }
-                     }
-                     MEX = { country_event = { id = SCA.24 days = 5 } }
                 }
          }
 
