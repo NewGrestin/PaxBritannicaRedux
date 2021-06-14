@@ -29,6 +29,13 @@ shared_focus = {
 	search_filters = {FOCUS_FILTER_POLITICAL}
 
 	relative_position_id = PB_RUS_Death_Taxes_And_Royalty
+	available = {
+		OR = {
+			has_country_flag = RUS_Kirill_Picked
+			has_country_flag = RUS_Alexandra_Picked
+			has_country_flag = RUS_Alexei_Picked
+		}
+	}
 	prerequisite = {
 		focus = PB_RUS_Death_Taxes_And_Royalty
 	}
@@ -38,7 +45,7 @@ shared_focus = {
 	}
 	
 	completion_reward = {
-		add_political_power = -200
+		add_political_power = -100
 		add_to_variable = {
 			var = RUS_Ethnic_Cohesion
 			value = 0.06
@@ -58,6 +65,13 @@ shared_focus = {
 	search_filters = {FOCUS_FILTER_POLITICAL}
 
 	relative_position_id = PB_RUS_Death_Taxes_And_Royalty
+	available = {
+		OR = {
+			has_country_flag = RUS_Kirill_Picked
+			has_country_flag = RUS_Alexandra_Picked
+			has_country_flag = RUS_Alexei_Picked
+		}
+	}
 	prerequisite = {
 		focus = PB_RUS_Death_Taxes_And_Royalty
 	}
@@ -67,7 +81,7 @@ shared_focus = {
 	}
 	
 	completion_reward = {
-		add_war_support = -0.2
+		add_war_support = -0.1
 		add_to_variable = {
 			var = RUS_Political_Dissonance
 			value = -0.06
@@ -85,8 +99,21 @@ shared_focus = {
 	y = 1
 	cost = 20
 	search_filters = {FOCUS_FILTER_POLITICAL}
+    cancel_if_invalid = yes
 
 	relative_position_id = PB_RUS_Death_Taxes_And_Royalty
+	available = {
+		OR = {
+		    has_country_flag = RUS_Alexandra_Picked
+		    has_country_flag = RUS_Alexei_Picked
+		}
+		NOT = {
+			custom_trigger_tooltip = {
+				tooltip = RUS_Kirill_Picked_Desk_Inspections_Blocked
+			    has_country_flag = RUS_Kirill_Picked
+			}
+		}
+	}
 	prerequisite = {
 		focus = PB_RUS_Death_Taxes_And_Royalty
 	}
@@ -96,7 +123,7 @@ shared_focus = {
 	}
 	
 	completion_reward = {
-		add_stability = -0.2
+		add_stability = -0.1
 		add_to_variable = {
 			var = RUS_Political_Dissonance
 			value = -0.06
@@ -368,5 +395,75 @@ shared_focus = {
 	completion_reward = {
 		custom_effect_tooltip = PB_RUS_Russias_Holiest_Day_tt
 		remove_ideas = PB_RUS_the_plotting_scoundrels
+		hidden_effect = {
+			set_country_flag = Succession_Struggle_Over
+			# Kirill is considered the default leader for simplicity sake
+			if = {
+				limit = {
+					AND = {
+					    check_variable = { RUS_kirill_power > RUS_alexei_power  }
+					    check_variable = { RUS_kirill_power > RUS_alexandra_power  }
+					}
+				}
+				load_focus_tree = PB_RUS_kirill_tree
+			}
+			else_if = {
+				limit = {
+					AND = {
+					    check_variable = { RUS_kirill_power > RUS_alexei_power  }
+					    check_variable = { RUS_kirill_power = RUS_alexandra_power  }
+					}
+				}
+				load_focus_tree = PB_RUS_kirill_tree
+			}
+			else_if = {
+				limit = {
+					AND = {
+					    check_variable = { RUS_kirill_power = RUS_alexei_power  }
+					    check_variable = { RUS_kirill_power > RUS_alexandra_power  }
+					}
+				}
+				load_focus_tree = PB_RUS_kirill_tree
+			}
+			#
+			if = {
+				limit = {
+					AND = {
+					    check_variable = { RUS_alexei_power > RUS_kirill_power  }
+					    check_variable = { RUS_alexei_power > RUS_alexandra_power  }
+					}
+				}
+				load_focus_tree = PB_RUS_alexei_tree
+			}
+			else_if = {
+				limit = {
+					AND = {
+					    check_variable = { RUS_alexei_power > RUS_kirill_power  }
+					    check_variable = { RUS_alexei_power = RUS_alexandra_power  }
+					}
+				}
+				load_focus_tree = PB_RUS_alexei_tree
+			}
+			#
+			if = {
+				limit = {
+					AND = {
+					    check_variable = { RUS_alexandra_power > RUS_kirill_power  }
+					    check_variable = { RUS_alexandra_power > RUS_alexei_power }
+					}
+				}
+				#load_focus_tree = PB_RUS_alexandra (Need Erwin to add the tree)
+			}
+			else_if = {
+				limit = {
+					AND = {
+					    check_variable = { RUS_alexandra_power > RUS_kirill_power  }
+					    check_variable = { RUS_alexandra_power = RUS_alexei_power }
+					}
+				}
+				#load_focus_tree = PB_RUS_alexandra (Need Erwin to add the tree)
+			}
+			#
+		}
 	}
 }
