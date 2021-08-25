@@ -836,28 +836,95 @@ on_actions = {
 		if = { #Great Balkan War - Entente Victory
 			limit = {
 				FROM = {
-					has_global_flag = Great_Balkan_War_Fired
-					original_tag = HUN
-				}
-				ROOT = {
-					has_global_flag = Great_Balkan_War_Fired
 					OR = {
-						original_tag = SER
-						is_in_faction_with = SER
+						original_tag = HUN
+						is_in_faction_with = HUN
 					}
+				}
+				OR = {
+					ROOT = {
+						original_tag = SER
+					}
+					ROOT = {
+						original_tag = ROM
+					}
+					ROOT = {
+						original_tag = GRE
+					}
+				}
+				has_global_flag = Great_Balkan_War_Fired
+			}
+
+			ROOT = {
+				leave_faction = yes
+			}
+
+			if = {
+				limit = {
+					ROOT = {
+						original_tag = SER
+					}
+				}
+				HUN = {
+					transfer_state = 104
+
+					transfer_state = 103
+				}
+
+				BUL = {
+					transfer_state = 48
+				}
+				set_global_flag = PB_GBW_Serbia_Defeated
+			}
+
+			if = {
+				limit = {
+					ROOT = {
+						original_tag = ROM
+					}
+				}
+				HUN = {
+					transfer_state = 84
+				}
+				set_global_flag = PB_GBW_Romania_Defeated
+			}
+
+			if = {
+				limit = {
+					ROOT = {
+						original_tag = GRE
+					}
+				}
+				BUL = {
+					transfer_state = 731
+				}
+				set_global_flag = PB_GBW_Greece_Defeated
+			}
+
+			if = {
+				limit = {
+					has_global_flag = PB_GBW_Serbia_Defeated
+					has_global_flag = PB_GBW_Romania_Defeated
+					OR = {
+						has_global_flag = PB_GBW_Greeks_Neutral
+						has_global_flag = PB_GBW_Greece_Defeated
+					}					
+				}
+				HUN = {
+					country_event = { id = balkwar.10 days = 1 }
 				}
 			}
 
-			FROM = {
+			HUN = {	
 				white_peace = ROOT
-				country_event = { id = balkwar.10 }
 			}
 			BUL = {	
-				country_event = { id = balkwar.18 } 
+				white_peace = ROOT
 			}
 			CRO = {
-				country_event = { id = balkwar.18 } 
+				white_peace = ROOT
 			}
+
 			set_global_flag = skip_default_capitulation
 		}
 		if = { #Great Balkan War - Anti-Hungarian Victory
@@ -869,26 +936,122 @@ on_actions = {
 						is_in_faction_with = SER
 					}
 				}
-				ROOT = {
-					has_global_flag = Great_Balkan_War_Fired
-					original_tag = HUN
+				OR = {
+					ROOT = {
+						original_tag = HUN
+					}
+					ROOT = {
+						original_tag = BUL
+					}
+					ROOT = {
+						original_tag = CRO
+					}
 				}
 			}
 
-			SER = {
-				white_peace = HUN
-				white_peace = BUL
-				white_peace = GRE
-				white_peace = CRO
-				country_event = { id = balkwar.15 }
+			if = {
+				limit = {
+					ROOT = {
+						original_tag = HUN
+					}					
+				}
+				ROM = {
+					transfer_state = 76
+					transfer_state = 83
+					transfer_state = 82
+
+					add_state_core = 76
+					add_state_core = 83
+					add_state_core = 82
+				}
+				SER = {
+					transfer_state = 45
+					add_state_core = 45
+
+					transfer_state = 764
+					add_state_core = 764
+				}
+				set_global_flag = PB_GBW_Hungary_Defeated
 			}
-			ROM = {
-				white_peace = HUN
-				white_peace = BUL
-				white_peace = GRE
-				white_peace = CRO
-				country_event = { id = balkwar.18 } 
+
+			if = {
+				limit = {
+					ROOT = {
+						original_tag = CRO
+					}
+				}
+				SER = {
+					annex_country = {
+						target = CRO
+						transfer_troops = yes
+					}
+				}
 			}
+
+			if = {
+				limit = {
+					original_tag = BUL
+					has_global_flag = PB_GBW_Greeks_Neutral
+				}
+				SER = {
+					annex_country = {
+						target = BUL
+						transfer_troops = yes
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					original_tag = BUL
+					NOT = {
+						has_global_flag = PB_GBW_Greeks_Neutral
+					}
+				}
+				GRE = {
+					transfer_state = 184
+					transfer_state = 821
+
+					add_state_core = 184
+					add_state_core = 821
+				}
+				SER = {
+					annex_country = {
+						target = BUL
+						transfer_troops = yes
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					has_global_flag = PB_GBW_Hungary_Defeated
+					OR = {
+						has_global_flag = PB_GBW_Bulgars_Neutral
+						has_global_flag = PB_GBW_Bulgaria_Defeated
+					}				
+				}
+				SER = {
+					country_event = { id = balkwar.15 days = 1 }
+				}
+			}
+
+			ROOT = {
+				leave_faction = yes
+			}
+
+			HUN = {	
+				white_peace = ROOT
+			}
+			BUL = {	
+				white_peace = ROOT
+			}
+			CRO = {
+				white_peace = ROOT
+			}
+
+			PB_GBW_Check_Victor = yes
+
 			set_global_flag = skip_default_capitulation
 		}
 		if = { #South African War - Natalia Victory
@@ -1130,7 +1293,6 @@ on_actions = {
 						original_tag = CAL
 					}
 				}
-
 			}
 
 			every_country = {
@@ -1286,10 +1448,33 @@ on_actions = {
 			}
 			set_global_flag = skip_default_capitulation
 		}
+
+		if = {
+			limit = { NOT = { has_global_flag = skip_default_capitulation } }
+			#Annex every country they've been fighting against
+			FROM = {
+				every_enemy_country = {
+					limit = {
+						OR = {
+							original_tag = ROOT
+							is_in_faction_with = ROOT
+						}
+					}
+					FROM = {
+						white_peace = PREV
+						annex_country = {
+							target = PREV
+							transfer_troops = no
+						}
+					}
+				}
+			}
+		}
+
+		else = {
+			set_global_flag = war_continuing
+		}
 	}
-	
-	#Capitulation block
-	set_global_flag = war_continuing
 
 	clr_global_flag = skip_default_capitulation
 	}
