@@ -5,6 +5,7 @@
 add_namespace = French
 add_namespace = French_flavour
 add_namespace = French_personality
+add_namespace = French_postwar
 
 country_event = {#Beginnings of the Doriot Coup
 	id = French.6
@@ -346,6 +347,11 @@ country_event = {#Doriot Coup Success
 			popularity = 0.1
 		}
 
+		hidden_effect = {
+			add_to_leading_coalition_ni = yes
+			remove_from_leading_coalition_ds = yes
+		}
+
 		add_popularity = {
 			ideology = ds
 			popularity = -0.1
@@ -435,6 +441,24 @@ country_event = {#Doriot Coup Failure
 				add_ideas = FRA_PB_maurice_papon_FM
 				add_ideas = FRA_PB_georges_valois_IM
 				add_ideas = FRA_PB_maurice_pujo
+
+				add_to_leading_coalition_ds = yes
+                remove_from_farright_coalition_ni = yes
+				remove_from_leading_coalition_ni = yes
+				ban_party_ni = yes
+			    unban_party_ds = yes
+                ban_party_rc = yes
+                ban_party_an = yes
+                ban_party_cn = yes
+                ban_party_lb = yes
+                ban_party_ss = yes
+                ban_party_jc = yes
+
+				set_party_name = { 
+                    ideology = ds
+                    long_name = FRA_Action_Francaise_long 
+                    name = FRA_Action_Francaise
+                }
 			}
 		}
 	}
@@ -507,6 +531,23 @@ country_event = {#Doriot Coup Failure - Armandists turn on Muarras
 			add_ideas = FRA_PB_rene_bousquet_FM
 			add_ideas = FRA_PB_hubert_lagardelle_IM
 			add_ideas = FRA_PB_simone_beauvoir
+
+			add_to_leading_coalition_ni = yes
+            remove_from_farright_coalition_ds = yes
+			remove_from_leading_coalition_ds = yes
+			ban_party_ds = yes
+            ban_party_rc = yes
+            ban_party_an = yes
+            ban_party_cn = yes
+            ban_party_lb = yes
+            ban_party_ss = yes
+            ban_party_jc = yes
+
+			set_party_name = { 
+                ideology = ni
+                long_name = FRA_National_Workers_Salvation_Front_long 
+                name = FRA_Salvation_Front
+            }
 		}
 	}
 }
@@ -1099,27 +1140,6 @@ country_event = {#France demands Wallonia - Wallonia seeks support from Germany 
 		    }
 		}
 	}
-
-	option = { #Stand down
-		name = French.28.b
-
-		ai_chance = {
-			factor = 60
-		}
-
-		add_political_power = -200
-
-		set_country_flag = FRA_Wallonian_Crisis_Stand_Down
-
-		hidden_effect = {
-			FRA = {
-			    news_event = {
-				    id = PBNews.95
-				    hours = 4
-			    }
-			}
-		}
-	}
 }
 
 country_event = {#France demands Netherlands - Germany
@@ -1451,14 +1471,8 @@ country_event = {#Dutch Crisis - Germany abandons the Netherlands - French Annex
 			transfer_state = 910
 			transfer_state = 911
 			transfer_state = 35
-		}
-		FNE = {
 			transfer_state = 7
 			transfer_state = 36
-
-		}
-		FRA = {
-			puppet = FNE
 		}
 
 		HOL = {
@@ -4953,7 +4967,6 @@ country_event = { # New Factory Opening In Paris
 		ai_chance = {
 			factor = 50
 		}
-
 	}
 
 	option = { # Can We Build Another One Of Those?
@@ -4975,5 +4988,110 @@ country_event = { # New Factory Opening In Paris
 		}
 
 	}
+}
 
+country_event = { #The SP demand Hannover
+	id = French_postwar.1
+	title = French_postwar.1.t
+	desc = French_postwar.1.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {
+		name = French_postwar.1.a
+			hidden_effect = {
+				HAN = { 
+				    transfer_state = 56
+				    add_state_core = 56
+				    transfer_state = 59
+				    add_state_core = 59
+				    transfer_state = 57
+				    add_state_core = 57
+				    set_cosmetic_tag = HAN_SP
+			    }
+				FRA = {
+			        if = {
+				        limit = {
+					        OR = {
+						        has_dlc = "Together for Victory"
+						        has_dlc = "Man the Guns"
+					        }
+				        }
+                        set_autonomy = {
+					        target = HAN
+					        autonomous_state = autonomy_PB_Collaborator_State
+					        freedom_level = 0.80
+				        }
+                        else = {
+					        puppet = HAN
+				        }
+			        }
+		        }
+				HAN = {
+					set_politics = {
+						ruling_party = ni
+						elections_allowed = no
+						last_election = "1935.12.17"
+						election_frequency = 48
+					}
+					kill_country_leader = yes
+					add_popularity = {
+                        ideology = ni
+                        popularity = 0.5
+                    }
+					if = {
+			            limit = {
+				            FRA = {
+					            has_country_flag = FRA_Joseph_Darnand_SP
+				            }
+			            }
+			            create_country_leader = {
+				            name = "Joseph Darmand"
+				            desc = "PB_Joseph_Darmand_DESC"
+				            picture = "gfx/leaders/FRA/Portrait_PB_FRA_Joseph_Darmand.dds"
+				            expire = "1965.1.1"
+				            ideology = NI_VARIANT_01
+			            }
+		            }
+		            if = {
+			            limit = {
+				            FRA = {
+					            has_country_flag = FRA_Xavier_Vallat_SP
+				            }
+			            }
+			            create_country_leader = {
+				            name = "Xavier Vallat"
+				            desc = "PB_Xavier_Vallat_DESC"
+				            picture = "gfx/leaders/FRA/Portrait_PB_FRA_Xavier_Vallat.dds"
+				            expire = "1965.1.1"
+				            ideology = NI_VARIANT_01
+			            }
+		            }
+		            if = {
+			            limit = {
+				            FRA = {
+					            has_country_flag = FRA_Coco_Chanel_SP
+				            }
+			            }
+			            create_country_leader = {
+				            name = "Gabrielle Chanel"
+				            desc = "PB_Gabrielle_Chanel_DESC"
+				            picture = "gfx/leaders/FRA/Portrait_FRA_Gabrielle_Chanel.dds"
+				            expire = "1965.1.1"
+				            ideology = NI_VARIANT_01
+			            }
+		            }
+				}
+			}
+			custom_effect_tooltip = PB_FRA_HAN_SP
+			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
+			add_to_variable = {
+				var = FRA_Factionalism
+				value = -0.06
+			}
+		}
+	}
 }
