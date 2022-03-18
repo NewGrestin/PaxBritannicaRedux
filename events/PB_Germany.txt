@@ -3,6 +3,7 @@
 ##################
 
 add_namespace = germany
+add_namespace = germany_exile
 
 
 country_event = {		#Kaiser's New Years Address
@@ -721,7 +722,7 @@ country_event = {#Russia - French Invasion Begins
 	}
 }
 
-country_event = {#Germany - Fall of Frankfurt
+country_event = {#Germany - Fall of Frankfurt 
 	id = germany.22
 	title = germany.22.t
 	desc = germany.22.d
@@ -748,23 +749,35 @@ country_event = {#Germany - Fall of Frankfurt
 			factor = 50
 		}
 
-		add_political_power = -150
+		add_political_power = -50
 
-		add_stability = -0.2
+		add_stability = -0.025
 
-		add_war_support = -0.2
+		add_war_support = -0.025
 
 		set_capital = 52
 	}
 }
 
-country_event = {#Germany - Fall of Munich
+country_event = {#Germany - Fall of Munich 
 	id = germany.23
 	title = germany.23.t
 	desc = germany.23.d
 	picture = GFX_report_PB_Murder
 
-	is_triggered_only = yes
+	trigger = {
+		tag = GER
+		has_war = yes
+		GER = {
+			NOT = {
+				controls_state = 52
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 1
+	}
 
 	option = {
 		name = germany.23.a
@@ -773,19 +786,16 @@ country_event = {#Germany - Fall of Munich
 			factor = 50
 		}
 
-		add_political_power = -150
+		add_political_power = -50
 
-		add_stability = -0.2
+		add_stability = -0.025
 
-		add_war_support = -0.2
+		add_war_support = -0.025
 
-		GER = {
-			country_event = { id = germany.24 days = 1 }
-		}
 	}
 }
 
-country_event = {#Germany - Fall of Munich - Collaborator Coup
+country_event = {#Germany - Fall of Munich - Collaborator Coup # not used currently
 	id = germany.24
 	title = germany.24.t
 	desc = germany.24.d
@@ -986,6 +996,46 @@ country_event = {#Germany - Fall of Munich - German Collaborators Offer Surrende
 			}
 		}
 
+		GER = {
+			annex_country = {
+				target = DAF
+				transfer_troops = yes
+			}
+
+			annex_country = {
+				target = DAS
+				transfer_troops = yes
+			}
+
+			set_global_flag = PB_GER_Exiled
+			set_cosmetic_tag = GER_Exile_Government
+		}
+
+		every_state = {
+			limit = {
+				is_owned_by = DAF
+			}
+
+			GER = {
+				add_state_core = PREV
+			}
+		}
+
+		every_state = {
+			limit = {
+				is_owned_by = DAS
+			}
+
+			GER = {
+				add_state_core = PREV
+			}
+		}
+
+		GER = {
+			set_country_flag = GER_IN_EXILE
+			leave_faction = yes
+		}
+
 		every_country = {
 			limit = {
 				has_war_with = GER
@@ -996,7 +1046,7 @@ country_event = {#Germany - Fall of Munich - German Collaborators Offer Surrende
 }
 
 
-country_event = {#Germany - Fall of Munich - Exiles Form Government
+country_event = {#Germany - Fall of Munich - Exiles Form Government # not currently used
 	id = germany.26
 	title = germany.26.t
 	desc = germany.26.d
@@ -1010,8 +1060,6 @@ country_event = {#Germany - Fall of Munich - Exiles Form Government
 		ai_chance = {
 			factor = 100
 		}
-
-		add_political_power = -200
 
 		GER = {
 			annex_country = {
@@ -3441,6 +3489,81 @@ country_event = {		#GermanyPerspectiveoftheColonies1
 		set_country_flag = PB_GER_Donitz_Chosen
 		
 	}	
+}
+
+#########################################################
+######## GERMANY EXILE EVENTS
+#########################################################
+
+country_event = {		#Our Darkest Hour
+	id = germany_exile.1
+	title = germany_exile.1.t
+	desc = germany_exile.1.d
+	picture = GFX_report_PB_Guns_01
+
+	fire_only_once = yes
+	is_triggered_only = yes
+
+
+	option = { 
+		name = germany_exile.1.a 
+
+	}	
+
+	option = { 
+
+	}	
+}
+
+country_event = {		#Germany offers us an alliance
+	id = germany_exile.2
+	title = germany_exile.2.t
+	desc = germany_exile.2.d
+	picture = GFX_report_PB_Guns_01
+
+	fire_only_once = yes
+	is_triggered_only = yes
+
+
+	option = { 
+		name = germany_exile.2.a 
+
+		GER = {
+			country_event = {
+                id = germany_exile.3
+                days = 1
+            }
+		}
+
+	}	
+	
+}
+
+country_event = {		#Portugal accepts
+	id = germany_exile.3
+	title = germany_exile.3.t
+	desc = germany_exile.3.d
+	picture = GFX_report_PB_Guns_01
+
+	fire_only_once = yes
+	is_triggered_only = yes
+
+
+	option = { 
+		name = germany_exile.3.a 
+
+		create_faction = GER_PEF_LIBERATION_FRONT
+
+		GER = { add_to_faction = PEF }
+
+		hidden_effect = {
+			news_event = {
+                id = PBNews.164
+                days = 1
+            }
+		}
+	}	
+
 }
 
 
