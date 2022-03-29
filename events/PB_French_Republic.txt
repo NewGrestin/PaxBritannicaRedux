@@ -1462,6 +1462,11 @@ country_event = {#France demands Netherlands - Compromise - France seizes Flande
 		FRA = {
 			transfer_state = 6
 			transfer_state = 910
+			create_wargoal = {
+                type = annex_everything
+                target = HOL
+            }
+			set_country_flag = DUTCH_ACCEPTED_COMPROMISE
 		}
 
 		hidden_effect = {
@@ -1677,37 +1682,14 @@ country_event = {#Policy towards Italy
 
 	fire_only_once = yes
 
-	option = { #Maintain hostility towards Italy
+	option = { #Restore Diplomatic Relations
 		name = French.39.a
 
 		ai_chance = {
 			factor = 50
 			modifier = {
-				factor = 0
-				ITA = {
-					OR = {
-						has_government = lb
-						has_government = ss
-					}
-				}
-			}
-		}
-
-		FRA = {
-			add_opinion_modifier = {
-				target = ITA modifier = hostile_diplomacy
-			}
-		}
-	}
-
-	option = { #Restore Diplomatic Relations
-		name = French.39.b
-
-		ai_chance = {
-			factor = 50
-			modifier = {
 				factor = 2
-				ITA = {
+				ISTA = {
 					OR = {
 						has_government = cn
 						has_government = rc
@@ -1721,7 +1703,7 @@ country_event = {#Policy towards Italy
 
 		FRA = {
 			add_opinion_modifier = {
-				target = ITA modifier = diplomatic_outreach
+				target = IST modifier = diplomatic_outreach
 			}
 		}
 	}
@@ -3640,12 +3622,41 @@ country_event = {# Germany Refuses
 	option = {
 		name = French.93.a
 		hidden_effect = {
+			if = {
+				limit = {
+					HOL = {
+						exists = yes
+						owns_state = 7
+					}
+				}
+				FRA = {
+					declare_war_on = {
+				        target = HOL
+				        type = annex_everything
+			        }
+				}
+			}
 			FRA = {
 				news_event = { id = PBNews.87 days = 1 } 
 				declare_war_on = {
 				    target = GER
 				    type = annex_everything
 			    }
+			}
+			if = {
+				limit = {
+					HOL = {
+						exists = yes
+					}
+					FRA = {
+						has_country_flag = DUTCH_ACCEPTED_COMPROMISE
+						is_ai = yes
+					}
+				}
+				declare_war_on = {
+				    target = HOL
+				    type = annex_everything
+			    }	
 			}
 		}
 		ai_chance = {
@@ -3985,7 +3996,7 @@ country_event = { #The Revolution Still Breathes
 	id = French_flavour.4
 	title = French_flavour.4.t
 	desc = French_flavour.4.d
-	picture = GFX_report_Generic_Female_Militia2
+	picture = GFX_report_PB_French_Soldiers
 
 	is_triggered_only = yes
 
@@ -5474,6 +5485,10 @@ country_event = { #The SP demand Hannover
 	option = {
 		name = French_postwar.1.a
 			hidden_effect = {
+				news_event = {
+			        id = PBNews.172
+			        days = 1
+		        }
 				HAN = { 
 				    transfer_state = 56
 				    add_state_core = 56

@@ -61,6 +61,9 @@ country_event = {		#Rhineland Bread Riots
 			GER = {
 				country_event = { id = germany.3 days = 8 }
 			}
+			GER = {
+				country_event = { id = germany.31 days = 60 }
+			}
 		}
 	}
 
@@ -86,6 +89,9 @@ country_event = {		#Rhineland Bread Riots
 		hidden_effect = {
 			GER = {
 				country_event = { id = germany.3 days = 8 }
+			}
+			GER = {
+				country_event = { id = germany.31 days = 60 }
 			}
 		}
 		add_popularity = {
@@ -265,7 +271,7 @@ country_event = {		#The Hirschfeld Institute - FLAVOR
 		}
 
 		add_popularity = {
-		    ideology = cn
+		    ideology = rc
 		    popularity = 0.03
 		}
 
@@ -946,19 +952,6 @@ country_event = {#Germany - Fall of Munich - German Collaborators Offer Surrende
 
 		if = {
 			limit = {
-				ITA = {
-					is_in_faction_with = FRA
-				}
-			}
-			ITA = {
-				transfer_state = 39
-				transfer_state = 736
-				transfer_state = 102
-			}
-		}
-
-		if = {
-			limit = {
 				IST = {
 					is_in_faction_with = FRA
 				}
@@ -966,7 +959,11 @@ country_event = {#Germany - Fall of Munich - German Collaborators Offer Surrende
 			IST = {
 				transfer_state = 39
 				transfer_state = 736
-				transfer_state = 102
+				transfer_state = 923
+
+				add_state_core = 39
+				add_state_core = 736
+				add_state_core = 102
 			}
 		}
 
@@ -995,13 +992,32 @@ country_event = {#Germany - Fall of Munich - German Collaborators Offer Surrende
 				transfer_troops = yes
 			}
 
-			annex_country = {
-				target = DAS
-				transfer_troops = yes
-			}
-
 			set_global_flag = PB_GER_Exiled
 			set_cosmetic_tag = GER_Exile_Government
+		}
+
+		if = {
+			limit = {
+				OR = {
+					has_dlc = "Together for Victory"
+					has_dlc = "Man the Guns"
+				}
+			}
+
+			GER = {
+				set_autonomy = {
+                    target = DAS
+                    autonomy_state = autonomy_free
+                    end_wars = yes
+                    end_civil_wars = yes
+                }
+			}
+
+			else = {
+				GER = {
+					end_puppet = DAS
+				}
+			}
 		}
 
 		every_state = {
@@ -1014,31 +1030,22 @@ country_event = {#Germany - Fall of Munich - German Collaborators Offer Surrende
 			}
 		}
 
-		every_state = {
-			limit = {
-				is_owned_by = DAS
-			}
-
-			GER = {
-				add_state_core = PREV
-			}
-		}
-
-		if = {
-			limit = {
-				GER = {
-					is_faction_leader = yes
-				}
-				dismantle_faction = yes
-				leave_faction = yes
-			}
-		}
-
 		if = {
 			limit = {
 				GER = {
 					is_in_faction_with = ENG 
 				}
+			}
+			GER = {
+				leave_faction = yes
+			}
+			SDW = {
+				leave_faction = yes
+			}
+			DAF = {
+				leave_faction = yes
+			}
+			DAS = {
 				leave_faction = yes
 			}
 		}
@@ -1152,9 +1159,9 @@ country_event = {#Germany - Fall of Munich - German Collaborators Offer Surrende
 			}
 			if = {
 				limit = {
-					has_idea = PB_GER_Political_Violence_Black_1
+					has_idea = PB_GER_Political_Violence_Black_2
 				}
-				remove_ideas = PB_GER_Political_Violence_Black_1
+				remove_ideas = PB_GER_Political_Violence_Black_2
 			}
 			if = {
 				limit = {
@@ -1823,303 +1830,141 @@ country_event = {#Germany - Fall of Munich - Russian East Germany
 	}
 }
 
-country_event = {		#Unrest in Rhineland Increasing
+############################################################################################################################################################
+############################################################################################################################################################	
+############################################################################################################################################################
+
+country_event = {		#Jacobins in the Rhineland
 	id = germany.28
 	title = germany.28.t
 	desc = germany.28.d
-	picture = GFX_report_event_reichstag_gathering
+	picture = GFX_report_PB_Socialist_Revolution
 
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Rhineland_Unrest > 20 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
+	
+	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 150
-	}
+	fire_only_once = yes
 
-	option = {#Ignore the agitators
+	option = {#Bombthemout
 		name = germany.28.a
 
 		ai_chance = {
-			factor = 100
+			factor = 50
 		}
 		add_political_power = 25
+        hidden_effect = {
+			GER = {
+				country_event = { id = germany.29 days = 1 }
+			}
+		}
+	}
 
-		custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Ten_tt
+	option = {#GowithInfantry
+		name = germany.28.b
 
+		ai_chance = {
+			factor = 50
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.30 days = 1 }
+			}
+		}
+	}
+}
+
+country_event = {		#BombtheRhineland
+	id = germany.29
+	title = germany.29.t
+	desc = germany.29.d
+	picture = GFX_report_Generic_Bombs
+
+   is_triggered_only = yes
+
+   fire_only_once = yes
+
+	option = { #ohfuck
+		name = germany.29.a
+		51 = {
+		damage_building = {
+			type = infrastructure
+			damage = 1
+		}
+	    }
+		custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Five_tt
 		add_to_variable = {
 			var = Germany_Rhineland_Unrest
 			value = 5
 		}
 
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 80
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red
+				add_idea = PB_GER_Political_Violence_Red_1
 			}
 		}
-	}
-
-	option = {#Try and make some concessions
-		name = germany.28.b
-
-		ai_chance = {
-			factor = 100
-		}
-
-		add_political_power = -25
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 80
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red_1
+				add_idea = PB_GER_Political_Violence_Red_2
 			}
 		}
-
-		random_list = {
-			50 = {
-				custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
-				add_to_variable = {
-					var = Germany_Rhineland_Unrest
-					value = -5
-				}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
 			}
-			50 = {
-				custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Five_tt
-				add_to_variable = {
-					var = Germany_Rhineland_Unrest
-					value = 5
-				}
-			}
-		}
-	}
-
-	option = {#Have them arrested
-		name = germany.28.c
-
-		ai_chance = {
-			factor = 100
-		}
-
-		add_political_power = -50
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 140
-			}
-		}
-
-		custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
-
-		add_to_variable = {
-			var = Germany_Rhineland_Unrest
-			value = -10
+			remove_idea = PB_GER_Political_Violence_Red_2
 		}
 	}
 }
 
-country_event = {		#Unrest in Brandenburg Increasing
-	id = germany.29
-	title = germany.29.t
-	desc = germany.29.d
-	picture = GFX_report_event_reichstag_gathering
-
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Brandenburg_Unrest > 20 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
-
-	mean_time_to_happen = {
-		days = 150
-	}
-
-
-	option = {#Ignore the agitators
-		name = germany.29.a
-
-		ai_chance = {
-			factor = 100
-		}
-		add_political_power = -25
-
-		add_stability = -0.05
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
-			}
-		}
-	}
-
-	option = {#Try and make some concessions
-		name = germany.29.b
-
-		ai_chance = {
-			factor = 100
-		}
-
-		add_political_power = -15
-
-		add_stability = -0.05
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
-			}
-		}
-
-		random_list = {
-			50 = {
-				custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
-				add_to_variable = {
-					var = Germany_Brandenburg_Unrest
-					value = -10
-				}
-			}
-			50 = {
-				custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Five_tt
-				add_to_variable = {
-					var = Germany_Brandenburg_Unrest
-					value = 5
-				}
-			}
-		}
-	}
-
-	option = {#Have them arrested
-		name = germany.29.b
-
-		ai_chance = {
-			factor = 100
-		}
-
-		add_political_power = -100
-
-		add_stability = -0.1
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
-			}
-		}
-
-		custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
-
-		add_to_variable = {
-			var = Germany_Brandenburg_Unrest
-			value = -10
-		}
-	}
-}
-
-country_event = {		#Unrest in Bavaria Increasing
+country_event = {		#StormedwithInfantry
 	id = germany.30
 	title = germany.30.t
 	desc = germany.30.d
-	picture = GFX_report_event_reichstag_gathering
+	picture = GFX_report_PB_Soldiers_Riot
 
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Bavaria_Unrest > 20 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
+	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 150
-	}
-
-	option = {#Ignore the agitators
+	fire_only_once = yes
+ 
+	option = { #Damn
 		name = germany.30.a
+		add_political_power = -10
+		add_manpower = -114
 
-		ai_chance = {
-			factor = 100
-		}
-		add_political_power = -25
-
-		add_stability = -0.05
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red
+				add_idea = PB_GER_Political_Violence_Red_1
 			}
 		}
-	}
-
-	option = {#Try and make some concessions
-		name = germany.30.b
-
-		ai_chance = {
-			factor = 100
-		}
-
-		add_political_power = -15
-
-		add_stability = -0.05
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red_1
+				add_idea = PB_GER_Political_Violence_Red_2
 			}
 		}
-
-		random_list = {
-			50 = {
-				custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
-				add_to_variable = {
-					var = Germany_Bavaria_Unrest
-					value = -10
-				}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
 			}
-			50 = {
-				custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Five_tt
-				add_to_variable = {
-					var = Germany_Bavaria_Unrest
-					value = 5
-				}
-			}
-		}
-	}
-
-	option = {#Have them arrested
-		name = germany.30.b
-
-		ai_chance = {
-			factor = 100
+			remove_idea = PB_GER_Political_Violence_Red_2
 		}
 
-		add_political_power = -100
-
-		add_stability = -0.1
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
-			}
-		}
-
-		custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
-
-		add_to_variable = {
-			var = Germany_Bavaria_Unrest
-			value = -10
-		}
 	}
 }
 
@@ -2129,17 +1974,9 @@ country_event = {		#Unrest in Saxony Increasing - Coal Workers in Zwickau
 	desc = germany.31.d
 	picture = GFX_report_PB_Coal_Digger
 
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Saxony_Unrest > 20 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
+	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 150
-	}
+	fire_only_once = yes
 
 	option = {#Ignore the agitators
 		name = germany.31.a
@@ -2157,9 +1994,8 @@ country_event = {		#Unrest in Saxony Increasing - Coal Workers in Zwickau
 		}
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.32 days = 51 }
 			}
 		}
 	}
@@ -2172,9 +2008,8 @@ country_event = {		#Unrest in Saxony Increasing - Coal Workers in Zwickau
 		}
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.32 days = 51 }
 			}
 		}
 
@@ -2208,9 +2043,8 @@ country_event = {		#Unrest in Saxony Increasing - Coal Workers in Zwickau
 		add_political_power = 50
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.32 days = 51 }
 			}
 		}
 
@@ -2225,57 +2059,674 @@ country_event = {		#Unrest in Saxony Increasing - Coal Workers in Zwickau
 	}
 }
 
-country_event = {		#Unrest in Hannover Increasing
+country_event = {		#Unrest in Prussia Dock Workers
 	id = germany.32
 	title = germany.32.t
 	desc = germany.32.d
-	picture = GFX_report_event_reichstag_gathering
+	picture = GFX_report_German_Harbour
 
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Hannover_Unrest > 20 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
+	is_triggered_only = yes
 
-	mean_time_to_happen = {
-		days = 150
-	}
+	fire_only_once = yes
 
-	option = {#Ignore the agitators
+	option = {#Good
 		name = germany.32.a
 
 		ai_chance = {
-			factor = 100
+			factor = 34
 		}
-		add_political_power = -25
+		add_political_power = -50
 
-		add_stability = -0.05
+		custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Brandenburg_Unrest
+			value = -10
+		}
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.33 days = 51 }
 			}
 		}
 	}
 
-	option = {#Try and make some concessions
+	option = {#Medium
 		name = germany.32.b
 
 		ai_chance = {
-			factor = 100
+			factor = 33
 		}
 
-		add_political_power = -15
-
-		add_stability = -0.05
+		add_political_power = -25
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.33 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.32.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.33 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Brandenburg_Unrest
+			value = 15
+		}
+	}
+}
+
+
+country_event = {		#Students in Münster Protest
+	id = germany.33
+	title = germany.33.t
+	desc = germany.33.d
+	picture = GFX_report_PB_Paris_Event
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.33.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.34 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.33.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.34 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.33.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.34 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#BavarianEnteprises
+	id = germany.34
+	title = germany.34.t
+	desc = germany.34.d
+	picture = GFX_report_PB_Money_Printer_BRRRRR
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.34.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.35 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.34.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.35 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.34.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.35 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#CulturalMovementBreslaur
+	id = germany.35
+	title = germany.35.t
+	desc = germany.35.d
+	picture = GFX_report_PB_Coal_Digger
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.35.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.36 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.35.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.36 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.35.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.36 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#DüsseldorfMilitaryFactories
+	id = germany.36
+	title = germany.36.t
+	desc = germany.36.d
+	picture = GFX_report_PB_Coal_Digger
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.36.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.37 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.36.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.37 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.36.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.37 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#ShootingSocialistsReactionarySalzburg
+	id = germany.37
+	title = germany.37.t
+	desc = germany.37.d
+	picture = GFX_report_German_Street_Chaos
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.37.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Austria_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Austria_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.38 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.37.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.38 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Austria_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Austria_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Austria_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Austria_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.37.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.38 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Austria_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Austria_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#AutobahnBridgeBielefeld
+	id = germany.38
+	title = germany.38.t
+	desc = germany.38.d
+	picture = GFX_report_PB_Coal_Digger
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.38.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.39 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.38.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.39 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.38.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.39 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#FloodinginEmden
+	id = germany.39
+	title = germany.39.t
+	desc = germany.39.d
+	picture = GFX_report_German_Floods
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.39.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Hannover_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Hannover_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.40 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.39.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.40 days = 51 }
 			}
 		}
 
@@ -2297,23 +2748,403 @@ country_event = {		#Unrest in Hannover Increasing
 		}
 	}
 
-	option = {#Have them arrested
-		name = germany.32.b
+	option = {#Bad
+		name = germany.39.c
 
 		ai_chance = {
-			factor = 100
+			factor = 33
 		}
 
-		add_political_power = -100
-
-		add_stability = -0.1
+		add_political_power = 50
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.40 days = 51 }
 			}
 		}
+
+		custom_effect_tooltip = GER_Hannover_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Hannover_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#BerlinActressFeather
+	id = germany.40
+	title = germany.40.t
+	desc = germany.40.d
+	picture = GFX_report_German_Theater
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.40.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Brandenburg_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.75 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.40.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.75 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.40.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.75 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Brandenburg_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#LiberalPolitician
+	id = germany.75
+	title = germany.75.t
+	desc = germany.75.d
+	picture = GFX_report_PB_Murder
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.75.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.76 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.75.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.76 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.75.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.76 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#FloodsinRhinelandPalatine
+	id = germany.76
+	title = germany.76.t
+	desc = germany.76.d
+	picture = GFX_report_PB_Coal_Digger
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.76.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.77 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.76.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.77 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.76.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.77 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#PoliticalBrawlinFrankfurt
+	id = germany.77
+	title = germany.77.t
+	desc = germany.77.d
+	picture = GFX_report_PB_Coal_Digger
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.77.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Frankfurt_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Frankfurt_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.78 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.77.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.78 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Frankfurt_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Frankfurt_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Frankfurt_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Frankfurt_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.77.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.78 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Frankfurt_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Frankfurt_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#JacobinHamburgMarch
+	id = germany.78
+	title = germany.78.t
+	desc = germany.78.d
+	picture = GFX_report_PB_Coal_Digger
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.78.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
 
 		custom_effect_tooltip = GER_Hannover_Unrest_Reduce_Ten_tt
 
@@ -2321,335 +3152,679 @@ country_event = {		#Unrest in Hannover Increasing
 			var = Germany_Hannover_Unrest
 			value = -10
 		}
-	}
-}
 
-country_event = {		#Unrest in Rhineland - Nationalists Organize
-	id = germany.33
-	title = germany.33.t
-	desc = germany.33.d
-	picture = GFX_report_event_reichstag_gathering
-
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Rhineland_Unrest > 50 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.79 days = 51 }
+			}
 		}
 	}
 
-	mean_time_to_happen = {
-		days = 150
+	option = {#Medium
+		name = germany.78.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.79 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Hannover_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Hannover_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Hannover_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Hannover_Unrest
+					value = 5
+				}
+			}
+		}
 	}
+
+	option = {#Bad
+		name = germany.78.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.79 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Hannover_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Hannover_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#FrenchFamilyStraßburg
+	id = germany.79
+	title = germany.79.t
+	desc = germany.79.d
+	picture = GFX_report_PB_Coal_Digger
+
+	is_triggered_only = yes
 
 	fire_only_once = yes
 
-	option = {
-		name = germany.33.a
+	option = {#Good
+		name = germany.79.a
 
 		ai_chance = {
-			factor = 100
+			factor = 34
 		}
 		add_political_power = -50
 
-		add_stability = -0.05
+		custom_effect_tooltip = GER_Elsass_Unrest_Reduce_Ten_tt
 
-		RHH = {
-			add_state_core = 51
-			add_state_core = 42
-			add_state_core = 28
+		add_to_variable = {
+			var = Germany_Elsass_Unrest
+			value = -10
 		}
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.80 days = 51 }
 			}
 		}
 	}
-}
 
-country_event = {		#Unrest in Brandenburg - Nationalists Organize
-	id = germany.34
-	title = germany.34.t
-	desc = germany.34.d
-	picture = GFX_report_event_reichstag_gathering
-
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Brandenburg_Unrest > 50 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
-
-	mean_time_to_happen = {
-		days = 150
-	}
-
-	fire_only_once = yes
-
-	option = {
-		name = germany.34.a
+	option = {#Medium
+		name = germany.79.b
 
 		ai_chance = {
-			factor = 100
+			factor = 33
 		}
+
 		add_political_power = -25
 
-		add_stability = -0.05
-
-		BRN = {
-			add_state_core = 64
-			add_state_core = 61
-			add_state_core = 62
-			add_state_core = 63
-			add_state_core = 68
-			add_state_core = 66
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.80 days = 51 }
+			}
 		}
 
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Elsass_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Elsass_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Elsass_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Elsass_Unrest
+					value = 5
+				}
 			}
 		}
 	}
-}
 
-country_event = {		#Unrest in Bavaria - Nationalists Organize
-	id = germany.35
-	title = germany.35.t
-	desc = germany.35.d
-	picture = GFX_report_event_reichstag_gathering
-
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Bavaria_Unrest > 50 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
-
-	mean_time_to_happen = {
-		days = 150
-	}
-
-	fire_only_once = yes
-
-	option = {
-		name = germany.35.a
+	option = {#Bad
+		name = germany.79.c
 
 		ai_chance = {
-			factor = 100
+			factor = 33
 		}
-		add_political_power = -25
 
-		add_stability = -0.05
-
-		BAV = {
-			add_state_core = 53
-			add_state_core = 52
-			add_state_core = 54
-			add_state_core = 55
-		}
+		add_political_power = 50
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.80 days = 51 }
 			}
+		}
+
+		custom_effect_tooltip = GER_Elsass_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Elsass_Unrest
+			value = 15
 		}
 	}
 }
 
-country_event = {		#Unrest in Saxony - Nationalists Organize
-	id = germany.36
-	title = germany.36.t
-	desc = germany.36.d
-	picture = GFX_report_event_reichstag_gathering
-
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Saxony_Unrest > 50 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
-
-	mean_time_to_happen = {
-		days = 150
-	}
-
-	fire_only_once = yes
-
-	option = {
-		name = germany.36.a
-
-		ai_chance = {
-			factor = 100
-		}
-		add_political_power = -25
-
-		add_stability = -0.05
-
-		SAX = {
-			add_state_core = 65
-			add_state_core = 60
-		}
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
-			}
-		}
-	}
-}
-
-country_event = {		#Unrest in Hannover - Nationalists Organize
-	id = germany.37
-	title = germany.37.t
-	desc = germany.37.d
-	picture = GFX_report_event_reichstag_gathering
-
-	trigger = {
-		tag = GER
-		check_variable = { Germany_Hannover_Unrest > 50 }
-		NOT = {
-			has_idea = GER_Unrest_Event_Timeout
-		}
-	}
-
-	mean_time_to_happen = {
-		days = 150
-	}
-
-	fire_only_once = yes
-
-	option = {
-		name = germany.37.a
-
-		ai_chance = {
-			factor = 100
-		}
-		add_political_power = -25
-
-		add_stability = -0.05
-
-		HAN = {
-			add_state_core = 59
-			add_state_core = 56
-			add_state_core = 57
-		}
-
-		hidden_effect = {
-			add_timed_idea = {
-				idea = GER_Unrest_Event_Timeout
-				days = 60
-			}
-		}
-	}
-}
-
-country_event = {		#Political Violence - Street Brawls
-	id = germany.38
-	title = germany.38.t
-	desc = germany.38.d
-	picture = GFX_report_event_reichstag_gathering
+country_event = {		#CriminalMarinesBremen
+	id = germany.80
+	title = germany.80.t
+	desc = germany.80.d
+	picture = GFX_report_PB_Coal_Digger
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
 
-	option = {
-		name = germany.38.a
+	option = {#Good
+		name = germany.80.a
 
 		ai_chance = {
-			factor = 100
+			factor = 34
 		}
-		add_political_power = -25
+		add_political_power = -50
 
-		add_manpower = -25
+		custom_effect_tooltip = GER_Hannover_Unrest_Reduce_Ten_tt
 
-		add_stability = -0.05
-
-		random_owned_state = {
-			limit = {
-				is_owned_by = GER
-			}
-			damage_building = {
-				type = infrastructure
-				damage = 1
-			}
+		add_to_variable = {
+			var = Germany_Hannover_Unrest
+			value = -10
 		}
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = PB_GER_Political_Violence_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.81 days = 51 }
 			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.80.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.81 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Hannover_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Hannover_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Hannover_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Hannover_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.80.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.81 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Hannover_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Hannover_Unrest
+			value = 15
 		}
 	}
 }
 
-country_event = {		#Political Violence - Ultranats
-	id = germany.39
-	title = germany.39.t
-	desc = germany.39.d
-	picture = GFX_report_event_reichstag_gathering
+country_event = {		#TorchMarchBolzen
+	id = germany.81
+	title = germany.81.t
+	desc = germany.81.d
+	picture = GFX_report_PB_Coal_Digger
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
 
-	option = {
-		name = germany.39.a
+	option = {#Good
+		name = germany.81.a
 
 		ai_chance = {
-			factor = 100
+			factor = 34
 		}
-		add_political_power = -25
+		add_political_power = -50
 
-		add_stability = -0.05
+		custom_effect_tooltip = GER_Austria_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Austria_Unrest
+			value = -10
+		}
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = PB_GER_Political_Violence_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.82 days = 51 }
 			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.81.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.82 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Austria_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Austria_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Austria_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Austria_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.81.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.82 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Austria_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Austria_Unrest
+			value = 15
 		}
 	}
 }
 
-country_event = {		#Political Violence - Hardline Leftists
-	id = germany.40
-	title = germany.40.t
-	desc = germany.40.d
-	picture = GFX_report_event_reichstag_gathering
+country_event = {		#LargeKarlsruheFires
+	id = germany.82
+	title = germany.82.t
+	desc = germany.82.d
+	picture = GFX_report_PB_Coal_Digger
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
 
-	option = {
-		name = germany.40.a
+	option = {#Good
+		name = germany.82.a
 
 		ai_chance = {
-			factor = 100
+			factor = 34
 		}
-		add_political_power = -25
+		add_political_power = -50
 
-		add_stability = -0.05
+		custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = -10
+		}
 
 		hidden_effect = {
-			add_timed_idea = {
-				idea = PB_GER_Political_Violence_Timeout
-				days = 60
+			GER = {
+				country_event = { id = germany.83 days = 51 }
 			}
 		}
 	}
+
+	option = {#Medium
+		name = germany.82.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.83 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.82.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.83 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Bavaria_Unrest
+			value = 15
+		}
+	}
 }
+
+country_event = {		#PrussianNationalistsKüstrin
+	id = germany.83
+	title = germany.83.t
+	desc = germany.83.d
+	picture = GFX_report_PB_German_Freikorps
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.83.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Brandenburg_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.84 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.83.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.84 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Brandenburg_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.83.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.84 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Brandenburg_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#ErfurtToxics
+	id = germany.84
+	title = germany.84.t
+	desc = germany.84.d
+	picture = GFX_report_German_Toxic
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.84.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = -50
+
+		custom_effect_tooltip = GER_Saxony_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Saxony_Unrest
+			value = -10
+		}
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.85 days = 51 }
+			}
+		}
+	}
+
+	option = {#Medium
+		name = germany.84.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.85 days = 51 }
+			}
+		}
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Saxony_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Saxony_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Saxony_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Saxony_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.84.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = 50
+
+		hidden_effect = {
+			GER = {
+				country_event = { id = germany.85 days = 51 }
+			}
+		}
+
+		custom_effect_tooltip = GER_Saxony_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Saxony_Unrest
+			value = 15
+		}
+	}
+}
+
+country_event = {		#MadmanInHalle
+	id = germany.85
+	title = germany.85.t
+	desc = germany.85.d
+	picture = GFX_report_GER_Shadow
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {#Good
+		name = germany.85.a
+
+		ai_chance = {
+			factor = 34
+		}
+		add_political_power = 50
+
+		custom_effect_tooltip = GER_Saxony_Unrest_Reduce_Ten_tt
+
+		add_to_variable = {
+			var = Germany_Saxony_Unrest
+			value = -10
+		}
+	}
+
+	option = {#Medium
+		name = germany.85.b
+
+		ai_chance = {
+			factor = 33
+		}
+
+		add_political_power = -25
+
+		random_list = {
+			50 = {
+				custom_effect_tooltip = GER_Saxony_Unrest_Reduce_Ten_tt
+				add_to_variable = {
+					var = Germany_Saxony_Unrest
+					value = -10
+				}
+			}
+			50 = {
+				custom_effect_tooltip = GER_Saxony_Unrest_Increase_Five_tt
+				add_to_variable = {
+					var = Germany_Saxony_Unrest
+					value = 5
+				}
+			}
+		}
+	}
+
+	option = {#Bad
+		name = germany.85.c
+
+		ai_chance = {
+			factor = 33
+		}
+
+		#add_political_power = 50
+
+		custom_effect_tooltip = GER_Saxony_Unrest_Increase_Fiveteen_tt
+
+		add_to_variable = {
+			var = Germany_Saxony_Unrest
+			value = 15
+		}
+	}
+}
+
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 country_event = {		#Political Violence - Bringing down the Berlin Freikorps
 	id = germany.41
@@ -2668,8 +3843,30 @@ country_event = {		#Political Violence - Bringing down the Berlin Freikorps
 			factor = 60
 		}
 		add_political_power = -25
-
-		add_stability = -0.05
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black
+				add_idea = PB_GER_Political_Violence_Black_1
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black_1
+				add_idea = PB_GER_Political_Violence_Black_2
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			remove_idea = PB_GER_Political_Violence_Black_2
+		}
 	}
 
 	option = { #Offer No Amnesty
@@ -2678,14 +3875,39 @@ country_event = {		#Political Violence - Bringing down the Berlin Freikorps
 		ai_chance = {
 			factor = 40
 		}
-		add_political_power = -50
+		add_political_power = 25
+
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black
+				add_idea = PB_GER_Political_Violence_Black_1
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black_1
+				add_idea = PB_GER_Political_Violence_Black_2
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			remove_idea = PB_GER_Political_Violence_Black_2
+		}
 
 		custom_effect_tooltip = GER_Brandenburg_Unrest_Increase_Five_tt
 
 		GER = {
 			add_to_variable = {
 				var = Germany_Brandenburg_Unrest
-				value = 3
+				value = 5
 			}
 		}
 	}
@@ -2722,14 +3944,6 @@ country_event = {		#Political Violence - Bringing down the Bavarian Freikorps
 		}
 		add_political_power = -60
 
-		custom_effect_tooltip = GER_Bavaria_Unrest_Increase_Five_tt
-		GER = {
-			add_to_variable = {
-				var = Germany_Bavaria_Unrest
-				value = 5
-			}
-		}
-
 		GER = {
 			country_event = { id = germany.44 days = 2 }
 		}
@@ -2749,10 +3963,6 @@ country_event = {		#Political Violence - Bringing down the Bavarian Freikorps - 
 	option = { #NOT APPLICABLE
 		name = germany.43.a
 
-		ai_chance = {
-			factor = 50
-		}
-
 		add_manpower = -6
 
 		if = {
@@ -2763,6 +3973,21 @@ country_event = {		#Political Violence - Bringing down the Bavarian Freikorps - 
 				remove_idea = PB_GER_Political_Violence_Black
 				add_idea = PB_GER_Political_Violence_Black_1
 			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black_1
+				add_idea = PB_GER_Political_Violence_Black_2
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			remove_idea = PB_GER_Political_Violence_Black_2
 		}
 	}
 }
@@ -2779,11 +4004,6 @@ country_event = {		#Political Violence - Bringing down the Bavarian Freikorps - 
 
 	option = { #NOT APPLICABLE
 		name = germany.44.a
-
-		ai_chance = {
-			factor = 50
-		}
-
 		add_political_power = -80
 
 		add_manpower = -63
@@ -2803,6 +4023,21 @@ country_event = {		#Political Violence - Bringing down the Bavarian Freikorps - 
 				remove_idea = PB_GER_Political_Violence_Black
 				add_idea = PB_GER_Political_Violence_Black_1
 			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black_1
+				add_idea = PB_GER_Political_Violence_Black_2
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			remove_idea = PB_GER_Political_Violence_Black_2
 		}
 	}
 }
@@ -2824,6 +4059,13 @@ country_event = {		#Political Violence - Bringing down the Alsace National Union
 					has_dynamic_modifier = { modifier = french_terrorism_2 }
 			}
 			remove_dynamic_modifier = { modifier = french_terrorism_2 }
+		}
+		custom_effect_tooltip = GER_Elsass_Unrest_Increase_Ten_tt
+		GER = {
+			add_to_variable = {
+				var = Germany_Elsass_Unrest
+				value = 10
+			}
 		}
 		add_political_power = -80
 
@@ -2886,6 +4128,31 @@ country_event = {		#Political Violence - Bringing down the Rhenish Freikorps Gro
 				value = -5
 			}
 		}
+
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black
+				add_idea = PB_GER_Political_Violence_Black_1
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Black_1
+				add_idea = PB_GER_Political_Violence_Black_2
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Black
+			}
+			remove_idea = PB_GER_Political_Violence_Black_2
+		}
 	}
 }
 
@@ -2902,7 +4169,7 @@ country_event = {		#Political Violence - Czech Legion Negotiations
 	option = { # Concessions for Stability
 		name = germany.48.a
 
-		add_political_power = -150
+		add_political_power = -100
 		add_stability = -0.025
         every_owned_state = {
 			limit = { 
@@ -2916,7 +4183,6 @@ country_event = {		#Political Violence - Czech Legion Negotiations
 	option = { # No Way
 		name = germany.48.b
 
-		add_political_power = -10
 		add_stability = 0.025
         GER = { set_country_flag = XXXXXXXX }
 	}
@@ -2935,7 +4201,7 @@ country_event = {		#Political Violence - Czech Legion Destroyed
 	option = { # Concessions for Stability
 		name = germany.49.a
 
-		add_political_power = -75
+		add_political_power = -25
 		add_manpower = -124
         every_owned_state = {
 			limit = { 
@@ -2981,7 +4247,7 @@ country_event = {		#Freeing the Phillipines No costs
 	id = germany.51
 	title = germany.51.t
 	desc = germany.51.d
-	picture = GFX_report_event_Ger_Philippines
+	picture = GFX_report_event_PB_Philippines
 
 	is_triggered_only = yes
 
@@ -2991,7 +4257,14 @@ country_event = {		#Freeing the Phillipines No costs
 		name = germany.51.a
         DAS = {
 		release = PHI
+		if = {
+			limit = {
+				has_war_with = PHI
+			}
+			white_peace = PHI
 		}	
+		}	
+
 	}	
 }
 
@@ -3010,6 +4283,19 @@ country_event = {		#Freeing the Phillipines with costs
         DAS = {
 	    release = PHI
 	    }
+		give_guarantee = PHI
+		diplomatic_relation = {
+			country = PHI
+			relation = non_aggression_pact
+			active = yes
+		}
+		release = PHI
+		if = {
+			limit = {
+				has_war_with = PHI
+			}
+			white_peace = PHI
+		}	
 	}	
 }
 
@@ -3066,7 +4352,7 @@ country_event = {		#ElectionsScheduled
 
 		hidden_effect = {
         set_country_flag = GER_Elections_Go
-		country_event = { id = germany.58 days = 10 }
+		country_event = { id = germany.58 days = 7 }
         complete_national_focus = PB_GER_New_Elections
 		}
 	}	
@@ -3084,9 +4370,12 @@ country_event = {		#TheSPReorganizes
 
 	option = { 
 		name = germany.56.a
-
+        add_popularity = {
+			ideology = ss
+			popularity = 0.15
+		}
 		hidden_effect = {
-			country_event = { id = germany.57 days = 10 }
+			country_event = { id = germany.57 days = 7 }
 		}
 	}	
 }
@@ -3103,8 +4392,12 @@ country_event = {		#TheLiberalsBeginTheirCampaigning
 
 	option = { 
 		name = germany.57.a
+		add_popularity = {
+			ideology = lb
+			popularity = 0.15
+		}
 		hidden_effect = {
-			country_event = { id = germany.59 days = 10 }
+			country_event = { id = germany.59 days = 7 }
 		}
 	}	
 }
@@ -3121,8 +4414,12 @@ country_event = {		#TheReactionariesontheMarch
 
 	option = { 
 		name = germany.58.a
+		add_popularity = {
+			ideology = rc
+			popularity = 0.15
+		}
 		hidden_effect = {
-			country_event = { id = germany.56 days = 10 }
+			country_event = { id = germany.56 days = 7 }
 		}
 	}	
 }
@@ -3161,6 +4458,64 @@ country_event = {		#ElectionsDecidingtheParty
 		add_ideas = GER_PB_Otto_Wels
 		complete_national_focus = PB_GER_Red_Diachy
 		set_country_flag = PB_GER_RED_POLITICS
+		add_popularity = {
+			ideology = ss
+			popularity = 0.1
+		}
+		add_popularity = {
+			ideology = lb
+			popularity = -0.05
+		}
+		add_popularity = {
+			ideology = rc
+			popularity = -0.05
+		}
+		custom_effect_tooltip = GER_All_Unrest_Increase_Ten_tt
+			GER = {
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Austria_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Saxony_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Hannover_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Frankfurt_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Elsass_Unrest
+					value = 10
+				}
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_0
+				add_idea = PB_GER_Political_Violence_Black
+			}	
 	}
 	option = { 
 		name = germany.59.b
@@ -3186,6 +4541,64 @@ country_event = {		#ElectionsDecidingtheParty
 		add_ideas = GER_PB_Wilhelm_Groener
 		complete_national_focus = PB_GER_liberal_way
 		set_country_flag = PB_GER_YELLOW_POLITICS
+		add_popularity = {
+			ideology = ss
+			popularity = -0.05
+		}
+		add_popularity = {
+			ideology = lb
+			popularity = 0.1
+		}
+		add_popularity = {
+			ideology = rc
+			popularity = -0.05
+		}
+		custom_effect_tooltip = GER_All_Unrest_Increase_Ten_tt
+			GER = {
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Austria_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Saxony_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Hannover_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Frankfurt_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Elsass_Unrest
+					value = 10
+				}
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_0
+				add_idea = PB_GER_Political_Violence_Mixed
+			}	
 	}
 	option = { 
 		name = germany.59.c
@@ -3211,6 +4624,64 @@ country_event = {		#ElectionsDecidingtheParty
 		add_ideas = GER_PB_Franz_Guertner
 		complete_national_focus = PB_GER_new_chapter
 		set_country_flag = PB_GER_BROWN_POLITICS
+		add_popularity = {
+			ideology = ss
+			popularity = -0.05
+		}
+		add_popularity = {
+			ideology = lb
+			popularity = -0.05
+		}
+		add_popularity = {
+			ideology = rc
+			popularity = 0.1
+		}
+		custom_effect_tooltip = GER_All_Unrest_Increase_Ten_tt
+			GER = {
+				add_to_variable = {
+					var = Germany_Rhineland_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Austria_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Bavaria_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Saxony_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Brandenburg_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Hannover_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Frankfurt_Unrest
+					value = 10
+				}
+	
+				add_to_variable = {
+					var = Germany_Elsass_Unrest
+					value = 10
+				}
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_0
+				add_idea = PB_GER_Political_Violence_Red
+			}	
 	}	
 }
 country_event = {		#ElizabethDownfall
@@ -3364,11 +4835,11 @@ country_event = {		#TalkingwithFerdinand
 		    set_capital = 4
             add_victory_points = {
 				province = 11666
-				value = 10
+				value = 5
 			}
 			add_victory_points = {
 				province = 6488
-				value = -10
+				value = -5
 			}
 			custom_effect_tooltip = GER_Frankfurt_Unrest_Increase_Ten_tt
 			custom_effect_tooltip = GER_Austria_Unrest_Reduce_Ten_tt
@@ -3387,6 +4858,103 @@ country_event = {		#TalkingwithFerdinand
 				popularity = 0.02
 			}
         
+	}
+}
+
+country_event = {		#PoliticalViolenceSaxony
+	id = germany.63
+	title = germany.63.t
+	desc = germany.63.d
+	picture = GFX_report_Germany_Bomb_House
+
+	is_triggered_only = yes
+    
+	fire_only_once = yes
+
+	option = { 
+		name = germany.63.a
+        custom_effect_tooltip = GER_Rhineland_Unrest_Decrease_Five_tt
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = -5
+		}
+
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red
+				add_idea = PB_GER_Political_Violence_Red_1
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red_1
+				add_idea = PB_GER_Political_Violence_Red_2
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
+			}
+			remove_idea = PB_GER_Political_Violence_Red_2
+		}
+	}
+}
+
+country_event = {		#PoliticalViolenceVienna
+	id = germany.64
+	title = germany.64.t
+	desc = germany.64.d
+	picture = GFX_report_Germany_Police_Raid
+
+	is_triggered_only = yes
+    
+	fire_only_once = yes
+
+	option = { 
+		name = germany.64.a
+		add_manpower = 34
+		4 = {
+			damage_building = {
+				type = infrastructure
+				damage = 1
+			}
+		}
+        custom_effect_tooltip = GER_Rhineland_Unrest_Increase_Five_tt
+		add_to_variable = {
+			var = Germany_Rhineland_Unrest
+			value = 5
+		}
+
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red
+				add_idea = PB_GER_Political_Violence_Red_1
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red_1
+			}
+			swap_ideas = {
+				remove_idea = PB_GER_Political_Violence_Red_1
+				add_idea = PB_GER_Political_Violence_Red_2
+			}
+		}
+		if = {
+			limit = {
+				has_idea = PB_GER_Political_Violence_Red
+			}
+			remove_idea = PB_GER_Political_Violence_Red_2
+		}
 	}
 }
 
@@ -4008,7 +5576,7 @@ country_event = {		#GermanyaskstopurchaseAshanti-Britian Perspective
 	id = germany.152
 	title = germany.152.t
 	desc = germany.152.d
-	picture = GFX_report_PB_Guns_01
+	picture = GFX_report_PB_Conference
 
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -4043,7 +5611,7 @@ country_event = {		#GermanyaskstopurchaseAshanti-Accept
 	id = germany.153
 	title = germany.153.t
 	desc = germany.153.d
-	picture = GFX_report_PB_Guns_01
+	picture = GFX_report_PB_Generic_Naval_Event
 
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -4052,6 +5620,7 @@ country_event = {		#GermanyaskstopurchaseAshanti-Accept
 	option = { 
 		name = germany.153.a #Nice
 		transfer_state = 839
+		add_stability = 0.01
 		add_timed_idea = {
 			idea = PB_GER_Ashanti_Purchase
 			days = 360
@@ -4059,11 +5628,11 @@ country_event = {		#GermanyaskstopurchaseAshanti-Accept
 	}	
 }
 
-country_event = {		#GermanyaskstopurchaseAshanti-Accept
+country_event = {		#GermanyaskstopurchaseAshanti-Decline
 	id = germany.154
 	title = germany.154.t
 	desc = germany.154.d
-	picture = GFX_report_PB_Guns_01
+	picture = GFX_report_PB_Generic_Spy_Radio
 
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -4121,7 +5690,7 @@ country_event = {		#GermanyPerspectiveoftheColonies1
 	id = germany.180
 	title = germany.180.t
 	desc = germany.180.d
-	picture = GFX_report_PB_Guns_01
+	picture = GFX_report_GER_Africa
 
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -4130,7 +5699,7 @@ country_event = {		#GermanyPerspectiveoftheColonies1
 	option = { 
 		name = germany.180.a #Yeah Sure
 		DAF = {
-			add_stability = 1
+			add_stability = 0.01
 		}	
 		add_political_power = 10
 		GER = {
@@ -4143,7 +5712,7 @@ country_event = {		#GermanyPerspectiveoftheColonies1
 	id = germany.181
 	title = germany.181.t
 	desc = germany.181.d
-	picture = GFX_report_PB_Guns_01
+	picture = GFX_report_GER_Pacific
 
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -4152,7 +5721,7 @@ country_event = {		#GermanyPerspectiveoftheColonies1
 	option = { 
 		name = germany.181.a #Yeah Sure
 		DAS = {
-			add_stability = 1
+			add_stability = 0.01
 		}	
 		add_political_power = 10
 		GER = {
@@ -4165,7 +5734,7 @@ country_event = {		#GermanyPerspectiveoftheColonies1
 	id = germany.182
 	title = germany.182.t
 	desc = germany.182.d
-	picture = GFX_report_PB_Guns_01
+	picture = GFX_report_PB_Conference2
 
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -4180,6 +5749,81 @@ country_event = {		#GermanyPerspectiveoftheColonies1
 		name = germany.182.b #Pacific
 		set_country_flag = PB_GER_Donitz_Chosen
 		
+	}	
+}
+
+country_event = {		#Lyon Trials
+	id = germany.183
+	title = germany.183.t
+	desc = germany.183.d
+	picture = GFX_report_PB_Conference2
+
+	fire_only_once = yes
+	is_triggered_only = yes
+
+
+	option = { 
+		name = germany.183.a 
+		add_stability = 0.1
+		hidden_effect = {
+			news_event = {
+                id = PBNews.171
+                days = 1
+            }
+		}
+	}	
+}
+
+country_event = {		#The Italian Dispute
+	id = germany.184
+	title = germany.184.t
+	desc = germany.184.d
+	picture = GFX_report_PB_Generic_Spy_Event
+
+	fire_only_once = yes
+	is_triggered_only = yes
+
+
+	option = { 
+		name = germany.184.a 
+		
+		hidden_effect = {
+			ITA = {
+				transfer_state = 39
+				add_state_core = 39
+			}
+			GER = {
+				remove_state_core = 39
+			}
+			ITA = {
+				transfer_state = 923
+				add_state_core = 923
+			}
+			GER = {
+				remove_state_core = 923
+			}
+			ITA = {
+				transfer_state = 736
+				add_state_core = 736
+			}
+			GER = {
+				remove_state_core = 736
+			}
+		}
+
+	}	
+
+	option = { 
+		name = germany.184.b
+    
+		hidden_effect = {
+			ITA = {
+				add_opinion_modifier = {
+					target = GER
+					modifier = large_decrease
+				}
+			}
+		}
 	}	
 }
 
