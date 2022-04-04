@@ -1,3 +1,23 @@
+ENG_prepare_for_war = {
+	allowed = { 
+		original_tag = ENG
+	}
+	enable = {
+		AND =  {
+			date > 1936.1.1
+			date < 1937.2.1
+		}
+
+		always = yes
+	}
+	abort_when_not_enabled = yes
+	
+	ai_strategy = {
+        type = force_build_armies
+        value = 25
+    }
+}
+
 PAX_rule_the_waves = {
 	allowed = { 
 		OR = {
@@ -69,6 +89,7 @@ PAX_WW2_AI_priority= {
 			has_war_with = FRA
 		}
 	}
+	abort_when_not_enabled = yes
 
 	ai_strategy = { type = area_priority id = europe value = 200 }
 	ai_strategy = { type = area_priority id = north_america value = -200 }
@@ -83,11 +104,18 @@ PAX_WW2_AI_priority= {
 	ai_strategy = { type = area_priority id = china_coast value = -200 }
 }
 
-ENG_spend_your_pp_for_fucksake = {
-	allowed = { original_tag = ENG }
+PAX_spend_your_pp_for_fucksake = {
+	allowed = { 
+		OR = {
+			original_tag = ENG 
+		    original_tag = GER 
+		    original_tag = FRA 
+		}
+	}
 	enable = {
 		has_political_power > 200
 	}
+	abort_when_not_enabled = yes
 	
 	ai_strategy = {
 		type = pp_spend_amount
@@ -98,24 +126,43 @@ ENG_spend_your_pp_for_fucksake = {
 	ai_strategy = {
 		type = pp_spend_amount
 		id = decision
-		value = 800
+		value = 500
 	}
 }
 
-ENG_stop__naval_invading_these nations = {
-	allowed = { original_tag = ENG }
-	enable = {
-		ENG = {
-			has_war_with = PRS
+ENG_stop_naval_invading_these_nations = {
+	allowed = { 
+		OR = {
+			original_tag = ENG
+			is_in_faction_with = ENG
 		}
 	}
+	enable = {
+		ENG = {
+			OR = {
+				has_war_with = PRS
+				has_war_with = FRA
+				has_war_with = RUS
+				has_war_with = FIN
+				has_war_with = MGE
+				has_war_with = SWE
+				has_war_with = NOR
+				has_war_with = SCH
+				has_war_with = IST
+				has_war_with = BAL
+			}
+		}
+		NOT = {
+			date > 1939.3.1
+		}
+	}
+	abort_when_not_enabled = yes
 	
 	ai_strategy = {
 		type = invade
 		id = "PRS"			
 		value = -2000
 	}
-
 	ai_strategy = {
 		type = invade
 		id = "RUS"			
@@ -134,6 +181,31 @@ ENG_stop__naval_invading_these nations = {
 	ai_strategy = {
 		type = invade
 		id = "DDR"			
+		value = -2000
+	}
+	ai_strategy = {
+		type = invade
+		id = "FIN"			
+		value = -2000
+	}
+	ai_strategy = {
+		type = invade
+		id = "SWE"			
+		value = -2000
+	}
+	ai_strategy = {
+		type = invade
+		id = "SCH"			
+		value = -2000
+	}
+	ai_strategy = {
+		type = invade
+		id = "NOR"			
+		value = -2000
+	}
+	ai_strategy = {
+		type = invade
+		id = "FRA"			
 		value = -2000
 	}
 }
@@ -470,7 +542,7 @@ AME_assist_ENG = {
 	}
 }
 
-ENG_invades_France_and_Italy = {
+ENG_invades_France_and_Italy = { ## After 1939 the Imperial Powers should invade the shit out of the Pacte
 	allowed = { 
 		original_tag = ENG 
 		original_tag = AME 
@@ -487,16 +559,31 @@ ENG_invades_France_and_Italy = {
 
 	ai_strategy = {
 		type = naval_invasion_focus
+		value = 2000
+	}
+
+	ai_strategy = {
+		type = invade
+		id = "FRA"			
+		value = 2000
+	}
+
+	ai_strategy = {
+		type = conquer
+		id = "FRA"
 		value = 100
 	}
 
 	ai_strategy = {
-		type = front_control
+		type = invade
+		id = "IST"			
+		value = 2000
+	}
 
-		area = mainland_europe
-
-		ordertype = invasion
-		execute_order = no
+	ai_strategy = {
+		type = conquer
+		id = "IST"
+		value = 100
 	}
 }
 
@@ -785,220 +872,3 @@ ENG_unit_production = {
 }
 
 
-# early invasions set to be less than later on, allows the AI to not let the invasion army to be wiped
-careful_with_early_invasions = {
-	enable = {
-		date < 1938.1.1
-
-		if = {
-			limit = { NOT = { has_dlc = "Man the Guns"} }
-			NOT = { has_tech = landing_craft }
-		}
-		else = {
-			NOT = { has_tech = mtg_landing_craft }
-		}
-		
-		OR = {
-			is_in_faction_with = ENG 
-			tag = ENG
-		}
-
-		NOT = {
-			FRA = { 
-				has_war_with = RUS
-			}
-		}
-	}
-	abort = {
-		OR = {
-			has_tech = landing_craft
-			has_tech = mtg_landing_craft
-		}
-		OR = {
-			FRA = { 
-				has_war_with = RUS 
-			}
-			date > 1938.1.1
-		}
-	}
-
-	ai_strategy = {
-		type = invade
-		id = "ITA"			
-		value = -100
-	}
-
-	ai_strategy = {
-		type = invade
-		id = "FRA"			
-		value = -300
-	}
-
-	ai_strategy = {
-		type = invade
-		id = "RUS"			
-		value = -300
-	}
-
-	ai_strategy = {
-		type = invade
-		id = "SPR"
-		value = -300
-	}
-	
-	ai_strategy = {
-		type = invade
-		id = "POR"
-		value = -300
-	}
-	
-}	
-
-
-# early invasions set to be less than later on, allows the AI to not let the invasion army to be wiped
-protect_scandinavian_interests = {
-	enable = {
-		GER = { has_capitulated = yes } 
-		GER = { has_war_with = FRA }
-		has_war_with = FRA
-		tag = ENG
-	}
-	abort = {
-		DEN = { has_capitulated = yes } 
-		NOR = { surrender_progress > 0.5 }		
-	}
-
-	ai_strategy = {
-		type = protect
-		id = "NOR"			
-		value = 400
-	}
-
-	ai_strategy = {
-		type = protect
-		id = "DEN"			
-		value = 100
-	}
-
-	ai_strategy = {
-		type = area_priority
-		id = scandinavia
-		value = 250
-	}
-
-	ai_strategy = {
-		type = naval_avoid_region
-		id = 16
-		value = -200
-	}
-
-	ai_strategy = {
-		type = naval_avoid_region
-		id = 174
-		value = -300
-	}
-
-	ai_strategy = {
-		type = naval_avoid_region
-		id = 173
-		value = -100
-	}
-
-	ai_strategy = {
-		type = naval_avoid_region
-		id = 207
-		value = -100
-	}
-
-	ai_strategy = {
-		type = naval_avoid_region
-		id = 42
-		value = 500
-	}
-
-	ai_strategy = {
-		type = naval_avoid_region
-		id = 47
-		value = 500
-	}
-}	
-
-# Ireland got invaded or has given access to a British enemy
-emerald_isles_crumble = {
-	enable = {
-		tag = ENG
-		OR = { 
-		IRE = { surrender_progress > 0.05 }
-		any_enemy_country = {
-		controls_state = 135 
-		}
-		any_enemy_country = {
-		controls_state = 134
-		}
-		any_enemy_country = {
-		controls_state = 113
-		}	
-		any_enemy_country = {
-		IRE = { is_subject_of = ROOT }
-		}	
-		any_enemy_country = {
-		IRE = { is_in_faction_with = ROOT }
-		}	
-		}
-	}
-	abort = {
-		OR = { 
-		IRE = { has_capitulated = yes } 
-		IRE = { surrender_progress > 0.5 }
-		ENG = { surrender_progress > 0.5 }	
-		}	
-	}
-
-	ai_strategy = {
-		type = protect
-		id = "IRE"			
-		value = 200
-	}
-
-	ai_strategy = {
-		type = naval_avoid_region
-		id = 43
-		value = -600
-	}
-
-	ai_strategy = {
-		type = invade
-		id = "IRE"
-		value = 100
-	}
-
-	ai_strategy = {
-		type = invade
-		id = "FRA"
-		value = -200
-	}
-
-	ai_strategy = {
-		type = invade
-		id = "RUS"
-		value = -200
-	}
-
-
-}	
-
-ENG_lifeline_of_the_empire = {
-	allowed = { original_tag = ENG }
-	enable = {
-		always = yes
-	}
-	abort = {
-		always = no
-	}
-
-	ai_strategy = {
-		type = area_priority
-		id = suez
-		value = 40 # this is extra on top of 50 base
-	}
-}
