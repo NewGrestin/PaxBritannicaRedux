@@ -566,6 +566,9 @@ on_actions = {
 					    ROOT = {
 						    original_tag = ICA
 					    }
+						NOT = {
+							has_global_flag = PB_Ulster_Crisis_War
+						}
 				    }
 
 				    IRE = {
@@ -576,13 +579,72 @@ on_actions = {
 					    }
 				    }
 					ENG = {
-						annex_country = {
+						country_event = {
+							id = britain.63
+							days = 1
+						}
+					}
+				    set_global_flag = skip_default_capitulation
+			    }	
+
+			    if = { # Ulster Crisis War - Loyalist Victory
+				    limit = {
+					    FROM = {
+						    OR = {
+							    original_tag = ENG
+							    original_tag = ULS
+								is_in_faction_with = ENG
+						    }
+					    }
+					    ROOT = {
+						    original_tag = ICA
+					    }
+						has_global_flag = PB_Ulster_Crisis_War
+				    }
+
+				    ENG = {
+					    white_peace = ROOT
+					    annex_country = {
+					        target = ROOT
+						    transfer_troops = no
+					    }
+				    }
+					ENG = {
+					    annex_country = {
 					        target = ULS
 						    transfer_troops = no
 					    }
 					}
+					clr_global_flag = PB_Ulster_Crisis_War
+
 				    set_global_flag = skip_default_capitulation
-			    }	
+			    }
+
+			    if = { # Ulster Crisis War - Irish Victory
+				    limit = {
+					    FROM = {
+							original_tag = ICA
+					    }
+					    ROOT = {
+						    OR = {
+							    original_tag = ENG
+							    original_tag = ULS
+							}
+					    }
+						has_global_flag = PB_Ulster_Crisis_War
+				    }
+
+				    ICA = {
+					    white_peace = ROOT
+					    annex_country = {
+					        target = ULS
+						    transfer_troops = no
+					    }
+				    }
+					clr_global_flag = PB_Ulster_Crisis_War
+
+				    set_global_flag = skip_default_capitulation
+			    }
 
 			    if = { # Chinese Civil War - Qing Victory
 				    limit = {
@@ -1377,42 +1439,60 @@ on_actions = {
 		        	set_global_flag = skip_default_capitulation
 		        }
         
-		        if = { #Second Great War - League Victory
+		        if = { #Second Great War - League Victory in France
 		        	limit = {
 		        		FROM = {
 		        			OR = {
-		        				has_global_flag = PB_Great_War_2_Fired
 		        				original_tag = ENG
 		        				is_in_faction_with = ENG
 		        			}
 		        		}
-		        		OR = {
-		        			ROOT = {
-		        				has_global_flag = PB_Great_War_2_Fired
-		        				original_tag = FRA
-		        			}
-		        		}
-		        		ROOT = {
-		        			has_global_flag = PB_Great_War_2_Fired
-		        			original_tag = RUS
-		        		}
+						ROOT = {
+							original_tag = FRA
+						}
 		        	}
-        
+					FRA = {
+						leave_faction = yes
+					}
 		        	every_country = {
 		        		limit = {
-		        			OR = {
-		        				has_war_with = FRA
-		        				has_war_with = RUS
-		        			}
+		        			has_war_with = FRA
 		        		}
 		        		white_peace = FRA
-		        		white_peace = RUS
 		        	}
 		        	ENG = {
 		        		country_event = { id = waroutcome.5 days = 5 } 
 		        	}
 		        	set_global_flag = skip_default_capitulation
 		        }
+
+		        if = { #Second Great War - League Victory in Russia - Fallback in case Russia is fully capitulated before taking decision
+		        	limit = {
+		        		FROM = {
+		        			OR = {
+		        				original_tag = ENG
+		        				is_in_faction_with = ENG
+		        			}
+		        		}
+						ROOT = {
+							original_tag = RUS
+						}
+		        	}
+					RUS = {
+						leave_faction = yes
+					}
+		        	every_country = {
+		        		limit = {
+		        			has_war_with = RUS
+		        		}
+		        		white_peace = RUS
+		        	}
+		        	ENG = {
+		        		country_event = { id = waroutcome.7 days = 1 } 
+		        	}
+		        	set_global_flag = skip_default_capitulation
+		        }
+        
         
 		        if = { #Fall Of Britain
 		        	limit = {
@@ -2135,6 +2215,32 @@ on_actions = {
 		        		} 
 		        	}
         
+		        	set_global_flag = skip_default_capitulation
+		        }
+
+		        if = { # Russian Finland Defeated
+		        	limit = {
+		        		FROM = {
+		        			OR = {
+		        				original_tag = ENG
+		        				is_in_faction_with = ENG
+		        			}
+		        		}
+		        		ROOT = {
+		        			original_tag = FIN
+		        		}
+		        	}
+        
+					FFI = {
+						annex_country = {
+							target = FIN
+						}	
+					}
+
+					ENG = {
+						add_to_faction = FFI
+					}
+
 		        	set_global_flag = skip_default_capitulation
 		        }
 		        #Capitulation block
