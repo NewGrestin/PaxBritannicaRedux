@@ -64,6 +64,136 @@ on_actions = {
 
 			    # normal peace stuff
 
+				if = { # Failsafe Event for the league beating Turkey
+				    limit = {
+					    FROM = {
+						    OR = {
+		        				original_tag = ENG
+		        				is_in_faction_with = ENG
+		        			}
+					    }
+					    ROOT = {
+						    original_tag = TUR
+					    }
+				    }
+
+				    ENG = {
+					    white_peace = ROOT
+				    }
+
+					if = {
+	                    limit = {
+		                    OR = {
+			                    has_dlc = "Together for Victory"
+			                    has_dlc = "Man the Guns"
+		                    }
+				            TUR = {
+					            is_subject_of = RUS
+				            }
+	                    }
+
+			            RUS = {
+				            set_autonomy = {
+                                target = TUR
+                                autonomy_state = autonomy_free
+                                end_wars = yes
+                                end_civil_wars = yes
+                            }
+			            }
+			            else = {
+				            RUS = {
+					            end_puppet = TUR
+				            }
+			            }
+		            }
+
+					TUR = {
+			            drop_cosmetic_tag = yes
+			            set_politics = {
+	                        ruling_party = ds
+                            elections_allowed = no
+                            last_election = "1935.12.17"
+                        }
+		            }
+
+		            if = {
+			            limit = {
+				            TUR = {
+					            is_in_faction_with = RUS
+				            }
+			            }
+			            leave_faction = yes
+		            }
+
+		            ENG = { add_to_faction = TUR }
+
+				    set_global_flag = skip_default_capitulation
+			    }
+
+				if = { # Russia beats the Turkish revolt
+				    limit = {
+					    FROM = {
+						    OR = {
+		        				original_tag = RUS
+		        				is_in_faction_with = RUS
+		        			}
+					    }
+					    ROOT = {
+						    original_tag = TUR
+					    }
+				    }
+
+				    RUS = {
+					    white_peace = ROOT
+				    }
+
+					TUR = {
+						leave_faction = yes
+					}
+
+					if = {
+	                    limit = {
+		                    OR = {
+			                    has_dlc = "Together for Victory"
+			                    has_dlc = "Man the Guns"
+		                    }
+	                    }
+
+	                    set_autonomy = {
+	                        target = TUR
+	                        autonomous_state = autonomy_client_state
+	                        freedom_level = 0.50
+                        }
+			            else = {
+				            puppet = TUR
+			            }
+		            }
+
+					TUR = {
+						set_politics = {
+	                        ruling_party = rc
+                            elections_allowed = no
+                            last_election = "1935.12.17"
+                        }
+						kill_country_leader = yes
+						create_country_leader = {
+	                        name = "Fevzi Cakmak"
+	                        desc = "POLITICS_MOHAMMED_ZAHIR_SHAH_DESC"
+	                        picture = Portrait_Fevzi_Cakmak
+	                        expire = "1965.1.1"
+	                        ideology = RC_VARIANT_01
+	                        traits = {
+							}
+                        }
+						drop_cosmetic_tag = yes
+						set_cosmetic_tag = TUR_RUS_PUPPET
+					}
+
+					FRA = { add_to_faction = TUR }
+
+				    set_global_flag = skip_default_capitulation
+			    }
+
 				if = { # Germany invades Serbia
 		        	limit = {
 		        		FROM = {
@@ -1687,46 +1817,51 @@ on_actions = {
 
 						set_country_flag = FRA_ENG_WW2_VICTOR
 		        	}
-					GER = {
-						annex_country = {
-							target = MGE
-							transfer_troops = yes
-						}		
+					if = {
+						limit = {
+							GER = {
+								has_country_flag = GER_IN_EXILE
+							}
+						}
+						GER = {
+						    annex_country = {
+						        target = MGE
+							    transfer_troops = no
+						    }		
 
-						annex_country = {
-							target = GLF
-							transfer_troops = yes
-						}	
+						    annex_country = {
+							    target = GLF
+							    transfer_troops = yes
+						    }	
 						
-						drop_cosmetic_tag = yes
+						    drop_cosmetic_tag = yes
 
-						set_country_flag = FRA_ENG_WW2_VICTOR
+						    remove_ideas = PB_GER_Cheap_Rifles
+						    remove_ideas = PB_GER_Central_African_Bush_War
+						    remove_ideas = PB_GER_Our_Darkest_Hour_7
+						    remove_ideas = PB_GER_Our_Darkest_Hour_6
+						    remove_ideas = PB_GER_Our_Darkest_Hour_5
+						    remove_ideas = PB_GER_Our_Darkest_Hour_4
+						    remove_ideas = PB_GER_Our_Darkest_Hour_3
+						    remove_ideas = PB_GER_Our_Darkest_Hour_2
+						    remove_ideas = PB_GER_Our_Darkest_Hour
 
-						remove_ideas = PB_GER_Cheap_Rifles
-						remove_ideas = PB_GER_Central_African_Bush_War
-						remove_ideas = PB_GER_Our_Darkest_Hour_7
-						remove_ideas = PB_GER_Our_Darkest_Hour_6
-						remove_ideas = PB_GER_Our_Darkest_Hour_5
-						remove_ideas = PB_GER_Our_Darkest_Hour_4
-						remove_ideas = PB_GER_Our_Darkest_Hour_3
-						remove_ideas = PB_GER_Our_Darkest_Hour_2
-						remove_ideas = PB_GER_Our_Darkest_Hour
-
-						transfer_state = 28
-						transfer_state = 42
-						transfer_state = 8
-						transfer_state = 909	
-						transfer_state = 923
-						transfer_state = 39
-						transfer_state = 736
-						transfer_state = 102
-
-						country_event = { id = germany_exile.8 days = 1 }	
+						    transfer_state = 28
+						    transfer_state = 42
+						    transfer_state = 8
+						    transfer_state = 909	
+						    transfer_state = 923
+						    transfer_state = 39
+						    transfer_state = 736
+						    transfer_state = 102
+ 
+						    country_event = { id = germany_exile.8 days = 1 }	
 						
-						set_capital = {
-                            state = 55 
-                            remember_old_capital = no
-                        }
+						    set_capital = {
+                                state = 55 
+                                remember_old_capital = no
+                            }
+					    }
 					}
 					if = {
 			            limit = {
@@ -1772,7 +1907,15 @@ on_actions = {
 					if = {
 						limit = {
 							ENG = {
-								has_war_with = RUS
+								AND = {
+									has_war_with = RUS
+									GER = {
+										NOT = {
+											has_war_with = RUS
+										}
+									}
+
+								}
 							}
 						}	
 						ENG = {
