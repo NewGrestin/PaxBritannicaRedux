@@ -431,16 +431,19 @@ country_event = {		#German Pacific - Philippines Defeat
 		PHI = {
 			has_capitulated = no
 		}
-		DAS = {
-			NOT = {
-				controls_state = 623
-				controls_state = 327
-				controls_state = 624
-				controls_state = 628
-				controls_state = 626
-				controls_state = 625
-				controls_state = 627
+		OR = {
+			DAS = {
+				NOT = {
+					controls_state = 623
+					controls_state = 327
+					controls_state = 624
+					controls_state = 628
+					controls_state = 626
+					controls_state = 625
+					controls_state = 627
+				}
 			}
+			date > 1934.01.01
 		}
 	}
 
@@ -1902,5 +1905,278 @@ country_event = {		#League Mandate Spain - funny monarchy moment
 				}
 			}
 		}
+	}
+}
+
+country_event = {		#German Pacific - Philippines Withdrawal WW2
+	id = waroutcome.16
+	title = waroutcome.16.t
+	desc = waroutcome.16.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	trigger = {
+		tag = DAS
+		has_war_with = PHI
+		GER = {
+			OR = {
+				has_war_with = FRA
+				has_war_with = RUS
+			}
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	fire_only_once = yes
+
+	option = { #Offer peace to the Phillippines
+		name = waroutcome.16.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		add_political_power = -150
+
+		add_stability = -0.1
+
+		PHI = {
+			save_global_event_target_as = winning_country
+
+			transfer_state = 627
+			transfer_state = 624
+			transfer_state = 625
+			transfer_state = 626
+			transfer_state = 628
+
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = PHI_Free_Independent
+		}
+
+		DAS = {
+			white_peace = PHI
+			save_global_event_target_as = losing_country
+			set_country_flag = DAS_PHI_Victory
+
+			remove_state_core = 627
+			remove_state_core = 624
+			remove_state_core = 625
+			remove_state_core = 626
+			remove_state_core = 628
+		}
+
+		if = {
+			limit = {
+				GER = {
+					has_war_with = PHI
+				}
+			}
+			GER = {
+				white_peace = PHI
+			}
+		}
+
+		set_global_flag = war_won
+		set_global_flag = show_peace_popup_alert
+	}
+}
+
+country_event = {		#British Far East - Vietnam Withdrawal
+	id = waroutcome.17
+	title = waroutcome.17.t
+	desc = waroutcome.17.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	trigger = {
+		tag = BFE
+		has_war_with = VIN
+		VIN = {
+			has_capitulated = no
+		}
+		OR = {
+			BFE = {
+				NOT = {
+					controls_state = 840
+					controls_state = 671
+					controls_state = 286
+				}
+			}
+			date > 1934.01.01
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	fire_only_once = yes
+
+	option = { #Offer peace to the Vietnamese
+		name = waroutcome.17.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		news_event = {
+			id = PBNews.32
+		}
+
+		add_political_power = -150
+
+		add_stability = -0.1
+
+		VIN = {
+			save_global_event_target_as = winning_country
+
+			transfer_state = 840
+			transfer_state = 671
+			transfer_state = 286
+
+			drop_cosmetic_tag = yes
+		}
+
+		BFE = {
+			white_peace = VIN
+			save_global_event_target_as = losing_country
+			set_country_flag = BFE_Vietnamese Victory
+
+			remove_state_core = 840
+			remove_state_core = 671
+			remove_state_core = 286
+		}
+
+		if = {
+			limit = {
+				ENG = {
+					has_war_with = VIN
+				}
+			}
+			ENG = {
+				white_peace = VIN
+			}
+		}
+
+		set_global_flag = war_won
+		set_global_flag = show_peace_popup_alert
+	}
+
+	option = { #We will not abandon Vietnam
+		name = waroutcome.17.b
+
+		ai_chance = {
+			factor = 0
+		}
+
+		add_political_power = -50
+
+		add_war_support = -0.1
+	}
+}
+
+country_event = {		#British Far East - Vietnam Victory Plan
+	id = waroutcome.18
+	title = waroutcome.18.t
+	desc = waroutcome.18.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	is_triggered_only = yes
+
+	option = { #Release Vietnam and Cambodia
+		name = waroutcome.18.a
+
+		ai_chance = {
+			factor = 100
+		}
+
+		VIN = {
+			transfer_state = 840
+			transfer_state = 671
+			transfer_state = 286
+
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = VIN_Client_Empire
+		}
+
+		CAM = {
+			transfer_state = 741
+		}
+
+		BFE = {
+			remove_state_core = 840
+			remove_state_core = 671
+			remove_state_core = 286
+			remove_state_core = 741
+		}
+
+		ENG = {
+			set_autonomy = {
+				target = VIN
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+
+			set_autonomy = {
+				target = CAM
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+		}
+
+		VIN = {
+			remove_idea = PB_Idea_VIN_Rebellion
+
+			set_politics = {
+				ruling_party = ds
+				last_election = "1936.1.1"
+				election_frequency = 48
+				elections_allowed = no
+			}
+
+			set_popularities = {
+				ni = 0
+				ds = 80
+				rc = 20
+				cn = 20
+				lb = 0
+				an = 0
+				ss = 0
+				jc = 0
+			}
+		}
+
+		CAM = {
+			set_politics = {
+				ruling_party = cn
+				last_election = "1936.1.1"
+				election_frequency = 48
+				elections_allowed = no
+			}
+
+			set_popularities = {
+				ni = 0
+				ds = 0
+				rc = 10
+				cn = 60
+				lb = 10
+				an = 10
+				ss = 10
+				jc = 0
+			}
+		}
+	}
+
+	option = { #No Change
+		name = waroutcome.18.b
+
+		ai_chance = {
+			factor = 0
+		}
+
+		add_political_power = -50
+
+		add_war_support = -0.1
 	}
 }
