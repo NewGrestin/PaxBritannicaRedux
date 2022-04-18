@@ -5,6 +5,7 @@ tags={
 	"Events"
 	"Gameplay"
 }
+
 replace_path = "common/ai_equipment"
 replace_path = "common/ai_focuses"
 replace_path = "common/ai_strategy"
@@ -38,5 +39,6 @@ replace_path = "map/supplyareas"
 replace_path = "music"
 replace_path = "tests"
 replace_path = "gfx/fonts"
+
 picture="thumbnail.png"
 supported_version="1.11.*"
