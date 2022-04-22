@@ -36,7 +36,6 @@ replace_path = "history/units"
 replace_path = "history/general"
 replace_path = "map/strategicregions"
 replace_path = "map/supplyareas"
-replace_path = "music"
 replace_path = "tests"
 replace_path = "gfx/fonts"
 
