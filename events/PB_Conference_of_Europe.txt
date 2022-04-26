@@ -4,6 +4,7 @@
 
 add_namespace = COE
 add_namespace = COEDEXTER
+add_namespace = COEGOV
 
 country_event = {
 	id = COE.1
@@ -185,6 +186,8 @@ country_event = {
 		ai_chance = {
 			factor = 1
         }
+	WLA = { transfer_state = 29 }
+
 	GER = { 
 	annex_country = { target = FRA } 
 	set_cosmetic_tag = GER_FRANCIA 
@@ -194,6 +197,48 @@ country_event = {
 			limit = { is_core_of = FRA }
 			add_core_of = GER
 		}	
+	}
+
+	if = { 
+	limit = { has_global_flag = PB_COE_FRANCIA_LARGE_OCT }
+    		every_state = {
+		limit = { check_variable = { culture_id = 8 } }
+		add_core_of = OCT
+		}
+		release = OCT
+	}
+
+	if = { 
+	limit = { has_global_flag = PB_COE_FRANCIA_SMALL_OCT }
+		OCT = { add_state_core = 557 add_state_core = 31 add_state_core = 22 }
+		release = OCT 
+	}
+
+	if = { 
+	limit = { has_global_flag = PB_COE_FRANCIA_NORMANDY }
+    		15 = { add_core_of = NRM }
+		NRM = { transfer_state = 15 }
+		NRM = { add_ideas = PB_Constitutionally_Enshrined_Neutrality }
+		country_event = { id = COEGOV.1 days = 0 }
+	}
+
+	if = { 
+	limit = { has_global_flag = PB_COE_ISRAEL_IN_FRANCE }
+
+	GER = { release = ISR }
+
+	ENG = { add_to_faction = ISR }
+	}
+
+	if = { 
+	limit = { has_global_flag = PB_COE_FRANCIA_OCT_TWO_SEAS }
+	OCT = { transfer_state = 19 } 
+	
+	}
+
+	if = { 
+	limit = { ISR = { owns_state = 18 } }
+	18 = { set_demilitarized_zone = no }
 	}
     }
 }
@@ -234,6 +279,84 @@ country_event = {
 		name = COEDEXTER.1.a
 		ai_chance = {
 			factor = 1
-        }
+        	}
 
     }
+}
+
+################Setting up new governments
+#Establishing Normandy
+country_event = {
+	id = COEGOV.1
+	title = COEGOV.1.t
+	desc = COEGOV.1.d
+	picture = GFX_report_Palace_Het_Loo
+ 
+    is_triggered_only = yes
+
+	option = { #A Normandian Kingdom
+		name = COEGOV.1.a
+		ai_chance = {
+			factor = 1
+        	}
+		NRM = { add_ideas = { PB_Parliamentary_Monarchy } }
+		country_event = { id = COEGOV.2 days = 0 }
+    }
+
+	option = { #A Normandian Republic
+		name = COEGOV.1.b
+		ai_chance = {
+			factor = 1
+        	}
+		NRM = { add_ideas = { PB_Parliamentary_Republic } 
+set_cosmetic_tag = NRM_REPUBLIC }
+    }
+}
+
+#Establishing Normandy - The Crown of Normandy
+country_event = {
+	id = COEGOV.2
+	title = COEGOV.2.t
+	desc = COEGOV.2.d
+	picture = GFX_report_Palace_Het_Loo
+ 
+    is_triggered_only = yes
+
+	option = { #A British King
+		name = COEGOV.2.a
+		ai_chance = {
+			factor = 1
+        	}
+		NRM = { add_stability = 0.02 }
+    }
+
+	option = { #A German king
+		name = COEGOV.2.b
+		ai_chance = {
+			factor = 1
+        	}
+NRM = {
+add_ideas = { PB_Prussian_Constitutionalism }
+set_cosmetic_tag = NRM_GERMAN
+if = {
+limit = { GER = { NOT = { has_leader = "Ferdinand II" } } }
+create_country_leader = {
+	name = "Stephanie I"
+	desc = "NA_DESC"
+	picture = "gfx/leaders/NRM/Portrait_NRM_Stephanie.dds"
+	ideology = CN_VARIANT_01
+}
+}
+else_if = {
+limit = { GER = { has_leader = "Ferdinand II" } }
+create_country_leader = {
+	name = "Ernst I"
+	desc = "NA_DESC"
+	picture = "gfx/leaders/NRM/Portrait_NRM_Ernst.dds"
+	ideology = CN_VARIANT_01
+}
+}
+}
+
+    }
+}
