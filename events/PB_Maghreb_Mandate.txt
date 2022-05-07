@@ -8,11 +8,16 @@ country_event = {		#Collapse of the Mandate
 	id = magman.1
 	title = magman.1.t
 	desc = magman.1.d
-	picture = GFX_report_event_Generic_Violent_Coup
+	picture = GFX_report_PB_Generic_Political_Event
 
 	trigger = {
 		tag = INA
 		has_stability < 0.2
+		INA = {
+			NOT = {
+				has_country_flag = PB_Algeria_War_Fired
+			}
+		}
 	}
 
 	mean_time_to_happen = {
@@ -24,8 +29,16 @@ country_event = {		#Collapse of the Mandate
 	option = {
 		name = magman.1.a
 
+		INA = {
+			set_country_flag = PB_Algeria_War_Fired
+		}
+
 		ALG = {
-			transfer_state = 838
+			transfer_state = 460
+			add_state_core = 460
+
+			transfer_state = 459
+			add_state_core = 459
 
 			load_oob = "ALG_Uprising"
 
@@ -38,17 +51,21 @@ country_event = {		#Collapse of the Mandate
 
 		FRG = {
 			transfer_state = 837
+			add_state_core = 837
+
+			transfer_state = 838
+			add_state_core = 838
 
 			load_oob = "FRG_Uprising"
 		}
 
-		news_event = { 
-			id = PBNews.38
-			days = 1 
-		} 
-
 		BAF = { 
 			country_event = { id = magman.2 days = 5 }
+
+			news_event = { 
+			    id = PBNews.38
+			    days = 1 
+		    } 
 		}
 	}
 }
@@ -57,14 +74,36 @@ country_event = {		#Collapse of the Mandate - British Africa Response
 	id = magman.2
 	title = magman.2.t
 	desc = magman.2.d
-	picture = GFX_report_event_Generic_Violent_Coup
+	picture = GFX_report_PB_Generic_Political_Event
 
 	is_triggered_only = yes
 
 	option = {
 		name = magman.2.a
 
+		FRA = {
+			country_event = { id = magman.4 days = 1 }
+		}
+
+		ALG = {
+			give_military_access = FRG
+			diplomatic_relation = {
+                country = FRG
+                relation = non_aggression_pact
+                active = yes
+            }
+		}
+
+		FRG = {
+			give_military_access = ALG
+		}
+
 		BAF = {
+
+			set_global_flag = PB_Algeria_War
+
+			load_oob = "BAF_Emergency_Militias"
+			
 			declare_war_on = {
 				target = ALG
 				type = annex_everything
@@ -76,6 +115,134 @@ country_event = {		#Collapse of the Mandate - British Africa Response
 			}
 
 			add_ideas = ENG_Algiers_Expedition
+		}
+	}
+}
+
+country_event = {		#Oran - Algeria War
+	id = magman.3
+	title = magman.3.t
+	desc = magman.3.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	is_triggered_only = yes
+
+	option = {
+		name = magman.3.a
+
+		FRG = {
+			diplomatic_relation = {
+                country = ALG
+                relation = military_access
+                active = no
+            }
+		}
+		ALG = {		
+			diplomatic_relation = {
+                country = FRG
+                relation = non_aggression_pact
+                active = no
+            }
+			diplomatic_relation = {
+                country = FRG
+                relation = military_access
+                active = no
+            }
+			declare_war_on = {
+				target = FRG
+				type = annex_everything
+			}
+		}
+	}
+}
+
+country_event = {		#Event informing France to help Oran
+	id = magman.4
+	title = magman.4.t
+	desc = magman.4.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	is_triggered_only = yes
+
+	option = {
+		name = magman.4.a
+
+		custom_effect_tooltip = PB_Algeria_Uprising_tt
+	}
+}
+
+country_event = {		#Oran request French annexation
+	id = magman.5
+	title = magman.5.t
+	desc = magman.5.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	is_triggered_only = yes
+
+	option = {
+		name = magman.5.a
+
+		FRA = {
+			annex_country = {
+			    target = FRG
+			    transfer_troops = yes
+			}
+			create_field_marshal = {
+	            name = "André Zeller"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Andre_Zeller.dds"
+	            traits = {
+		            war_hero 
+	            }
+	            skill = 3
+	            attack_skill = 3
+	            defense_skill = 2
+	            planning_skill = 2
+	            logistics_skill = 4
+            }
+
+            create_corps_commander = {
+	            name = "Fernand Gambiez"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Fernand_Gambiez.dds"
+	            traits = {
+	               	trait_engineer
+		            media_personality
+	            }
+	            skill = 3
+	            attack_skill = 4
+	            defense_skill = 2
+	            planning_skill = 1
+	            logistics_skill = 1
+            }
+
+            create_corps_commander = {
+	            name = "Raoul Salan"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Raoul_Salan.dds"
+	            traits = {
+		            infantry_officer
+	            }
+	            skill = 2
+	            attack_skill = 2
+	            defense_skill = 3
+	            planning_skill = 1
+	            logistics_skill = 1
+            }
+
+            create_corps_commander = {
+                name = "Edmond Jouhaud"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Edmond_Jouhaud.dds"
+	            traits = {
+		            commando
+	            }
+	            skill = 2
+	            attack_skill = 1
+	            defense_skill = 2
+	            planning_skill = 4
+	            logistics_skill = 2
+            }
 		}
 	}
 }
