@@ -2,6 +2,8 @@
 
 oob = "ENG_1933"
 
+starting_train_buffer = 2
+
 if = {
 	limit = {
 		has_dlc = "Man the Guns"
@@ -10,6 +12,39 @@ if = {
 	else = {
 		set_naval_oob = "ENG_1933_Naval_Legacy"
 	}
+}
+
+add_dynamic_modifier = { 
+	modifier = PB_Automation_Crisis_Dynamic_Modifier 
+}
+
+add_to_variable = {
+	var = PB_AC_stability_factor
+	value = 0.05
+}
+add_to_variable = {
+	var = PB_AC_Research_Speed_Factor
+	value = 0.05
+}
+add_to_variable = {
+	var = PB_AC_Consumer_Goods
+	value = 0.04
+}
+add_to_variable = {
+	var = PB_AC_ProductionMaxEfficiency
+	value = 0.06
+}
+add_to_variable = {
+	var = PB_AC_ic_factory
+	value = 0.05
+}
+add_to_variable = {
+	var = PB_AC_ProductionEfficiencyGain
+	value = 0.08
+}
+add_to_variable = {
+	var = PB_AC_line_change_production_efficiency_factor
+	value = 0.06
 }
 
 set_variable = { var = ENG_HaigTory_Support value = 70 }
@@ -22,18 +57,16 @@ set_variable = { var = ENG_NPP_Support value = 10 }
 set_variable = { var = ENG_Empire_Outlook value = 0 }
 
 PB_Set_Max_State_Focus = yes
+set_country_flag = PB_content_country
 
 #coalition stuff
 
-ban_party_ni = yes
 add_to_farleft_coalition_jc = yes
 add_to_farleft_coalition_ss = yes
-add_to_center_coalition_lb = yes 
-add_to_center_coalition_an = yes
-add_to_farright_coalition_ni = yes
-add_to_farright_coalition_ds = yes
+add_to_right_coalition_an = yes
 add_to_right_coalition_rc = yes
 add_to_right_coalition_cn = yes
+add_to_right_coalition_lb = yes
 add_to_leading_coalition_cn = yes
 
 set_research_slots = 4
@@ -44,8 +77,10 @@ create_intelligence_agency = {
 
 # Starting tech
 set_technology = {
+	tech_automat_great_war = 1
+	basic_train = 1
 	infantry_rations = 1
-	infantry_weapons = 1
+	infantry_weapons1930 = 1
 	infantry_weapons1933 = 1
 	tech_support = 1		
 	tech_engineers = 1
@@ -53,8 +88,6 @@ set_technology = {
 	motorised_infantry = 1
 	gw_artillery = 1
 	interwar_antiair = 1
-	gwtank = 1
-	basic_light_tank = 1
 	early_fighter = 1
 	cv_early_fighter = 1
 	cv_naval_bomber1 = 1
@@ -73,6 +106,30 @@ set_technology = {
 	radio_detection = 1
 	fuel_silos = 1
 	fuel_refining = 1
+}
+
+if = {
+	limit = {
+		NOT = { has_dlc = "No Step Back" }
+	}
+	set_technology = {
+		gwtank = 1
+		basic_light_tank = 1
+		basic_heavy_tank = 1
+	}
+}
+if = {
+	limit = {
+		has_dlc = "No Step Back"
+	}
+	set_technology = {
+		gwtank_chassis = 1
+		basic_light_tank_chassis = 1
+		basic_medium_tank_chassis = 1
+		basic_heavy_tank_chassis = 1
+		engine_tech_1 = 1
+		armor_tech_1 = 1
+	}
 }
 
 if = {
@@ -124,6 +181,15 @@ if = {
 }
 
 if = {
+	limit = {
+		has_dlc = "La Resistance"
+	}
+	set_technology = {
+		armored_car1 = 1
+	}
+}
+
+if = {
 	limit = { has_dlc = "Together for Victory" }
 
 	add_to_tech_sharing_group = ImpConf_research
@@ -171,12 +237,6 @@ if = {
 		target = BFE
 		autonomous_state = autonomy_constituent_dominion
 		freedom_level = 0.60
-	}
-
-	set_autonomy = {
-		target = MIS
-		autonomous_state = autonomy_constituent_dominion
-		freedom_level = 0.54
 	}
 
 	set_autonomy = {
@@ -243,7 +303,6 @@ if = {
 		puppet = BAF
 		puppet = BCL
 		puppet = BFE
-		puppet = MIS
 		puppet = NZL
 		puppet = RAJ
 		puppet = ACD
@@ -308,12 +367,15 @@ add_ideas = {
 	PB_Parliamentary_Monarchy
 	PB_Govidea_Free_Market_Capitalism
 	PB_Great_War_Military
+
+	PB_ENG_Vickers_Armstrongs
+	PB_ENG_John_Brown_Company
 }
 
 set_stability = 0.6
-set_war_support = 0.1
+set_war_support = 0.5
 
-set_convoys = 800
+set_convoys = 250
 
 create_faction = BER
 
@@ -693,6 +755,26 @@ ACD = {
 	}
 }
 
+# CHARACTERS
+recruit_character = ENG_Alan_Brooke
+recruit_character = ENG_JFC_Fuller
+recruit_character = ENG_Edmund_Allenby
+recruit_character = ENG_Bernard_Montgomery
+recruit_character = ENG_William_Slim
+recruit_character = ENG_Andrew_Cunningham
+recruit_character = ENG_Arthur_Harris
+recruit_character = ENG_Paul_Fildes
+recruit_character = ENG_Hugh_Dowding
+recruit_character = ENG_Edgar_Hewitt
+recruit_character = ENG_Keith_Park
+recruit_character = ENG_Dudley_Pound
+recruit_character = ENG_ernle_chatfield
+recruit_character = ENG_Lord_Gort
+recruit_character = ENG_John_Dill
+recruit_character = ENG_Archibald_Wavell
+
+
+
 create_country_leader = {
 	name = "HRM George V"
 	desc = "ENG_King_George_Desc"
@@ -742,30 +824,6 @@ create_country_leader = {
 	ideology = JC_VARIANT_02
 }
 
-create_field_marshal = {
-	name = "Alan Brooke" 
-	id = 997
-	picture = "Portrait_Britain_Alan_Brooke.dds"
-	traits = { Iberian_Front_Veteran trait_cautious career_officer }
-	skill = 5
-	attack_skill = 3
-	defense_skill = 4
-	planning_skill = 4
-	logistics_skill = 3
-}
-
-create_field_marshal = {
-	name = "Bernard Montgomery" 
-	id = 996
-	picture = "Portrait_ENG_Bernard_Montgomery.dds"
-	traits = { Iberian_Front_Veteran shellshocked augmented }
-	skill = 4
-	attack_skill = 4
-	defense_skill = 2
-	planning_skill = 1
-	logistics_skill = 4
-}
-
 create_corps_commander = {
 	name = "Harold Alexander"
 	picture = "Portrait_Britain_Harold_Alexander.dds"
@@ -778,17 +836,6 @@ create_corps_commander = {
 }
 
 create_corps_commander = {
-	name = "Edmund Allenby"
-	picture = "Portrait_ENG_Edmund_Allenby.dds"
-	traits = { Iberian_Front_Veteran old_guard war_hero infantry_officer }
-	skill = 3
-	attack_skill = 3
-	defense_skill = 4
-	planning_skill = 2
-	logistics_skill = 3
-}
-
-create_corps_commander = {
 	name = "George Milne"
 	picture = "Portrait_ENG_George_Milne.dds"
 	traits = { old_guard bearer_of_artillery }
@@ -797,17 +844,6 @@ create_corps_commander = {
 	defense_skill = 5
 	planning_skill = 3
 	logistics_skill = 2
-}
-
-create_corps_commander = {
-	name = "William Slim"
-	picture = "Portrait_ENG_William_Slim.dds"
-	traits = { jungle_rat ranger }
-	skill = 3
-	attack_skill = 4
-	defense_skill = 3
-	planning_skill = 2
-	logistics_skill = 4
 }
 
 create_corps_commander = {
@@ -825,33 +861,97 @@ create_corps_commander = {
 	name = "Arthur MacArthur III"
 	picture = "Portrait_ENG_lolscottishmacarthur.dds"
 	traits = { Iberian_Front_Veteran egotist cavalry_officer }
-	skill = 2
-	attack_skill = 2
-	defense_skill = 4
+	skill = 3
+	attack_skill = 3
+	defense_skill = 3
 	planning_skill = 2
-	logistics_skill = 2
+	logistics_skill = 1
 }
 
-create_corps_commander = {
-	name = "J. F. C. Fuller"
-	picture = "Portrait_ENG_JFC_Fuller.dds"
-	traits = { questionable_methods paranoid armor_officer }
+create_navy_leader = {
+	name = "Ernest king"
+	desc = "PB_Ernest_king_Desc"
+	portrait_path = "gfx/leaders/ENG/Portrait_ENG_Ernest_King.dds"
+	traits = {
+		bold
+	}
+	skill = 4
+	attack_skill = 4
+	defense_skill = 2
+	maneuvering_skill = 4
+	coordination_skill = 2
+}
+
+create_navy_leader = {
+	name = "William Leahy"
+	desc = "PB_William_Leahy_Desc"
+	portrait_path = "gfx/leaders/ENG/Portrait_ENG_William_Leahy.dds"
+	traits = {
+		blockade_runner
+	}
+	skill = 4
+	attack_skill = 1
+	defense_skill = 5
+	maneuvering_skill = 3
+	coordination_skill = 3
+}
+
+create_navy_leader = {
+	name = "William F. Halsey"
+	desc = "PB_William_Halsey_Desc"
+	portrait_path = "gfx/leaders/ENG/Portrait_ENG_William_Halsey.dds"
+	traits = {
+		aviation_enthusiast
+		superior_tactician
+	}
+	skill = 4
+	attack_skill = 3
+	defense_skill = 1
+	maneuvering_skill = 2
+	coordination_skill = 4
+}
+
+create_navy_leader = {
+	name = "William G. Andrewes"
+	desc = "PB_William_Andrewes_Desc"
+	portrait_path = "gfx/leaders/ENG/Portrait_ENG_William_Andrewes.dds"
+	traits = {
+		trait_reckless
+		seawolf
+	}
+	skill = 3
+	attack_skill = 2
+	defense_skill = 1
+	maneuvering_skill = 4
+	coordination_skill = 2
+}
+
+create_navy_leader = {
+	name = "William G. Tennant"
+	desc = "PB_William_Tennant_Desc"
+	portrait_path = "gfx/leaders/ENG/Portrait_ENG_William_Tennant.dds"
+	traits = {
+		gunnery_expert
+	}
+	skill = 2
+	attack_skill = 2
+	defense_skill = 1
+	maneuvering_skill = 2
+	coordination_skill = 2
+}
+
+create_navy_leader = {
+	name = "Bertram H. Ramsay"
+	desc = "PB_Bertram_Ramsay_Desc"
+	portrait_path = "gfx/leaders/ENG/Portrait_ENG_Bertram_Ramsay.dds"
+	traits = {
+		navy_career_officer
+	}
 	skill = 2
 	attack_skill = 1
-	defense_skill = 3
-	planning_skill = 4
-	logistics_skill = 2
-}
-
-create_corps_commander = {
-	name = "Archibald Wavell"
-	picture = "Portrait_ENG_Archibald_Wavell.dds"
-	traits = { trait_reckless infantry_officer }
-	skill = 1
-	attack_skill = 2
-	defense_skill = 3
-	planning_skill = 4
-	logistics_skill = 2
+	defense_skill = 2
+	maneuvering_skill = 2
+	coordination_skill = 1
 }
 
 if = {
@@ -860,7 +960,7 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Valentine Vivian"
-		picture = "Portrait_ENG_Valentine_Vivian.dds"
+		GFX = GFX_Portrait_ENG_Valentine_Vivian
 		traits = { operative_master_interrogator }
 		bypass_recruitment = no
 		available_to_spy_master = yes
@@ -869,7 +969,7 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Ian Fleming"
-		picture = "Portrait_ENG_Ian_Fleming.dds"
+		GFX = GFX_Portrait_ENG_Ian_Fleming
 		traits = { operative_well_groomed }
 		bypass_recruitment = no
 		available_to_spy_master = yes
@@ -878,7 +978,7 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Virginia Hall"
-		picture = "Portrait_ENG_Virginia_Hall.dds"
+		GFX = GFX_Portrait_ENG_Virginia_Hall
 		traits = { operative_razormaiden }
 		bypass_recruitment = no
 		available_to_spy_master = yes
@@ -887,7 +987,7 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Ralph Izzard"
-		picture = "Portrait_ENG_Ralph_Izzard.dds"
+		GFX = GFX_Portrait_ENG_Ralph_Izzard
 		traits = { operative_infiltrator }
 		bypass_recruitment = no
 		available_to_spy_master = yes
@@ -896,7 +996,7 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Harold Philby"
-		picture = "Portrait_ENG_Harold_Philby.dds"
+		GFX = GFX_Portrait_ENG_Harold_Philby
 		traits = { operative_double_agent }
 		bypass_recruitment = no
 		available_to_spy_master = yes
@@ -905,7 +1005,7 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Julia Carolyn Child"
-		picture = "Portrait_ENG_Julia_Child.dds"
+		GFX = GFX_Portrait_ENG_Julia_Child
 		traits = { operative_linguist }
 		bypass_recruitment = no
 		available_to_spy_master = yes
@@ -914,7 +1014,7 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Eric Arthur Roberts"
-		picture = "Portrait_ENG_Eric_Roberts.dds"
+		GFX = GFX_Portrait_ENG_Eric_Roberts
 		traits = { operative_infiltrator }
 		bypass_recruitment = no
 		available_to_spy_master = yes
@@ -923,11 +1023,20 @@ if = {
 	}
 	create_operative_leader = {
 		name = "Amy Elizabeth Thorpe"
-		picture = "Portrait_ENG_Amy_Thorpe.dds"
+		GFX = GFX_Portrait_ENG_Amy_Thorpe
 		traits = { operative_seducer }
 		bypass_recruitment = no
 		available_to_spy_master = yes
 		female = yes
+		nationalities = { ENG }
+	}
+	create_operative_leader = {
+		name = "Carandini Lee"
+		GFX = GFX_Portrait_ENG_Saruman
+		traits = { operative_seducer operative_infiltrator operative_linguist }
+		bypass_recruitment = no
+		available_to_spy_master = yes
+		female = no
 		nationalities = { ENG }
 	}
 }
@@ -1226,5 +1335,106 @@ if = {
 			rear_1_custom_slot = ship_heavy_battery_1
 		}
 	}	
+}
+
+if = {
+	limit = {
+		has_dlc = "No Step Back"
+	}
+	create_equipment_variant = {
+		name = "Light Landship Mk. IV"
+		type = light_tank_chassis_1
+		parent_version = 0
+		modules = {
+			main_armament_slot = tank_heavy_machine_gun
+			turret_type_slot = tank_light_one_man_tank_turret
+			suspension_type_slot = tank_christie_suspension
+			armor_type_slot = tank_riveted_armor
+			engine_type_slot = tank_gasoline_engine
+		}
+		upgrades = {
+			tank_nsb_engine_upgrade = 2
+			tank_nsb_armor_upgrade = 1
+		}
+		icon = "GFX_ENG_basic_light_tank_medium"
+		obsolete = yes #used for oob
+	}
+	create_equipment_variant = {
+		name = "Light Landship Mk. VI"
+		type = light_tank_chassis_1
+		parent_version = 1
+		modules = {
+			main_armament_slot = tank_heavy_machine_gun
+			turret_type_slot = tank_light_two_man_tank_turret
+			suspension_type_slot = tank_bogie_suspension
+			armor_type_slot = tank_riveted_armor
+			engine_type_slot = tank_gasoline_engine
+			special_type_slot_1 = tank_radio_1
+			special_type_slot_2 = smoke_launchers
+		}
+		icon = "GFX_ENG_basic_light_tank_medium"
+		upgrades = {
+			tank_nsb_engine_upgrade = 2
+			tank_nsb_armor_upgrade = 2
+		}
+	}
+
+	create_equipment_variant = {
+		name = "Medium Mk. II"
+		type = medium_tank_chassis_0
+		parent_version = 0
+		modules = {
+			main_armament_slot = tank_small_cannon
+			turret_type_slot = tank_medium_three_man_tank_turret
+			suspension_type_slot = tank_bogie_suspension
+			armor_type_slot = tank_riveted_armor
+			engine_type_slot = tank_gasoline_engine
+			special_type_slot_1 = tank_radio_1
+		}
+		upgrades = {
+			tank_nsb_armor_upgrade = 1
+			tank_nsb_engine_upgrade = 2
+		}
+		icon = "GFX_ENG_basic_light_tank_medium"
+	}
+
+	create_equipment_variant = {
+		name = "Vickers 6 ton A"
+		type = light_tank_chassis_0
+		parent_version = 0
+		modules = {
+			main_armament_slot = tank_heavy_machine_gun
+			turret_type_slot = tank_light_one_man_tank_turret
+			suspension_type_slot = tank_bogie_suspension
+			armor_type_slot = tank_riveted_armor
+			engine_type_slot = tank_gasoline_engine
+			special_type_slot_1 = secondary_turret_hmg
+		}
+		upgrades = {
+			tank_nsb_armor_upgrade = 3
+			tank_nsb_engine_upgrade = 2
+		}
+		icon = "GFX_ENG_light_BAB_camo"
+		obsolete = yes #export only
+	}
+
+	create_equipment_variant = {
+		name = "Vickers 6 ton B"
+		type = light_tank_chassis_0
+		parent_version = 1
+		modules = {
+			main_armament_slot = tank_small_cannon
+			turret_type_slot = tank_light_two_man_tank_turret
+			suspension_type_slot = tank_bogie_suspension
+			armor_type_slot = tank_riveted_armor
+			engine_type_slot = tank_gasoline_engine
+		}
+		upgrades = {
+			tank_nsb_armor_upgrade = 3
+			tank_nsb_engine_upgrade = 2
+		}
+		icon = "GFX_ENG_light_BAB_camo"
+		obsolete = yes #export only
+	}
 }
 

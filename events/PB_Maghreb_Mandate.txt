@@ -8,11 +8,16 @@ country_event = {		#Collapse of the Mandate
 	id = magman.1
 	title = magman.1.t
 	desc = magman.1.d
-	picture = GFX_report_event_Generic_Violent_Coup
+	picture = GFX_report_PB_Generic_Political_Event
 
 	trigger = {
 		tag = INA
 		has_stability < 0.2
+		INA = {
+			NOT = {
+				has_country_flag = PB_Algeria_War_Fired
+			}
+		}
 	}
 
 	mean_time_to_happen = {
@@ -24,28 +29,79 @@ country_event = {		#Collapse of the Mandate
 	option = {
 		name = magman.1.a
 
-		ALG = {
-			transfer_state = 838
+		INA = {
+			set_country_flag = PB_Algeria_War_Fired
+		}
 
-			change_tag_from = INA
+		ALG = {
+
+			add_war_support = 0.5
+             
+            add_ideas = PB_Idea_ALG_Revolution_Spirit
+
+			transfer_state = 460
+			add_state_core = 460
+
+			transfer_state = 459
+			add_state_core = 459
 
 			load_oob = "ALG_Uprising"
+
+			change_tag_from = INA
+			hidden_effect= {
+				add_equipment_to_stockpile = {
+					type = train_equipment
+					amount = 3
+					producer = FRA
+				}
+			}	
+
 		}
 
-		MOR = {
-			transfer_state = 290
-		}
+		#MOR = {
+		#	transfer_state = 290
+		#}
 
 		FRG = {
+			add_ideas = PB_Idea_FRG_French_Help
 			transfer_state = 837
+			add_state_core = 837
+
+			transfer_state = 838
+			add_state_core = 838
 
 			load_oob = "FRG_Uprising"
-		}
 
-		news_event = { id = PBNews.38 days = 1 }
+			add_war_support = 0.5
+			hidden_effect= {
+				add_equipment_to_stockpile = {
+					type = train_equipment
+					amount = 3
+					producer = FRA
+				}
+			}
+		}
 
 		BAF = { 
 			country_event = { id = magman.2 days = 5 }
+
+			remove_state_core = 837
+			remove_state_core = 838
+			remove_state_core = 460
+			remove_state_core = 459
+			remove_state_core = 513
+
+			news_event = { 
+			    id = PBNews.38
+			    days = 1 
+		    } 
+		}
+
+		SPR = { 
+			country_event = { id = magman.6 days = 5 }
+		}	
+		MOR = { 
+			country_event = { id = magman.7 days = 5 }
 		}
 	}
 }
@@ -54,14 +110,36 @@ country_event = {		#Collapse of the Mandate - British Africa Response
 	id = magman.2
 	title = magman.2.t
 	desc = magman.2.d
-	picture = GFX_report_event_Generic_Violent_Coup
+	picture = GFX_report_PB_Generic_Political_Event
 
 	is_triggered_only = yes
 
 	option = {
 		name = magman.2.a
 
+		FRA = {
+			country_event = { id = magman.4 days = 1 }
+		}
+
+		ALG = {
+			give_military_access = FRG
+			diplomatic_relation = {
+                country = FRG
+                relation = non_aggression_pact
+                active = yes
+            }
+		}
+
+		FRG = {
+			give_military_access = ALG
+		}
+
 		BAF = {
+
+			set_global_flag = PB_Algeria_War
+
+			load_oob = "BAF_Emergency_Militias"
+			
 			declare_war_on = {
 				target = ALG
 				type = annex_everything
@@ -73,6 +151,299 @@ country_event = {		#Collapse of the Mandate - British Africa Response
 			}
 
 			add_ideas = ENG_Algiers_Expedition
+		}
+	}
+}
+
+country_event = {		#Oran - Algeria War
+	id = magman.3
+	title = magman.3.t
+	desc = magman.3.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	is_triggered_only = yes
+
+	option = {
+		name = magman.3.a
+
+		FRG = {
+			diplomatic_relation = {
+                country = ALG
+                relation = military_access
+                active = no
+            }
+		}
+		ALG = {		
+			diplomatic_relation = {
+                country = FRG
+                relation = non_aggression_pact
+                active = no
+            }
+			diplomatic_relation = {
+                country = FRG
+                relation = military_access
+                active = no
+            }
+			declare_war_on = {
+				target = FRG
+				type = annex_everything
+			}
+			add_war_support = 0.2
+		}
+	}
+}
+
+country_event = {		#Event informing France to help Oran
+	id = magman.4
+	title = magman.4.t
+	desc = magman.4.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	is_triggered_only = yes
+
+	option = {
+		name = magman.4.a
+
+		custom_effect_tooltip = PB_Algeria_Uprising_tt
+	}
+}
+
+country_event = {		#Oran request French annexation
+	id = magman.5
+	title = magman.5.t
+	desc = magman.5.d
+	picture = GFX_report_PB_Generic_Political_Event
+
+	is_triggered_only = yes
+
+	option = {
+		name = magman.5.a
+
+		FRA = {
+			annex_country = {
+			    target = FRG
+			    transfer_troops = yes
+			}
+			create_field_marshal = {
+	            name = "André Zeller"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Andre_Zeller.dds"
+	            traits = {
+		            war_hero 
+	            }
+	            skill = 3
+	            attack_skill = 3
+	            defense_skill = 2
+	            planning_skill = 2
+	            logistics_skill = 4
+            }
+
+            create_corps_commander = {
+	            name = "Fernand Gambiez"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Fernand_Gambiez.dds"
+	            traits = {
+	               	trait_engineer
+		            media_personality
+	            }
+	            skill = 3
+	            attack_skill = 4
+	            defense_skill = 2
+	            planning_skill = 1
+	            logistics_skill = 1
+            }
+
+            create_corps_commander = {
+	            name = "Raoul Salan"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Raoul_Salan.dds"
+	            traits = {
+		            infantry_officer
+	            }
+	            skill = 2
+	            attack_skill = 2
+	            defense_skill = 3
+	            planning_skill = 1
+	            logistics_skill = 1
+            }
+
+            create_corps_commander = {
+                name = "Edmond Jouhaud"
+	            desc = ""
+	            portrait_path = "gfx/leaders/FRG/Portrait_FRG_Edmond_Jouhaud.dds"
+	            traits = {
+		            commando
+	            }
+	            skill = 2
+	            attack_skill = 1
+	            defense_skill = 2
+	            planning_skill = 4
+	            logistics_skill = 2
+            }
+			
+			add_war_support = 0.05
+
+			news_event = { 
+			    id = PBNews.195
+			    days = 1 
+		    } 
+		}
+	}
+}
+
+country_event = {		#Collapse of the Mandate - Spanish Response
+	id = magman.6
+	title = magman.6.t
+	desc = magman.6.d
+	picture = GFX_report_PB_British_Ships
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {
+		name = magman.6.a
+		SPR = {
+			transfer_state = 290
+			add_stability = 0.05
+            add_war_support = 0.05
+            set_country_flag = spain_rif
+		}
+		hidden_effect = {
+		SPR = { 
+			country_event = { id = magman.8 days = 5 }
+		}
+		#MOR = { 
+		#	country_event = { id = magman.7 days = 1 }
+		#}
+	    }
+	}
+}
+
+country_event = {		#Collapse of the Mandate - Morroco Response
+	id = magman.7
+	title = magman.7.t
+	desc = magman.7.d
+	picture = GFX_report_PB_British_Ships
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {
+		name = magman.7.a
+            add_war_support = 0.9
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = 2000
+			}
+			add_equipment_to_stockpile = {
+				type = infantry_rations_equipment
+				amount = 10000
+			}
+			add_ideas = war_economy
+			add_ideas = extensive_conscription
+			hidden_effect = {
+				MOR = { 
+					country_event = { id = magman.9 days = 10 }
+		        }
+		    }	
+	}
+}
+
+country_event = {		#Collapse of the Mandate - Spanish Response 2
+	id = magman.8
+	title = magman.8.t
+	desc = magman.8.d
+	picture = GFX_report_PB_British_Ships
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {
+		name = magman.8.a
+		SPR = {
+            add_war_support = 0.1
+		}
+        290 = {
+		set_resistance = 75
+		set_compliance = 25
+	    }
+
+		custom_effect_tooltip =  SPR_spain_ceuta_warning_tt
+	}
+}
+
+country_event = {		#Collapse of the Mandate - Morocco Declares War
+	id = magman.9
+	title = magman.9.t
+	desc = magman.9.d
+	picture = GFX_report_PB_British_Ships
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {
+		name = magman.9.a
+		add_war_support = 0.1
+		declare_war_on = {
+			target = SPR
+			type = annex_everything
+		}
+		set_global_flag = morroco_spain_rif_war
+		news_event = { 
+			id = PBNews.197
+			days = 1 
+	    }
+	}
+}
+
+country_event = {		#Collapse of the Mandate - Rif War - British Steals Land
+	id = magman.10
+	title = magman.10.t
+	desc = magman.10.d
+	picture = GFX_report_PB_British_Ships
+
+	trigger = {
+		tag = ENG
+		SPR = {
+			controls_province = 7069
+			has_war_with = MOR
+			owns_state = 290
+		}
+		has_global_flag = morroco_spain_rif_war
+	}
+
+	mean_time_to_happen = {
+		days = 1
+	}
+
+	fire_only_once = yes
+
+	option = {
+		name = magman.10.a
+		ai_chance = {
+			factor = 50
+		}
+        add_political_power = -50
+		BAF = {
+		transfer_state = 807
+		transfer_state = 699
+	    }
+	}
+
+	option = {
+		name = magman.10.b
+		ai_chance = {
+			factor = 50
+		}
+		add_political_power = 50
+		send_equipment = {
+			equipment = infantry_equipment
+			amount = 1000
+			target = MOR
 		}
 	}
 }

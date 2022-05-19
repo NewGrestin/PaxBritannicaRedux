@@ -3,7 +3,7 @@ Welcome to the new Pax Britannica GitHub. This is the development branch and wil
 INSTALLATION GUIDE:
 
 	1. Register at GitHub
-	Send Clawstrider a discord pm with your GitHub name
+	Send Grestin a discord pm with your GitHub name
 	
 	2. Download GitHub Desktop
 	https://desktop.GitHub.com/
@@ -12,7 +12,7 @@ INSTALLATION GUIDE:
 	
 	4. After you've been added to the GitHub by Clawstrider, go to your GitHub Desktop
 	Click file, then clone respository. 
-	Select "clawstrider/PaxBritannicaTwoRedux"
+	Select "NewGrestin/PaxBritannicaTwoRedux"
 	
 	5. In the Local Path box, type:
 	C:\User\YOUR NAME\Documents\Paradox Interactive\Hearts of Iron IV\mod\PaxBritannicaTwoRedux
@@ -31,10 +31,10 @@ INSTALLATION GUIDE:
 FAQ:
 
 	Q: Help I'm having trouble installing it!
-	A: Read each step again slowly. If you're sure you've followed everything exactly, talk to Clawstrider, Grestin or Luey.
+	A: Read each step again slowly. If you're sure you've followed everything exactly, talk to Dan, Grestin or Luey.
 	
 	Q: This is awesome, can I share it with all my friends?
 	A: For now, we're keeping this dev build private. A workshop version will be available when we have a (relatively) polished version.
 	
 	
-	If you have any other issues or questions, please get in contact with Claw, Gres and Luey who will be happy to help you further.
+	If you have any other issues or questions, please get in contact with Dan, Gres and Luey who will be happy to help you further.
