@@ -7,6 +7,87 @@ on_actions = {
 			}
 		} 
 	}
+	on_state_control_changed = { 
+		effect = {
+			ROOT = {
+				if = {
+					limit = {
+						any_state = {
+							limit = {
+								NOT = {
+   									is_in_array = {
+        								array = ROOT.PB_accepted_cultures
+        								value = culture_id
+    								}
+									has_dynamic_modifier = {
+    									modifier = Foreign_Culture
+									}
+								}	
+							}
+							add_dynamic_modifier = {
+   								modifier = Foreign_Culture
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						any_state = {
+							limit = {
+   								is_in_array = {
+        							array = ROOT.PB_accepted_cultures
+        							value = culture_id
+    							}
+								has_dynamic_modifier = {
+    								modifier = Foreign_Culture
+								}	
+							}
+							remove_dynamic_modifier	 = {
+   								modifier = Foreign_Culture
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						any_state = {
+							limit = {
+   								is_in_array = {
+        							array = ROOT.PB_accepted_cultures
+        							value = culture_id
+    							}
+								has_dynamic_modifier = {
+    								modifier = Culture_Conversion
+								}	
+							}
+							remove_dynamic_modifier	 = {
+   								modifier = Culture_Conversion
+							}
+						}
+					}
+				}
+			}
+		} 
+	}
+	on_startup = { 
+		effect = {
+			ROOT = {
+				every_state = {
+					limit = {
+						NOT = {
+   							is_in_array = {
+        						array = ROOT.PB_accepted_cultures
+        						value = culture_id
+    						}
+						}
+					}
+					add_dynamic_modifier = {
+   						modifier = Foreign_Culture
+					}
+				}
+			}
+		} 
+	}
 	on_monthly = { 
 		effect = {
 			ROOT = { 
@@ -26,6 +107,12 @@ on_actions = {
 					}
 					clr_state_flag = PB_Culture_Convert_In_Progress
 					add_core_of = ROOT
+					remove_dynamic_modifier = { 
+						modifier = Culture_Conversion 
+					} 
+					remove_dynamic_modifier = {  # Failsafe
+						modifier = Foreign_Culture 
+					} 
 				}
 
 				every_owned_state = {
@@ -42,6 +129,12 @@ on_actions = {
 						value = 0
 					}
 					clr_state_flag = PB_Culture_Accept_In_Progress
+					remove_dynamic_modifier = { 
+						modifier = Culture_Conversion 
+					} 
+					remove_dynamic_modifier = {  # Failsafe
+						modifier = Foreign_Culture 
+					} 
 				}
 
 				if = {
