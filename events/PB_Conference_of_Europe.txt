@@ -28,6 +28,14 @@ country_event = {
         }
 	set_global_flag = PB_COE_TOPIC_FRANCE
 	set_global_flag = PB_COE_STARTED
+	country_event = { id = COE.21 days = 5 }
+	FRA = { set_variable = { PB_War_Rep_CG = 0 } }
+	FRA = {
+	add_dynamic_modifier = {
+   	modifier = PB_War_Reps_Dynamic_Modifier 
+    	scope = FRA
+	}
+	}
     }
 }
 
@@ -51,6 +59,7 @@ country_event = {
 			factor = 1
         }
 	set_global_flag = PB_COE_PROPOSAL_DEXTER
+
     }
 }
 
@@ -679,6 +688,81 @@ country_event = {
 			factor = 1
         }
 	clr_global_flag = PB_COE_TOPIC_FRANCE
+	if = { 
+	limit = { FRA = { check_variable = { PB_War_Rep_CG = 0 } } }
+		FRA = { 
+			remove_dynamic_modifier = {
+   			modifier = PB_War_Reps_Dynamic_Modifier 
+			}
+		}
+	}
+    }
+}
+
+#Wallonia demands reparations
+country_event = {
+	id = COE.21
+	title = COE.21.t
+	desc = COE.21.d
+	picture = GFX_report_Palace_Het_Loo
+ 
+    is_triggered_only = yes
+
+	option = {	#ignore the walloons
+		name = COE.21.a
+		ai_chance = {
+			factor = 20
+        	}
+
+    }
+
+	option = {	#give them only war reps
+		name = COE.21.b
+		ai_chance = {
+			factor = 20
+        	}
+	FRA = { add_to_variable = { PB_War_Rep_CG = 0.05 } }
+    }
+
+	option = {	#war reps and pas de calais
+		name = COE.21.c
+		ai_chance = {
+			factor = 60
+        	}
+		WLA = { transfer_state = 29 }
+		29 = { set_demilitarized_zone = no }	
+		FRA = { add_to_variable = { PB_War_Rep_CG = 0.05 } }			
+    }
+}
+
+#Israel exists and seeks war reparations for Jewish victims
+country_event = {
+	id = COE.22
+	title = COE.22.t
+	desc = COE.22.d
+	picture = GFX_report_Palace_Het_Loo
+ 
+    	fire_only_once = yes
+
+	trigger = { 
+	has_global_flag = PB_COE_TOPIC_FRANCE
+	ISR = { exists = yes }	
+	}
+
+	option = {	#too much
+		name = COE.22.a
+		ai_chance = {
+			factor = 10
+        	}
+
+    	}
+
+	option = {	#give them only war reps
+		name = COE.22.b
+		ai_chance = {
+			factor = 90
+        	}
+	FRA = { add_to_variable = { PB_War_Rep_CG = 0.08 } }
     }
 }
 
