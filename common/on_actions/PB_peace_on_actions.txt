@@ -71,6 +71,48 @@ on_actions = {
 
 			    # normal peace stuff
 
+				if = { # SCA Defeats minor American nation
+		        	limit = {
+		        		FROM = {
+							OR = {
+								original_tag = SCA
+								is_in_faction_with = SCA
+							}
+		        		}
+		        		ROOT = {
+							OR = {
+								original_tag = TAC
+								original_tag = NWA
+								original_tag = TAB
+								original_tag = FRE
+								original_tag = DES
+								original_tag = NEV
+								original_tag = SHO
+								original_tag = LAK
+								original_tag = APA
+								original_tag = SFE
+								original_tag = CMC
+								original_tag = GRN
+								original_tag = NRT
+								original_tag = IRO
+								original_tag = MRN
+								original_tag = OSA
+								original_tag = STA
+								original_tag = DER
+							}
+		        		}
+		        	}
+        
+					SCA = {
+						white_peace = ROOT
+						annex_country = {
+							target = ROOT
+						}	
+					}
+
+		        	set_global_flag = skip_default_capitulation
+		        }
+
 				if = { # French invasion of SPR
 				    limit = {
 					    FROM = {
@@ -4720,6 +4762,37 @@ on_actions = {
         
 		        	set_global_flag = skip_default_capitulation
 		        }	
+
+				if = { #Back up peace deal in case someone beats scandi after france is defeated and before war outcome event 12 has fired
+		        	limit = {
+						ENG = {
+							has_country_flag = Still_at_war_with_scandi
+						}
+		        		FROM = {
+		        			OR = {
+		        				original_tag = ENG
+		        				is_in_faction_with = ENG
+		        			}
+		        		}
+		        		ROOT = {
+		        			original_tag = SND
+		        		}
+		        	}
+
+					if = {
+						limit = {
+							ENG = {
+								has_country_flag = Still_at_war_with_scandi
+							}
+						}
+						FROM = {
+		        		    white_peace = ROOT
+		        	    }
+						## No need to mention the actual peace deal effects since that will be handled by war outcome event 12
+					}
+        
+		        	set_global_flag = skip_default_capitulation
+		        }	
         
 		        if = { #South African War - Sudwestafrika Victory - Natalia
 		        	limit = {
@@ -4848,6 +4921,16 @@ on_actions = {
 							}
 						}
 						DEN = {
+							leave_faction = yes
+						}
+					}
+					if = {
+						limit = {
+							SND = {
+							    is_in_faction_with = FRA
+							}
+						}
+						SND = {
 							leave_faction = yes
 						}
 					}
@@ -7599,6 +7682,7 @@ on_actions = {
 		        #Capitulation block
 		        set_global_flag = war_continuing
 	        }    
+
 			}        
 	        clr_global_flag = skip_default_capitulation
 	    }
