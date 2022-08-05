@@ -34,8 +34,11 @@ INSTALLATION GUIDE:
 FAQ:
 
 	Q: Help I'm having trouble installing it!
-	A: Read each step again slowly. If you're sure you've followed everything exactly, talk to Dan, Grestin or Luey.
+	A: Read each step again slowly. If you're sure you've followed everything exactly, talk to Dan or Grestin.
+	
+	Q: Do I need Grestin to add me to the GitHub so I can download it?
+	A: No. You can download the dev version of the mod whenever. You only need to get in contact with Grestin if you want to work on the mod yourself.
 	
 	
 	
-	If you have any other issues or questions, please get in contact with Dan, Gres and Luey who will be happy to help you further.
+	If you have any other issues or questions, please get in contact with Dan or Grestin who will be happy to help you further.
