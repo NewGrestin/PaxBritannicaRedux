@@ -1,5 +1,320 @@
 PB_Orbit_Wars_Decisions = {
 
+	PB_Orbit_Wars_AI_Manager = {
+		icon = generic_operation
+
+		available = {
+			NOT = {
+				is_ai = yes
+				OR = {
+					original_tag = ENG
+					original_tag = RUS
+				}
+			}
+		}
+
+		activation = {                         
+			is_ai = yes
+			OR = {
+				original_tag = ENG
+				original_tag = RUS
+			}              
+		}
+
+		fire_only_once = no
+
+		is_good = no
+
+		ai_will_do = {
+			factor = 10
+		}
+
+		days_mission_timeout = 90
+
+		timeout_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = 15
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Satellite_Orbit_Decay = {
+		icon = generic_operation
+
+		available = {
+			NOT = {
+				ROOT = {
+					has_country_flag = OBW_Satellite_in_Orbit
+				} 
+			}
+		}
+
+		activation = {                         
+			ROOT = {
+				has_country_flag = OBW_Satellite_in_Orbit
+			}                 
+		}
+
+		fire_only_once = no
+
+		is_good = no
+
+		ai_will_do = {
+			factor = 10
+		}
+
+		days_mission_timeout = 90
+
+		timeout_effect = {
+			custom_effect_tooltip = PB_Orbit_Satellite_Decay_tt
+
+			clr_country_flag = OBW_Satellite_in_Orbit
+
+			PB_OBW_Clear_Satellite_Ability = yes
+
+			if = {
+				limit ={
+					original_tag = ENG
+				}
+				clr_global_flag = ENG_Satellite_in_Orbit
+			}
+
+			if = {
+				limit ={
+					original_tag = RUS
+				}
+				clr_global_flag = RUS_Satellite_in_Orbit
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Activate_Combat_Satellite = {
+
+		icon = generic_operation
+
+		priority = 266
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 0
+		}
+
+		available = {
+			OR = {
+				original_tag = ENG
+				original_tag = RUS
+			}
+			OR = {
+				has_war_with = ENG
+				has_war_with = RUS
+			}
+
+            custom_trigger_tooltip = {
+				tooltip = OBW_Satellite_in_Orbit_tt
+				has_country_flag = OBW_Satellite_in_Orbit
+		    }
+
+            custom_trigger_tooltip = {
+				tooltip = OBW_Satellite_Active_tt
+				NOT = {
+					has_country_flag = OBW_Satellite_Active
+				}
+		    }
+
+            custom_trigger_tooltip = {
+				tooltip = OBW_Combat_Satellite_Expended_tt
+				NOT = {
+					has_country_flag = OBW_Combat_Satellite_Expended
+				}
+		    }
+
+            custom_trigger_tooltip = {
+				tooltip = OBW_Combat_Satellite_Available
+				OR = {
+					has_country_flag = OW_Active_Component_Relative_Kill_Vehicle
+					has_country_flag = OW_Active_Component_Space_Pirates
+					has_country_flag = OW_Active_Component_Space_Nukes
+					has_country_flag = OW_Active_Component_Scorched_Space
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		days_remove = 25
+
+		complete_effect = {
+			set_country_flag = OBW_Satellite_Active
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Relative_Kill_Vehicle
+					original_tag = ENG
+				}
+				set_country_flag = OBW_Combat_Satellite_Expended
+				RUS = {
+					country_event = {
+						id = OrbitSuccess.4
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Relative_Kill_Vehicle
+					original_tag = RUS
+				}
+				set_country_flag = OBW_Combat_Satellite_Expended
+				ENG = {
+					country_event = {
+						id = OrbitSuccess.4
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Space_Pirates
+					original_tag = ENG
+				}
+				RUS = {
+					country_event = {
+						id = OrbitSuccess.5
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Space_Pirates
+					original_tag = RUS
+				}
+				ENG = {
+					country_event = {
+						id = OrbitSuccess.5
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Space_Nukes
+					original_tag = ENG
+				}
+				set_country_flag = OBW_Combat_Satellite_Expended
+				RUS = {
+					country_event = {
+						id = OrbitSuccess.6
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Space_Nukes
+					original_tag = RUS
+				}
+				set_country_flag = OBW_Combat_Satellite_Expended
+				ENG = {
+					country_event = {
+						id = OrbitSuccess.7
+					}
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Scorched_Space
+				}
+				set_country_flag = OBW_Scorched_Space_Active
+				clr_country_flag = OBW_Satellite_Active
+				ENG = {
+					country_event = {
+						id = OrbitSuccess.9
+					}
+				}
+				RUS = {
+					country_event = {
+						id = OrbitSuccess.9
+					}
+				}
+			}
+		}
+
+		remove_effect = {
+			clr_country_flag = OBW_Satellite_Active
+		}
+	}
+
+	PB_Orbit_Wars_Use_Satellite_Ability = {
+
+		icon = generic_operation
+
+		priority = 265
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 0
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Satellite_in_Orbit_tt
+				has_country_flag = OBW_Satellite_in_Orbit
+		    }
+
+            custom_trigger_tooltip = {
+				tooltip = OBW_Satellite_Active_tt
+				NOT = {
+					has_country_flag = OBW_Satellite_Active
+				}
+		    }
+
+            custom_trigger_tooltip = {
+				tooltip = OBW_Satellite_Non_Combat_Satellite_tt
+				OR = {
+					has_country_flag = OW_Active_Component_Communications_Booster
+					has_country_flag = OW_Active_Component_Intel_Interceptor
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		days_remove = 25
+
+		complete_effect = {
+			set_country_flag = OBW_Satellite_Active
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Communications_Booster
+				}
+				add_timed_idea = {
+					idea = PB_Idea_OBW_Communications_Boost
+					days = 25
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = OW_Active_Component_Intel_Interceptor
+				}
+				add_timed_idea = {
+					idea = PB_Idea_OBW_Intelligence_Boost
+					days = 25
+				}
+			}
+		}
+
+		remove_effect = {
+			clr_country_flag = OBW_Satellite_Active
+		}
+	}
+
 	PB_Orbit_Wars_Launch_Rocket = {
 
 		icon = generic_operation
@@ -9,7 +324,7 @@ PB_Orbit_Wars_Decisions = {
 		cost = 0
 
 		ai_will_do = {
-			factor = 0
+			factor = 100
 		}
 
 		available = {
@@ -24,6 +339,18 @@ PB_Orbit_Wars_Decisions = {
 				tooltip = OBW_Launch_Not_in_Progress_tt
 				NOT = {
 					has_country_flag = OBW_Currently_Launching_Rocket
+				}
+		    }
+            custom_trigger_tooltip = {
+				tooltip = OBW_Satellite_Not_in_Orbit_tt
+				NOT = {
+					has_country_flag = OBW_Satellite_in_Orbit
+				}
+		    }
+            custom_trigger_tooltip = {
+				tooltip = OBW_Scorched_Space_Active_tt
+				NOT = {
+					has_country_flag = OBW_Scorched_Space_Active
 				}
 		    }
 		}
@@ -48,6 +375,16 @@ PB_Orbit_Wars_Decisions = {
 
 			set_variable = {
 				var = Local_Launch_Failure_Chance
+				value = 0
+			}
+
+			set_variable = {
+				var = OW_Rocket_Val
+				value = 0
+			}
+
+			set_variable = {
+				var = OW_Fuel_Val
 				value = 0
 			}
 		}
@@ -251,7 +588,7 @@ PB_Orbit_Wars_Decisions = {
 		cost = 0
 
 		ai_will_do = {
-			factor = 0
+			factor = 100
 		}
 
 		visible = {
@@ -812,7 +1149,7 @@ PB_Orbit_Wars_Decisions = {
 		cost = 0
 
 		ai_will_do = {
-			factor = 0
+			factor = 100
 		}
 
 		visible = {
@@ -834,6 +1171,11 @@ PB_Orbit_Wars_Decisions = {
 			set_country_flag = OBW_Fuel_Installed
 
 			custom_effect_tooltip = tooltip_OBW_Solid_Fuel_Booster_Stats
+
+			set_variable = {
+				var = OW_Fuel_Val
+				value = 1
+			}
 
 			add_to_variable = {
 				var = Local_Launch_Success_Chance
@@ -953,6 +1295,11 @@ PB_Orbit_Wars_Decisions = {
 
 			custom_effect_tooltip = tooltip_OBW_Liquid_Fuel_Booster_Stats
 
+			set_variable = {
+				var = OW_Fuel_Val
+				value = 2
+			}
+
 			add_to_variable = {
 				var = Local_Launch_Success_Chance
 				value = 10
@@ -1070,6 +1417,11 @@ PB_Orbit_Wars_Decisions = {
 			set_country_flag = OBW_Fuel_Installed
 
 			custom_effect_tooltip = tooltip_OBW_Liquid_Fuel_Booster_Stats
+
+			set_variable = {
+				var = OW_Fuel_Val
+				value = 3
+			}
 
 			add_to_variable = {
 				var = Local_Launch_Success_Chance
@@ -1190,6 +1542,11 @@ PB_Orbit_Wars_Decisions = {
 
 			custom_effect_tooltip = tooltip_OBW_Teleforce_Fuel_Booster_Stats
 
+			set_variable = {
+				var = OW_Fuel_Val
+				value = 4
+			}
+
 			add_to_variable = {
 				var = Local_Launch_Success_Chance
 				value = 15
@@ -1309,6 +1666,11 @@ PB_Orbit_Wars_Decisions = {
 
 			custom_effect_tooltip = tooltip_OBW_Nuclear_Fuel_Booster_Stats
 
+			set_variable = {
+				var = OW_Fuel_Val
+				value = 5
+			}
+
 			add_to_variable = {
 				var = Local_Launch_Success_Chance
 				value = 25
@@ -1323,6 +1685,1173 @@ PB_Orbit_Wars_Decisions = {
 			add_to_variable = {
 				var = Local_Launch_Failure_Chance
 				value = 30
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Stellar_Research_Module = {
+
+		icon = OBW_Part_Available
+
+		priority = 100
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+
+			modifier = {
+				factor = 0
+				ROOT = {
+					check_variable = {
+						var = Current_Research_Points
+						value < 150
+					}
+				}
+			}
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Stellar_Research_Module_Stats
+			custom_effect_tooltip = tooltip_OBW_Stellar_Research_Module_Effects
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 1
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 5
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 5
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Communications_Booster = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 110
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 74
+			}
+		}
+		custom_cost_text = OBW_Has_75_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Communications_Booster_Researched
+			}
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_75_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 74
+				}
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -75
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Communications_Booster_Researched
+
+			custom_effect_tooltip = tooltip_OBW_Communications_Booster_Researched
+
+			custom_effect_tooltip = tooltip_OBW_Critical_Item_indicator
+		}
+	}
+
+	PB_Orbit_Wars_Install_Communications_Booster = {
+
+		icon = OBW_Part_Available
+
+		priority = 110
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Communications_Booster_Researched
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Communications_Booster_Stats
+
+			custom_effect_tooltip = tooltip_OBW_Communications_Booster_Module_Effects
+
+			custom_effect_tooltip = tooltip_OBW_Critical_Item_indicator
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 2
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 5
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 15
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Research_Dome = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 111
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 20
+
+			modifier = {
+				factor = 0
+				ROOT = {
+					NOT = {
+						OR = {
+							has_country_flag = OBW_Research_Crew_Quarters
+							has_country_flag = OBW_Communications_Booster_Researched
+						}
+					}
+				}
+			}
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 74
+			}
+		}
+		custom_cost_text = OBW_Has_75_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Research_Dome_Researched
+			}
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_75_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 74
+				}
+		    }
+
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_Researched_Crew_Quarters_tt
+				has_country_flag = OBW_Research_Crew_Quarters
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -75
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Research_Dome_Researched
+
+			custom_effect_tooltip = tooltip_OBW_Research_Dome_Researched
+		}
+	}
+
+	PB_Orbit_Wars_Install_Research_Dome = {
+
+		icon = OBW_Part_Available
+
+		priority = 111
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Research_Dome_Researched
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Research_Dome_Stats
+
+			custom_effect_tooltip = tooltip_OBW_Research_Dome_Module_Effects
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 3
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 10
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 25
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Intel_Interceptor = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 112
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 50
+
+			modifier = {
+				factor = 0
+				ROOT = {
+					NOT = {
+						OR = {
+							has_country_flag = OBW_Research_Crew_Quarters
+							has_country_flag = OBW_Communications_Booster_Researched
+						}
+					}
+				}
+			}
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 99
+			}
+		}
+		custom_cost_text = OBW_Has_100_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Research_Intel_Interceptor
+			}
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_100_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 99
+				}
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -100
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Research_Intel_Interceptor
+
+			custom_effect_tooltip = tooltip_OBW_Research_Intel_Interceptor_Researched
+		}
+	}
+
+	PB_Orbit_Wars_Install_Intel_Interceptor = {
+
+		icon = OBW_Part_Available
+
+		priority = 112
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Research_Intel_Interceptor
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Intel_Interceptor_Stats
+
+			custom_effect_tooltip = tooltip_OBW_Intel_Interceptor_Module_Effects
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 4
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 10
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 5
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Crew_Quarters = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 113
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 124
+			}
+		}
+		custom_cost_text = OBW_Has_125_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Research_Crew_Quarters
+			}
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_125_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 124
+				}
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -125
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Research_Crew_Quarters
+
+			custom_effect_tooltip = tooltip_OBW_Research_Crew_Quarters_Researched
+
+			custom_effect_tooltip = tooltip_OBW_Critical_Item_indicator
+		}
+	}
+
+	PB_Orbit_Wars_Install_Crew_Quarters = {
+
+		icon = OBW_Part_Available
+
+		priority = 113
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Research_Crew_Quarters
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Crew_Quarters_Stats
+
+			custom_effect_tooltip = tooltip_OBW_Crew_Quarters_Module_Effects
+
+			custom_effect_tooltip = tooltip_OBW_Critical_Item_indicator
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 5
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 5
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 35
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Relative_Kill_Vehicle = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 114
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 50
+
+			modifier = {
+				factor = 0
+				ROOT = {
+					NOT = {
+						OR = {
+							has_country_flag = OBW_Research_Crew_Quarters
+							has_country_flag = OBW_Communications_Booster_Researched
+						}
+					}
+				}
+			}
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 149
+			}
+		}
+		custom_cost_text = OBW_Has_150_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Research_RKV
+			}
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_150_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 149
+				}
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -150
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Research_RKV
+
+			custom_effect_tooltip = tooltip_OBW_Research_RKV_Researched
+		}
+	}
+
+	PB_Orbit_Wars_Install_RKV = {
+
+		icon = OBW_Part_Available
+
+		priority = 114
+
+		cost = 20
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Research_RKV
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_RKV_Stats
+
+			custom_effect_tooltip = tooltip_OBW_RKV_Effects
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 6
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 10
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 40
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Space_Pirates = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 115
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 20
+
+			modifier = {
+				factor = 0
+				ROOT = {
+					NOT = {
+						OR = {
+							has_country_flag = OBW_Research_Crew_Quarters
+							has_country_flag = OBW_Communications_Booster_Researched
+						}
+					}
+				}
+			}
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 124
+			}
+		}
+		custom_cost_text = OBW_Has_125_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Research_Space_Pirates
+			}
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_125_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 124
+				}
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -125
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Research_Space_Pirates
+
+			custom_effect_tooltip = tooltip_OBW_Research_Space_Pirates_Researched
+		}
+	}
+
+	PB_Orbit_Wars_Install_Space_Pirates = {
+
+		icon = OBW_Part_Available
+
+		priority = 115
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 20
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Research_Space_Pirates
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Space_Pirates_Stats
+
+			custom_effect_tooltip = tooltip_OBW_Space_Pirates_Effects
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 7
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 10
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 40
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Space_Nukes = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 115
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 50
+
+			modifier = {
+				factor = 0
+				ROOT = {
+					NOT = {
+						OR = {
+							has_country_flag = OBW_Research_Crew_Quarters
+							has_country_flag = OBW_Communications_Booster_Researched
+						}
+					}
+				}
+			}
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 149
+			}
+		}
+		custom_cost_text = OBW_Has_150_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Research_Space_Nukes
+			}
+		}
+
+		available = {
+			has_tech = nukes
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_150_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 149
+				}
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -150
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Research_Space_Nukes
+
+			custom_effect_tooltip = tooltip_OBW_Research_Space_Nukes_Researched
+		}
+	}
+
+	PB_Orbit_Wars_Install_Space_Nukes = {
+
+		icon = OBW_Part_Available
+
+		priority = 116
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 20
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Research_Space_Nukes
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Space_Nukes_Stats
+
+			custom_effect_tooltip = tooltip_OBW_Space_Nukes_Effects
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 8
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 5
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 45
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Failure_Chance
+				min = 0
+				max = 100
+			}
+		}
+	}
+
+	PB_Orbit_Wars_Acquire_Scorched_Space = {
+
+		icon = OBW_Part_Researchable
+
+		priority = 116
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+
+			modifier = {
+				factor = 0
+				ROOT = {
+					NOT = {
+						OR = {
+							has_country_flag = OBW_Research_Crew_Quarters
+							has_country_flag = OBW_Communications_Booster_Researched
+						}
+					}
+				}
+			}
+		}
+
+		custom_cost_trigger = {
+			check_variable = {
+				var = Current_Research_Points
+				value > 149
+			}
+		}
+		custom_cost_text = OBW_Has_150_RP_cost_tt
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+
+			NOT = {
+				has_country_flag = OBW_Research_Scorched_Space
+			}
+		}
+
+		available = {
+			has_tech = nukes
+            custom_trigger_tooltip = {
+				tooltip = OBW_Has_150_RP_tt
+				check_variable = {
+					var = Current_Research_Points
+					value > 149
+				}
+		    }
+		}
+
+		fire_only_once = yes
+
+		days_remove = 60
+
+		complete_effect = {
+			add_to_variable = {
+				var = Current_Research_Points
+				value = -150
+			}
+
+			clamp_variable = {
+				var = Current_Research_Points
+				min = 0
+				max = 300
+			}
+		}
+
+		remove_effect = {
+			set_country_flag = OBW_Research_Scorched_Space
+
+			custom_effect_tooltip = tooltip_OBW_Research_Scorched_Space_Researched
+		}
+	}
+
+	PB_Orbit_Wars_Install_Scorched_Space = {
+
+		icon = OBW_Part_Available
+
+		priority = 117
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 20
+		}
+
+		visible = {
+			has_country_flag = OBW_Component_Parts_Visible
+			has_country_flag = OBW_Research_Scorched_Space
+		}
+
+		available = {
+            custom_trigger_tooltip = {
+				tooltip = OBW_Does_Not_Component_Installed_tt
+				NOT = {
+					has_country_flag = OBW_Component_Installed
+				}
+		    }
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			set_country_flag = OBW_Component_Installed
+
+			custom_effect_tooltip = tooltip_OBW_Scorched_Space_Stats
+
+			custom_effect_tooltip = tooltip_OBW_Scorched_Space_Effects
+
+			set_variable = {
+				var = OW_Component_Val
+				value = 9
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Success_Chance
+				value = 15
+			}
+
+			clamp_variable = {
+				var = Local_Launch_Success_Chance
+				min = 0
+				max = 100
+			}
+
+			add_to_variable = {
+				var = Local_Launch_Failure_Chance
+				value = 45
 			}
 
 			clamp_variable = {
