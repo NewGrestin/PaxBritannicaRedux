@@ -1,0 +1,439 @@
+### Moved to common/scripted_effects/PB_Cultures.txt so that it can be reloaded in game.
+on_actions = {
+	on_startup = { 
+		effect = {
+			ENG = { # Don't mind this, scope fix.
+				PB_Setup_Cultures = yes
+			}
+			ROOT = {
+				set_variable = { PB_Active_Conversions = 0 }
+			}
+		} 
+	}
+	on_state_control_changed = { 
+		effect = {
+			ROOT = {
+				if = {
+					limit = {
+						any_state = {
+							limit = {
+								NOT = {
+   									is_in_array = {
+        								array = ROOT.PB_accepted_cultures
+        								value = culture_id
+    								}
+									has_dynamic_modifier = {
+    									modifier = Foreign_Culture
+									}
+								}	
+							}
+							add_dynamic_modifier = {
+   								modifier = Foreign_Culture
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						any_state = {
+							limit = {
+   								is_in_array = {
+        							array = ROOT.PB_accepted_cultures
+        							value = culture_id
+    							}
+								has_dynamic_modifier = {
+    								modifier = Foreign_Culture
+								}	
+							}
+							remove_dynamic_modifier	 = {
+   								modifier = Foreign_Culture
+							}
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						any_state = {
+							limit = {
+   								is_in_array = {
+        							array = ROOT.PB_accepted_cultures
+        							value = culture_id
+    							}
+								has_dynamic_modifier = {
+    								modifier = Culture_Conversion
+								}	
+							}
+							remove_dynamic_modifier	 = {
+   								modifier = Culture_Conversion
+							}
+						}
+					}
+				}
+			}
+		} 
+	}
+	on_startup = { 
+		effect = {
+			ROOT = {
+				every_state = {
+					limit = {
+						NOT = {
+   							is_in_array = {
+        						array = ROOT.PB_accepted_cultures
+        						value = culture_id
+    						}
+						}
+					}
+					add_dynamic_modifier = {
+   						modifier = Foreign_Culture
+					}
+				}
+			}
+		} 
+	}
+	on_monthly = { 
+		effect = {
+			ROOT = { 
+
+				### Culture Industrial Cost Checker
+
+				if = {
+					limit = {
+						check_variable = { PB_Active_Conversions > 0 }
+						AND = {
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost
+								has_idea = PB_Culture_Civ_Cost2
+								has_idea = PB_Culture_Civ_Cost3
+								has_idea = PB_Culture_Civ_Cost4
+								has_idea = PB_Culture_Civ_Cost5
+								has_idea = PB_Culture_Civ_Cost6
+								has_idea = PB_Culture_Civ_Cost7
+								has_idea = PB_Culture_Civ_Cost8
+								has_idea = PB_Culture_Civ_Cost9
+								has_idea = PB_Culture_Civ_Cost10
+							}
+						}
+					}
+					set_variable = { PB_Active_Conversions = 0 }
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost
+						check_variable = { PB_Active_Conversions < 1 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost2
+						check_variable = { PB_Active_Conversions < 2 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost2
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost3
+						check_variable = { PB_Active_Conversions < 3 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost3
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost4
+						check_variable = { PB_Active_Conversions < 4 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost4
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost5
+						check_variable = { PB_Active_Conversions < 5 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost5
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost6
+						check_variable = { PB_Active_Conversions < 6 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost6
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost7
+						check_variable = { PB_Active_Conversions < 7 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost7
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost8
+						check_variable = { PB_Active_Conversions < 8 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost8
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost9
+						check_variable = { PB_Active_Conversions < 9 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost9
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Culture_Civ_Cost10
+						check_variable = { PB_Active_Conversions < 10 }
+					}
+					remove_ideas = PB_Culture_Civ_Cost10
+				}
+
+
+				### Conversion/Acceptance stuff
+
+				every_owned_state = {
+					limit = {
+						has_state_flag = PB_Culture_Convert_In_Progress
+						check_variable = { PB_convert_progress = 100 }
+					}
+					set_temp_variable = { temp_culture = ROOT.PB_main_culture }
+    				PB_Cultures_change_culture_of_state = yes
+					set_variable = {
+						var = PB_convert_progress
+						value = 0
+					}
+					clr_state_flag = PB_Culture_Convert_In_Progress
+					add_core_of = ROOT
+					remove_dynamic_modifier = { 
+						modifier = Culture_Conversion 
+					} 
+					remove_dynamic_modifier = {  # Failsafe
+						modifier = Foreign_Culture 
+					} 
+					ROOT = {
+						add_to_variable = { PB_Active_Conversions = -1 }
+						clamp_variable = {
+							var = PB_Active_Conversions
+							min = 0
+							max = 10
+						} 
+					}
+				}
+
+				every_owned_state = {
+					limit = {
+						has_state_flag = PB_Culture_Accept_In_Progress
+						check_variable = { PB_convert_progress = 100 }
+					}
+					set_temp_variable = { temp_culture = culture_id }
+					ROOT = { 
+						PB_Cultures_add_accepted_culture = yes 
+					}
+					set_variable = {
+						var = PB_convert_progress
+						value = 0
+					}
+					clr_state_flag = PB_Culture_Accept_In_Progress
+					remove_dynamic_modifier = { 
+						modifier = Culture_Conversion 
+					} 
+					remove_dynamic_modifier = {  # Failsafe
+						modifier = Foreign_Culture 
+					} 
+					ROOT = {
+						add_to_variable = { PB_Active_Conversions = -1 }
+						clamp_variable = {
+							var = PB_Active_Conversions
+							min = 0
+							max = 10
+						} 
+					}
+				}
+
+				if = {
+					limit = {
+						has_idea = PB_Affirmitive_Action
+                        any_state = {
+							limit = {
+								has_state_flag = PB_Culture_Accept_In_Progress
+								is_owned_by = ROOT
+							}
+						}
+					}
+					every_state = {
+						limit = {
+							has_state_flag = PB_Culture_Accept_In_Progress
+							is_owned_by = ROOT
+						}
+						add_to_variable = { PB_convert_progress = 9 }
+						clamp_variable = {
+							var = PB_convert_progress
+							min = 0
+							max = 100
+						} 
+					}
+				}
+
+				else_if = {
+					limit = {
+						has_idea = PB_Significant_Autonomy
+						any_state = {
+							limit = {
+								has_state_flag = PB_Culture_Accept_In_Progress
+								is_owned_by = ROOT
+							}
+						}
+					}
+					every_state = {
+						limit = {
+							has_state_flag = PB_Culture_Accept_In_Progress
+							is_owned_by = ROOT
+						}
+						add_to_variable = { PB_convert_progress = 6 }
+						clamp_variable = {
+							var = PB_convert_progress
+							min = 0
+							max = 100
+						} 
+					}
+				}
+
+				else_if = {
+					limit = {
+						has_idea = PB_Significant_Autonomy
+						any_state = {
+							limit = {
+								has_state_flag = PB_Culture_Convert_In_Progress
+								is_owned_by = ROOT
+							}
+						}
+					}
+					every_state = {
+						limit = {
+							has_state_flag = PB_Culture_Convert_In_Progress
+							is_owned_by = ROOT
+						}
+						add_to_variable = { PB_convert_progress = 3 }
+						clamp_variable = {
+							var = PB_convert_progress
+							min = 0
+							max = 100
+						} 
+					}
+				}
+
+				else_if = {
+					limit = {
+						has_idea = PB_Limited_Autonomy
+						any_state = {
+							limit = {
+								OR = {
+									has_state_flag = PB_Culture_Accept_In_Progress
+									has_state_flag = PB_Culture_Convert_In_Progress
+								}
+								is_owned_by = ROOT
+							}
+						}
+					}
+					every_state = {
+						limit = {
+							OR = {
+								has_state_flag = PB_Culture_Accept_In_Progress
+								has_state_flag = PB_Culture_Convert_In_Progress
+							}
+							is_owned_by = ROOT
+						}
+						add_to_variable = { PB_convert_progress = 3 }
+						clamp_variable = {
+							var = PB_convert_progress
+							min = 0
+							max = 100
+						} 
+					}
+				}
+
+				else_if = {
+					limit = {						
+						has_idea = PB_Racial_Segregation
+						any_state = {
+							limit = {
+								has_state_flag = PB_Culture_Convert_In_Progress
+								is_owned_by = ROOT
+							}
+						}
+					}
+					every_state = {
+						limit = {
+							has_state_flag = PB_Culture_Convert_In_Progress
+							is_owned_by = ROOT
+						}
+						add_to_variable = { PB_convert_progress = 6 }
+						clamp_variable = {
+							var = PB_convert_progress
+							min = 0
+							max = 100
+						} 
+					}
+				}
+
+				else_if = {
+					limit = {
+						has_idea = PB_Racial_Segregation
+						any_state = {
+							limit = {
+								has_state_flag = PB_Culture_Accept_In_Progress
+								is_owned_by = ROOT
+							}
+						}
+					}
+					every_state = {
+						limit = {
+							has_state_flag = PB_Culture_Accept_In_Progress
+							is_owned_by = ROOT
+						}
+						add_to_variable = { PB_convert_progress = 3 }
+						clamp_variable = {
+							var = PB_convert_progress
+							min = 0
+							max = 100
+						} 
+					}
+				}
+				
+				else_if = {
+					limit = {
+						has_idea = PB_Racial_Hierarchy
+						any_state = {
+							limit = {
+								has_state_flag = PB_Culture_Convert_In_Progress
+								is_owned_by = ROOT
+							}
+						}
+					}
+					every_state = {
+						limit = {
+							has_state_flag = PB_Culture_Convert_In_Progress
+							is_owned_by = ROOT
+						}
+						add_to_variable = { PB_convert_progress = 9 }
+						clamp_variable = {
+							var = PB_convert_progress
+							min = 0
+							max = 100
+						} 
+					}
+				}
+			}
+		} 
+	}
+}

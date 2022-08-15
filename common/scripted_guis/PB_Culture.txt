@@ -1,0 +1,496 @@
+# Bernie will slowly take over the GUI world
+
+# No
+# - Scars
+
+# Yes
+# - Bernie
+
+# No!
+# - Scars
+
+# ={
+# - Bernie
+
+scripted_gui = {
+
+	PB_Political_Culture_Scripted_GUI = {
+		window_name = "PB_Pol_Culture_GUI"
+		context_type = player_context
+		parent_window_token = politics_tab
+		dynamic_lists = {
+			PB_Culture_Pol_grid = {
+				entry_container = "PB_Culture_Pol_entry"
+				array = PB_accepted_cultures
+				value = j
+			}
+		}
+		properties = {
+			icon = {
+				image = "GFX_PB_Culture_[?j]"
+			}
+		}
+		triggers = {
+			main_culture_visible = {
+				check_variable = { PB_main_culture = j }
+			}
+		}
+	}
+
+
+	PB_Culture_Scripted_GUI = {
+		window_name = "PB_Culture_GUI"
+		context_type = selected_state_context
+		parent_window_name = state_info_window
+		#dirty = culture_id
+
+        properties = {
+			PB_Culture_Icon = {
+				image = "GFX_PB_Culture_[?culture_id]"
+			}
+		}
+		triggers = {
+			PB_Pax_Culture_Bar_Blank_visible = {
+				is_owned_by = ROOT
+				ROOT = {
+                    is_subject = no
+                }
+				NOT = {
+   					is_in_array = {
+        				array = ROOT.PB_accepted_cultures
+        				value = culture_id
+    				}
+				}
+				check_variable = { PB_convert_progress = 0 }
+			}
+		}
+	}
+	
+	PB_Culture_Conversion_gui = {
+		window_name = "PB_Culture_Conversion_gui"
+		context_type = selected_state_context
+		parent_window_name = state_info_window
+		visible = {
+			is_owned_by = ROOT
+			ROOT = {
+				is_subject = no
+			}
+			NOT = {
+				is_in_array = {
+					array = ROOT.PB_accepted_cultures
+					value = culture_id
+				}
+			}
+		}
+		triggers = {
+			PB_Pax_foreign_culture_visible = {
+				NOT = {
+   					is_in_array = {
+        				array = ROOT.PB_accepted_cultures
+        				value = culture_id
+    				}
+				}
+				NOT = {
+					OR = {
+						has_state_flag = PB_Culture_Accept_In_Progress
+						has_state_flag = PB_Culture_Convert_In_Progress
+					}
+				}
+			}
+			PB_Pax_culture_change_visible = {
+				NOT = {
+   					is_in_array = {
+        				array = ROOT.PB_accepted_cultures
+        				value = culture_id
+    				}
+				}
+				OR = {
+					has_state_flag = PB_Culture_Accept_In_Progress
+					has_state_flag = PB_Culture_Convert_In_Progress
+				}
+			}
+			PB_Pax_Culture_Bar_Blank_visible = {
+				check_variable = { PB_convert_progress = 0 }
+			}
+			PB_Pax_Culture_Bar_visible = {
+				set_temp_variable = { convert_frame = PB_convert_progress }
+				divide_temp_variable = { convert_frame = 10 }
+				NOT = { check_variable = { PB_convert_progress = 0 } }
+			}
+			PB_Pax_Accept_Button_visible = {
+				ROOT = {
+					has_political_power > 149
+					has_manpower > 49999
+					num_of_available_civilian_factories > 0
+					NOT = {
+						has_idea = PB_Racial_Hierarchy
+						has_idea = PB_Culture_Civ_Cost10
+					}
+				}
+				NOT = {
+					OR = {
+						has_state_flag = PB_Culture_Accept_In_Progress
+						has_state_flag = PB_Culture_Convert_In_Progress
+					}
+				}
+			}
+			PB_Pax_Convert_Button_visible = {
+				ROOT = {
+					has_political_power > 149
+					has_manpower > 49999
+					num_of_available_civilian_factories > 0
+					NOT = {
+						has_idea = PB_Affirmitive_Action
+						has_idea = PB_Culture_Civ_Cost10
+					}
+				}
+				NOT = {
+					OR = {
+						has_state_flag = PB_Culture_Accept_In_Progress
+						has_state_flag = PB_Culture_Convert_In_Progress
+					}
+				}
+			}
+			PB_Pax_Accept_Button_Blocked_visible = {
+				ROOT = {
+					OR = {
+						has_political_power < 149
+						has_political_power = 149
+						has_manpower < 49999
+						has_manpower = 49999
+						num_of_available_civilian_factories = 0
+						has_idea = PB_Culture_Civ_Cost10
+					}
+					NOT = {
+						has_idea = PB_Racial_Hierarchy
+					}
+				}
+				NOT = {
+					OR = {
+						has_state_flag = PB_Culture_Accept_In_Progress
+						has_state_flag = PB_Culture_Convert_In_Progress
+					}
+				}
+			}
+			PB_Pax_Convert_Button_Blocked_visible = {
+				ROOT = {
+					OR = {
+						has_political_power < 149
+						has_political_power = 149
+						has_manpower < 49999
+						has_manpower = 49999
+						num_of_available_civilian_factories = 0
+						has_idea = PB_Culture_Civ_Cost10
+					}
+					NOT = {
+						has_idea = PB_Affirmitive_Action
+					}
+				}
+				NOT = {
+					OR = {
+						has_state_flag = PB_Culture_Accept_In_Progress
+						has_state_flag = PB_Culture_Convert_In_Progress
+					}
+				}
+			}
+		}
+		effects = {
+			PB_Pax_Accept_Button_click = {
+				set_state_flag = PB_Culture_Accept_In_Progress
+				remove_dynamic_modifier = { 
+					modifier = Foreign_Culture 
+				} 
+				add_dynamic_modifier = { 
+					modifier = Culture_Conversion 
+				} 
+				ROOT = {
+					scoped_sound_effect = "wholesome_chungus_sound"
+					add_to_variable = { PB_Active_Conversions = 1 }
+					clamp_variable = {
+						var = PB_Active_Conversions
+						min = 0
+						max = 10
+					} 
+					add_political_power = -150
+					add_manpower = -50000
+					if = {
+						limit = {
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost2
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost2
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost2
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost3
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost3
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost3
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost4
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost4
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost4
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost5
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost5
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost5
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost6
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost6
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost6
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost7
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost7
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost7
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost8
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost8
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost8
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost9
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost9
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost9
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost10
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost10
+					}
+					clr_country_flag = Culture_Idea_Swap_Block
+				}
+			}
+			PB_Pax_Convert_Button_click = {
+				set_state_flag = PB_Culture_Convert_In_Progress
+				remove_dynamic_modifier = { 
+					modifier = Foreign_Culture 
+				} 
+				add_dynamic_modifier = { 
+					modifier = Culture_Conversion 
+				} 
+				ROOT = {
+					scoped_sound_effect = "definitely_not_ethnic_cleansing"
+					add_to_variable = { PB_Active_Conversions = 1 }
+					clamp_variable = {
+						var = PB_Active_Conversions
+						min = 0
+						max = 10
+					} 
+					add_political_power = -150
+					add_manpower = -50000
+					if = {
+						limit = {
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost2
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost2
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost2
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost3
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost3
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost3
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost4
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost4
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost4
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost5
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost5
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost5
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost6
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost6
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost6
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost7
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost7
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost7
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost8
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost8
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost8
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost9
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost9
+					}
+					if = {
+						limit = {
+							has_idea = PB_Culture_Civ_Cost9
+							NOT = {
+								has_idea = PB_Culture_Civ_Cost10
+								has_country_flag = Culture_Idea_Swap_Block
+							}
+						}
+						set_country_flag = Culture_Idea_Swap_Block
+						add_ideas = PB_Culture_Civ_Cost10
+					}
+					clr_country_flag = Culture_Idea_Swap_Block
+				}
+			}
+
+		}
+		properties = {
+			PB_Pax_Culture_Bar = {
+				frame = convert_frame
+			}
+		}
+	}
+	
+	PB_Culture_debug_marker = {
+		window_name = "PB_Culture_debug_marker"
+		context_type = state_mapicon
+		visible = { ROOT = { has_country_flag = PB_Culture_debug_on } }
+		mapicon_targets = {
+			target_array = global.states
+		}
+		properties = {
+			marker_button = {
+				frame = FROM.Culture_debug_mark
+			}
+		}
+		effects = {
+			marker_button_click = {
+				FROM = {
+					if = {
+						limit = {
+							check_variable = { Culture_debug_mark = 2 }
+						}
+						set_variable = { Culture_debug_mark = 1 }
+					}
+					else = {
+						set_variable = { Culture_debug_mark = 2 }
+					}
+				}
+			}
+		}
+	}
+}
+
