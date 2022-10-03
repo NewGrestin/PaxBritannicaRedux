@@ -273,9 +273,9 @@ NDefines = {
 		WAR_SUPPORT_OFFNSIVE_WAR = -0.2,				-- Impact of being in offensive war
 		WAR_SUPPORT_DEFENSIVE_WAR = 0.2,				-- Impact of being in defensive war
 		WAR_SUPPORT_TENSION_IMPACT = 0.4,				-- Total impact of world tension
-		MIN_STABILITY = 0.0,
+		MIN_STABILITY = -1.0,
 		MAX_STABILITY = 1.0,
-		MIN_WAR_SUPPORT = 0.0,
+		MIN_WAR_SUPPORT = -1.0,
 		MAX_WAR_SUPPORT = 1.0,
 		FRONT_PROVINCE_SCORE = 20,    					-- Max province score of a front. Used for the hostile troop alert
 		MAJOR_IC_RATIO = 3,                             -- difference in total factories needed to be considered major with respect to other nation
@@ -3051,7 +3051,7 @@ NDefines = {
 	},
 	
 	NFocus = {
-		FOCUS_POINT_DAYS = 7,						-- Each point takes a week
+		FOCUS_POINT_DAYS = 1,						-- Each point takes a week
 		FOCUS_PROGRESS_PEACE = 1,					-- Progress during peace
 		FOCUS_PROGRESS_WAR = 1,					-- Progress during war
 		MAX_SAVED_FOCUS_PROGRESS = 10,				-- This much progress can be saved while not having a focus selected
