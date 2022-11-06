@@ -3087,7 +3087,7 @@ NAI = {
 },
 
 NFocus = {
-	FOCUS_POINT_DAYS = 7,						-- Each point takes a week
+	FOCUS_POINT_DAYS = 1,						-- Each point takes a week
 	FOCUS_PROGRESS_PEACE = 1,					-- Progress during peace
 	FOCUS_PROGRESS_WAR = 1,					-- Progress during war
 	MAX_SAVED_FOCUS_PROGRESS = 10,				-- This much progress can be saved while not having a focus selected
