@@ -4320,9 +4320,10 @@ country_event = {# Give some of Basque to Spain?
 			country_exists = BSQ 
 		}
 		tag = FRA
-		SPR = {
-			is_in_faction_with = FRA
-		}
+		owns_state = 172
+		#SPR = { #you *can* give it to them if you want ig
+		#	is_in_faction_with = FRA
+		#}
 	}
 
 	mean_time_to_happen = {
@@ -4341,7 +4342,30 @@ country_event = {# Give some of Basque to Spain?
 			}
 			add_stability = 0.1
 		}
-		add_political_power = -25
+		add_political_power = -10
+		ai_chance = {
+			factor = 100
+			modifier = {
+				factor = 0
+				SPR = {
+					OR = {
+						has_capitulated = yes
+						NOT = { is_in_faction_with = FRA }
+					}
+				}
+			}
+		}
+	}
+	option = { # no
+		name = French.86.b
+		SPR = {
+			add_opinion_modifier = {
+				target = FRA
+				modifier = medium_decrease
+			}
+		}
+		#event about deciding a governor
+		country_event = { id = French.96 hours = 4 }
 		ai_chance = {
 			factor = 100
 		}
@@ -4738,7 +4762,1249 @@ country_event = {# German Troops Retreat Into Denmark
 	}
 }
 
+country_event = {# Basque Governor
+	id = French.96
+	title = French.96.t
+	desc = French.96.d
+	picture = GFX_report_PB_French_Fascists
 
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #appoint Jose Luis de Arrese
+		name = French.96.a
+		trigger = {
+			has_country_leader_with_trait = PB_Pers_Charismatic
+		}
+		custom_effect_tooltip = PB_Pers_Charismatic_FRA_tt
+		172 = {
+			add_compliance = 25
+			add_resistance = -25
+		}
+		hidden_effect = {
+			BSQ = {
+				set_politics = {
+					ruling_party = ni
+					elections_allowed = no
+				}
+				add_popularity = {
+					ideology = ni
+					popularity = 0.2
+				}
+			}
+		}
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = { #appoint a SP guy
+		name = French.96.b
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_MIL_IN_POWER
+			}
+		}
+		hidden_effect = {
+			172 = {
+				set_state_flag = FRA_SP_management
+			}
+			country_event = { id = French.97 days = 3 random = 12 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = { #appoint a military guy
+		name = French.96.c
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_SP_IN_POWER
+			}
+		}
+		hidden_effect = {
+			country_event = { id = French.98 days = 3 random = 12 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+}
+
+country_event = {#adrien marquet exploiting anti-socialist tendencies in basque occupation
+	id = French.97
+	title = French.97.t
+	desc = French.97.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.97.a
+		ai_chance = {
+			factor = 100
+		}
+		172 = {
+			add_compliance = 10
+		}
+		hidden_effect = {
+			country_event = { id = French.99 days = 15 random = 120 }
+		}
+	}
+}
+
+country_event = {#military governor in basque crushing resistance
+	id = French.98
+	title = French.98.t
+	desc = French.98.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.97.a
+		ai_chance = {
+			factor = 100
+		}
+		172 = {
+			add_resistance = -15
+		}
+		hidden_effect = {
+			country_event = { id = French.100 days = 25 random = 240 }
+		}
+	}
+}
+
+country_event = {#basque controlled by SP
+	id = French.99
+	title = French.99.t
+	desc = French.99.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.99.a
+		ai_chance = {
+			factor = 100
+		}
+		172 = {
+			add_compliance = 10
+			add_resistance = -10
+			add_dynamic_modifier = { modifier = FRA_SP_governed_state }
+		}
+	}
+}
+
+country_event = {#basque controlled by militarists
+	id = French.100
+	title = French.100.t
+	desc = French.100.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.97.a
+		ai_chance = {
+			factor = 100
+		}
+		172 = {
+			add_compliance = 10
+			add_resistance = -10
+			add_dynamic_modifier = { modifier = FRA_militarist_governed_state }
+		}
+	}
+}
+
+country_event = {# Breton Governor
+	id = French.101
+	title = French.101.t
+	desc = French.101.d
+	picture = GFX_report_PB_French_Fascists
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #appoint Paul-Marie Gamory-Dubourdeau #c'mon french guys why you gotta have such long names
+		name = French.101.a
+		trigger = {
+			has_country_leader_with_trait = PB_Pers_Intelligent
+		}
+		custom_effect_tooltip = PB_Pers_Intelligent_FRA_tt
+		add_political_power = 25
+		14 = {
+			add_resistance = -20
+		}
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = { #appoint a SP guy
+		name = French.101.b
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_MIL_IN_POWER
+			}
+		}
+		hidden_effect = {
+			14 = {
+				set_state_flag = FRA_SP_management
+			}
+			country_event = { id = French.103 days = 7 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = { #appoint a military guy
+		name = French.101.c
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_SP_IN_POWER
+			}
+		}
+		hidden_effect = {
+			country_event = { id = French.105 days = 3 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+}
+
+country_event = {#brittany cored
+	id = French.102
+	title = French.102.t
+	desc = French.102.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #nice
+		name = French.102.a
+		ai_chance = {
+			factor = 100
+		}
+
+		add_state_core = 14
+	}
+}
+
+country_event = {#marc augier sways some Breton nationalist pagans
+	id = French.103
+	title = French.103.t
+	desc = French.103.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #nice... I guess?
+		name = French.103.a
+		ai_chance = {
+			factor = 100
+		}
+		add_manpower = 5
+		14 = {
+			add_compliance = 12
+		}
+		hidden_effect = {
+			country_event = { id = French.104 days = 13 }
+		}
+	}
+}
+
+country_event = {#breton SP state created
+	id = French.104
+	title = French.104.t
+	desc = French.104.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #poggers my esoteric fascists
+		name = French.103.a
+		ai_chance = {
+			factor = 100
+		}
+		14 = {
+			add_resistance = -10
+			add_dynamic_modifier = { modifier = FRA_SP_governed_state }
+		}
+	}
+}
+
+country_event = {#breton nationalists executed
+	id = French.105
+	title = French.105.t
+	desc = French.105.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #education from the bullet of a gun
+		name = French.103.a
+		ai_chance = {
+			factor = 100
+		}
+		14 = {
+			add_resistance = -20
+		}
+		add_stability = 0.01
+		hidden_effect = {
+			country_event = { id = French.106 days = 12 }
+		}
+	}
+}
+
+country_event = {#military production compound made in brittany
+	id = French.106
+	title = French.106.t
+	desc = French.106.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #thanks dawg
+		name = French.106.a
+		ai_chance = {
+			factor = 100
+		}
+		14 = {
+			add_extra_state_shared_building_slots = 1
+			add_building_construction = {
+				type = arms_factory
+				level = 1
+				instant_build = yes
+			}
+		}
+		hidden_effect = {
+			country_event = { id = French.107 days = 6 }
+		}
+	}
+}
+
+country_event = {#military state made in brittany
+	id = French.107
+	title = French.107.t
+	desc = French.107.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #thanks dawg
+		name = French.107.a
+		ai_chance = {
+			factor = 100
+		}
+		14 = {
+			add_compliance = 5
+			add_dynamic_modifier = { modifier = FRA_militarist_governed_state }
+		}
+	}
+}
+
+country_event = {# Walloon Governor
+	id = French.108
+	title = French.108.t
+	desc = French.108.d
+	picture = GFX_report_PB_French_Fascists
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #appoint victor matthys
+		name = French.108.a
+		trigger = {
+			has_country_leader_with_trait = PB_Pers_Ambitious
+		}
+		custom_effect_tooltip = PB_Pers_Ambitious_FRA_tt
+		random_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_compliance = 10
+		}
+		random_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_resistance = -10
+		}
+		hidden_effect = {
+			country_event = { id = French.109 days = 3 }
+		}
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = { #appoint a SP guy
+		name = French.108.b
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_MIL_IN_POWER
+			}
+		}
+		hidden_effect = {
+			34 = {
+				set_state_flag = FRA_SP_management
+			}
+			country_event = { id = French.110 days = 7 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = { #appoint a military guy
+		name = French.108.c
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_SP_IN_POWER
+			}
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_resistance = -5
+		}
+		hidden_effect = {
+			country_event = { id = French.111 days = 3 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+}
+
+country_event = {#Walloon propagandist sways public opinion
+	id = French.109
+	title = French.109.t
+	desc = French.109.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Agree
+		name = French.109.a
+		ai_chance = {
+			factor = 100
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_compliance = 8
+		}
+		hidden_effect = {
+			country_event = { id = French.112 days = 2 }
+		}
+	}
+}
+
+country_event = {#SP institutes reign of terror in Walloonia
+	id = French.110
+	title = French.110.t
+	desc = French.110.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.110.a
+		ai_chance = {
+			factor = 100
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_resistance = -10
+		}
+		hidden_effect = {
+			country_event = { id = French.113 days = 7 }
+		}
+	}
+}
+
+country_event = {#Militarists enact martial law in walloonia
+	id = French.111
+	title = French.111.t
+	desc = French.111.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.111.a
+		ai_chance = {
+			factor = 100
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_resistance = -5
+		}
+		army_experience = 2
+		hidden_effect = {
+			country_event = { id = French.114 days = 8 }
+		}
+	}
+}
+
+country_event = {#walloon resistance assassinates matthys
+	id = French.112
+	title = French.112.t
+	desc = French.112.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #replace with another walloon nationalist jose streel
+		name = French.112.a
+		ai_chance = {
+			factor = 100
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_resistance = 5
+		}
+		random_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_compliance = 5
+		}
+		hidden_effect = {
+			country_event = { id = French.115 days = 5 }
+		}
+	}
+	option = { #appoint a SP guy
+		name = French.112.b
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_MIL_IN_POWER
+			}
+		}
+		hidden_effect = {
+			34 = {
+				set_state_flag = FRA_SP_management
+			}
+			country_event = { id = French.110 days = 4 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+	option = { #appoint a military guy
+		name = French.112.c
+		trigger = {
+			NOT = {
+				has_country_flag = FRA_SP_IN_POWER
+			}
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_resistance = -5
+		}
+		hidden_effect = {
+			country_event = { id = French.111 days = 2 }
+		}
+		if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			if = {
+				limit = {
+					FRA = {
+						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+						NOT = {
+							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+						}
+					}
+				}
+				swap_ideas = {
+					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+				}
+				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+			}
+
+			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+		ai_chance = {
+			factor = 3
+		}
+	}
+}
+
+country_event = {#sp state in walloonia
+	id = French.113
+	title = French.113.t
+	desc = French.113.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.113.a
+		ai_chance = {
+			factor = 100
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_dynamic_modifier = { modifier = FRA_SP_governed_state }
+		}
+		random_owned_controlled_state = {
+			limit = {
+				is_core_of = WLA
+			}
+			add_extra_state_shared_building_slots = 1
+			add_building_construction = {
+				type = industrial_complex
+				level = 1
+				instant_build = yes
+			}
+		}
+		hidden_effect = {
+			country_event = { id = French.115 days = 4 }
+		}
+	}
+}
+
+country_event = {#militarist state in walloonia
+	id = French.114
+	title = French.114.t
+	desc = French.114.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.114.a
+		ai_chance = {
+			factor = 100
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_dynamic_modifier = { modifier = FRA_militarist_governed_state }
+		}
+		add_manpower = 2000
+		hidden_effect = {
+			country_event = { id = French.115 days = 4 }
+		}
+	}
+}
+
+country_event = {#walloonia cored
+	id = French.115
+	title = French.115.t
+	desc = French.115.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #Nice
+		name = French.115.a
+		ai_chance = {
+			factor = 100
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_controlled_by = FRA
+				is_core_of = WLA
+			}
+			add_core_of = FRA
+		}
+	}
+}
+
+country_event = {#test for dutch being SP controlled REMOVE WHEN STARTING WORK ON DIETSLAND STUFF
+	id = French.116
+	title = French.116.t
+	desc = French.116.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { #ye
+		name = French.116.a
+		ai_chance = {
+			factor = 100
+		}
+		7 = {
+			set_state_flag = FRA_SP_management
+		}
+	}
+}
 
 country_event = {#France invites Nationalist Turkey
 	id = French.1000
@@ -6395,6 +7661,11 @@ country_event = { #The SP demand Hannover
 				id = PBNews.172
 				days = 1
 			}
+			country_event = {
+				id = French_postwar.13
+				days = 30
+				random = 480
+			}
 		}	
 		HAN = { 
 			transfer_state = 56
@@ -6485,6 +7756,222 @@ country_event = { #The SP demand Hannover
 		add_to_variable = {
 			var = FRA_Factionalism
 			value = -0.06
+		}
+		every_state = {
+			limit = {
+				has_dynamic_modifier = {
+					modifier = FRA_militarist_governed_state
+				}
+			}
+			remove_dynamic_modifier = { modifier = FRA_militarist_governed_state }
+			add_dynamic_modifier = { modifier = FRA_militarist_governed_state_angry }
+		}
+	}
+	option = {
+		name = French_postwar.1.b
+		hidden_effect = {
+			#news_event = { #replace with new event for the SP uprising
+			#	id = PBNews.172 
+			#	days = 1
+			#}
+		}	
+		HAN = { 
+			transfer_state = 56
+			add_state_core = 56
+			transfer_state = 59
+			add_state_core = 59
+			transfer_state = 57
+			add_state_core = 57
+			transfer_state = 917
+			add_state_core = 917
+			set_cosmetic_tag = HAN_SP
+			division_template = {
+				name = "Division Expérimentale Automat"		
+				regiments = {
+					gw_basic_automat = { x = 0 y = 0 }
+					gw_basic_automat = { x = 0 y = 1 }
+					gw_basic_automat = { x = 0 y = 2 }
+					gw_basic_automat = { x = 1 y = 0 }
+					gw_basic_automat = { x = 1 y = 1 }
+					gw_basic_automat = { x = 1 y = 2 }
+				}
+				support = {
+					mot_recon = { x = 0 y = 0 } 
+				}
+				priority = 2
+			}
+
+			division_template = {
+				name = "Division d'Infanterie"		
+				regiments = {
+					infantry = { x = 0 y = 0 }
+					infantry = { x = 0 y = 1 }
+					infantry = { x = 0 y = 2 }
+					infantry = { x = 1 y = 0 }
+					infantry = { x = 1 y = 1 }
+					infantry = { x = 1 y = 2 }
+					infantry = { x = 2 y = 0 }
+					infantry = { x = 2 y = 1 }
+					infantry = { x = 2 y = 2 }
+					infantry = { x = 3 y = 0 }
+				}
+			}
+
+			division_template = {
+				name = "Division d'Sécurité Publique"
+
+				regiments = {
+					light_infantry = { x = 0 y = 0 }
+					light_infantry = { x = 0 y = 1 }
+					light_infantry = { x = 0 y = 2 }
+					infantry = { x = 1 y = 0 }
+					infantry = { x = 1 y = 1 }
+					infantry = { x = 1 y = 2 }
+				}
+				support = {
+					military_police = { x = 0 y = 0 }
+					recon = { x = 0 y = 1 } 
+				}
+			}
+
+			division_template = {
+				name = "Division d'Infanterie Motorisée"	
+
+				regiments = {
+					motorized = { x = 0 y = 0 }
+					motorized = { x = 0 y = 1 }
+					motorized = { x = 0 y = 2 }
+					motorized = { x = 1 y = 0 }
+					motorized = { x = 1 y = 1 }
+					motorized = { x = 1 y = 2 }
+					motorized = { x = 2 y = 0 }
+					motorized = { x = 2 y = 1 }
+					motorized = { x = 2 y = 2 }
+				}
+				support = {
+					recon = { x = 0 y = 0 }      
+					artillery = { x = 0 y = 1 }  
+				}
+			}
+
+			division_template = {
+				name = "Brigade de Chars de Combat"
+
+				regiments = {
+					light_armor = { x = 0 y = 0 }
+					light_armor = { x = 0 y = 1 }
+			        light_armor = { x = 1 y = 0 }
+					light_armor = { x = 1 y = 1 }
+					motorized = { x = 2 y = 0 }
+			        motorized = { x = 2 y = 1 }
+				}
+				support = {
+			        recon = { x = 0 y = 0 }
+			        engineer = { x = 0 y = 1 }
+				}
+			}
+		}
+		every_state = {
+			limit = {
+				is_core_of = FRA
+			}
+			add_core_of = HAN
+			if = {
+				limit = {
+					has_state_flag = FRA_SP_management
+				}
+				HAN = {
+					transfer_state = PREV
+				}
+				create_unit = {
+            division = "name = \"Division d'Sécurité Publique\" division_template = \"Division d'Sécurité Publique\" start_experience_factor = 0.4"
+          owner = HAN
+          count = 2
+        }
+        random_list = {
+        	25 = {
+        		create_unit = {
+            	division = "name = \"Division Expérimentale Automat d'Sécurité Publique\" division_template = \"Division Expérimentale Automat\" start_experience_factor = 0.3"
+		          owner = HAN
+		          count = 1
+		        }
+        	}
+        	40 = {
+        		create_unit = {
+            	division = "name = \"Division d'Sécurité Publique\" division_template = \"Division d'Infanterie\" start_experience_factor = 0.2"
+		          owner = HAN
+		          count = 1
+		        }
+        	}
+        	25 = {
+        		create_unit = {
+            	division = "name = \"Brigade de Chars d'Sécurité Publique\" division_template = \"Brigade de Chars de Combat\" start_experience_factor = 0.2"
+		          owner = HAN
+		          count = 1
+		        }
+        	}
+        }
+			}
+		}
+		HAN = {
+			set_politics = {
+				ruling_party = ni
+				elections_allowed = no
+				last_election = "1935.12.17"
+				election_frequency = 48
+			}
+			kill_country_leader = yes
+			add_popularity = {
+				ideology = ni
+				popularity = 0.5
+			}
+			if = {
+				limit = {
+					FRA = {
+						has_country_flag = FRA_Joseph_Darnand_SP
+					}
+				}
+				create_country_leader = {
+					name = "Joseph Darnand"
+					desc = "PB_Joseph_Darmand_DESC"
+					picture = "gfx/leaders/FRA/Portrait_PB_FRA_Joseph_Darmand.dds"
+					expire = "1965.1.1"
+					ideology = NI_VARIANT_01
+				}
+			}
+			if = {
+				limit = {
+					FRA = {
+					has_country_flag = FRA_Xavier_Vallat_SP
+					}
+				}
+				create_country_leader = {
+					name = "Xavier Vallat"
+					desc = "PB_Xavier_Vallat_DESC"
+					picture = "gfx/leaders/FRA/Portrait_PB_FRA_Xavier_Vallat.dds"
+					expire = "1965.1.1"
+					ideology = NI_VARIANT_01
+				}
+			}
+			if = {
+				limit = {
+					FRA = {
+					has_country_flag = FRA_Coco_Chanel_SP
+					}
+				}
+				create_country_leader = {
+					name = "Gabrielle Chanel"
+					desc = "PB_Gabrielle_Chanel_DESC"
+					picture = "gfx/leaders/FRA/Portrait_FRA_Gabrielle_Chanel.dds"
+					expire = "1965.1.1"
+					ideology = NI_VARIANT_01
+				}
+			}
+		}
+		custom_effect_tooltip = PB_FRA_SP_uprising
+		delete_unit_template_and_units = {
+			division_template = "Division d'Sécurité Publique"
+			disband = no
 		}
 	}
 }
@@ -6884,5 +8371,247 @@ country_event = { #Egypt
 
 	option = {
 		name = French_postwar.12.c 
+	}
+}
+
+country_event = { #The SP demand furhter autonomy
+	id = French_postwar.13
+	title = French_postwar.13.t
+	desc = French_postwar.13.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = {
+		name = French_postwar.13.a
+		HAN = { 
+			if = {
+				limit = {
+					7 = {
+						has_state_flag = FRA_SP_management
+					}
+				}
+				hidden_effect = {
+					transfer_state = 7
+					add_state_core = 7
+					transfer_state = 36
+					add_state_core = 36
+					transfer_state = 911
+					add_state_core = 911
+					transfer_state = 35
+					add_state_core = 35
+					transfer_state = 910
+					add_state_core = 910
+					transfer_state = 6
+					add_state_core = 6
+					transfer_state = 51
+					add_state_core = 51
+				}
+				custom_effect_tooltip = FRA_SP_allemania_grows_through_benelux
+			}
+		}
+		if = {
+			limit = {
+				14 = {
+					has_state_flag = FRA_SP_management
+				}
+			}
+			custom_effect_tooltip = PB_FRA_BRT_SP
+			hidden_effect = {
+				BRT = {
+					transfer_state = 14
+					set_cosmetic_tag = BRT_SP
+				}
+				FRA = {
+					if = {
+						limit = {
+							OR = {
+								has_dlc = "Together for Victory"
+								has_dlc = "Man the Guns"
+							}
+						}
+						set_autonomy = {
+							target = BRT
+							autonomous_state = autonomy_PB_Collaborator_State
+							freedom_level = 0.80
+						}
+						else = {
+							puppet = BRT
+						}
+					}
+				}
+				BRT = {
+					set_politics = {
+						ruling_party = ni
+						elections_allowed = no
+						last_election = "1935.12.17"
+						election_frequency = 48
+					}
+					kill_country_leader = yes
+					add_popularity = {
+						ideology = ni
+						popularity = 0.5
+					}
+					create_country_leader = {
+						name = "Marc Augier"
+						desc = "PB_Gabrielle_Chanel_DESC"
+						picture = "gfx/leaders/FRA/FRA_1.dds"
+						expire = "1965.1.1"
+						ideology = NI_VARIANT_01
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				172 = {
+					has_state_flag = FRA_SP_management
+				}
+			}
+			custom_effect_tooltip = PB_FRA_BSQ_SP
+			hidden_effect = {
+				BSQ = {
+					transfer_state = 172
+					set_cosmetic_tag = BSQ_SP
+				}
+				FRA = {
+					if = {
+						limit = {
+							OR = {
+								has_dlc = "Together for Victory"
+								has_dlc = "Man the Guns"
+							}
+						}
+						set_autonomy = {
+							target = BSQ
+							autonomous_state = autonomy_PB_Collaborator_State
+							freedom_level = 0.80
+						}
+						else = {
+							puppet = BSQ
+						}
+					}
+				}
+				BSQ = {
+					set_politics = {
+						ruling_party = ni
+						elections_allowed = no
+						last_election = "1935.12.17"
+						election_frequency = 48
+					}
+					kill_country_leader = yes
+					add_popularity = {
+						ideology = ni
+						popularity = 0.5
+					}
+					create_country_leader = {
+						name = "Adrien Marquet"
+						desc = "PB_Gabrielle_Chanel_DESC"
+						picture = "gfx/leaders/FRA/FRA_2.dds"
+						expire = "1965.1.1"
+						ideology = NI_VARIANT_01
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				7 = {
+					NOT = { has_state_flag = FRA_SP_management }
+				}
+				34 = {
+					has_state_flag = FRA_SP_management
+				}
+			}
+			custom_effect_tooltip = PB_FRA_WLA_SP
+			hidden_effect = {
+				WLA = {
+					transfer_state = 34
+					transfer_state = 788
+					set_cosmetic_tag = WLA_SP
+				}
+				FRA = {
+					if = {
+						limit = {
+							OR = {
+								has_dlc = "Together for Victory"
+								has_dlc = "Man the Guns"
+							}
+						}
+						set_autonomy = {
+							target = WLA
+							autonomous_state = autonomy_PB_Collaborator_State
+							freedom_level = 0.80
+						}
+						else = {
+							puppet = WLA
+						}
+					}
+				}
+				WLA = {
+					set_politics = {
+						ruling_party = ni
+						elections_allowed = no
+						last_election = "1935.12.17"
+						election_frequency = 48
+					}
+					kill_country_leader = yes
+					add_popularity = {
+						ideology = ni
+						popularity = 0.5
+					}
+					create_country_leader = {
+						name = "Marcel Gombert"
+						desc = "PB_Gabrielle_Chanel_DESC"
+						picture = "gfx/leaders/FRA/FRA_6.dds"
+						expire = "1965.1.1"
+						ideology = NI_VARIANT_01
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				7 = {
+					has_state_flag = FRA_SP_management
+				}
+				34 = {
+					has_state_flag = FRA_SP_management
+				}
+			}
+			hidden_effect = {
+				HAN = {
+					add_state_core = 34
+					transfer_state = 34
+					add_state_core = 788
+					transfer_state = 788
+					add_state_core = 855
+					transfer_state = 855
+				}
+			}
+		}
+		add_offsite_building = {
+			type = industrial_complex
+			level = 3
+		}
+		add_offsite_building = {
+			type = arms_factory
+			level = 3
+		}
+	}
+	option = { #no you got Hannover
+		name = French_postwar.13.b
+		every_state = {
+			limit = {
+				has_dynamic_modifier = {
+					modifier = FRA_SP_governed_state
+				}
+			}
+			remove_dynamic_modifier = { modifier = FRA_SP_governed_state }
+			add_dynamic_modifier = { modifier = FRA_SP_governed_state_angry }
+		}
+		add_political_power = -100
 	}
 }
