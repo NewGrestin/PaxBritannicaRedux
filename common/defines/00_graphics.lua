@@ -565,6 +565,9 @@ NAirGfx = {
 	AIRPLANES_1_SCOUT_PLANE_PATROL_ANIM = 1,
 	AIRPLANES_3_SCOUT_PLANE_PATROL_ANIM = 3,
 
+	STRAT_BOMBER_FIREBOMB_THRESHOLD = 42.0,         -- If a strategic bomber has a strat_bomber value >= this, then the firebombing animation will be used
+	STRAT_BOMBER_CARPETBOMB_THRESHOLD = 16.0,       -- If a strategic bomber has a strat_bomber value >= this, then the carpet-bombing animation will be used
+
 	BOMBERS_DIVISION_FACTOR = 60,					-- Number of effective bombers in a strategic region will be divided by this factor.
 	MISSILES_DIVISION_FACTOR = 60,					-- Number of missiles shown in a strategic region will be divided by this factor.
 	FIGHTERS_DIVISION_FACTOR = 40,					-- Number of missiles shown in a strategic region will be divided by this factor.
@@ -793,9 +796,15 @@ NGraphics = {
 	COUNTRY_FLAG_SMALL_TEX_WIDTH = 10,
 	COUNTRY_FLAG_SMALL_TEX_HEIGHT = 7,
 	COUNTRY_FLAG_SMALL_TEX_MAX_SIZE = 256, -- Tweak dependly on amount of countries. Must be power of 2. No more then 2048.
-	VICTORY_POINT_LEVELS = 2,
+	VICTORY_POINT_LEVELS = 3,
 	VICTORY_POINT_MAP_ICON_AFTER = {0, 20}, -- After this amount of VP the map icon becomes bigger dot.
+	VICTORY_POINT_MAP_ICON_CAPITAL_CUTOFF_MAX = 1000.0,	--Capitals are special snowflakes, they need their own number
 	VICTORY_POINT_MAP_ICON_TEXT_CUTOFF = {150, 250, 500},  -- At what camera distance the VP name text disappears.
+	VICTORY_POINT_MAP_ICON_TEXT_CUTOFF_MIN = 100.0, -- Min range for victory point text
+	VICTORY_POINT_MAP_ICON_TEXT_CUTOFF_MAX = 800.0, -- Max range for victory point text
+	VICTORY_POINT_MAP_ICON_DOT_CUTOFF_MIN = 100.0, -- Min range for victory point dot
+	VICTORY_POINT_MAP_ICON_DOT_CUTOFF_MAX = 1000.0, -- Max range for victory point text
+	VICTORY_POINT_MAP_ICON_MAX_VICTORY_POINTS_FOR_PERCENT = 22, -- Default max value for point on the above range. It doesn't matter much if the VP value exceeds this, it'll be treated as max.
 	VICTORY_POINTS_DISTANCE_CUTOFF = {250, 500, 1000}, -- At what distance VPs are hidden
 	AIRBASE_ICON_DISTANCE_CUTOFF = 900, -- At what distance air bases are hidden
 	NAVALBASE_ICON_DISTANCE_CUTOFF = 900, -- 1300, -- At what distance naval bases are hidden
@@ -1263,6 +1272,8 @@ NInterface = {
 	-- When selecting a module in the tank designer, for each role the module forbids a role icon may be displayed.
 	EQUIPMENT_DESIGNER_SHOW_MODULE_FORBIDS_BASE_ROLE_ICON = 0, -- If this is set to 0 no icon will be displayed if the main tank role is forbidden. If set to 1 the icon will be displayed as normal.
 	EQUIPMENT_DESIGNER_SHOW_MODULE_FORBIDS_SPECIALIZED_ROLE_ICON = 0, -- If this is set to 0 no icons will be displayed for any forbidden specialized roles. If set to 1 the icons will be displayed as normal.
+
+	MIO_CENTRAL_TREE_HORIZONTAL_POSITION = 1, -- Horizontal position for auto-generated MIO traits
 
 	SLOW_INTERFACE_THRESHOLD = 5000, -- Show warning "SLOW INTERFACE" in debug when interface refresh takes more that this (in microseconds)
 },
