@@ -568,11 +568,11 @@ NAirGfx = {
 	STRAT_BOMBER_FIREBOMB_THRESHOLD = 42.0,         -- If a strategic bomber has a strat_bomber value >= this, then the firebombing animation will be used
 	STRAT_BOMBER_CARPETBOMB_THRESHOLD = 16.0,       -- If a strategic bomber has a strat_bomber value >= this, then the carpet-bombing animation will be used
 
-	BOMBERS_DIVISION_FACTOR = 60,					-- Number of effective bombers in a strategic region will be divided by this factor.
+	BOMBERS_DIVISION_FACTOR = 30,					-- Number of bombers in a strategic region will be divided by this factor.
 	MISSILES_DIVISION_FACTOR = 60,					-- Number of missiles shown in a strategic region will be divided by this factor.
-	FIGHTERS_DIVISION_FACTOR = 40,					-- Number of missiles shown in a strategic region will be divided by this factor.
+	FIGHTERS_DIVISION_FACTOR = 30,					-- Number of missiles shown in a strategic region will be divided by this factor.
 	SCOUT_PLANE_DIVISION_FACTOR = 30,				-- Number of missiles shown in a strategic region will be divided by this factor.
-	TRANSPORT_DIVISION_FACTOR = 60,
+	TRANSPORT_DIVISION_FACTOR = 30,
 	MAX_MISSILE_BOMBING_SCENARIOS = 2,				-- Max number of missile bombing scenarios in a strategic region.
 	MAX_PATROL_SCENARIOS = 2,						-- Max number of patrol scenarios in a strategic region.
 	MAX_BOMBING_SCENARIOS = 2,						-- Max number of bombings scenarios in a strategic region.
@@ -797,7 +797,7 @@ NGraphics = {
 	COUNTRY_FLAG_SMALL_TEX_HEIGHT = 7,
 	COUNTRY_FLAG_SMALL_TEX_MAX_SIZE = 256, -- Tweak dependly on amount of countries. Must be power of 2. No more then 2048.
 	VICTORY_POINT_LEVELS = 3,
-	VICTORY_POINT_MAP_ICON_AFTER = {0, 20}, -- After this amount of VP the map icon becomes bigger dot.
+	VICTORY_POINT_MAP_ICON_AFTER = {0, 9, 20}, -- After this amount of VP the map icon becomes bigger dot.
 	VICTORY_POINT_MAP_ICON_CAPITAL_CUTOFF_MAX = 1000.0,	--Capitals are special snowflakes, they need their own number
 	VICTORY_POINT_MAP_ICON_TEXT_CUTOFF = {150, 250, 500},  -- At what camera distance the VP name text disappears.
 	VICTORY_POINT_MAP_ICON_TEXT_CUTOFF_MIN = 100.0, -- Min range for victory point text
@@ -805,7 +805,6 @@ NGraphics = {
 	VICTORY_POINT_MAP_ICON_DOT_CUTOFF_MIN = 100.0, -- Min range for victory point dot
 	VICTORY_POINT_MAP_ICON_DOT_CUTOFF_MAX = 1000.0, -- Max range for victory point text
 	VICTORY_POINT_MAP_ICON_MAX_VICTORY_POINTS_FOR_PERCENT = 22, -- Default max value for point on the above range. It doesn't matter much if the VP value exceeds this, it'll be treated as max.
-	VICTORY_POINTS_DISTANCE_CUTOFF = {250, 500, 1000}, -- At what distance VPs are hidden
 	AIRBASE_ICON_DISTANCE_CUTOFF = 900, -- At what distance air bases are hidden
 	NAVALBASE_ICON_DISTANCE_CUTOFF = 900, -- 1300, -- At what distance naval bases are hidden
 	RADAR_ICON_DISTANCE_CUTOFF = 1100, -- At what distance the radars are hidden
@@ -937,17 +936,20 @@ NGraphics = {
 	TRADE_ROUTE_BAD_EFFICIENCY_HOTSPOT_COLOR = { 1.0, 0.0, 0.0, 0.75 },
 	TRADE_ROUTE_PRODUCTION_TRANSFER_COLOR = { 0.0, 0.5, 1.0, 0.75 },
 	TRADE_ROUTE_SUPPLIES_TRANSFER_COLOR = { 1.0, 1.0, 1.0, 0.75 },
-	TRADE_ROUTE_RESOURCE_EXPORT_COLOR = { 0.5, 0.5, 1.0, 0.75 },
-	TRADE_ROUTE_RESOURCE_IMPORT_COLOR = { 0.5, 0.5, 1.0, 0.75 },
+	TRADE_ROUTE_RESOURCE_EXPORT_COLOR = { 0.7, 1.0, 0.5, 0.75 },
+	TRADE_ROUTE_RESOURCE_IMPORT_COLOR = { 0.2, 0.9, 1.0, 0.75 },
 	TRADE_ROUTE_LEND_LEASE_EXPORT_COLOR = { 0.5, 1.0, 0.0, 0.75 },
 	TRADE_ROUTE_LEND_LEASE_IMPORT_COLOR = { 0.5, 1.0, 0.0, 0.75 },
+	TRADE_ROUTE_INTERNATIONAL_MARKET_COLOR = {0.0, 1.0, 0.0, 0.75},
 
 	TRAIT_GRID_COLUMN_OFFSET = 3,
 	TRAIT_GRID_COLUMN_WIDTH = 208,
 	TRAIT_GRID_ROW_SHIFT = 48,
 
-	TRAIT_LINE_ASSIGNED_COLOR = { 0.47, 0.93, 0.65 },
-	TRAIT_LINE_NON_ASSIGNED_COLOR = { 0.67, 0.75, 0.93 },
+	--- Colors used for the trait trees (MIO and character trait trees)
+	TRAIT_LINE_ASSIGNED_COLOR = { 0.47, 0.93, 0.65 }, -- Color for parent dependency lines when the parent is assigned.
+	TRAIT_LINE_NON_ASSIGNED_COLOR = { 0.67, 0.75, 0.93 }, -- Color for parent dependency lines when the parent is not assigned assigned.
+	TRAIT_LINE_HIGHLIGHT_COLOR = { 1.0, 1.0, 0.0 }, -- Color for parent dependency lines to the parents when hovering over a trait.
 	TRAIT_INVALID_FOR_ASSIGNMENT_COLOR = { 0.8, 0.3, 0.3 },
 
 	PRIDE_OF_THE_FLEET_MODULATE = { 1.0, 0.95, 0.0, 1.0 }, -- pride of the fleet color
@@ -1341,4 +1343,3 @@ NFriendGUI = {
 }
 
 for k,v in pairs( NDefines_Graphics ) do NDefines[k] = v end
-	
