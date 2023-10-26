@@ -269,6 +269,10 @@ PB_MARS_Invasion_Command = {
 	}
 
 	MIF_Target_Neighbor = {
+		ai_will_do = {
+			factor = 100
+		}
+
 		target_root_trigger = {
 			OR = {
 				original_tag = TFH
@@ -296,6 +300,113 @@ PB_MARS_Invasion_Command = {
 					type = annex_everything
 				}
 			}
+		}
+	}
+
+	MIF_Integrate_State = {
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		target_root_trigger = {
+			OR = {
+				original_tag = TFH
+				original_tag = TFD
+				original_tag = TFP
+			}
+			has_completed_focus = MIF_Begin_Terraforming
+		}
+
+		days_remove = 25
+
+		modifier = {
+			civilian_factory_use = 1
+		}
+
+		state_target = yes
+
+		target_trigger = {
+			FROM = {
+				NOT = {
+					is_core_of = ROOT
+				}
+				OR = {
+					is_owned_by = ROOT
+					is_fully_controlled_by = ROOT
+				}
+				any_neighbor_state = {
+					is_core_of = ROOT
+				}
+			}
+		}
+		available = {
+			FROM = {
+				any_neighbor_state = {
+					is_core_of = ROOT
+				}
+			}
+		}
+		on_map_mode = map_and_decisions_view
+		icon = my_icon
+		cost = 50
+		complete_effect = {
+			FROM = {
+				add_core_of = ROOT
+				PB_Clear_Unique_Terrain = yes
+				add_province_modifier = {
+					static_modifiers = { red_weed }
+					province = {
+						all_provinces = yes
+					}			
+				}
+			}
+		}
+	}
+
+	PB_Process_Humans = {
+
+		icon = generic_decision
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		visible ={
+			OR = {
+				original_tag = TFH
+				original_tag = TFD
+				original_tag = TFP
+			}
+			has_completed_focus = MIF_Liquidation
+		}
+
+		available = {
+			ROOT = {
+				has_completed_focus = MIF_Liquidation
+			}
+		}
+
+		modifier = {
+			civilian_factory_use = 5
+		}
+
+		days_remove = 30
+
+		fire_only_once = yes
+
+		remove_effect = {
+			random_owned_controlled_state = {
+				limit = { 
+					ROOT = { 
+						has_full_control_of_state = PREV 
+					} 
+				}
+				add_manpower = -1500
+			}
+			add_fuel = 1500
 		}
 	}
 
