@@ -11,7 +11,10 @@ PB_MARS_Invasion_Command = {
 					original_tag = TFD
 				}
 			}
-			has_completed_focus = MIF_Home_away_from_Home
+			OR = {
+				date > 1934.01.01
+				has_completed_focus = MIF_Home_away_from_Home			
+			}
 		}
 
 		activation = {                         
@@ -21,7 +24,10 @@ PB_MARS_Invasion_Command = {
 				original_tag = TFD
 			}  
 			NOT = {
-				has_completed_focus = MIF_Home_away_from_Home
+				OR = {
+					has_completed_focus = MIF_Home_away_from_Home
+					date > 1934.01.01					
+				}
 			}             
 		}
 
@@ -268,41 +274,6 @@ PB_MARS_Invasion_Command = {
 		}
 	}
 
-	MIF_Target_Neighbor = {
-		ai_will_do = {
-			factor = 100
-		}
-
-		target_root_trigger = {
-			OR = {
-				original_tag = TFH
-				original_tag = TFD
-				original_tag = TFP
-			}
-		}
-		target_trigger = {
-			FROM = {
-				is_neighbor_of = ROOT
-			}
-		}
-		available = {
-			ROOT = {
-				has_war = no
-			}
-		}
-		on_map_mode = map_and_decisions_view
-		icon = my_icon
-		cost = 0
-		complete_effect = {
-			ROOT = {
-				declare_war_on = {
-					target = FROM
-					type = annex_everything
-				}
-			}
-		}
-	}
-
 	MIF_Integrate_State = {
 
 		ai_will_do = {
@@ -313,7 +284,6 @@ PB_MARS_Invasion_Command = {
 			OR = {
 				original_tag = TFH
 				original_tag = TFD
-				original_tag = TFP
 			}
 			has_completed_focus = MIF_Begin_Terraforming
 		}
@@ -350,7 +320,62 @@ PB_MARS_Invasion_Command = {
 		on_map_mode = map_and_decisions_view
 		icon = my_icon
 		cost = 50
-		complete_effect = {
+		remove_effect = {
+			FROM = {
+				add_core_of = ROOT
+				PB_Clear_Unique_Terrain = yes
+				add_province_modifier = {
+					static_modifiers = { red_weed }
+					province = {
+						all_provinces = yes
+					}			
+				}
+			}
+		}
+	}
+
+	MIF_Integrate_State_TFP = {
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		target_root_trigger = {
+			original_tag = TFP
+			has_completed_focus = MIF_Begin_Terraforming
+		}
+
+		days_remove = 25
+
+		modifier = {
+			civilian_factory_use = 1
+		}
+
+		state_target = yes
+
+		target_trigger = {
+			FROM = {
+				NOT = {
+					is_core_of = ROOT
+				}
+				OR = {
+					is_owned_by = ROOT
+					is_fully_controlled_by = ROOT
+				}
+			}
+		}
+		available = {
+			FROM = {
+				OR = {
+					is_owned_by = ROOT
+					is_fully_controlled_by = ROOT						
+				}
+			}
+		}
+		on_map_mode = map_and_decisions_view
+		icon = my_icon
+		cost = 50
+		remove_effect = {
 			FROM = {
 				add_core_of = ROOT
 				PB_Clear_Unique_Terrain = yes
@@ -488,12 +513,9 @@ PB_MARS_Invasion_Command = {
 						controls_state = 126					
 					}
 				}	
-				OR = {
-					ENG = {
-						has_capitulated = yes
-						exists = no
-					}					
-				}	
+				ENG = {
+					exists = no
+				}
 			}	
 		}
 
