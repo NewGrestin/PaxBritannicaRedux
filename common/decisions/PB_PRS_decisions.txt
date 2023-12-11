@@ -7,10 +7,9 @@ PB_PRS_Consolidate_The_State = {
 
 		available = {
 			763 = {
-				owner = {
+				controller = {
 					tag = PRS
 				}
-				is_core_of = PRS
 			}
 		}
 
@@ -49,10 +48,9 @@ PB_PRS_Consolidate_The_State = {
 
 		available = {
 			5 = {
-				owner = {
+				controller = {
 					tag = PRS
 				}
-				is_core_of = PRS
 			}
 		}
 
@@ -91,10 +89,9 @@ PB_PRS_Consolidate_The_State = {
 
 		available = {
 			85 = {
-				owner = {
+				controller = {
 					tag = PRS
 				}
-				is_core_of = PRS
 			}
 		}
 
@@ -133,10 +130,9 @@ PB_PRS_Consolidate_The_State = {
 
 		available = {
 			86 = {
-				owner = {
+				controller = {
 					tag = PRS
 				}
-				is_core_of = PRS
 			}
 		}
 
@@ -144,13 +140,58 @@ PB_PRS_Consolidate_The_State = {
 			factor = 4000
 		}
 
-		fire_only_once = yes
+		days_re_enable = 30
 
 		on_map_mode = map_only
 
 		state_target = yes
 
 		targets = { state = 86 }
+
+        days_remove = 14
+
+		modifier = {
+			stability_weekly = -0.005
+		}
+
+		remove_effect = {
+			add_popularity = {
+				ideology = an
+				popularity = 0.05
+			}
+		
+		}
+	}
+
+	PRS_Political_Maneuvers_In_Memel = {
+
+		icon = GFX_decision_eng_trade_unions_demand
+
+		cost = 30
+
+		visible = {
+			owns_state = 188
+		}
+
+		available = {
+			188 = {
+				controller = {
+					tag = PRS
+				}
+			}
+		}
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_re_enable = 30
+
+		on_map_mode = map_only
+
+		state_target = yes
+
+		targets = { state = 188 }
 
         days_remove = 14
 
@@ -3512,4 +3553,671 @@ PB_PRS_Origin_Of_Our_People = {
 
 }
 
+PB_PRS_Against_The_Slavic_Horde = {
+
+	PRS_Restore_Political_Confidence = {
+
+		icon = GFX_decision_generic_special_forces
+
+		visible = {
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PRS_Restore_Political_Confidence_tt
+				check_variable = { PRS_Failed_Operations > 4 }
+			}
+		}
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 200
+		}
+
+		fire_only_once = yes
+
+		complete_effect = {
+			add_stability = -0.1
+			add_political_power = 100
+			add_war_support = 0.1
+			add_popularity = {
+				ideology = rc
+				popularity = 0.15
+			}
+			set_politics = {
+				ruling_party = rc
+				elections_allowed = no
+			}
+			hidden_effect = {
+				kill_country_leader = yes
+			}
+			create_country_leader = {
+				name = "Alfred Rosenberg"
+				desc = "PB_Alfred_Rosenberg_DESC"
+				picture = "Portrait_PRS_Alfred_Rosenberg.dds"
+				expire = "1965.1.1"
+				ideology = RC_VARIANT_01
+			}
+			add_ideas = PB_Military_Government
+			add_ideas = PB_Managed_Democracy
+			add_ideas = PB_PRS_Puppet_King
+		}
+	}
+
+	PRS_Extend_War_Aims = {
+
+		icon = GFX_decision_generic_scorched_earth
+
+		visible = {
+		}
+
+		available = {
+			has_stability > 0.045
+		}
+
+		custom_cost_trigger = { has_stability > 0.045 }
+		custom_cost_text = decision_cost_5_stability
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 200
+		}
+
+		fire_only_once = yes
+
+		complete_effect = {
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Warsaw
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Krakow
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Kiev
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Minsk
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Moscow
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Riga
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Sevastopol
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_St_Petersburg
+				days = 50
+			}
+			add_days_mission_timeout = {
+				mission = PRS_Secure_Tsaritsyn
+				days = 50
+			}
+		}
+	}
+
+	PRS_Secure_Warsaw = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			OR = {
+				AND = {
+					POL = {
+						controls_state = 10
+						has_war_with = PRS
+					}
+				}
+				AND = {
+					RUS = {
+						controls_state = 10
+						has_war_with = PRS
+					}
+				}
+			}      
+		}
+
+		available = {
+			OR = {
+				10 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				NOT = {
+					has_war_with = RUS
+				}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 150
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_Krakow = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			OR = {
+				AND = {
+					POL = {
+						controls_state = 88
+						has_war_with = PRS
+					}
+				}
+				AND = {
+					RUS = {
+						controls_state = 88
+						has_war_with = PRS
+					}
+				}
+				AND = {
+					PGA = {
+						controls_state = 88
+						has_war_with = PRS
+					}
+				}
+			}      
+		}
+
+		available = {
+			OR = {
+				88 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				NOT = {
+					has_war_with = RUS
+				}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 200
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_Riga = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			OR = {
+				AND = {
+					BAL = {
+						controls_state = 10
+						has_war_with = PRS
+					}
+				}
+				AND = {
+					RUS = {
+						controls_state = 10
+						has_war_with = PRS
+					}
+				}
+			}       
+		}
+
+		available = {
+			OR = {
+				12 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				NOT = {
+					has_war_with = RUS
+				}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 365
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_Minsk = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			AND = {
+				RUS = {
+					controls_state = 88
+					has_war_with = PRS
+				}
+			}     
+		}
+
+		available = {
+			OR = {
+				206 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				NOT = {
+					has_war_with = RUS
+				}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 365
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_Kiev = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			AND = {
+				RUS = {
+					controls_state = 202
+					has_war_with = PRS
+				}
+			}     
+		}
+
+		available = {
+			OR = {
+				202 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				#NOT = {
+				#	has_war_with = RUS
+				#}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 365
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_Sevastopol = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			AND = {
+				RUS = {
+					controls_state = 137
+					has_war_with = PRS
+				}
+			}     
+		}
+
+		available = {
+			OR = {
+				137 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				#NOT = {
+				#	has_war_with = RUS
+				#}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 365
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_St_Petersburg = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			AND = {
+				RUS = {
+					controls_state = 195
+					has_war_with = PRS
+				}
+			}     
+		}
+
+		available = {
+			OR = {
+				195 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				NOT = {
+					has_war_with = RUS
+				}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 450
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_Moscow = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			AND = {
+				RUS = {
+					controls_state = 219
+					has_war_with = PRS
+				}
+			}    
+		}
+
+		available = {
+			OR = {
+				219 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				#NOT = {
+				#	has_war_with = RUS
+				#}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 450
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+	PRS_Secure_Tsaritsyn = {
+
+		icon = GFX_decision_infiltrate_state
+
+		activation = { 
+			has_completed_focus = PB_PRS_Europes_Eastern_Legion 
+			AND = {
+				RUS = {
+					controls_state = 217
+					has_war_with = PRS
+				}
+			}     
+		}
+
+		available = {
+			OR = {
+				217 = {
+					OR = {
+						controller = { 
+							is_in_faction_with = PRS
+						}
+						controller = { 
+							tag = PRS
+						}
+					}
+				}
+				#NOT = {
+				#	has_war_with = RUS
+				#}
+			}
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = yes
+				
+		days_mission_timeout = 450
+
+		timeout_effect = {
+			add_war_support = -0.05
+			add_stability = -0.05
+			add_political_power = -25
+			add_to_variable = {
+				var = PRS_Failed_Operations
+				value = 1
+				tooltip = PRS_Failed_Operations_tt
+			}
+		}
+
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.05
+			add_political_power = 25
+			army_experience = 15
+		}
+	}
+
+}
 
