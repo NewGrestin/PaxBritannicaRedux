@@ -152,7 +152,6 @@ PB_ENG_Imperial_Tension_Category = {
 
 		icon = anglois_crisis_decisions
 		
-		cost = 50
 
 		ai_will_do = {
 			factor = 50
@@ -186,6 +185,8 @@ PB_ENG_Imperial_Tension_Category = {
 		#	tag = QUE
 		#}
 
+		war_with_on_timeout = AME
+
 		highlight_states = {
 			highlight_state_targets = {
 				state = 950
@@ -201,6 +202,7 @@ PB_ENG_Imperial_Tension_Category = {
 		days_re_enable = 1
 
 		timeout_effect = {
+			#Locals and GFX
             custom_effect_tooltip = AME_Spacing_tt
 
 			custom_effect_tooltip = fate_cavelier_tt
@@ -221,15 +223,32 @@ PB_ENG_Imperial_Tension_Category = {
 
 			custom_effect_tooltip = fate_superieur_tt
 
-			custom_effect_tooltip = AME_Spacing_tt
-
-			ENG  = { add_stability = 0.05 add_political_power = 50 }
-			QUE  = { add_stability = -0.05 add_political_power = -100 }
+			#custom_effect_tooltip = AME_Spacing_tt
 
 			custom_effect_tooltip = AME_Spacing_tt
 
 			custom_effect_tooltip = what_if_angloiscrisis_fails_tt	
 			custom_effect_tooltip = AME_Spacing_tt	
+
+			#Actual Effects
+
+			ENG  = { add_stability = 0.05 add_political_power = 50 }
+			QUE  = { add_stability = -0.1 add_political_power = -100 }
+
+			hidden_effect = {
+				#if = {
+				#	limit = {
+				#		
+				#	}
+				#	AME = {		
+				#		country_event = {
+				#			id = Anglois_Crisis.21
+				#			days = 2
+				#		}	
+				#	}
+				#}	
+
+			}	
 		}
 	}
 
@@ -239,7 +258,6 @@ PB_ENG_Imperial_Tension_Category = {
 
 		icon = anglois_crisis_decisions
 		
-		cost = 50
 
 		ai_will_do = {
 			factor = 50
@@ -284,10 +302,15 @@ PB_ENG_Imperial_Tension_Category = {
 			original_tag = AME
 		}
 
+		war_with_on_timeout = QUE
+		war_with_on_timeout = ENG
+
+
 		days_remove = 1
 		days_re_enable = 1
 
 		timeout_effect = {
+			#Locals and GFX
             custom_effect_tooltip = AME_Spacing_tt
 
 			custom_effect_tooltip = fate_cavelier_tt
@@ -308,14 +331,89 @@ PB_ENG_Imperial_Tension_Category = {
 
 			custom_effect_tooltip = fate_superieur_tt
 
-			custom_effect_tooltip = AME_Spacing_tt
+			custom_effect_tooltip = AME_Spacing_tt	
 
-			AME = { add_stability = 0.05 add_political_power = 50 }
-
-			custom_effect_tooltip = AME_Spacing_tt
+			#custom_effect_tooltip = AME_Spacing_tt
 
 			custom_effect_tooltip = what_if_angloiscrisis_fails_tt	
 			custom_effect_tooltip = AME_Spacing_tt	
+
+			#Actual Effects
+
+			#AME = { add_stability = 0.05 add_political_power = 50 }
+
+			hidden_effect = {
+
+				#If America Gets NOTHING
+				if = {
+					limit = {
+						AME = {
+								AND  = {
+								NOT = { has_country_flag = Cavelier_is_American }
+								NOT = { has_country_flag = Wisconsin_is_American }
+								NOT = { has_country_flag = Michigan_is_American }
+								NOT = { has_country_flag = Huron_is_American }
+								NOT = { has_country_flag = Superieur_is_American }
+								}	
+						}		
+					}
+					
+					AME = {		
+						country_event = {
+							id = Anglois_Crisis.21
+							days = 2
+						}	
+					}
+				}	
+
+				#If America Gets Something
+				if = {
+					limit = {
+						AME = {
+								has_country_flag = Cavelier_is_American 
+								OR = {
+								NOT = { has_country_flag = Huron_is_American }
+								NOT = { has_country_flag = Superieur_is_American }
+								}	
+						}		
+					}
+					
+					AME = {		
+						country_event = {
+							id = Anglois_Crisis.22
+							days = 2
+						}	
+					}
+				}	
+
+
+				#If America Gets EVERYTHING
+				if = {
+					limit = {
+						AME = {
+								AND  = {
+								  has_country_flag = Cavelier_is_American 
+								  has_country_flag = Wisconsin_is_American 
+								  has_country_flag = Michigan_is_American 
+								  has_country_flag = Huron_is_American 
+								  has_country_flag = Superieur_is_American 
+								}	
+						}		
+					}
+					
+					AME = {		
+						country_event = {
+							id = Anglois_Crisis.23
+							days = 2
+						}	
+					}
+				}	
+
+
+
+
+			}	
+
 		}
 	}
 
@@ -332,6 +430,7 @@ PB_ENG_Imperial_Tension_Category = {
 
 		available = {
 			original_tag = AME
+
 			NOT = {
                AME = {
 			    	has_country_flag = {
@@ -340,6 +439,14 @@ PB_ENG_Imperial_Tension_Category = {
 			    	}
 			    }
 		    }
+
+			NOT = {
+				custom_trigger_tooltip = {
+					tooltip = AME_Cavelier_Secured_Not_tt
+					has_country_flag = Cavelier_is_American
+				}
+			}
+			
 		}
 
 
@@ -399,6 +506,13 @@ PB_ENG_Imperial_Tension_Category = {
 			    		days < 10
 			    	}
 			    }
+			}
+
+			NOT = {
+				custom_trigger_tooltip = {
+					tooltip = AME_Wisconsin_Secured_Not_tt
+					has_country_flag = Wisonsin_is_American
+				}
 			}
 		}	
 
@@ -460,6 +574,13 @@ PB_ENG_Imperial_Tension_Category = {
 			    	}
 			    }
 			}
+
+			NOT = {
+				custom_trigger_tooltip = {
+					tooltip = AME_Michigan_Secured_Not_tt
+					has_country_flag = Michigan_is_American
+				}
+			}
 		}
 
 		visible = {
@@ -517,6 +638,13 @@ PB_ENG_Imperial_Tension_Category = {
 			    	}
 			    }
 			}
+
+			NOT = {
+				custom_trigger_tooltip = {
+					tooltip = AME_Huron_Secured_Not_tt
+					has_country_flag = Huron_is_American
+				}
+			}
 		}	
 
 		visible = {
@@ -573,6 +701,13 @@ PB_ENG_Imperial_Tension_Category = {
 			    		days < 10
 			    	}
 			    }
+			}
+
+			NOT = {
+				custom_trigger_tooltip = {
+					tooltip = AME_Superieur_Secured_Not_tt
+					has_country_flag = Superieur_is_American
+				}
 			}
 		}	
 
@@ -650,10 +785,10 @@ PB_ENG_Imperial_Tension_Category = {
 				value = -5
 			}
 
-			add_power_balance_value = {
-				id = EMG_AME_power_balance
-				value = 0.025
-			}
+			#add_power_balance_value = {
+			#	id = EMG_AME_power_balance
+			#	value = 0.025
+			#}
 
 			custom_effect_tooltip = AME_Spacing_tt
 
@@ -691,7 +826,7 @@ PB_ENG_Imperial_Tension_Category = {
 				support_equipment > 999
 			}
 			has_equipment = {
-				artillery_equipment > 499
+				artillery_equipment > 999
 			}
 			
 		}	
