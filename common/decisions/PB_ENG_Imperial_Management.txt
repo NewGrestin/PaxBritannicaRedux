@@ -1653,7 +1653,7 @@ PB_ENG_Imperial_Management = {
 		cost = UC_first_Acadia_cost
 
 		ai_will_do = {
-			factor = 50
+			factor = 1
 		}
 
 		available = {
@@ -1694,11 +1694,19 @@ PB_ENG_Imperial_Management = {
 		days_remove = 25
 		days_re_enable = 180
 
+		modifier = {
+			civilian_factory_use = 1
+		}
+
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			#PB_ENG_Increase_Imperial_Tension_Small = yes
+			add_power_balance_value = {
+				id = EMG_AME_power_balance
+				value = -0.05
+			}
 			AME = {
 				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
-				}
+			}
 		}
 
 		remove_effect = {
@@ -1710,6 +1718,101 @@ PB_ENG_Imperial_Management = {
 
 				PB_ImpMan_Increase_ACD_AME_Influence = yes
 			}
+		}
+	}
+
+	PM_AME_American_Acadiana_Binding = {
+
+		icon = GFX_decision_eng_puppet_usa
+		
+		cost = UC_first_Acadia_cost
+
+		ai_will_do = {
+			factor = 1
+		}
+
+		available = {
+			original_tag = AME
+			AME = {
+				NOT = {
+					has_completed_focus = PB_AME_Rebuild_Acadia
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = ImpManagement_Acd_80_tt
+					check_variable = {
+						ImpManagement_ACD > 80
+					}
+			}
+			ACD = {
+				exists = yes
+				is_in_faction_with = AME
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_Imp_90_Tension_Limit_Under
+				check_variable = { global.ENG_Empire_Tension < 90 }
+			}
+			#NOT = {
+			#	AME = {
+			#		has_country_flag = {
+			#			flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			#			days < 100
+			#		}
+			#	}
+			#}
+		}
+
+		cancel_trigger = {
+			custom_trigger_tooltip = {
+				tooltip = PB_Imp_90_Tension_Limit
+				check_variable = { global.ENG_Empire_Tension > 90 }
+			}
+		}
+
+		targets = { 
+			tag = ACD
+		}
+
+		visible = {
+			original_tag = AME
+		}
+
+		days_remove = 30
+		#days_re_enable = 180
+
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 3
+			political_power_gain = -0.05
+		}
+
+		complete_effect = {
+			PB_ENG_Increase_Imperial_Tension_Small = yes
+			add_power_balance_value = {
+				id = EMG_AME_power_balance
+				value = -0.15
+			}
+			AME = {
+			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			}
+		}
+
+		remove_effect = {
+
+			add_political_power = 50
+
+			custom_effect_tooltip = ENG_ACD_Blocked_tt
+			set_global_flag = ENG_ACD_Blocked_flag
+
+			PB_ImpMan_Increase_ACD_AME_Influence = yes
+
+			#ACD = {
+			#	country_event = {
+			#		id = ImpCiv.2
+			#		days = 7
+			#	}
+			#}
 		}
 	}
 
@@ -1739,7 +1842,14 @@ PB_ENG_Imperial_Management = {
 			    	flag = PAX_Confederation_Struggle_Decisions_Flag_England
 					days > 100
 			    }
-			    }
+			}
+
+			NOT = {
+				custom_trigger_tooltip = {
+					tooltip = ENG_ACD_Blocked_explain_tt
+					has_global_flag = ENG_ACD_Blocked_flag
+				}
+			}
 		}
 
 		cancel_trigger = {
