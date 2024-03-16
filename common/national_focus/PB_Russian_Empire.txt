@@ -1863,7 +1863,7 @@ focus_tree = {
 		icon = GFX_goal_PB_RUS_Create_Gosplan
 		x = -8
 		y = 4
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -1883,7 +1883,21 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			set_variable = {
+				RUS_Gosplan_production_speed_farm_factor = 0
+			}
+			set_variable = {
+				RUS_Gosplan_consumer_goods_factor = 0
+			}
+			set_variable = {
+				RUS_Gosplan_production_speed_arms_factory_factor = 0
+			}
+			set_variable = {
+				RUS_Gosplan_industrial_capacity_factory = 0
+			}
+			add_dynamic_modifier = {
+				modifier = RUS_Gosplan_Dynamic_Modifier
+			}
 		}
 	}
 
@@ -1892,7 +1906,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Reorganize_Ukrainian_Grain
 		x = -9
 		y = 5
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -1916,7 +1930,12 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			add_to_variable = {
+				var = RUS_Gosplan_production_speed_farm_factor
+				value = 0.05
+				tooltip = RUS_Gosplan_increase_farm_construction_tt
+			}
+			PB_RUS_Decrease_Ukrainian_Resistance = yes
 		}
 	}
 
@@ -1925,7 +1944,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Work_with_Kulaks
 		x = -7
 		y = 5
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -1949,7 +1968,12 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			modify_building_resources = {
+				building = farm
+				resource = grain
+				amount = 1
+			}
+			PB_RUS_Okhrana_Resource_Drop_Medium = yes
 		}
 	}
 
@@ -1958,7 +1982,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Increase_Military_Budget
 		x = -9
 		y = 6
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -1983,7 +2007,16 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			add_to_variable = {
+				var = RUS_Gosplan_production_speed_arms_factory_factor
+				value = 0.05
+				tooltip = RUS_Gosplan_increase_mil_construction_tt
+			}
+			add_popularity = {
+				ideology = ni
+				popularity = 0.05
+			}
+			PB_MilitaryReform_Moderate_Progress_Increase = yes
 		}
 	}
 
@@ -1992,7 +2025,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Integrate_Unions
 		x = -7
 		y = 6
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2017,7 +2050,20 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			add_popularity = {
+				ideology = ss
+				popularity = 0.05
+			}
+			add_to_variable = {
+				var = RUS_Gosplan_consumer_goods_factor
+				value = -0.05
+				tooltip = RUS_Gosplan_decrease_consumer_goods_tt
+			}
+			add_to_variable = {
+				var = RUS_Gosplan_industrial_capacity_factory
+				value = 0.05
+				tooltip = RUS_Gosplan_increase_factory_output_tt
+			}
 		}
 	}
 
@@ -2026,7 +2072,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Focus_on_Metropolitan_Russia
 		x = -9
 		y = 7
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2051,7 +2097,10 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			swap_ideas = {
+				remove_idea = PB_RUS_Middle_Class_Rising
+				add_idea = PB_RUS_Middle_Class_Rising_But_Better
+			}
 		}
 	}
 
@@ -2060,7 +2109,7 @@ focus_tree = {
 		icon = GFX_goal_PB_First_Five_Year_Plan
 		x = -7
 		y = 7
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2085,7 +2134,7 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			activate_mission = PB_RUS_First_Five_Year_Plan_Mission
 		}
 	}
 
@@ -2094,7 +2143,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Economic_Integrate_Poland
 		x = -11
 		y = 8
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2109,13 +2158,33 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_STABILITY}
 
         available = {
-			always = no
+			RUS = {
+				AND = {
+					OR = {
+						has_completed_focus = PB_RUS_Three_Brothers_Policy
+						has_completed_focus = PB_RUS_Russify_Poland
+					}
+					check_variable = {
+						var = RUS_Polish_Resistance_Power
+						value = 20
+						compare = less_than
+					}
+				}
+			}
         }
 
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			annex_country = {
+				target = POL
+				transfer_troops = yes
+			}
+			annex_country = {
+				target = PGA
+				transfer_troops = yes
+			}
+			PB_RUS_Decrease_Polish_Resistance = yes
 		}
 	}
 
@@ -2124,7 +2193,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Economic_Integrate_Baltic
 		x = -9
 		y = 8
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2138,14 +2207,30 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_POLITICAL}
 		search_filters = {FOCUS_FILTER_STABILITY}
 
-        available = {
-			always = no
-        }
+		available = {
+			RUS = {
+				AND = {
+					OR = {
+						has_completed_focus = PB_RUS_Three_Brothers_Policy
+						has_completed_focus = PB_RUS_Russify_Poland
+					}
+					check_variable = {
+						var = RUS_Baltic_Resistance_Power
+						value = 20
+						compare = less_than
+					}
+				}
+			}
+		}
 
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			annex_country = {
+				target = BAL
+				transfer_troops = yes
+			}
+			PB_RUS_Decrease_Baltic_Resistance = yes
 		}
 	}
 
@@ -2154,7 +2239,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Economic_Integrate_Caucasia
 		x = -7
 		y = 8
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2169,13 +2254,24 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_STABILITY}
 
         available = {
-			always = no
+			RUS = {
+				AND = {
+					OR = {
+						has_completed_focus = PB_RUS_Three_Brothers_Policy
+						has_completed_focus = PB_RUS_Russify_Poland
+					}
+					has_completed_focus = PB_RUS_Promote_Greater_Armenism
+				}
+			}
         }
 
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			annex_country = {
+				target = TRS
+				transfer_troops = yes
+			}
 		}
 	}
 
@@ -2184,7 +2280,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Economic_Integrate_Alaska
 		x = -5
 		y = 8
-		cost = 7
+		cost = 56
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2199,13 +2295,22 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_STABILITY}
 
         available = {
+			#RUS = {
+			#	OR = {
+			#		has_completed_focus = PB_RUS_Three_Brothers_Policy
+			#		has_completed_focus = PB_RUS_Russify_Poland
+			#	}
+			#}
 			always = no
         }
 
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			annex_country = {
+				target = ASK
+				transfer_troops = yes
+			}
 		}
 	}
 
@@ -2214,7 +2319,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Break_Ground_in_Alaska
 		x = -6
 		y = 4
-		cost = 7
+		cost = 70
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2228,13 +2333,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_STABILITY}
 
         available = {
-			always = no
+			
         }
 
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			custom_effect_tooltip = PB_RUS_Alaskan_Prospecting_tt
+			set_variable = { PB_RUS_Trans_Alaskan_Pipeline_var = 0 }
 		}
 	}
 
@@ -2243,12 +2349,12 @@ focus_tree = {
 		icon = GFX_goal_PB_Alaskan_Pipeline
 		x = -5
 		y = 5
-		cost = 7
+		cost = 40
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
 		prerequisite = {
-			focus = PB_RUS_Break_Ground_in_Alaska
+			focus = PB_RUS_Break_Ground_in_Alaska 
 		}
 
 		available_if_capitulated = no
@@ -2257,13 +2363,23 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_STABILITY}
 
         available = {
-			always = no
+			
         }
 
-		cancel_if_invalid = yes
+		cancel_if_invalid = no
+
+		select_effect = {
+			RUS = {
+				country_event = {
+					id = Russian_flavour.6
+					days = 10
+				}
+			}
+		}
 
 		completion_reward = {
-
+			custom_effect_tooltip = PB_RUS_Laying_Pipe_tt
+			activate_mission = PB_RUS_Trans_Alaskan_Pipeline_Completion
 		}
 	}
 
@@ -2272,7 +2388,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Expand_Alaskan_Pipeline
 		x = -5
 		y = 6
-		cost = 7
+		cost = 40
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2286,13 +2402,32 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_STABILITY}
 
         available = {
-			always = no
+			
         }
 
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			custom_effect_tooltip = PB_RUS_Alaskan_Pipeline_Expansion_tt
+			every_country = {
+				limit = {
+					AND = {
+						is_in_north_america = yes
+						NOT = {
+							OR = {
+								original_tag = AME
+								original_tag = QUE
+								original_tag = MEX
+								original_tag = YUC
+								original_tag = GUA
+								original_tag = LOS
+								original_tag = BCL
+							}
+						}
+					}
+				}
+				country_event = Russian_Foreign_Policy.4
+			}
 		}
 	}
 
@@ -2301,7 +2436,7 @@ focus_tree = {
 		icon = GFX_goal_PB_Establish_Ministry_of_Energy
 		x = -5
 		y = 7
-		cost = 7
+		cost = 40
 
 		relative_position_id = PB_RUS_Second_Time_of_Troubles
 	
@@ -2321,7 +2456,12 @@ focus_tree = {
 		cancel_if_invalid = yes
 
 		completion_reward = {
-
+			TRS = {
+				add_ideas = PB_Idea_Establish_Ministry_Energy
+			}
+			ASK = {
+				add_ideas = PB_Idea_Establish_Ministry_Energy
+			}
 		}
 	}
 
@@ -2538,7 +2678,7 @@ focus_tree = {
 		}
 	
 		mutually_exclusive = {
-			focus = PB_RUS_Russian_Bilingualism
+			focus = PB_RUS_Three_Brothers_Policy
 		}
 
 		available_if_capitulated = no
@@ -6201,7 +6341,9 @@ focus_tree = {
 					type = bunker
 					level = 3
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}	
 				}
 			}
 			67 = {
@@ -6209,7 +6351,9 @@ focus_tree = {
 					type = bunker
 					level = 3
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}
 				}
 			}
 			762 = {
@@ -6217,7 +6361,9 @@ focus_tree = {
 					type = bunker
 					level = 3
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}
 				}
 			}
 			88 = {
@@ -6225,7 +6371,9 @@ focus_tree = {
 					type = bunker
 					level = 3
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}
 				}
 			}
 			add_ideas = PB_RUS_Western_Military_Focus
@@ -6281,7 +6429,9 @@ focus_tree = {
 					type = bunker
 					level = 1
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}
 				}
 			}
 			67 = {
@@ -6289,7 +6439,9 @@ focus_tree = {
 					type = bunker
 					level = 1
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}
 				}
 			}
 			762 = {
@@ -6297,7 +6449,9 @@ focus_tree = {
 					type = bunker
 					level = 1
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}
 				}
 			}
 			88 = {
@@ -6305,7 +6459,9 @@ focus_tree = {
 					type = bunker
 					level = 1
 					instant_build = yes
-					limit_to_border_country = GER
+					province = {
+						limit_to_border_country = GER
+					}
 				}
 			}
 			408 = {
@@ -6313,7 +6469,9 @@ focus_tree = {
 					type = coastal_bunker
 					level = 1
 					instant_build = yes
-					limit_to_coastal = yes
+					province = {
+						limit_to_coastal = yes
+					}
 				}
 			}
 			745 = {
@@ -6391,7 +6549,9 @@ focus_tree = {
 					type = coastal_bunker
 					level = 2
 					instant_build = yes
-					limit_to_coastal = yes
+					province = {
+						limit_to_coastal = yes
+					}
 				}
 			}
 			745 = {
@@ -6656,6 +6816,12 @@ focus_tree = {
 			239 = {
 				set_temp_variable = { temp_culture = 66 }
 				PB_Cultures_change_culture_of_state = yes
+				hidden_effect = {
+					set_temp_variable = { PB_RUS_Deport_East_Germans_temp_var = state_population }
+					multiply_temp_variable = { PB_RUS_Deport_East_Germans_temp_var = -0.25 }
+					add_manpower = PB_RUS_Deport_East_Germans_temp_var
+				}
+				custom_effect_tooltip = PB_RUS_Deport_Eastern_Germans_tt
 			}
 		}
 	}
