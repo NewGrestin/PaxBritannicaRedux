@@ -6600,7 +6600,7 @@ focus_tree = {
 	focus = {
 		id = PB_RUS_Sweet_Revenge
 		icon = GFX_goal_PB_RUS_Addressing_the_world
-		x = 10
+		x = 25
 		y = 16
 		cost = 30
 
@@ -6615,11 +6615,23 @@ focus_tree = {
 		available = {
 			has_global_flag = ENG_Collaborators_Installed
 			has_global_flag = PB_GER_Defeated
+			if = {
+				limit = {
+					has_global_flag = PB_Franco_Russian_War
+				}
+				has_global_flag = PB_Russian_Victory_Franco_Russian_War
+			}
 		}
 
 		bypass = {
 			has_global_flag = ENG_Collaborators_Installed
 			has_global_flag = PB_GER_Defeated
+			if = {
+				limit = {
+					has_global_flag = PB_Franco_Russian_War
+				}
+				has_global_flag = PB_Russian_Victory_Franco_Russian_War
+			}
 		}
 
 		cancel_if_invalid = yes
@@ -6669,14 +6681,10 @@ focus_tree = {
 						OR = {
 							is_subject_of = RUS
 							is_guaranteed_by = RUS
+							has_country_flag = Tag_in_Russian_Sphere
 						}
 					}
-					set_temp_variable = {
-						stupid_tsargrad_accords_temp_var = 0
-					}
-				}
-				RUS = {
-					add_to_faction = stupid_tsargrad_accords_temp_var
+					RUS = { add_to_faction = PREV }
 				}
 				news_event = PBNews.291
 			}
@@ -6748,6 +6756,15 @@ focus_tree = {
 		completion_reward = {
 			TUR = {
 				set_cosmetic_tag = TUR_Anatolian_Provinces
+				every_controlled_state = {
+					limit = {
+						check_variable = {
+							culture_id = 58
+						}
+					}
+					set_temp_variable = { temp_culture = 856 }
+					PB_Cultures_change_culture_of_state = yes
+				}
 			}
 		}
 	}
@@ -6772,7 +6789,12 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 
 		available = {
-
+			OR = {
+				has_government = ss
+				has_government = lb
+				has_government = cn
+				has_government = rc
+			}
 		}
 
 		cancel_if_invalid = yes
@@ -6780,13 +6802,41 @@ focus_tree = {
 		relative_position_id = PB_RUS_Proclaim_Tsargrad_Accords
 
 		completion_reward = {
-			add_popularity = {
-				ideology = cn
-				popularity = 0.05
+			if = {
+				limit = {
+					has_government = ss
+				}
+				add_popularity = {
+					ideology = ss
+					popularity = 0.15
+				}
 			}
-			add_popularity = {
-				ideology = lb
-				popularity = 0.05
+			if = {
+				limit = {
+					has_government = lb
+				}
+				add_popularity = {
+					ideology = lb
+					popularity = 0.15
+				}
+			}
+			if = {
+				limit = {
+					has_government = cn
+				}
+				add_popularity = {
+					ideology = cn
+					popularity = 0.15
+				}
+			}
+			if = {
+				limit = {
+					has_government = rc
+				}
+				add_popularity = {
+					ideology = rc
+					popularity = 0.15
+				}
 			}
 			add_stability = 0.1
 		}
@@ -6797,7 +6847,7 @@ focus_tree = {
 		icon = GFX_goal_PB_RUS_Addressing_the_world
 		x = -1
 		y = 2
-		cost = 56
+		cost = 70
 
 		prerequisite = {
 			focus = PB_RUS_Denounce_Decadent_West
@@ -6852,7 +6902,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 
 		available = {
-
+			OR = {
+				has_government = ds
+				has_government = ni
+			}
 		}
 
 		cancel_if_invalid = yes
@@ -6860,13 +6913,23 @@ focus_tree = {
 		relative_position_id = PB_RUS_Proclaim_Tsargrad_Accords
 
 		completion_reward = {
-			add_popularity = {
-				ideology = ni
-				popularity = 0.05
+			if = {
+				limit = {
+					has_government = ds
+				}
+				add_popularity = {
+					ideology = ds
+					popularity = 0.15
+				}
 			}
-			add_popularity = {
-				ideology = rc
-				popularity = 0.05
+			if = {
+				limit = {
+					has_government = ni
+				}
+				add_popularity = {
+					ideology = ni
+					popularity = 0.15
+				}
 			}
 			add_war_support = 0.1
 		}
@@ -6925,16 +6988,54 @@ focus_tree = {
 		relative_position_id = PB_RUS_Proclaim_Tsargrad_Accords
 
 		completion_reward = {
-
+			NJP = {
+				random_owned_state = {
+					limit = {
+						industrial_complex > 2
+					}
+					remove_building = {
+						type = industrial_complex
+						level = 2
+					}
+				}
+				add_ideas = PB_Idea_Japanese_War_Reparations
+			}
+			SJP = {
+				random_owned_state = {
+					limit = {
+						arms_factory > 2
+					}
+					remove_building = {
+						type = arms_factory
+						level = 2
+					}
+				}
+				add_ideas = PB_Idea_Japanese_War_Reparations
+			}
+			RUS = {
+				random_owned_state = {
+					add_extra_state_shared_building_slots = 4
+					add_building_construction = {
+						type = industrial_complex
+						level = 2
+						instant_build = yes
+					}
+					add_building_construction = {
+						type = arms_factory
+						level = 2
+						instant_build = yes
+					}
+				}
+			}
 		}
 	}
 
 	focus = {
-		id = PB_RUS_Eastern_Adjustments						# ill do this one later, im in no mood to do another scripted peace deal
+		id = PB_RUS_Eastern_Adjustments
 		icon = GFX_goal_PB_RUS_Addressing_the_world
 		x = 3
 		y = 2
-		cost = 56
+		cost = 70
 
 		prerequisite = {
 			focus = PB_RUS_Squeeze_Home_Islands
@@ -6953,7 +7054,94 @@ focus_tree = {
 		relative_position_id = PB_RUS_Proclaim_Tsargrad_Accords
 
 		completion_reward = {
-
+			if = {
+				limit = {
+					ROC = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = ROC
+				}
+			}
+			if = {
+				limit = {
+					CHI = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = CHI
+				}
+			}
+			if = {
+				limit = {
+					TIB = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = TIB
+				}
+			}
+			if = {
+				limit = {
+					GAN = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = GAN
+				}
+			}
+			if = {
+				limit = {
+					XSM = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = XSM
+				}
+			}
+			if = {
+				limit = {
+					KUM = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = KUM
+				}
+			}
+			if = {
+				limit = {
+					ETR = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = ETR
+				}
+			}
+			if = {
+				limit = {
+					SGH = {
+						exists = yes
+					}
+				}
+				create_wargoal = {
+					type = annex_everything
+					target = SGH
+				}
+			}
 		}
 	}
 
@@ -7081,9 +7269,10 @@ focus_tree = {
 		relative_position_id = PB_RUS_Proclaim_Tsargrad_Accords
 
 		completion_reward = {
-			hidden_effect = {
-				PER = {
-					country_event = postwar_russia.2
+			PER = {
+				country_event = {
+					id = postwar_russia.2
+					days = 3
 				}
 			}
 			custom_effect_tooltip = PB_RUS_PER_Oil_Or_War_tt
