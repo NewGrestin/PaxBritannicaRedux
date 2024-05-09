@@ -102,7 +102,7 @@ country_event = {# Automation Crisis hits UC - Edison tells Coolidge to suck it
 		hidden_effect = {
 			country_event = {
 				id = Unicom.3
-				days = 6
+				days = 4
 			}			 
 		}
 
@@ -199,7 +199,7 @@ country_event = {# Automation Crisis hits UC - Automation Riots
 		hidden_effect = {
 			country_event = {
 				id = Unicom.4
-				days = 6
+				days = 4
 			}			 
 		}
 
@@ -253,7 +253,7 @@ country_event = {# Automation Crisis hits UC - Butler endorses the Legion Propos
 		hidden_effect = {
 			country_event = {
 				id = Unicom.6
-				days = 10
+				days = 5
 			}			 
 		}
 	}
@@ -270,7 +270,7 @@ country_event = {# Automation Crisis hits UC - Butler endorses the Legion Propos
 		hidden_effect = {
 			country_event = {
 				id = Unicom.6
-				days = 10
+				days = 5
 			}			 
 		}
 	}
@@ -3724,16 +3724,15 @@ country_event = {# Looking to the Western States - Cracking down on Arcoplex Boo
 	id = Unicom_Conservatives.3
 	title = Unicom_Conservatives.3.t
 	desc = Unicom_Conservatives.3.d
-	picture = GFX_report_Generic_Rioting
+	picture = GFX_report_event_PB_American_Bootleg
 
 	is_triggered_only = yes
 
 	option = { #Not Applicable
 		name = Unicom_Conservatives.3.a
 
-		ai_chance = {
-			factor = 50
-		}
+		add_political_power = 50
+		add_stability = 0.025
 	}
 }
 
@@ -6867,10 +6866,6 @@ country_event = {# Edward appointed as Governor General
 
 	option = { #Not Applicable
 		name = Unicom_Foreign_Policy.17.a
-
-		ai_chance = {
-			factor = 50
-		}
 	}
 }
 
@@ -6913,10 +6908,27 @@ country_event = {# Carribean - Showcase of Power
 	desc = Unicom_Foreign_Policy.19.d
 	picture = GFX_report_event_PB_AME_Ships
 
-	is_triggered_only = yes
+	trigger = {
+		tag = AME
+		focus_progress = {
+			focus = PB_AME_Protector_Caribean
+			progress > 0.25
+		}
+	}
+
+	fire_only_once = yes
+
 
 	option = { #Makeourcase
 		name = Unicom_Foreign_Policy.19.a
+
+		ai_chance = {
+			base = 50
+		}
+
+		PB_ENG_Increase_Imperial_Tension_Small = yes
+
+		custom_effect_tooltip = AME_Spacing_tt
 
 		ENG = {
 			country_event = {
@@ -6925,65 +6937,24 @@ country_event = {# Carribean - Showcase of Power
 			}
 		}
 		
-
-		#justsavingthisherefornow - for later events
-		hidden_effect = {
-			news_event = { 
-				id = PBNews.293
-				days = 1
-			}
-		}	
-		
 	}
 
 	option = { #AShowofForce
 		name = Unicom_Foreign_Policy.19.b
 
-		ENG = {
-			country_event = {
-				id = Unicom_Foreign_Policy.21
-				days = 1
-			}
+		ai_chance = {
+			base = 50
 		}
 
-	}
-}
+		PB_ENG_Increase_Imperial_Tension_Small = yes
 
-country_event = {# Carribean - Showcase of Power
-	id = Unicom_Foreign_Policy.19
-	title = Unicom_Foreign_Policy.19.t
-	desc = Unicom_Foreign_Policy.19.d
-	picture = GFX_report_event_PB_AME_Ships
+		set_global_flag = AME_Careb_show_force
 
-	is_triggered_only = yes
-
-	option = { #Makeourcase
-		name = Unicom_Foreign_Policy.19.a
+		custom_effect_tooltip = AME_Spacing_tt
 
 		ENG = {
 			country_event = {
 				id = Unicom_Foreign_Policy.20
-				days = 1
-			}
-		}
-		
-
-		#justsavingthisherefornow - for later events
-		hidden_effect = {
-			news_event = { 
-				id = PBNews.293
-				days = 1
-			}
-		}	
-		
-	}
-
-	option = { #AShowofForce
-		name = Unicom_Foreign_Policy.19.b
-
-		ENG = {
-			country_event = {
-				id = Unicom_Foreign_Policy.21
 				days = 1
 			}
 		}
@@ -6992,19 +6963,127 @@ country_event = {# Carribean - Showcase of Power
 }
 
 country_event = {# Carribean - Showcase of Power - Britain Answer
-	id = Unicom_Foreign_Policy.21
-	title = Unicom_Foreign_Policy.21.t
-	desc = Unicom_Foreign_Policy.21.d
+	id = Unicom_Foreign_Policy.20
+	title = Unicom_Foreign_Policy.20.t
+	desc = Unicom_Foreign_Policy.20.d
 	picture = GFX_report_event_PB_AME_Ships
 
 	is_triggered_only = yes
 
 	option = { #No...Aretheystupid
-		name = Unicom_Foreign_Policy.21.a
+		name = Unicom_Foreign_Policy.20.a
 
-		ENG = {
+		ai_chance = {
+			base = 75
+
+			modifier = { # AME_Careb_show_force if ENG government is CN and SS
+				add = -10
+
+				has_global_flag = AME_Careb_show_force
+				ENG = {
+					OR = {
+					has_government = cn
+					has_government = ss
+					}
+				}
+			}
+
+
+			modifier = { # AME_Careb_show_force if ENG government is DS and RC
+				add = 10
+
+				has_global_flag = AME_Careb_show_force
+				ENG = {
+					OR = {
+					has_government = rc
+					has_government = ds
+					}
+				}
+			}
+
+			modifier = { # if Imperial Tension is High
+				add = 10
+				check_variable = { global.ENG_Empire_Tension > 49 }
+			}
+
+			modifier = { # if Imperial Tension is Low
+				add = -20
+				check_variable = { global.ENG_Empire_Tension < 50 }
+			}
+
+			modifier = { # if Power of Balance is American Aligned 1
+				add = -10
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.5
+				}	
+			}
+
+			modifier = { # if Power of Balance is American Aligned 2
+				add = -20
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.7
+				}	
+			}
+
+			modifier = { # if Power of Balance is American Aligned 3
+				add = -10
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.9
+				}	
+			}
+
+			modifier = { # if America has atleast 100 Destroyers
+				add = -10
+				AME = {
+					has_navy_size = {
+						size > 99
+						type = destroyer
+						archetype = ship_hull_light
+					}
+				}	
+			}
+
+			modifier = { # if America has atleast 15 Capital Ships
+				add = -20
+				AME = {
+					has_navy_size = {
+						size > 14
+						type = capital_ship
+						archetype = ship_hull_heavy
+					}
+				}	
+			}
+
+			modifier = { # if America has atleast 6 Carriers
+				add = -10
+				AME = {
+					has_navy_size = {
+						size > 5
+						type = carrier
+						archetype = ship_hull_carrier
+					}
+				}	
+			}
+		}
+
+		
+		PB_ENG_Increase_Imperial_Tension_Large = yes
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		add_power_balance_value = {
+			id = EMG_AME_power_balance
+			value = 0.15
+		}
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		AME = {
 			country_event = {
-				id = Unicom_Foreign_Policy.20
+				id = Unicom_Foreign_Policy.21
 				days = 1
 			}
 		}
@@ -7012,11 +7091,94 @@ country_event = {# Carribean - Showcase of Power - Britain Answer
 	}
 
 	option = { #Expect Trinidad
-		name = Unicom_Foreign_Policy.21.b
+		name = Unicom_Foreign_Policy.20.b
 
-		ENG = {
+		ai_chance = {
+			base = 20
+
+			modifier = { # AME_Careb_show_force if ENG government is DS and RC
+				add = -5
+
+				has_global_flag = AME_Careb_show_force
+				ENG = {
+					OR = {
+					has_government = rc
+					has_government = ds
+					}
+				}
+			}
+
+			modifier = { # if Imperial Tension is High
+				add = -5
+				check_variable = { global.ENG_Empire_Tension > 49 }
+			}
+
+			modifier = { # if Imperial Tension is Low
+				add = 10
+				check_variable = { global.ENG_Empire_Tension < 50 }
+			}
+
+			modifier = { # if Power of Balance is American Aligned 1
+				add = 5
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.5
+				}	
+			}
+
+			modifier = { # if Power of Balance is American Aligned 2
+				add = 10
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.7
+				}	
+			}
+
+			modifier = { # if America has atleast 100 Destroyers
+				add = 5
+				AME = {
+					has_navy_size = {
+						size > 99
+						type = destroyer
+						archetype = ship_hull_light
+					}
+				}	
+			}
+
+			modifier = { # if America has atleast 6 Carriers
+				add = 5
+				AME = {
+					has_navy_size = {
+						size > 5
+						type = carrier
+						archetype = ship_hull_carrier
+					}
+				}	
+			}
+		}
+
+		add_political_power = 50
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		custom_effect_tooltip = AME_ENG_Car_Warning_tt_1
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		PB_ENG_Increase_Imperial_Tension_Small = yes
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		add_power_balance_value = {
+			id = EMG_AME_power_balance
+			value = -0.1
+		}
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		AME = {
 			country_event = {
-				id = Unicom_Foreign_Policy.21
+				id = Unicom_Foreign_Policy.22
 				days = 1
 			}
 		}
@@ -7024,17 +7186,220 @@ country_event = {# Carribean - Showcase of Power - Britain Answer
 	}
 
 	option = { #Theycanhaveeverything
-		name = Unicom_Foreign_Policy.21.b
+		name = Unicom_Foreign_Policy.20.c
 
-		ENG = {
+		ai_chance = {
+			base = 5
+
+			modifier = { # AME_Careb_show_force if ENG government is CN and SS
+				add = 10
+
+				has_global_flag = AME_Careb_show_force
+				ENG = {
+					OR = {
+					has_government = cn
+					has_government = ss
+					}
+				}
+			}
+
+
+			modifier = { # AME_Careb_show_force if ENG government is DS and RC
+				add = -5
+
+				has_global_flag = AME_Careb_show_force
+				ENG = {
+					OR = {
+					has_government = rc
+					has_government = ds
+					}
+				}
+			}
+
+			modifier = { # if Imperial Tension is High
+				add = -5
+				check_variable = { global.ENG_Empire_Tension > 49 }
+			}
+
+			modifier = { # if Imperial Tension is Low
+				add = 10
+				check_variable = { global.ENG_Empire_Tension < 50 }
+			}
+
+			modifier = { # if Power of Balance is American Aligned 1
+				add = 5
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.5
+				}	
+			}
+
+			modifier = { # if Power of Balance is American Aligned 2
+				add = 10
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.7
+				}	
+			}
+
+			modifier = { # if Power of Balance is American Aligned 3
+				add = 10
+				power_balance_value = {
+					id = EMG_AME_power_balance
+					value < -0.9
+				}	
+			}
+
+			modifier = { # if America has atleast 100 Destroyers
+				add = 5
+				AME = {
+					has_navy_size = {
+						size > 99
+						type = destroyer
+						archetype = ship_hull_light
+					}
+				}	
+			}
+
+			modifier = { # if America has atleast 15 Capital Ships
+				add = 20
+				AME = {
+					has_navy_size = {
+						size > 14
+						type = capital_ship
+						archetype = ship_hull_heavy
+					}
+				}	
+			}
+
+			
+			modifier = { # if America has atleast 6 Carriers
+				add = 5
+				AME = {
+					has_navy_size = {
+						size > 5
+						type = carrier
+						archetype = ship_hull_carrier
+					}
+				}	
+			}
+		}
+
+		custom_effect_tooltip = AME_ENG_Car_Warning_tt_2
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		PB_ENG_Decrease_Imperial_Tension_Moderate = yes
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		add_power_balance_value = {
+			id = EMG_AME_power_balance
+			value = -0.2
+		}
+
+		custom_effect_tooltip = AME_Spacing_tt
+
+		AME = {
 			country_event = {
-				id = Unicom_Foreign_Policy.21
+				id = Unicom_Foreign_Policy.23
 				days = 1
 			}
 		}
 
 	}
 }
+
+country_event = {# Carribean - Britian says no
+	id = Unicom_Foreign_Policy.21
+	title = Unicom_Foreign_Policy.21.t
+	desc = Unicom_Foreign_Policy.21.d
+	picture = GFX_report_event_PB_AME_Ships
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+
+	option = { #Makeourcase
+		name = Unicom_Foreign_Policy.21.a
+
+		add_political_power = -50
+
+		custom_effect_tooltip = AME_Increase_Tension_15
+
+		custom_effect_tooltip = focus_completion_warning_tt
+
+		set_country_flag = ENG_Denies_Carb_Ownership
+
+	}
+}	
+
+country_event = {# Carribean - Britian says yes but no Trini
+	id = Unicom_Foreign_Policy.22
+	title = Unicom_Foreign_Policy.22.t
+	desc = Unicom_Foreign_Policy.22.d
+	picture = GFX_report_event_PB_AME_Ships
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+
+	option = { #Makeourcase
+		name = Unicom_Foreign_Policy.22.a
+
+		custom_effect_tooltip = AME_Increase_Tension_5
+
+		custom_effect_tooltip = focus_completion_warning_tt
+
+		set_country_flag = ENG_Accepts_Carb_Ownership
+
+	}
+}	
+
+
+country_event = {# Carribean - Britian says yes
+	id = Unicom_Foreign_Policy.23
+	title = Unicom_Foreign_Policy.23.t
+	desc = Unicom_Foreign_Policy.23.d
+	picture = GFX_report_event_PB_AME_Ships
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+
+	option = { #Makeourcase
+		name = Unicom_Foreign_Policy.23.a
+
+		add_political_power = 50
+
+		custom_effect_tooltip =  AME_Reduce_Tension_10
+
+		custom_effect_tooltip = focus_completion_warning_tt
+
+		set_country_flag = ENG_Accepts_Carb_Ownership
+
+		set_country_flag = ENG_Accepts_Carb_Ownership_also_Trinidad
+
+	}
+}	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###########################
 
 
 country_event = {# UC Republic Presidential Election
