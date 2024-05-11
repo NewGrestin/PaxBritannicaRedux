@@ -301,22 +301,52 @@ PB_AME_Domestic_Policy = {
 	}
 
 	AME_Union_Strikes = {
-		icon = revolt
+		icon = POL_organize_strike_two
 
 		activation = {      
-			has_stability < 0.5                   
-			custom_trigger_tooltip = {
-				tooltip = AME_Unions_Not_Support_Government_tt
-				ROOT = {
-					check_variable = { AME_Union_Support < 20 }
-				}
-			}               
+			AND = {
+				has_stability < 0.5  
+				OR = {
+				#	has_idea = PB_Middling_Consumer_Confidence
+					has_idea = PB_Stagnating_Growth
+					has_idea = PB_Market_Underperformance
+					has_idea = PB_Market_Panic
+					has_idea = PB_Market_Apocalypse
+				}	
+				custom_trigger_tooltip = {
+					tooltip = AME_Unions_Not_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Union_Support < 30 }
+					}
+				}   
+			}              
+		}
+
+		available = {
+			AND = {
+				has_stability < 0.5  
+				OR = {
+				#	has_idea = PB_Middling_Consumer_Confidence
+					has_idea = PB_Stagnating_Growth
+					has_idea = PB_Market_Underperformance
+					has_idea = PB_Market_Panic
+					has_idea = PB_Market_Apocalypse
+				}	
+				custom_trigger_tooltip = {
+					tooltip = AME_Unions_Not_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Union_Support < 30 }
+					}
+				}   
+			}
 		}
 
 		cancel_trigger = {
 			OR = {
 				has_stability > 0.5 
 				has_idea = AME_Suppressed_Unions
+				has_idea = PB_Middling_Consumer_Confidence
+				has_idea = PB_Strong_Consumer_Confidence
 			} 
 		}
 
@@ -324,21 +354,69 @@ PB_AME_Domestic_Policy = {
 
 		selectable_mission = yes
 
-		cost = 100
+	    cost = 50
 
 		ai_will_do = {
-			factor = 10
+			factor = 15
 		}
 
-		days_mission_timeout = 28
+		priority = 100
+
+		days_mission_timeout = 30
+
+		days_re_enable = 150
 
 		complete_effect = {
-			custom_effect_tooltip = AME_Suppressed_Unions_tt
+			custom_effect_tooltip = AME_Agree_Unions_tt
 			custom_effect_tooltip = AME_Spacing_tt
-			hidden_effect = {
-				add_timed_idea = {
-					idea = AME_Suppressed_Unions
-					days = 60
+			PB_AME_Increase_Union_Support = yes
+			PB_AME_Decrease_Megacorp_Support = yes
+
+			if = {
+				limit = { has_government = cn }
+				add_popularity = {
+					ideology = cn
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = an }
+				add_popularity = {
+					ideology = an
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = ds }
+				add_popularity = {
+					ideology = ds
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = rc }
+				add_popularity = {
+					ideology = rc
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = lb }
+				add_popularity = {
+					ideology = lb
+					popularity = -0.025
+				}
+			}
+
+			if = {
+				limit = { has_government = ss }
+				add_popularity = {
+					ideology = ss
+					popularity = -0.01
 				}
 			}
 		}
@@ -346,7 +424,7 @@ PB_AME_Domestic_Policy = {
 		timeout_effect = {
 			add_timed_idea = {
 				idea = PB_AME_Union_Strikes_idea
-				days = 60
+				days = 90
 			}
 		}
 	}
