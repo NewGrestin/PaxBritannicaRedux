@@ -430,10 +430,10 @@ PB_AME_Domestic_Policy = {
 	}
 
 	AME_Megacorp_Manuevers = {
-		icon = revolt
+		icon = gre_investment_decisions
 
 		activation = {
-			an > 0.2                   
+			#an > 0.2                   
 			custom_trigger_tooltip = {
 				tooltip = AME_Megacorp_Not_Support_Government_tt
 				ROOT = {
@@ -442,9 +442,28 @@ PB_AME_Domestic_Policy = {
 			}               
 		}
 
+		priority = 150
+
+		available = {
+
+			#an > 0.2                   
+		#custom_trigger_tooltip = {
+		#	tooltip = AME_Megacorp_Not_Support_Government_tt
+		#	ROOT = {
+		#		check_variable = { AME_Megacorp_Support < 40 }
+		#	}
+		#}     
+			
+		}
+
 		cancel_trigger = {
 			OR = {
-				an < 0.2  
+				custom_trigger_tooltip = {
+					tooltip = AME_Megacorp_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Megacorp_Support > 50 }
+					}
+				}
 				has_idea = AME_Edison_Placated
 			} 
 		}
@@ -453,29 +472,86 @@ PB_AME_Domestic_Policy = {
 
 		selectable_mission = yes
 
-		cost = 100
+		cost = 50
 
 		ai_will_do = {
 			factor = 10
 		}
 
+		days_re_enable = 200
+
 		days_mission_timeout = 30
 
 		complete_effect = {
+			PB_AME_Increase_Megacorp_Support = yes
 			custom_effect_tooltip = AME_Edison_Placated_tt
 			custom_effect_tooltip = AME_Spacing_tt
 			hidden_effect = {
 				add_timed_idea = {
 					idea = AME_Edison_Placated
-					days = 180
+					days = 250
+				}
+			}
+
+			if = {
+				limit = { has_government = lb }
+				add_popularity = {
+					ideology = lb
+					popularity = -0.03
+				}
+			}
+
+			if = {
+				limit = { has_government = ss }
+				add_popularity = {
+					ideology = ss
+					popularity = -0.03
 				}
 			}
 		}
 
 		timeout_effect = {
-			add_popularity = {
-				ideology = an
-				popularity = 0.02
+			PB_AME_Decrease_Megacorp_Support = yes
+			random_list = {
+
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_research_speed_low_tt
+					add_to_variable = {
+						var = PB_EIEC_Research_Speed_Factor
+						value = -0.02
+					}
+		    	}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_maximum_production_efficiency_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionMaxEfficiency
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_production_factory_efficiency_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionEfficiencyGain
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_line_change_production_efficiency_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_line_change_production_efficiency_factor
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_industrial_capacity_factory_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ic_factory
+						value = -0.05
+					}
+				}
+				10 = {
+					PB_AME_Decrease_Megacorp_Support = yes
+				}
 			}
 		}
 	}
@@ -692,7 +768,7 @@ PB_AME_Domestic_Policy = {
 	PB_Increase_Southern_Funding = {
 		icon = generic_propaganda
 
-		cost = 25
+		cost = 50
 
 		available = {
 			NOT = {
@@ -916,7 +992,7 @@ PB_AME_Domestic_Policy = {
 	PB_EIEC_Expansion_Targets = {
 		icon = influence_cold_war
 
-		cost = 150
+		cost = 100
 
 		available = {
 			custom_trigger_tooltip = {
@@ -969,10 +1045,10 @@ PB_AME_Domestic_Policy = {
 						}
 					}
 				}
-				add_extra_state_shared_building_slots = 2
+				add_extra_state_shared_building_slots = 3
 				add_building_construction = {
 					type = industrial_complex
-					level = 2
+					level = 3
 					instant_build = yes
 				}
 			}
@@ -1001,19 +1077,19 @@ PB_AME_Domestic_Policy = {
 		}
 
 		modifier = {
-			industrial_capacity_factory = 0.1
+			industrial_capacity_factory = 0.15
 		}
 
 		days_re_enable = 180
 
-		days_remove = 30
+		days_remove = 180
 
 		remove_effect = {
 			PB_AME_Decrease_Megacorp_Support = yes
-			add_popularity = {
-				ideology = an
-				popularity = -0.025
-			}
+			#add_popularity = {
+			#	ideology = an
+			#	popularity = -0.025
+			#}
 			#add_timed_idea = {
 			#	idea = PB_AME_Ford_Production_Quotas_idea
 			#	days = 30
@@ -1044,7 +1120,7 @@ PB_AME_Domestic_Policy = {
 
 		fire_only_once = yes
 
-		days_remove = 30
+		days_remove = 14
 
 		complete_effect = {
 			country_event = {
@@ -1054,11 +1130,11 @@ PB_AME_Domestic_Policy = {
 
 		remove_effect = {
 			PB_AME_Decrease_Megacorp_Support = yes
-			add_popularity = {
-				ideology = an
-				popularity = 0.05
-			}
-		}
+			#add_popularity = {
+			#	ideology = an
+			#	popularity = 0.05
+			#}
+		}#
 	}
 
 	PB_Support_American_Texas = {
