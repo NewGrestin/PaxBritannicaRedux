@@ -40,5 +40,7 @@ replace_path = "map/supplyareas"
 replace_path = "tests"
 replace_path = "gfx/fonts"
 
+path="C:/Users/gagem/Documents/Paradox Interactive/Hearts of Iron IV/mod/PaxBritannicaRedux/PaxBritannicaTwoElectricBoogaloo"
+
 picture="thumbnail.png"
 supported_version="1.14.*"
