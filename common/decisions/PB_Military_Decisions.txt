@@ -1,210 +1,615 @@
 PB_Military_Decisions = {
 
-	PB_Study_Great_War_Tactics = {
+	PB_GER_Seize_the_Colonial_Fleet = {
 
-		icon = generic_operation
+		cost = 15
 
-		available = {
-			NOT = {
-				has_idea = PB_Fully_Modern_Military
+		icon = generic_naval
+
+		visible = {
+		tag = GER
+		}
+
+		available = {	
+			OR = {
+			has_war_with = FRA
+			has_war_with = RUS
+			has_war_with = JAP
+			}
+			DAS = { 
+			is_subject = yes 
+			has_capitulated = no
+			has_navy_size = {
+			size > 0
+			}
 			}
 		}
 
 		ai_will_do = {
-			factor = 100
+			factor = 0
 		}
 
-		modifier = {
-			political_power_gain = -0.1
-		}
-
-		days_remove = 30
-
-		days_re_enable = 30
-
-		custom_cost_trigger = { command_power > 4 }
-		custom_cost_text = decision_cost_5_cp
+		fire_only_once = yes
 
 		complete_effect = {
-			add_command_power  = -5
+		DAS = {
+		transfer_navy = {
+    		target = GER
 		}
-
-		remove_effect = {
-			PB_MilitaryReform_Small_Progress_Increase = yes
+		}
 		}
 	}
 
-	PB_Training_Exercise = {
+	PB_AME_Clone_Program_Start = {
 
-		icon = generic_prepare_civil_war
+		icon = generic_research
+
+		visible = {
+			original_tag = AME
+			NOT = {
+				has_country_flag = AME_Cloning_Program_Active
+			}
+		}
 
 		available = {
-			NOT = {
-				has_idea = PB_Fully_Modern_Military
-			}
+			has_completed_focus = PB_AME_Initiate_Cloning_Program
 		}
 
 		ai_will_do = {
-			factor = 100
+			factor = 4000
 		}
 
-		modifier = {
-			political_power_gain = -0.1
+		modifier = {	
+			civilian_factory_use = 3
+			research_speed_factor = -0.1
 		}
 
-		days_remove = 30
+		days_remove = 100
 
-		days_re_enable = 30
-
-		custom_cost_trigger = {
-			has_equipment = { infantry_equipment > 2000 }
-		}
-		custom_cost_text = decision_cost_2000_infequip
+		fire_only_once = yes
 
 		complete_effect = {
-			add_equipment_to_stockpile = {
-				type = infantry_equipment
-				amount = -2000
-				producer = ROOT
-			}
 		}
 
 		remove_effect = {
-			PB_MilitaryReform_Moderate_Progress_Increase = yes
+			custom_effect_tooltip = PB_AME_Clone_Program_Start_Support
+			set_country_flag = AME_Cloning_Program_Active
+			set_variable = { var = AME_Clone_Program value = 0 }
 		}
 	}
 
-	PB_Generic_Officers_Recruitment = {
+	PB_AME_Clone_Program_Sampling_1 = {
 
-		icon = generic_army_support
+		icon = generic_research
 
-		available = {
+		visible = {
+			original_tag = AME
+			has_country_flag = AME_Cloning_Program_Active
 			NOT = {
-				has_idea = PB_Fully_Modern_Military
+				has_tech = special_project_clone_troopers
 			}
 		}
 
-		ai_will_do = {
-			factor = 100
-		}
-
-		modifier = {
-			experience_gain_army_factor = -0.1
-		}
-
-		days_remove = 30
-
-		days_re_enable = 30
-
-		custom_cost_trigger = { command_power > 9 }
-		custom_cost_text = decision_cost_10_cp
-
-		complete_effect = {
-			add_command_power  = -10
-		}
-
-		remove_effect = {
-			PB_MilitaryReform_Small_Progress_Increase = yes
-		}
-	}
-
-	PB_Examine_Wartime_Landships = {
-
-		icon = generic_tank
-
 		available = {
-			NOT = {
-				has_idea = PB_Fully_Modern_Military
+			has_completed_focus = PB_AME_Initiate_Cloning_Program
+			custom_trigger_tooltip = {
+				tooltip = PB_AME_Cloning_Underground_tt
+				NOT = {
+					has_idea = AME_Cloning_Underground
+				}
 			}
 		}
 
+		fixed_random_seed = no
+
 		ai_will_do = {
-			factor = 100
+			factor = 400
 		}
 
-		modifier = {
-			civilian_factory_use = 5
+		modifier = {	
+			civilian_factory_use = 1
+			research_speed_factor = -0.05
 		}
 
 		days_remove = 30
 
 		days_re_enable = 60
 
-		custom_cost_trigger = { command_power > 9 }
-		custom_cost_text = decision_cost_10_cp
-
-		complete_effect = {
-			add_command_power  = -20
-		}
-
 		remove_effect = {
-			PB_MilitaryReform_Small_Progress_Increase = yes
+			random_list = {
+				50 = {
+					custom_effect_tooltip = PB_AME_Clone_Program_Progress
+					add_to_variable = {
+						var = AME_Clone_Program
+						value = 1
+					}
+					country_event = {
+						id = Unicom_Research.1
+					}
+				}
+				50 = {
+					country_event = {
+						id = Unicom_Research.2
+					}
+				}
+			}
 		}
 	}
 
-	PB_Expand_Military_Academies = {
+	PB_AME_Clone_Program_Sampling_2 = {
 
-		icon = generic_army_support
+		icon = generic_research
 
-		available = {
+		visible = {
+			original_tag = AME
+			has_country_flag = AME_Cloning_Program_Active
 			NOT = {
-				has_idea = PB_Fully_Modern_Military
+				has_tech = special_project_clone_troopers
 			}
 		}
 
-		ai_will_do = {
-			factor = 100
+		available = {
+			has_completed_focus = PB_AME_Initiate_Cloning_Program
+			custom_trigger_tooltip = {
+				tooltip = PB_AME_Cloning_Underground_tt
+				NOT = {
+					has_idea = AME_Cloning_Underground
+				}
+			}
 		}
 
-		modifier = {
-			civilian_factory_use = 3
+		fixed_random_seed = no
+
+		ai_will_do = {
+			factor = 400
+		}
+
+		modifier = {	
+			civilian_factory_use = 1
+			research_speed_factor = -0.05
 		}
 
 		days_remove = 30
 
-		days_re_enable = 180
+		days_re_enable = 60
+
+		remove_effect = {
+			random_list = {
+				50 = {
+					custom_effect_tooltip = PB_AME_Clone_Program_Progress2
+					add_to_variable = {
+						var = AME_Clone_Program
+						value = 2
+					}
+					country_event = {
+						id = Unicom_Research.1
+					}
+				}
+				50 = {
+					country_event = {
+						id = Unicom_Research.2
+					}
+				}
+			}
+		}
+	}
+
+	PB_AME_Clone_Program_Sampling_3 = {
+
+		icon = generic_research
+
+		visible = {
+			original_tag = AME
+			has_country_flag = AME_Cloning_Program_Active
+			NOT = {
+				has_tech = special_project_clone_troopers
+			}
+		}
+
+		available = {
+			has_completed_focus = PB_AME_Initiate_Cloning_Program
+			custom_trigger_tooltip = {
+				tooltip = PB_AME_Cloning_Underground_tt
+				NOT = {
+					has_idea = AME_Cloning_Underground
+				}
+			}
+		}
+
+		fixed_random_seed = no
+
+		ai_will_do = {
+			factor = 400
+		}
+
+		modifier = {	
+			civilian_factory_use = 1
+			research_speed_factor = -0.05
+		}
+
+		days_remove = 30
+
+		days_re_enable = 60
+
+		remove_effect = {
+			random_list = {
+				75 = {
+					custom_effect_tooltip = PB_AME_Clone_Program_Progress
+					add_to_variable = {
+						var = AME_Clone_Program
+						value = 1
+					}
+					country_event = {
+						id = Unicom_Research.1
+					}
+				}
+				25 = {
+					country_event = {
+						id = Unicom_Research.2
+					}
+				}
+			}
+		}
+	}
+
+	PB_AME_Finalize_Tuskegee = {
+
+		icon = generic_research
+
+		visible = {
+			original_tag = AME
+			has_country_flag = AME_Cloning_Program_Active
+			NOT = {
+				has_tech = special_project_clone_troopers
+			}
+		}
+
+		available = {
+			has_completed_focus = PB_AME_Initiate_Cloning_Program
+			custom_trigger_tooltip = {
+				tooltip = PB_AME_Cloning_Underground_Sufficient_Progress_tt
+				ROOT = {
+					check_variable = { AME_Clone_Program > 5 }
+				}
+			}
+		}
+
+		fixed_random_seed = no
+
+		ai_will_do = {
+			factor = 400
+		}
+
+		modifier = {	
+			civilian_factory_use = 1
+			research_speed_factor = -0.05
+		}
+
+		days_remove = 100
+
+		fire_only_once = yes
+
+		remove_effect = {
+			set_technology = {
+				special_project_clone_troopers = 1
+			}
+			country_event = {
+				id = Unicom_Research.3
+			}
+		}
+	}
+
+	PB_AME_Eyes_in_the_Skies_Decision = {
+
+		icon = generic_air
+
+		visible = {
+			original_tag = AME
+		}
+
+		available = {
+			has_completed_focus = PB_AME_Eyes_in_the_Skies
+			custom_trigger_tooltip = {
+				tooltip = AME_Eyes_in_the_Skies_Cooldown_tt
+				NOT = {
+					has_idea = AME_Eyes_in_the_Skies_Cooldown
+				}
+			}
+		}
 
 		cost = 100
 
-		complete_effect = {
-			add_command_power  = -10
-		}
-
-		remove_effect = {
-			PB_MilitaryReform_Moderate_Progress_Increase = yes
-		}
-	}
-
-	PB_Expand_Research_Facilities = {
-
-		icon = generic_construction
-
-		available = {
-			NOT = {
-				has_idea = PB_Fully_Modern_Military
-			}
-		}
+		fixed_random_seed = no
 
 		ai_will_do = {
-			factor = 100
-		}
-
-		modifier = {
-			civilian_factory_use = 5
+			factor = 400
 		}
 
 		days_remove = 30
 
-		days_re_enable = 365
+		days_re_enable = 14
 
-		cost = 150
+		remove_effect = {
+			if = {
+				limit = {
+					SCA = {
+						exists = yes
+					}
+				}
+				random_list = {
+					75 = {
+						SCA = {
+							country_event = {
+								id = Unicom_Foreign_Policy.16
+							}
+						}
+					}
+					25 = {
+						SCA = {
+							country_event = {
+								id = Unicom_Foreign_Policy.15
+							}
+						}
+					}
+				}
+			}
+
+			add_timed_idea = {
+				idea = PB_AME_Eyes_in_the_Skies_idea
+				days = 90
+			}
+
+			add_timed_idea = {
+				idea = AME_Eyes_in_the_Skies_Cooldown
+				days = 180
+			}
+		}
+	}
+
+	PB_AME_Orbit_Wars_Contribution = {
+
+		icon = generic_air
+
+		visible = {
+			original_tag = AME
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = AME_Global_Orbit_Wars_Active_tt
+				OR = {
+					has_global_flag = Global_Orbit_Wars_Active
+				}
+			}
+			has_completed_focus = PB_AME_American_Orbit_Program
+			is_in_faction_with = ENG
+			ENG = {
+				NOT = {
+					has_idea = PB_Idea_OBW_Orbit_War_Winner
+				}
+			}
+			RUS = {
+				NOT = {
+					has_idea = PB_Idea_OBW_Orbit_War_Winner
+				}
+			}
+			NOT = {
+				has_war_with = ENG
+			}
+			NOT = {
+				has_war_with = ENG
+			}
+		}
+
+		cost = 75
+
+		fixed_random_seed = no
+
+		ai_will_do = {
+			factor = 5
+		}
+
+		days_remove = 7
+
+		days_re_enable = 90
+
+		remove_effect = {
+			ENG = {
+				country_event = {
+					id = Orbit.21
+				}
+			}
+			PB_ENG_Decrease_Imperial_Tension_Small = yes
+		}
+	}
+
+	PB_AME_Orbit_Wars_Research_Roulette = {
+
+		icon = generic_air
+
+		visible = {
+			original_tag = AME
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = AME_Global_Orbit_Wars_Active_tt
+				OR = {
+					has_global_flag = Global_Orbit_Wars_Active
+				}
+			}
+			has_completed_focus = PB_AME_American_Orbit_Program
+		}
+
+		cost = 75
+
+		fixed_random_seed = no
+
+		ai_will_do = {
+			factor = 5
+		}
+
+		days_remove = 7
+
+		days_re_enable = 30
+
+		remove_effect = {
+			random_list = {
+				50 = {
+					add_tech_bonus = {
+						bonus = 0.5
+						uses = 1
+						category = radar_tech
+					}
+				}
+				25 = {
+					add_tech_bonus = {
+						bonus = 0.5
+						uses = 1
+						category = electronics
+					}
+				}
+				10 = {
+					add_tech_bonus = {
+						bonus = 0.5
+						uses = 1
+						category = rocketry
+					}
+				}
+				5 = {
+					add_tech_bonus = {
+						bonus = 0.5
+						uses = 1
+						category = jet_technology
+					}
+				}
+				5 = {
+					add_tech_bonus = {
+						bonus = 0.5
+						uses = 1
+						category = nuclear
+					}
+				}
+			}
+		}
+	}
+
+	PB_Evolve_Military_1 = {
+
+		custom_cost_trigger = { 
+			has_army_experience > 49 
+		}
+		custom_cost_text = PB_MM_50_XP
+
+		icon = generic_operation
+
+		visible = {
+			NOT = {
+			has_idea = PB_Great_War_Military
+			has_idea = PB_Semi_Modern_Military
+			has_idea = PB_Fully_Modern_Military
+		    }
+		}
+
+		available = {
+			has_idea = PB_Pre_Great_War_Army
+		}
+
+		ai_will_do = {
+			factor = 5000
+		}
+
+		modifier = {
+			experience_gain_army_factor = -0.1
+		}
+
+		days_remove = 100
+
+		fire_only_once = yes
 
 		complete_effect = {
-			add_command_power  = -20
+			army_experience = -50
 		}
 
 		remove_effect = {
-			PB_MilitaryReform_Large_Progress_Increase = yes
+			add_ideas = PB_Great_War_Military
 		}
 	}
+
+	PB_Evolve_Military_2 = {
+
+		custom_cost_trigger = { 
+			has_army_experience > 99 
+		}
+		custom_cost_text = PB_MM_100_XP
+
+		icon = generic_operation
+
+		visible = {
+			NOT = {
+			#has_idea = PB_Pre_Great_War_Army
+			has_idea = PB_Semi_Modern_Military
+			has_idea = PB_Fully_Modern_Military
+		    }
+		}
+
+		available = {
+			has_idea = PB_Great_War_Military
+		}
+
+		ai_will_do = {
+			factor = 50000
+		}
+
+		modifier = {
+			experience_gain_army_factor = -0.1
+		}
+
+		days_remove = 100
+
+		fire_only_once = yes
+
+		complete_effect = {
+			army_experience = -100
+		}
+
+		remove_effect = {
+			add_ideas = PB_Semi_Modern_Military
+		}
+	}
+
+	PB_Evolve_Military_3 = {
+
+		custom_cost_trigger = { 
+			has_army_experience > 149 
+		}
+		custom_cost_text = PB_MM_150_XP
+
+		icon = generic_operation
+
+		available = {
+			has_idea = PB_Semi_Modern_Military
+		}
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		modifier = {
+			experience_gain_army_factor = -0.2
+		}
+
+		days_remove = 100
+
+		fire_only_once = yes
+
+		complete_effect = {
+			army_experience = -150
+		}
+
+		remove_effect = {
+			add_ideas = PB_Fully_Modern_Military
+		}
+	}
+
 }
