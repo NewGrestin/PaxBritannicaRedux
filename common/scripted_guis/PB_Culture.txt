@@ -12,27 +12,32 @@
 # ={
 # - Bernie
 
+# :deployears:
+# - Sprinkles
+
 scripted_gui = {
 
 	PB_Political_Culture_Scripted_GUI = {
 		window_name = "PB_Pol_Culture_GUI"
 		context_type = player_context
 		parent_window_token = politics_tab
+		dirty = culture_dirty_var
+
 		dynamic_lists = {
 			PB_Culture_Pol_grid = {
 				entry_container = "PB_Culture_Pol_entry"
 				array = PB_accepted_cultures
-				value = j
+				value = culture_v
 			}
 		}
 		properties = {
 			icon = {
-				image = "GFX_PB_Culture_[?j]"
+				image = "GFX_PB_Culture_[?culture_v.GetTokenKey]"
 			}
 		}
 		triggers = {
 			main_culture_visible = {
-				check_variable = { PB_main_culture = j }
+				check_variable = { PB_main_culture = culture_v }
 			}
 		}
 	}
@@ -42,11 +47,11 @@ scripted_gui = {
 		window_name = "PB_Culture_GUI"
 		context_type = selected_state_context
 		parent_window_name = state_info_window
-		#dirty = culture_id
+		dirty = culture_dirty_var
 
         properties = {
 			PB_Culture_Icon = {
-				image = "GFX_PB_Culture_[?culture_id]"
+				image = "GFX_PB_Culture_[?culture_token.GetTokenKey]"
 			}
 		}
 		triggers = {
@@ -58,7 +63,7 @@ scripted_gui = {
 				NOT = {
    					is_in_array = {
         				array = ROOT.PB_accepted_cultures
-        				value = culture_id
+        				value = culture_token
     				}
 				}
 				check_variable = { PB_convert_progress = 0 }
@@ -70,6 +75,7 @@ scripted_gui = {
 		window_name = "PB_Culture_Conversion_gui"
 		context_type = selected_state_context
 		parent_window_name = state_info_window
+
 		visible = {
 			is_owned_by = ROOT
 			#ROOT = {
@@ -78,7 +84,7 @@ scripted_gui = {
 			NOT = {
 				is_in_array = {
 					array = ROOT.PB_accepted_cultures
-					value = culture_id
+					value = culture_token
 				}
 			}
 		}
@@ -87,7 +93,7 @@ scripted_gui = {
 				NOT = {
    					is_in_array = {
         				array = ROOT.PB_accepted_cultures
-        				value = culture_id
+        				value = culture_token
     				}
 				}
 				NOT = {
@@ -101,7 +107,7 @@ scripted_gui = {
 				NOT = {
    					is_in_array = {
         				array = ROOT.PB_accepted_cultures
-        				value = culture_id
+        				value = culture_token
     				}
 				}
 				OR = {
@@ -151,29 +157,29 @@ scripted_gui = {
 						AND = {
 							OR = {
 								AND = {
-									check_variable = { culture_id = 29 }
+									check_variable = { culture_token = 29 }
 									ROOT = {
 										check_variable = { RUS_Finnish_Resistance_Power < 25 }
 									}
 								}
 								AND = {
-									check_variable = { culture_id = 60 }
+									check_variable = { culture_token = 60 }
 									ROOT = {
 										check_variable = { RUS_Ukraine_Resistance_Power < 25 }
 									}
 								}
 								AND = {
 									OR = {
-										check_variable = { culture_id = 65 }
-										check_variable = { culture_id = 75 }
-										check_variable = { culture_id = 76 }
+										check_variable = { culture_token = 65 }
+										check_variable = { culture_token = 75 }
+										check_variable = { culture_token = 76 }
 									}
 									ROOT = {
 										check_variable = { RUS_Baltic_Resistance_Power < 25 }
 									}
 								}
 								AND = {
-									check_variable = { culture_id = 63 }
+									check_variable = { culture_token = 63 }
 									ROOT = {
 										check_variable = { RUS_Polish_Resistance_Power < 25 }
 									}
@@ -185,8 +191,8 @@ scripted_gui = {
 						}
 						AND = {
 							OR = {
-								check_variable = { culture_id = 74 }
-								check_variable = { culture_id = 84 }
+								check_variable = { culture_token = 74 }
+								check_variable = { culture_token = 84 }
 							}
 							ROOT = {
 								has_completed_focus = PB_RUS_Civilize_Islamic_Caucasia
@@ -533,35 +539,6 @@ scripted_gui = {
 		properties = {
 			PB_Pax_Culture_Bar = {
 				frame = convert_frame
-			}
-		}
-	}
-	
-	PB_Culture_debug_marker = {
-		window_name = "PB_Culture_debug_marker"
-		context_type = state_mapicon
-		visible = { ROOT = { has_country_flag = PB_Culture_debug_on } }
-		mapicon_targets = {
-			target_array = global.states
-		}
-		properties = {
-			marker_button = {
-				frame = FROM.Culture_debug_mark
-			}
-		}
-		effects = {
-			marker_button_click = {
-				FROM = {
-					if = {
-						limit = {
-							check_variable = { Culture_debug_mark = 2 }
-						}
-						set_variable = { Culture_debug_mark = 1 }
-					}
-					else = {
-						set_variable = { Culture_debug_mark = 2 }
-					}
-				}
 			}
 		}
 	}
