@@ -213,30 +213,41 @@ PB_AME_Domestic_Policy = {
 	AME_Freedmen_Agitation = {
 		icon = revolt
 
-		activation = {                         
-			custom_trigger_tooltip = {
-				tooltip = AME_Freedmen_Not_Support_Government_tt
-				ROOT = {
-					check_variable = { AME_Freedmen_Support < 50 }
-				}
+		activation = { 
+			AND = {
+				has_stability < 0.5                          
+				custom_trigger_tooltip = {
+					tooltip = AME_Freedmen_Not_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Freedmen_Support < 50 }
+					}
+				} 
 			}               
 		}
 
 		cancel_trigger = {
-			has_idea = AME_Suppressed_Agitation
+			#has_idea = AME_Suppressed_Agitation
+			OR = {
+				has_stability > 0.5 
+				ROOT = {
+					check_variable = { AME_Freedmen_Support > 50 }
+				}
+			} 
 		}
 
 		is_good = no
 
 		selectable_mission = yes
 
-		cost = 100
+		cost = 50
 
 		ai_will_do = {
 			factor = 10
 		}
 
 		days_mission_timeout = 30
+
+		days_re_enable = 150
 
 		complete_effect = {
 			custom_effect_tooltip = AME_Suppressed_Agitation_tt
@@ -249,9 +260,63 @@ PB_AME_Domestic_Policy = {
 			}
 		}
 
+		complete_effect = {
+
+			PB_AME_Increase_Freedmen_Support = yes
+			PB_AME_Decrease_Southerner_Support = yes
+
+			if = {
+				limit = { has_government = cn }
+				add_popularity = {
+					ideology = cn
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = an }
+				add_popularity = {
+					ideology = an
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = ds }
+				add_popularity = {
+					ideology = ds
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = rc }
+				add_popularity = {
+					ideology = rc
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = lb }
+				add_popularity = {
+					ideology = lb
+					popularity = 0.01
+				}
+			}
+
+			if = {
+				limit = { has_government = ss }
+				add_popularity = {
+					ideology = ss
+					popularity = 0.01
+				}
+			}
+			PB_AME_Increase_Freedmen_Support = yes
+		}
+
 		timeout_effect = {
-			PB_AME_Increase_Freedmen_Radicalization = yes
-			PB_AME_Increase_Southerner_Radicalization = yes
+			PB_AME_Decrease_Freedmen_Support = yes
 		}
 	}
 
