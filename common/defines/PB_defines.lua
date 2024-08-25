@@ -1,3 +1,7 @@
 NDefines.NFocus.FOCUS_POINT_DAYS = 1
 NDefines.NCountry.MIN_STABILITY = -1.0
 NDefines.NCountry.MIN_WAR_SUPPORT = -1.0
+NDefines.NCountry.BASE_MAX_COMMAND_POWER = 300.0
+NDefines.NMilitary.MAX_ARMY_EXPERIENCE = 750
+NDefines.NMilitary.MAX_NAVY_EXPERIENCE = 750
+NDefines.NMilitary.MAX_AIR_EXPERIENCE = 750
