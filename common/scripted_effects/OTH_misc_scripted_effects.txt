@@ -1,0 +1,77 @@
+### ALERTS RELATED SCRIPTED EFFECTS ###
+# set_temp_variable = { temp_alert = token:<alert> }
+# OTH_add_alert = yes
+OTH_add_alert = {
+	if = {
+		limit = {
+			# only add alert if the current scope is not an ai, doesnt already have the alert, has the alert enabled, and the alerts conditions are true
+			is_ai = no
+			NOT = { is_in_array = { active_alerts = temp_alert } }
+			meta_trigger = {
+				text = {
+					[ALERT]_visible = yes
+				}
+				ALERT = "[?temp_alert.GetTokenKey]"
+			}
+		}
+		add_to_array = { active_alerts = temp_alert }
+		if = {
+			limit = {
+				is_in_array = { global.alerts_with_sound = temp_alert }
+			}
+			meta_effect = {
+				text = {
+					scoped_sound_effect = "alert_sound_[ALERT]"
+				}
+				ALERT = "[?temp_alert.GetTokenKey]"
+			}
+		}
+	}
+}
+
+# alert arrays
+# global.alerts = root array that stores every custom alert, mandatory for every alert to be added here
+# global.dangerous_alerts = identifier array that stores alerts that relate to dangerous matters, optional
+# global.alerts_with_sound = identifier array that stores alerts with a sound effect, optional
+OTH_alerts_on_startup = {
+	# global.alerts
+	add_to_array = { global.alerts = token:debug_mode_enabled }
+
+	# global.dangerous_alerts
+
+	# global.alerts_with_sound
+	
+
+	# dont touch past this or else
+	# xoxo sprinkles
+	for_each_scope_loop = {
+		array = global.countries
+		for_each_loop = {
+			array = global.alerts
+			set_temp_variable = { temp_alert = v }
+			OTH_add_alert = yes
+		}
+	}
+}
+
+### EXAMPLE OF A SYSTEM WITH AN ALERT
+# highly recommended that systems which utilize alerts (or just generally for all mechs tbh) use scripted effects with temp var inputs for ease of modulability
+# quick example provided below
+# - sprinkles
+#d_example_system_with_alert = {
+#	add_to_temp_variable = { amount = 5 }
+#	example_scripted_effect = yes
+#}
+#example_scripted_effect = {
+#	add_to_variable = { example = amount }
+#	calibrate_example_scripted_effect = yes
+#}
+#calibrate_example_scripted_effect = {
+#	clamp_variable = {
+#		var = example
+#		min = 0
+#		max = 100
+#	}
+#	set_temp_variable = { temp_alert = token:example_alert }
+#	OTH_add_alert = yes
+#}
