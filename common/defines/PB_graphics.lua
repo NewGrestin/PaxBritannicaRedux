@@ -8,3 +8,7 @@ NDefines.NGraphics.GRADIENT_BORDERS_CAMERA_DISTANCE_OVERRIDE_COUNTRY = 0.08
 NDefines.NGraphics.TREE_FADE_NEAR = 150.0
 NDefines.NGraphics.TREE_FADE_FAR = 300.0
 
+-- useful for high camera state name display, uncomment when needed
+-- NDefines.NGraphics.PROVINCE_NAME_DRAW_DISTANCE = 2000.0
+-- NDefines.NGraphics.DRAW_COUNTRY_NAMES_CUTOFF = 3000
+
