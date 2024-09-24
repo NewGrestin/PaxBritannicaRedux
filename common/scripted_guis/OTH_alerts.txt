@@ -1,0 +1,78 @@
+scripted_gui = {
+	OTH_alerts = {
+		context_type = player_context
+		window_name = "OTH_alerts"
+		dirty = active_alerts^num
+		parent_window_token = top_bar
+
+		triggers = {
+			# derive alerts_sorted array based on active_alerts and presence in the global.dangerous_alerts identifier array
+			alerts_calculator_click_enabled = {
+				all_of = {
+					array = active_alerts
+					value = alert_v
+					if = {
+						limit = {
+							is_in_array = { global.dangerous_alerts = alert_v }
+						}
+						add_to_temp_array = { array = alerts_sorted value = alert_v index = 0 }
+					}
+					else = {
+						add_to_temp_array = { alerts_sorted = alert_v }
+					}
+				}
+			}
+
+			# define the glow used for the alert
+			alert_glow_visible = {
+				if = {
+					limit = {
+						is_in_array = { global.dangerous_alerts = current_alert }
+					}
+					set_temp_variable = { temp_glow_id = 2 }
+				}
+				else = {
+					set_temp_variable = { temp_glow_id = 1 }
+				}
+			}
+		}
+
+		properties = {
+			alert_icon = {
+				image = "GFX_alert_[?current_alert.GetTokenKey]"
+			}
+			alert_glow = {
+				image = "GFX_alert_glow_[?temp_glow_id]"
+			}
+		}
+
+		effects = {
+			alert_icon_click = {
+				# execute idea's effect payload stored in on_add
+				add_ideas = var:current_alert
+				remove_ideas = var:current_alert
+			}
+			alert_icon_right_click = {
+				remove_from_array = { active_alerts = current_alert }
+			}
+			fetch_alert_delayed = {
+				meta_effect = {
+					text = {
+						custom_effect_tooltip = [CURRENT_ALERT]_delayed
+					}
+					CURRENT_ALERT = "[?current_alert.GetTokenKey]"
+				}
+			}
+		}
+
+		dynamic_lists = {
+			OTH_alerts_gridbox = {
+				array = alerts_sorted
+				value = current_alert
+				entry_container = "OTH_alerts_entry_container"
+			}
+		}
+
+		ai_enabled = { always = no }	# perm disable ai for perf boost
+	}
+}

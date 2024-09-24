@@ -4,11 +4,21 @@ on_actions = {
 		effect = {
 			ENG = { # Don't mind this, scope fix.
 				PB_Setup_Cultures = yes
+				PB_Setup_Culture_RGB = yes
+				# used for failsafe gui reloading
+				#add_to_array = { global.PB_content_countries = ENG }
+				#add_to_array = { global.PB_content_countries = FRA }
+				#add_to_array = { global.PB_content_countries = GER }
+				#add_to_array = { global.PB_content_countries = AME }
+				#add_to_array = { global.PB_content_countries = SCA }
+				#add_to_array = { global.PB_content_countries = MEX }
+				#add_to_array = { global.PB_content_countries = RUS }
+				#add_to_array = { global.PB_content_countries = PRS }
 			}
-			ROOT = {
-				set_variable = { PB_Active_Conversions = 0 }
-			}
-		} 
+			#ROOT = {	# on_startup doesnt have a ROOT scope so this does absolutely nothing dummy + null vars are 0 anyways and we dont ever check for the vars existence - sprinkles
+			#	set_variable = { PB_Active_Conversions = 0 }
+			#}
+		}
 	}
 	on_state_control_changed = { 
 		effect = {
@@ -16,10 +26,7 @@ on_actions = {
 				every_owned_state = {
 					limit = {
 						NOT = {
-							is_in_array = {
-								array = ROOT.PB_accepted_cultures
-								value = culture_id
-							}
+							is_in_array = { ROOT.PB_accepted_cultures = culture_token }
 							has_dynamic_modifier = {
 								modifier = Foreign_Culture
 							}
@@ -31,10 +38,7 @@ on_actions = {
 				}
 				every_owned_state = {
 					limit = {
-						is_in_array = {
-							array = ROOT.PB_accepted_cultures
-							value = culture_id
-						}
+						is_in_array = { ROOT.PB_accepted_cultures = culture_token }
 						has_dynamic_modifier = {
 							modifier = Foreign_Culture
 						}	
@@ -45,10 +49,7 @@ on_actions = {
 				}
 				every_owned_state = {
 					limit = {
-						is_in_array = {
-							array = ROOT.PB_accepted_cultures
-							value = culture_id
-						}
+						is_in_array = { ROOT.PB_accepted_cultures = culture_token }
 						has_dynamic_modifier = {
 							modifier = Culture_Conversion
 						}	
@@ -62,29 +63,30 @@ on_actions = {
 	}
 	on_startup = { 
 		effect = {
-			ROOT = {
-				every_state = {
-					limit = {
-						NOT = {
-   							is_in_array = {
-        						array = ROOT.PB_accepted_cultures
-        						value = culture_id
-    						}
-						}
+			every_state = {
+				limit = {
+					NOT = {
+						is_in_array = { ROOT.PB_accepted_cultures = culture_token }
 					}
-					add_dynamic_modifier = {
-   						modifier = Foreign_Culture
-					}
+				}
+				add_dynamic_modifier = {
+					modifier = Foreign_Culture
 				}
 			}
 		} 
 	}
 	on_monthly = { 
 		effect = {
-			ROOT = { 
-
+			ROOT = {
+				# failsafe to reload the gui for content countries in case it failed to update for some reason
+				#if = {
+				#	limit = {
+				#		is_in_array = { global.PB_content_countries = THIS }
+				#	}
+				#	add_to_variable = { culture_dirty_var = 1 }
+				#}
+				
 				### Culture Industrial Cost Checker
-
 				if = {
 					limit = {
 						check_variable = { PB_Active_Conversions > 0 }
@@ -223,8 +225,8 @@ on_actions = {
 						has_state_flag = PB_Culture_Accept_In_Progress
 						check_variable = { PB_convert_progress = 100 }
 					}
-					set_temp_variable = { temp_culture = culture_id }
-					ROOT = { 
+					set_temp_variable = { temp_culture = culture_token }
+					ROOT = {
 						PB_Cultures_add_accepted_culture = yes 
 					}
 					set_variable = {

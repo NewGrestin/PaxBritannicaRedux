@@ -5578,6 +5578,7 @@ on_actions = {
 							transfer_troops = no
 						}
 						remove_ideas = PB_GER_Central_African_Bush_War
+						set_global_flag = portugal_in_exile_lost_bush_war
 					}
 
 					set_global_flag = skip_default_capitulation
@@ -5611,6 +5612,7 @@ on_actions = {
 
 					GER = {
 						remove_ideas = PB_GER_Central_African_Bush_War
+						set_global_flag = portugal_in_exile_won_bush_war
 					}
 
 
@@ -6017,6 +6019,14 @@ on_actions = {
 						set_cosmetic_tag = ROC_Reunified
 
 						country_event = GenChina.4
+						country_event = GenChina.8
+					}
+					ROC = {
+						remove_ideas = PB_CHI_Second_Southern_Expedition
+						set_division_template_lock = {
+							division_template = "Revolutionary Chinese Rebels"
+							is_locked = no
+						}
 					}
 					set_global_flag = skip_default_capitulation
 				}
@@ -6145,6 +6155,33 @@ on_actions = {
 					set_global_flag = skip_default_capitulation
 				}
 
+				if = { # Anarchist China beats Manchuria
+					limit = {
+						FROM = {
+							OR = {
+								is_in_faction_with = ROC
+								original_tag = ROC
+							}
+						}
+						ROOT = {
+							original_tag = MAN
+						}
+					}
+
+					ROC = {
+						white_peace = ROOT
+						annex_country = {
+							target = ROOT
+							transfer_troops = no
+						}
+					}
+
+					MON = {
+						drop_cosmetic_tag = yes
+					}
+					set_global_flag = skip_default_capitulation
+				}
+
 				if = { # Manchuria beats Imperial China
 					limit = {
 						FROM = {
@@ -6174,8 +6211,42 @@ on_actions = {
 					set_global_flag = skip_default_capitulation
 				}
 
+				if = { # Manchuria beats Anarchist China
+					limit = {
+						FROM = {
+							OR = {
+								is_in_faction_with = MAN
+								original_tag = MAN
+							}
+						}
+						ROOT = {
+							original_tag = ROC
+						}
+					}
+
+					MAN = {
+						white_peace = ROOT
+						annex_country = {
+							target = ROOT
+							transfer_troops = no
+						}
+						annex_country = {
+							target = MON
+							transfer_troops = no
+						}
+						set_cosmetic_tag = MAN_Reunified
+					}
+
+					set_global_flag = skip_default_capitulation
+				}
+
 				if = { # Russia beats Alaska
 					limit = {
+						RUS = {
+							NOT = {
+								has_country_flag = RUS_Operation_Morzh_Failed
+							}
+						}
 						FROM = {
 							OR = {
 								is_in_faction_with = RUS
@@ -6230,6 +6301,69 @@ on_actions = {
 							transfer_troops = no
 						}
 						set_cosmetic_tag = ASK_Russia
+					}
+
+					set_global_flag = skip_default_capitulation
+				}
+
+				if = { # Aleutians and Russia retake Alaska
+					limit = {
+						RUS = {
+							has_country_flag = RUS_Operation_Morzh_Failed
+						}
+						FROM = {
+							OR = {
+								is_in_faction_with = RUS
+								original_tag = RUS
+							}
+						}
+						ROOT = {
+							original_tag = ASK
+						}
+					}
+
+					GLG = {
+						white_peace = ROOT
+						annex_country = {
+							target = ROOT
+							transfer_troops = no
+						}
+					}
+
+					GLG = {
+						drop_cosmetic_tag = yes
+						set_cosmetic_tag = GLG_Far_West_Rep
+						set_capital = {
+							state = 463
+						}
+						add_state_core = 463
+						add_state_core = 739
+						
+						
+					}
+					set_global_flag = skip_default_capitulation
+				}
+
+				if = { # Alaska beats Russia and Aleutians
+					limit = {
+						RUS = {
+							has_country_flag = RUS_Operation_Morzh_Failed
+						}
+						FROM = {
+							original_tag = ASK
+						}
+						ROOT = {
+							original_tag = GLG
+						}
+					}
+
+					ASK = {
+						white_peace = ROOT
+						annex_country = {
+							target = ROOT
+							transfer_troops = no
+						}
+						white_peace = RUS
 					}
 
 					set_global_flag = skip_default_capitulation
@@ -8033,8 +8167,16 @@ on_actions = {
 					}
 					if = {
 						limit = {
-							GER = {
-								has_country_flag = GER_IN_EXILE
+							AND = {
+								GER = {
+									has_country_flag = GER_IN_EXILE
+								}
+								NOT = {
+									PRS = {
+										exists = yes
+										has_completed_focus = PB_PRS_Germany_United 
+									}
+								}
 							}
 						}
 						GER = {
@@ -8076,6 +8218,25 @@ on_actions = {
 								remember_old_capital = no
 							}
 						}
+					}
+					else_if = {
+						limit = {
+							PRS = {
+								exists = yes
+								has_completed_focus = PB_PRS_Germany_United 
+							}
+						}
+						PRS = {
+							transfer_state = 28
+							transfer_state = 42
+							transfer_state = 8
+							transfer_state = 909	
+							transfer_state = 923
+							transfer_state = 39
+							transfer_state = 736
+							transfer_state = 102
+						}
+
 					}
 					if = {
 						limit = {
@@ -8311,6 +8472,146 @@ on_actions = {
 						}
 						set_country_flag = ENG_WW2_VICTOR
 					}
+					set_global_flag = skip_default_capitulation
+				}
+
+				if = { # Intermarium War - Russia beats Poland
+					limit = {
+						FROM = {
+							OR = {
+								original_tag = RUS
+								is_in_faction_with = RUS
+							}
+						}
+						ROOT = {
+							original_tag = POL
+						}
+					}
+					POL = {
+						leave_faction = yes
+					}
+					POL = {
+						white_peace = RUS
+						set_country_flag = POL_Intermarium_War_Lose
+					}
+					RUS = {
+						annex_country = {
+							target = POL
+							transfer_troops = no
+						}
+						every_state = {
+							limit = {
+								is_core_of = POL
+							}
+							add_core_of = RUS
+						}
+					}
+					
+					set_global_flag = skip_default_capitulation
+				}
+
+				if = { # Intermarium War - Russia beats Balts
+					limit = {
+						FROM = {
+							OR = {
+								original_tag = RUS
+								is_in_faction_with = RUS
+							}
+						}
+						ROOT = {
+							original_tag = BAL
+						}
+					}
+					BAL = {
+						leave_faction = yes
+					}
+					BAL = {
+						white_peace = RUS
+						set_country_flag = BAL_Intermarium_War_Lose
+					}
+					RUS = {
+						annex_country = {
+							target = BAL
+							transfer_troops = no
+						}
+						every_state = {
+							limit = {
+								is_core_of = BAL
+							}
+							add_core_of = RUS
+						}
+					}
+					
+					set_global_flag = skip_default_capitulation
+				}
+
+				if = { # Intermarium War - Russia beats Ukraine
+					limit = {
+						FROM = {
+							OR = {
+								original_tag = RUS
+								is_in_faction_with = RUS
+							}
+						}
+						ROOT = {
+							original_tag = UKR
+						}
+					}
+					UKR = {
+						leave_faction = yes
+					}
+					UKR = {
+						white_peace = RUS
+						set_country_flag = UKR_Intermarium_War_Lose
+					}
+					RUS = {
+						annex_country = {
+							target = UKR
+							transfer_troops = no
+						}
+						every_state = {
+							limit = {
+								is_core_of = UKR
+							}
+							add_core_of = RUS
+						}
+					}
+					
+					set_global_flag = skip_default_capitulation
+				}
+
+				if = { # Intermarium War - Russia beats Finland
+					limit = {
+						FROM = {
+							OR = {
+								original_tag = RUS
+								is_in_faction_with = RUS
+							}
+						}
+						ROOT = {
+							original_tag = FIN
+						}
+					}
+					FIN = {
+						leave_faction = yes
+					}
+					FIN = {
+						white_peace = RUS
+						set_country_flag = FIN_Intermarium_War_Lose
+					}
+					RUS = {
+						annex_country = {
+							target = FIN
+							transfer_troops = no
+						}
+						every_state = {
+							limit = {
+								is_core_of = FIN
+							}
+							add_core_of = RUS
+						}
+					}
+					
 					set_global_flag = skip_default_capitulation
 				}
 
