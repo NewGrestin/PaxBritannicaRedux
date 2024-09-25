@@ -1371,6 +1371,54 @@ on_actions = {
 
 				######### -------------- #########
 
+				if = { # Pacte defeats Prussia ## This is incase Prussia dies after Germany
+					limit = {
+						FROM = {
+							OR = {
+								original_tag = RUS
+								is_in_faction_with = RUS
+							}
+						}
+						ROOT = {
+							original_tag = PRS
+						}
+						GER = {
+							has_country_flag = GER_IN_EXILE
+						}
+						PRS = {
+							OR = {
+								has_country_leader = {
+									name = "Friedrich Heinrich Albrecht"
+									ruling_only = yes
+								}
+								has_idea = PB_PRS_Puppet_King
+							}
+						}
+					}
+
+					every_country = {
+						limit = {
+							has_war_with = ROOT
+						}
+						white_peace = ROOT
+					}
+		
+					RUS = {
+						white_peace = ROOT
+						annex_country = {
+							target = ROOT
+						}	
+						country_event = {
+							id = Russian_Foreign_Policy.3
+							days = 3
+						}
+					}
+
+					set_global_flag = skip_default_capitulation
+				}
+
+				######### -------------- #########
+
 				if = { # SCA Defeats Wild West tag
 					limit = {
 						FROM = {
@@ -9592,6 +9640,44 @@ on_actions = {
 							id = French_postwar.5
 							days = 14
 						}		
+					}
+					
+					if = {
+						limit = {
+							PRS = {
+								OR = {
+									exists = no
+									has_capitulated = yes
+								}
+							}
+						}
+						RUS = {
+							every_state = {
+								limit = {
+									is_core_of = PRS
+								}
+								RUS = {
+									transfer_state = PREV
+								}
+							}
+							country_event = {
+								id = Russian_Foreign_Policy.3
+								days = 3
+							}
+						}
+
+						if = {
+							limit = {
+								86 = {
+									NOT = {
+										is_core_of = PRS
+									}
+								}
+							}
+							DDR = {
+								transfer_state = 86
+							}
+						}
 					}
 					set_global_flag = skip_default_capitulation
 				}
