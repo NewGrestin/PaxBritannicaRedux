@@ -39,6 +39,7 @@ replace_path = "map/strategicregions"
 replace_path = "map/supplyareas"
 replace_path = "tests"
 replace_path = "gfx/fonts"
+replace_path = "music"
 
 picture="thumbnail.png"
-supported_version="1.13.*"
+supported_version="1.15.*"
