@@ -1,0 +1,111 @@
+PB_Setup_Board_Namespaces = {
+	### ---- Anglo-American ---- ###
+	# first names
+	set_temp_variable = { global.starting_first_name_token@megacorp_board_member_namespaces_anglo_american = token:megacorp_board_member_first_name_charles }
+	set_temp_variable = { global.num_of_first_names@megacorp_board_member_namespaces_anglo_american = 4 }
+	# last names
+	set_temp_variable = { global.starting_last_name_token@megacorp_board_member_namespaces_anglo_american = token:megacorp_board_member_last_name_bancroft }
+	set_temp_variable = { global.num_of_last_names@megacorp_board_member_namespaces_anglo_american = 4 }
+}
+
+PB_Setup_Megacorps = {
+	### ---- EIEC ---- ###
+	add_to_array = { global.megacorporations = token:megacorp_edison_imperial_electric_company }
+	set_variable = { global.megacorp_headquarters@megacorp_edison_imperial_electric_company = token:corporate_zone_british_isles }
+	add_to_array = { global.megacorp_traits@megacorp_edison_imperial_electric_company = token:corporate_trait_innovative }
+	set_variable = { global.megacorp_funds@megacorp_edison_imperial_electric_company = 1000 }
+	set_variable = { global.megacorp_leader@megacorp_edison_imperial_electric_company = token:EIEC_charles_edison }
+	set_variable = { global.megacorp_leader_title@megacorp_edison_imperial_electric_company = token:corporate_leader_title_chief_executive_officer }
+	set_temp_variable = { num_of_supportive_board_members = 21 }
+	set_temp_variable = { num_of_board_members = 26 }
+	set_temp_variable = { board_namespace = token:megacorp_board_member_namespaces_anglo_american }
+	set_temp_variable = { temp_megacorp = token:megacorp_edison_imperial_electric_company }
+	PB_Setup_Board_Members = yes
+}
+
+PB_Setup_Corporate_Zones = {
+	### ---- Define Corporate Zone ---- ###
+	add_to_array = { global.corporate_zones = token:corporate_zone_british_isles }
+
+	# do not touch this block
+	# xoxo sprinkles
+	for_each_loop = {
+		array = global.corporate_zones
+		value = current_corporate_zone
+		resize_array = { global.influence@var:current_corporate_zone = global.megacorporations^num }
+	}
+
+	### ---- British Isles ---- ###
+	add_to_array = { global.corporate_zone_states@corporate_zone_british_isles = 1.id }
+	add_to_array = { global.corporate_zone_states@corporate_zone_british_isles = 2.id }
+	add_to_array = { global.corporate_zone_states@corporate_zone_british_isles = 3.id }
+	add_to_array = { global.corporate_zone_attributes@corporate_zone_british_isles = token:corporate_zone_attribute_megacity }
+	add_to_array = { global.corporate_zone_attributes@corporate_zone_british_isles = token:corporate_zone_attribute_megacorp_headquarters }
+	set_variable = { global.influence@corporate_zone_british_isles^constant:PB_Megacorporations.megacorp_carnegie_steel_company = 90 }
+	set_variable = { global.influence@corporate_zone_british_isles^constant:PB_Megacorporations.megacorp_edison_imperial_electric_company = 10 }
+}
+
+## Changes the influence of the megacorp specified in `temp_megacorp` in the corporate zone specified in `temp_corporate_zone` by the amount specified in `amount`
+# SCOPE: Any
+PB_Megacorps_change_influence = {
+	meta_effect = {
+		text = {
+			add_to_variable = { global.influence@var:temp_corporate_zone^constant:PB_Megacorporations.[MEGACORP] = amount }
+		}
+		MEGACORP = "[?temp_megacorp.GetTokenKey]"
+	}
+	set_temp_variable = { divisor = global.megacorporations^num }
+	subtract_from_temp_variable = { divisor = 1 }
+	divide_temp_variable = { amount = divisor }
+	for_each_loop = {
+		array = global.megacorporations
+		value = current_megacorporation
+		meta_effect = {
+			text = {
+				subtract_from_variable = { global.influence@var:temp_corporate_zone^constant:PB_Megacorporations.[MEGACORP] = amount }
+			}
+			MEGACORP = "[?current_megacorporation.GetTokenKey]"
+		}
+	}
+	custom_effect_tooltip = PB_Megacorps_change_influence_tt
+}
+
+PB_Setup_Board_Members = {
+	subtract_from_temp_variable = { num_of_supportive_board_members = 1 }
+	for_loop_effect = {
+		end = num_of_board_members
+		value = iter
+		# first names
+		set_temp_variable = { temp_board_member = global.starting_first_name_token@var:board_namespace }
+		set_temp_variable = { temp_board_member = global.num_of_first_names@var:board_namespace }
+		set_temp_variable_to_random = {
+			var = temp_board_member_addend
+			max = global.num_of_first_names@var:board_namespace
+			integer = yes
+		}
+		add_to_temp_variable = { temp_board_member = temp_board_member_addend }
+		add_to_array = { global.board_members_first_names@var:temp_megacorp = temp_board_member }
+
+		# last names
+		set_temp_variable = { temp_board_member = global.starting_last_name_token@var:board_namespace }
+		set_temp_variable = { temp_board_member = global.num_of_last_names@var:board_namespace }
+		set_temp_variable_to_random = {
+			var = temp_board_member_addend
+			max = global.num_of_last_names@var:board_namespace
+			integer = yes
+		}
+		add_to_temp_variable = { temp_board_member = temp_board_member_addend }
+		add_to_array = { global.board_members_last_names@var:temp_megacorp = temp_board_member }
+
+		# support
+		if = {
+			limit = {
+				check_variable = { iter < num_of_supportive_board_members }
+			}
+			add_to_array = { global.board_members_support@var:temp_megacorp = 1 }
+		}
+		else = {
+			add_to_array = { global.board_members_support@var:temp_megacorp = 0 }
+		}
+	}
+}
