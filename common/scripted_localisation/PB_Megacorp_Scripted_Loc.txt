@@ -1,27 +1,152 @@
 defined_text = {
-	name = get_corporate_zone_name
-	#text = {
-	#	trigger = {
-	#		check_variable = { temp_corporate_zone = token:<corporate zone> }
-	#	}
-	#	localization_key = <corporate zone>
-	#}
-	### DEFAULT
+	name = print_megacorp_corporate_zone_influences
 	text = {
-		localization_key = corporate_zone_name_text
+		trigger = {
+			any_of = {
+				array = global.corporate_zones
+				value = current_corporate_zone
+				any_of_scopes = {
+					array = global.corporate_zone_states@var:current_corporate_zone
+					set_temp_variable = { temp_corporate_zone = current_corporate_zone }
+					state = FROM
+				}
+			}
+			find_highest_in_array = {
+				array = global.influences@var:temp_corporate_zone
+				index = temp_megacorporation_idx
+			}
+			set_temp_variable = { temp_megacorp = token:megacorp_edison_imperial_electric_company }
+			add_to_temp_variable = { temp_megacorp = temp_megacorporation_idx }
+			log = "Influences in [get_corporate_zone_name]: [?global.influences@var:temp_corporate_zone^num]"
+			all_of = {
+				array = global.influences@var:temp_corporate_zone
+				value = influence_val
+				index = temp_megacorp_idx
+				set_temp_variable = { temp_megacorp = token:megacorp_edison_imperial_electric_company }
+				add_to_temp_variable = { temp_megacorp = temp_megacorp_idx }
+				log = "Current Megacorporation to show in Detailed View: [get_megacorp_name]"
+				if = {
+					limit = {
+						check_variable = { influence_val > 0 }
+					}
+					log = "[get_megacorp_name] has [?influence_val] influence in [get_corporate_zone_name]"
+					add_to_temp_array = { influences_to_print = influence_val }
+					set_temp_variable = { temp_megacorp_entry = token:megacorp_edison_imperial_electric_company }
+					add_to_temp_variable = { temp_megacorp_entry = temp_megacorp_idx }
+					add_to_temp_array = { megacorporations_to_print = temp_megacorp_entry }
+				}
+			}
+			log = "Temp Influences: [?influences_to_print^num]"
+			log = "Temp Megacorps: [?megacorporations_to_print^num]"
+			log = "Temp Influence 1: [?influences_to_print^0]"
+			log = "Temp Megacorp 1: [?megacorporations_to_print^0]"
+			log = "Temp Influence 2: [?influences_to_print^1]"
+			log = "Temp Megacorp 2: [?megacorporations_to_print^1]"
+		}
+		localization_key = "[render_corporate_zone_influences_array]"
+	}
+	text = {
+		localization_key = ""
+	}
+}
+
+defined_text = {
+	name = render_corporate_zone_influences_array
+	text = {
+		trigger = {
+			check_variable = { idx < influences_to_print^num }
+			set_temp_variable = { temp_influence = influences_to_print^idx }
+			set_temp_variable = { temp_megacorp = megacorporations_to_print^idx }
+			add_to_temp_variable = { idx = 1 }
+		}
+		localization_key = corporate_zone_influences_entry  # recurse!
+	}
+	text = {
+		localization_key = ""
+	}
+}
+
+defined_text = {
+	name = get_PB_Megacorps_change_influence_tt_increase_decrease
+	text = {
+		trigger = {
+			check_variable = { amount > 0 }
+		}
+		localization_key = PB_Megacorps_change_influence_tt_increase
+	}
+	text = {
+		localization_key = PB_Megacorps_change_influence_tt_decrease
+	}
+}
+
+defined_text = {
+	name = get_PB_megacorp_map_mode_tooltip
+	text = {
+		trigger = {
+			any_of = {
+				array = global.corporate_zones
+				value = current_corporate_zone
+				any_of_scopes = {
+					array = global.corporate_zone_states@var:current_corporate_zone
+					set_temp_variable = { temp_corporate_zone = current_corporate_zone }
+					state = FROM
+				}
+			}
+			find_highest_in_array = {
+				array = global.influences@var:temp_corporate_zone
+				index = temp_megacorporation_idx
+			}
+			set_temp_variable = { temp_megacorp = token:megacorp_edison_imperial_electric_company }
+			add_to_temp_variable = { temp_megacorp = temp_megacorporation_idx }
+		}
+		localization_key = PB_megacorp_map_mode_tt
+	}
+}
+
+defined_text = {
+	name = get_megacorp_map_icon_name
+	text = {
+		trigger = {
+			set_temp_variable = { temp_megacorp = current_megacorporation }
+		}
+		localization_key = "[get_megacorp_name]"
+	}
+}
+
+defined_text = {
+	name = get_megacorp_map_icon_desc
+	text = {
+		trigger = {
+			set_temp_variable = { temp_megacorp = current_megacorporation }
+		}
+		localization_key = "[get_megacorp_desc]"
+	}
+}
+
+defined_text = {
+	name = get_corporate_zone_name
+	text = {
+		localization_key = "[?temp_corporate_zone.GetTokenKey]"
+	}
+}
+
+defined_text = {
+	name = get_corporate_zone_desc
+	text = {
+		localization_key = "[?temp_corporate_zone.GetTokenKey]_desc"
 	}
 }
 
 defined_text = {
 	name = get_megacorp_name
-	#text = {
-	#	trigger = {
-	#		check_variable = { temp_megacorp = token:<corporate zone> }
-	#	}
-	#	localization_key = <corporate zone>
-	#}
-	### DEFAULT
 	text = {
-		localization_key = megacorp_name_text
+		localization_key = "[?temp_megacorp.GetTokenKey]"
+	}
+}
+
+defined_text = {
+	name = get_megacorp_desc
+	text = {
+		localization_key = "[?temp_megacorp.GetTokenKey]_desc"
 	}
 }
