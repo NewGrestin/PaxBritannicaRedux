@@ -35,6 +35,8 @@ scripted_gui = {
 				}
 				# yes ik i couldve just nested some gridboxes or just dynamically fetched an entry window
 				# no i will not be doing that bc thats the BORING pdxcuck option
+				clear_temp_array = other_megacorps_same_with_same_corporate_zone_hq
+				clear_temp_array = megacorps_same_with_same_corporate_zone_hq
 				all_of = {
 					array = global.megacorporations
 					value = current_megacorp
@@ -48,14 +50,26 @@ scripted_gui = {
 							array = global.corporate_zone_states@var:global.megacorp_headquarters@var:current_megacorp
 							if = {
 								limit = { state = PREV }
-								add_to_temp_array = { megacorps_same_with_same_corporate_zone_hq = current_megacorp }
+								add_to_temp_array = { other_megacorps_same_with_same_corporate_zone_hq = current_megacorp }
 							}
 						}
 					}
 				}
 				if = {
 					limit = {
-						check_variable = { megacorps_same_with_same_corporate_zone_hq^num > 0 }
+						check_variable = { other_megacorps_same_with_same_corporate_zone_hq^num > 0 }
+					}
+					all_of = {
+						array = global.megacorporations
+						if = {
+							limit = {
+								OR = {
+									is_in_array = { other_megacorps_same_with_same_corporate_zone_hq = v }
+									check_variable = { current_megacorporation = v }
+								}
+							}
+							add_to_temp_array = { megacorps_same_with_same_corporate_zone_hq = v }
+						}
 					}
 					any_of = {
 						array = megacorps_same_with_same_corporate_zone_hq
@@ -65,7 +79,7 @@ scripted_gui = {
 					set_temp_variable = { median_idx = megacorps_same_with_same_corporate_zone_hq^num }
 					subtract_from_temp_variable = { median_idx = 1 }
 					divide_temp_variable = { median_idx = 2 }
-					subtract_from_variable = { megacorp_map_icon_x = median_idx }
+					subtract_from_temp_variable = { megacorp_map_icon_x = median_idx }
 					multiply_temp_variable = { megacorp_map_icon_x = @MAP_ICON_MULTILOGO_SPACING }
 				}
 			}
