@@ -1,0 +1,137 @@
+# why the game hates properly naming this file is beyond me, renaming it to PB_State_Focus_Scripted_GUI.txt breaks the mechanic
+# prob has smth to do with ascii encoding fw the load order, will look into it further post-update
+# xoxo sprinkles
+
+##########
+# Bernie will slowly take over the GUI world
+
+# :AkkoBleh:
+# - sprinkles
+
+# DATA STRUCT DOCUMENTATION #
+# PB_active_state_focus = state scoped perm var that stores the selected focus (note: uses -1 as a null coalescing operator as the default, 0, is already used for civs)
+# PB_State_Focus_Cap = country scoped perm var that stores the maximum number of states with an active focus
+# PB_states_with_active_focus = country scoped perm array that stores the states with a focus
+# PB_state_focus_options_temp = temp array that stores the possible options for a state focus (note: uses index mapping rather than in the actual values of the elements)
+#	null = no focus
+#	0 = civ factory focus
+#	1 = mil factory focus
+#	2 = infrastructure focus
+#	3 = manpower focus
+#	4 = resources focus
+
+scripted_gui = {
+	PB_State_Focus_Scripted_GUI = {
+		window_name = "PB_State_Focus_GUI"
+		context_type = selected_state_context
+		parent_window_token = selected_state_view
+		dirty = PB_State_Focus_dirty
+
+		triggers = {
+			PB_state_focus_options_temp_array_calculator_click_enabled = {
+				clear_temp_array = PB_state_focus_options_temp
+				PB_state_focus_options_temp_init = yes
+			}
+
+			PB_state_focus_option_click_enabled = {
+				is_controlled_by = ROOT
+				set_temp_variable = { PB_state_focus_option_frame = 1 }
+				if = {
+					limit = { has_variable = PB_active_state_focus }
+					check_variable = { PB_active_state_focus = current_focus }
+					set_temp_variable = { PB_state_focus_option_frame = 2 }
+				}
+				else = {
+					check_variable = { ROOT.PB_states_with_active_focus^num < ROOT.PB_State_Focus_Cap }
+				}
+			}
+
+			PB_state_focus_clear_all_click_enabled = {
+				is_controlled_by = ROOT
+			}
+		}
+
+		effects = {
+			PB_state_focus_clear_all_click = {
+				for_each_scope_loop = {
+					array = ROOT.PB_states_with_active_focus
+					meta_effect = {
+						text = {
+							remove_dynamic_modifier = { modifier = PB_state_focus_modifiers_[I] }
+						}
+						I = "[?PB_active_state_focus]"
+					}
+					clear_variable = PB_active_state_focus
+				}
+				clear_array = ROOT.PB_states_with_active_focus
+				add_to_variable = { PB_State_Focus_dirty = 1 }
+			}
+
+			PB_state_focus_option_click = {
+				if = {
+					limit = {
+						has_variable = PB_active_state_focus
+					}
+					meta_effect = {
+						text = {
+							remove_dynamic_modifier = { modifier = PB_state_focus_modifiers_[ACTIVE_FOCUS] }
+						}
+						ACTIVE_FOCUS = "[?PB_active_state_focus]"
+					}
+					clear_variable = PB_active_state_focus
+					remove_from_array = { ROOT.PB_states_with_active_focus = THIS }
+				}
+				else = {
+					meta_effect = {
+						text = {
+							add_dynamic_modifier = { modifier = PB_state_focus_modifiers_[CURRENT_FOCUS] }
+						}
+						CURRENT_FOCUS = "[?current_focus]"
+					}
+					set_variable = { PB_active_state_focus = current_focus }
+					add_to_array = { ROOT.PB_states_with_active_focus = THIS }
+				}
+				add_to_variable = { PB_State_Focus_dirty = 1 }
+			}
+		}
+
+		properties = {
+			PB_state_focus_option = {
+				image = "GFX_state_focus_[?current_focus]"
+				frame = PB_state_focus_option_frame
+			}
+		}
+
+		dynamic_lists = {
+			PB_state_focus_options_gridbox = {
+				array = PB_state_focus_options_temp
+				index = current_focus
+				entry_container = "PB_state_focus_option_entry"
+				ai_weights = {
+					PB_state_focus_option_click = {
+						ai_will_do = {
+							modifier = {
+								factor = 20
+								meta_trigger = {
+									text = { PB_state_focus_[CURRENT_FOCUS]_ai = yes }
+									CURRENT_FOCUS = "[?current_focus]"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		ai_test_interval = 744
+		ai_test_variance = 186
+		ai_test_scopes = test_self_controlled_states
+		ai_check_scope = { is_core_of = ROOT }
+
+		ai_weights = {
+			PB_state_focus_clear_all_click = {
+				ai_will_do = { base = 0 }
+			}
+		}
+	}
+}
