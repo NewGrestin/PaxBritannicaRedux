@@ -18,7 +18,7 @@ for filename in files:
    if "set_technology" not in open(filename, encoding="utf8").read():
     openedfile = open(filename, "a", encoding="utf8")
     openedfile.write("set_technology = {\n")
-    openedfile.write(" " + "infantry_weapons1930 = 1\n")
+    openedfile.write(" " + "great_war_infantry_weapons = 1\n")
     openedfile.write(" " + "tech_support = 1\n")
     openedfile.write(" " + "early_fighter = 1\n")
     openedfile.write(" " + "basic_train = 1\n")
