@@ -213,24 +213,33 @@ PB_AME_Domestic_Policy = {
 	AME_Freedmen_Agitation = {
 		icon = revolt
 
-		activation = {                         
-			custom_trigger_tooltip = {
-				tooltip = AME_Freedmen_Not_Support_Government_tt
-				ROOT = {
-					check_variable = { AME_Freedmen_Support < 50 }
-				}
+		activation = { 
+			AND = {
+				has_stability < 0.5                          
+				custom_trigger_tooltip = {
+					tooltip = AME_Freedmen_Not_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Freedmen_Support < 50 }
+					}
+				} 
 			}               
 		}
 
 		cancel_trigger = {
-			has_idea = AME_Suppressed_Agitation
+			#has_idea = AME_Suppressed_Agitation
+			OR = {
+				has_stability > 0.5 
+				ROOT = {
+					check_variable = { AME_Freedmen_Support > 50 }
+				}
+			} 
 		}
 
 		is_good = no
 
 		selectable_mission = yes
 
-		cost = 100
+		cost = 50
 
 		ai_will_do = {
 			factor = 10
@@ -238,9 +247,11 @@ PB_AME_Domestic_Policy = {
 
 		days_mission_timeout = 30
 
+		days_re_enable = 150
+
 		complete_effect = {
 			custom_effect_tooltip = AME_Suppressed_Agitation_tt
-			custom_effect_tooltip = AME_Spacing_tt
+			custom_effect_tooltip = PB_spacing_tt
 			hidden_effect = {
 				add_timed_idea = {
 					idea = AME_Suppressed_Agitation
@@ -249,9 +260,63 @@ PB_AME_Domestic_Policy = {
 			}
 		}
 
+		complete_effect = {
+
+			PB_AME_Increase_Freedmen_Support = yes
+			PB_AME_Decrease_Southerner_Support = yes
+
+			if = {
+				limit = { has_government = cn }
+				add_popularity = {
+					ideology = cn
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = an }
+				add_popularity = {
+					ideology = an
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = ds }
+				add_popularity = {
+					ideology = ds
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = rc }
+				add_popularity = {
+					ideology = rc
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = lb }
+				add_popularity = {
+					ideology = lb
+					popularity = 0.01
+				}
+			}
+
+			if = {
+				limit = { has_government = ss }
+				add_popularity = {
+					ideology = ss
+					popularity = 0.01
+				}
+			}
+			PB_AME_Increase_Freedmen_Support = yes
+		}
+
 		timeout_effect = {
-			PB_AME_Increase_Freedmen_Radicalization = yes
-			PB_AME_Increase_Southerner_Radicalization = yes
+			PB_AME_Decrease_Freedmen_Support = yes
 		}
 	}
 
@@ -301,22 +366,52 @@ PB_AME_Domestic_Policy = {
 	}
 
 	AME_Union_Strikes = {
-		icon = revolt
+		icon = POL_organize_strike_two
 
 		activation = {      
-			has_stability < 0.5                   
-			custom_trigger_tooltip = {
-				tooltip = AME_Unions_Not_Support_Government_tt
-				ROOT = {
-					check_variable = { AME_Union_Support < 20 }
-				}
-			}               
+			AND = {
+				has_stability < 0.5  
+				OR = {
+				#	has_idea = PB_Middling_Consumer_Confidence
+					has_idea = PB_Stagnating_Growth
+					has_idea = PB_Market_Underperformance
+					has_idea = PB_Market_Panic
+					has_idea = PB_Market_Apocalypse
+				}	
+				custom_trigger_tooltip = {
+					tooltip = AME_Unions_Not_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Union_Support < 30 }
+					}
+				}   
+			}              
+		}
+
+		available = {
+			AND = {
+				has_stability < 0.5  
+				OR = {
+				#	has_idea = PB_Middling_Consumer_Confidence
+					has_idea = PB_Stagnating_Growth
+					has_idea = PB_Market_Underperformance
+					has_idea = PB_Market_Panic
+					has_idea = PB_Market_Apocalypse
+				}	
+				custom_trigger_tooltip = {
+					tooltip = AME_Unions_Not_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Union_Support < 30 }
+					}
+				}   
+			}
 		}
 
 		cancel_trigger = {
 			OR = {
 				has_stability > 0.5 
 				has_idea = AME_Suppressed_Unions
+				has_idea = PB_Middling_Consumer_Confidence
+				has_idea = PB_Strong_Consumer_Confidence
 			} 
 		}
 
@@ -324,21 +419,69 @@ PB_AME_Domestic_Policy = {
 
 		selectable_mission = yes
 
-		cost = 100
+	    cost = 50
 
 		ai_will_do = {
-			factor = 10
+			factor = 15
 		}
 
-		days_mission_timeout = 28
+		priority = 100
+
+		days_mission_timeout = 30
+
+		days_re_enable = 150
 
 		complete_effect = {
-			custom_effect_tooltip = AME_Suppressed_Unions_tt
-			custom_effect_tooltip = AME_Spacing_tt
-			hidden_effect = {
-				add_timed_idea = {
-					idea = AME_Suppressed_Unions
-					days = 60
+			custom_effect_tooltip = AME_Agree_Unions_tt
+			custom_effect_tooltip = PB_spacing_tt
+			PB_AME_Increase_Union_Support = yes
+			PB_AME_Decrease_Megacorp_Support = yes
+
+			if = {
+				limit = { has_government = cn }
+				add_popularity = {
+					ideology = cn
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = an }
+				add_popularity = {
+					ideology = an
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = ds }
+				add_popularity = {
+					ideology = ds
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = rc }
+				add_popularity = {
+					ideology = rc
+					popularity = -0.05
+				}
+			}
+
+			if = {
+				limit = { has_government = lb }
+				add_popularity = {
+					ideology = lb
+					popularity = -0.025
+				}
+			}
+
+			if = {
+				limit = { has_government = ss }
+				add_popularity = {
+					ideology = ss
+					popularity = -0.01
 				}
 			}
 		}
@@ -346,16 +489,16 @@ PB_AME_Domestic_Policy = {
 		timeout_effect = {
 			add_timed_idea = {
 				idea = PB_AME_Union_Strikes_idea
-				days = 60
+				days = 90
 			}
 		}
 	}
 
 	AME_Megacorp_Manuevers = {
-		icon = revolt
+		icon = gre_investment_decisions
 
 		activation = {
-			an > 0.2                   
+			#an > 0.2                   
 			custom_trigger_tooltip = {
 				tooltip = AME_Megacorp_Not_Support_Government_tt
 				ROOT = {
@@ -364,9 +507,28 @@ PB_AME_Domestic_Policy = {
 			}               
 		}
 
+		priority = 150
+
+		available = {
+
+			#an > 0.2                   
+		#custom_trigger_tooltip = {
+		#	tooltip = AME_Megacorp_Not_Support_Government_tt
+		#	ROOT = {
+		#		check_variable = { AME_Megacorp_Support < 40 }
+		#	}
+		#}     
+			
+		}
+
 		cancel_trigger = {
 			OR = {
-				an < 0.2  
+				custom_trigger_tooltip = {
+					tooltip = AME_Megacorp_Support_Government_tt
+					ROOT = {
+						check_variable = { AME_Megacorp_Support > 50 }
+					}
+				}
 				has_idea = AME_Edison_Placated
 			} 
 		}
@@ -375,29 +537,175 @@ PB_AME_Domestic_Policy = {
 
 		selectable_mission = yes
 
-		cost = 100
+		cost = 50
 
 		ai_will_do = {
 			factor = 10
 		}
 
+		days_re_enable = 200
+
 		days_mission_timeout = 30
 
 		complete_effect = {
+			PB_AME_Increase_Megacorp_Support = yes
 			custom_effect_tooltip = AME_Edison_Placated_tt
-			custom_effect_tooltip = AME_Spacing_tt
+			custom_effect_tooltip = PB_spacing_tt
 			hidden_effect = {
 				add_timed_idea = {
 					idea = AME_Edison_Placated
-					days = 180
+					days = 250
+				}
+			}
+
+			if = {
+				limit = { has_government = lb }
+				add_popularity = {
+					ideology = lb
+					popularity = -0.03
+				}
+			}
+
+			if = {
+				limit = { has_government = ss }
+				add_popularity = {
+					ideology = ss
+					popularity = -0.03
 				}
 			}
 		}
 
 		timeout_effect = {
-			add_popularity = {
-				ideology = an
-				popularity = 0.02
+			#PB_AME_Decrease_Megacorp_Support = yes
+			random_list = {
+
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_research_speed_low_tt
+					add_to_variable = {
+						var = PB_EIEC_Research_Speed_Factor
+						value = -0.02
+					}
+		    	}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_maximum_production_efficiency_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionMaxEfficiency
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_production_factory_efficiency_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionEfficiencyGain
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_line_change_production_efficiency_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_line_change_production_efficiency_factor
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_industrial_capacity_factory_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ic_factory
+						value = -0.05
+					}
+				}
+				10 = {
+					PB_AME_Decrease_Megacorp_Support = yes
+				}
+			}
+		}
+	}
+
+	AME_Southern_Issue_Timer = {
+		icon = generic_ignite_civil_war
+
+		activation = {      
+			AND = {
+				
+				OR = {
+					has_government = lb
+					has_government = ss
+				}	
+				
+				NOT = {
+					OR = {
+					has_completed_focus = PB_AME_Address_The_Southern_Issue
+					has_completed_focus = PB_AME_No_War_Against_the_South   
+					}
+				}
+			}              
+		}
+
+		available = {
+			AND = {
+				
+				OR = {
+					has_government = lb
+					has_government = ss
+				}	
+				
+				#NOT = {
+					OR = {
+					has_completed_focus = PB_AME_Address_The_Southern_Issue
+					has_completed_focus = PB_AME_No_War_Against_the_South   
+					}
+				#}
+			}          
+		}
+
+		cancel_trigger = {
+			OR = {
+				has_completed_focus = PB_AME_Address_The_Southern_Issue
+				has_completed_focus = PB_AME_No_War_Against_the_South   
+				has_war_with_major = yes
+			} 
+		}
+
+		is_good = no
+
+		selectable_mission = no
+
+	    #cost = 50
+
+		ai_will_do = {
+			factor = 15
+		}
+
+		priority = 100
+
+		days_mission_timeout = 200
+
+		days_re_enable = 100
+
+		complete_effect = {
+
+			#has_completed_focus = PB_AME_Address_The_Southern_Issue
+			#has_completed_focus = PB_AME_No_War_Against_the_South   
+		}
+
+		timeout_effect = {
+			add_political_power = -75
+			PB_AME_Decrease_Freedmen_Support = yes
+
+			if = {
+				limit = { has_government = lb }
+				add_popularity = {
+					ideology = lb
+					popularity = -0.025
+				}
+			}
+
+			if = {
+				limit = { has_government = ss }
+				add_popularity = {
+					ideology = ss
+					popularity = -0.02
+				}
 			}
 		}
 	}
@@ -599,8 +907,13 @@ PB_AME_Domestic_Policy = {
 
 		days_remove = 25
 
+		modifier = {
+			production_speed_buildings_factor = -0.05
+		}
+
 		remove_effect = {
-			add_stability = 0.03
+			#add_stability = 0.03
+			add_political_power = 50
 			PB_AME_Increase_Freedmen_Support = yes
 			PB_AME_Decrease_Southerner_Support = yes
 		}
@@ -631,17 +944,22 @@ PB_AME_Domestic_Policy = {
 
 		days_remove = 25
 
+		modifier = {
+			production_speed_buildings_factor = -0.05
+		}
+
 		remove_effect = {
-			add_stability = 0.03
-			PB_AME_Decrease_Freedmen_Support = yes
+		#	add_stability = 0.03
+			add_political_power = 50
 			PB_AME_Increase_Southerner_Support = yes
+			PB_AME_Decrease_Freedmen_Support = yes
 		}
 	}
 
 	PB_Promote_EIEC_Ventures = {
 		icon = generic_brain
 
-		cost = 50
+		cost = 75
 
 		available = {
 			NOT = {
@@ -663,10 +981,137 @@ PB_AME_Domestic_Policy = {
 		remove_effect = {
 			PB_AME_Increase_Megacorp_Support = yes
 			PB_AME_Decrease_Union_Support = yes
-			add_popularity = {
-				ideology = an
-				popularity = 0.03
+
+			add_to_variable = {
+				var = PB_EIEC_Political_Power_Factor
+				value = -0.05
 			}
+
+			custom_effect_tooltip = AME_EIEC_increase_EIEC_Influence_tt
+
+			random_list = {
+
+				10 = {
+					custom_effect_tooltip = AME_EIEC_increase_research_speed_med_tt
+					add_to_variable = {
+						var = PB_EIEC_Research_Speed_Factor
+						value = 0.04
+					}
+		    	}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_increase_maximum_production_efficiency_med_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionMaxEfficiency
+						value = 0.1
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_increase_production_factory_efficiency_gain_med_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionEfficiencyGain
+						value = 0.1
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_increase_line_change_production_efficiency_gain_med_tt
+					add_to_variable = {
+						var = PB_EIEC_line_change_production_efficiency_factor
+						value = 0.1
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_increase_industrial_capacity_factory_gain_med_tt
+					add_to_variable = {
+						var = PB_EIEC_ic_factory
+						value = 0.1
+					}
+				}
+			}
+			#add_popularity = {
+			#	ideology = an
+			#	popularity = 0.01
+			#}
+		}
+	}
+
+	PB_Discourage_EIEC_Contracts = {
+		icon = generic_political_discourse
+
+		cost = 125
+
+		available = {
+		#	NOT = {
+		#		has_country_leader = {
+		#			name = "Jack Lang"
+		#			ruling_only = yes
+		#		}				
+		#	}
+		}
+
+		ai_will_do = {
+			factor = 10
+		}
+
+		days_re_enable = 50
+
+		days_remove = 30
+
+		remove_effect = {
+
+			add_to_variable = {
+				var =PB_EIEC_Political_Power_Factor
+				value = 0.05
+			}
+
+			custom_effect_tooltip = AME_EIEC_decrease_EIEC_Influence_tt
+
+			random_list = {
+
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_research_speed_low_tt
+					add_to_variable = {
+						var = PB_EIEC_Research_Speed_Factor
+						value = -0.02
+					}
+		    	}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_maximum_production_efficiency_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionMaxEfficiency
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_production_factory_efficiency_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ProductionEfficiencyGain
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_line_change_production_efficiency_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_line_change_production_efficiency_factor
+						value = -0.05
+					}
+				}
+				10 = {
+					custom_effect_tooltip = AME_EIEC_decrease_industrial_capacity_factory_gain_low_tt
+					add_to_variable = {
+						var = PB_EIEC_ic_factory
+						value = -0.05
+					}
+				}
+			}
+
+			PB_AME_Decrease_Megacorp_Support = yes
+
+
+			#PB_AME_Decrease_Union_Support = yes
+			#add_popularity = {
+			#	ideology = an
+			#	popularity = 0.01
+			#}
 		}
 	}
 
@@ -679,24 +1124,29 @@ PB_AME_Domestic_Policy = {
 			factor = 10
 		}
 
-		days_re_enable = 1
+		days_re_enable = 50
 
-		days_remove = 1
+		days_remove = 25
+
+		modifier = {
+			political_power_gain = -0.1
+		}
 
 		remove_effect = {
-			PB_AME_Decrease_Megacorp_Support = yes
 			PB_AME_Increase_Union_Support = yes
 			add_popularity = {
 				ideology = ss
-				popularity = 0.03
+				popularity = 0.01
 			}
+			custom_effect_tooltip = PB_spacing_tt
+			PB_AME_Decrease_Megacorp_Support = yes
 		}
 	}
 
 	PB_EIEC_Expansion_Targets = {
 		icon = influence_cold_war
 
-		cost = 150
+		cost = 100
 
 		available = {
 			custom_trigger_tooltip = {
@@ -719,11 +1169,13 @@ PB_AME_Domestic_Policy = {
 		days_remove = 30
 
 		remove_effect = {
-			PB_AME_Decrease_Megacorp_Support = yes
+			custom_effect_tooltip = PB_spacing_tt
+			PB_AME_Increase_Megacorp_Support = yes
 			add_popularity = {
 				ideology = an
-				popularity = 0.05
+				popularity = 0.02
 			}
+			custom_effect_tooltip = PB_spacing_tt
 			random_owned_controlled_state = {
 				limit = {
 					free_building_slots = {
@@ -747,10 +1199,10 @@ PB_AME_Domestic_Policy = {
 						}
 					}
 				}
-				add_extra_state_shared_building_slots = 2
+				add_extra_state_shared_building_slots = 3
 				add_building_construction = {
 					type = industrial_complex
-					level = 2
+					level = 3
 					instant_build = yes
 				}
 			}
@@ -778,25 +1230,29 @@ PB_AME_Domestic_Policy = {
 			factor = 10
 		}
 
+		modifier = {
+			industrial_capacity_factory = 0.15
+		}
+
 		days_re_enable = 180
 
-		days_remove = 30
+		days_remove = 180
 
 		remove_effect = {
-			PB_AME_Decrease_Megacorp_Support = yes
-			add_popularity = {
-				ideology = an
-				popularity = 0.05
-			}
-			add_timed_idea = {
-				idea = PB_AME_Ford_Production_Quotas_idea
-				days = 30
-			}
+			PB_AME_Increase_Megacorp_Support = yes
+			#add_popularity = {
+			#	ideology = an
+			#	popularity = -0.025
+			#}
+			#add_timed_idea = {
+			#	idea = PB_AME_Ford_Production_Quotas_idea
+			#	days = 30
+			#}
 		}
 	}
 
 	PB_Megacorps_Union_Standard_Imports = {
-		icon = ger_mefo_bills
+		icon = oil
 
 		cost = 150
 
@@ -818,7 +1274,7 @@ PB_AME_Domestic_Policy = {
 
 		fire_only_once = yes
 
-		days_remove = 30
+		days_remove = 14
 
 		complete_effect = {
 			country_event = {
@@ -827,16 +1283,16 @@ PB_AME_Domestic_Policy = {
 		}
 
 		remove_effect = {
-			PB_AME_Decrease_Megacorp_Support = yes
-			add_popularity = {
-				ideology = an
-				popularity = 0.05
-			}
-		}
+			PB_AME_Increase_Megacorp_Support = yes
+			#add_popularity = {
+			#	ideology = an
+			#	popularity = 0.05
+			#}
+		}#
 	}
 
 	PB_Support_American_Texas = {
-		icon = generic_prepare_civil_war
+		icon = generic_industry
 
 		available = {
 			ATX = {
@@ -856,23 +1312,40 @@ PB_AME_Domestic_Policy = {
 				}
 			}
 			has_equipment = {
-				infantry_equipment > 1000
+				infantry_equipment > 1999
+			}
+			has_equipment = {
+				field_kits_equipment > 1999
 			}
 		}
+
+		#visible = {
+		#	ATX = {
+		#		exists = yes
+		#		has_war_with = TEX
+		#	}
+		#}
 
 		ai_will_do = {
 			factor = 10
 		}
 
+		priority = 10
+
 		fire_only_once = yes
 
-		days_remove = 14
+		days_remove = 3
 
 		remove_effect = {
 			ATX = {
 				send_equipment = {
 					equipment = infantry_equipment
-					amount = 1000
+					amount = 2000
+					target = AME
+				}
+				send_equipment = {
+					equipment = field_kits_equipment
+					amount = 2000
 					target = AME
 				}
 			}

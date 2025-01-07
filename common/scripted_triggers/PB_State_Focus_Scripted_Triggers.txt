@@ -1,0 +1,297 @@
+PB_state_focus_0_ai = {
+	has_war = no
+	free_building_slots = {
+		building = industrial_complex
+		size > 0
+		include_locked = no
+	}
+	# this should be a low priority and only done when you dont need to do the others
+	PB_state_focus_1_ai = no
+	PB_state_focus_3_ai = no
+	PB_state_focus_4_ai = no
+}
+
+PB_state_focus_1_ai = {
+	ROOT = {
+		OR = {
+			check_variable = { ai_attitude_is_threatened = 1 }
+			AND = {
+				has_war = yes
+				all_allied_country = {
+					add_to_temp_variable = { our_side_mils = num_of_military_factories }
+				}
+				add_to_temp_variable = { our_side_mils = num_of_military_factories }
+				all_enemy_country = {
+					add_to_temp_variable = { enemy_side_mils = num_of_military_factories }
+				}
+				multiply_temp_variable = { enemy_side_mils = 1.1 }
+				check_variable = { enemy_side_mils > our_side_mils }
+			}
+		}
+	}
+	free_building_slots = {
+		building = arms_factory
+		size > 0
+		include_locked = no
+	}
+}
+
+PB_state_focus_2_ai = {
+	free_building_slots = {
+		building = infrastructure
+		size > 0
+		include_locked = no
+	}
+	# this should be a low priority and only done when you dont need to do the others
+	PB_state_focus_0_ai = no
+	PB_state_focus_1_ai = no
+	PB_state_focus_3_ai = no
+	PB_state_focus_4_ai = no
+}
+
+PB_state_focus_3_ai = {
+	is_core_of = ROOT
+	ROOT = {
+		NOT = { has_idea = disarmed_nation }
+		OR = {
+			has_war = yes
+			set_temp_variable = { temp_ratio = manpower_k }
+			divide_temp_variable = { temp_ratio = total_manpower_k }
+			check_variable = { temp_ratio < 0.005 }
+		}
+		all_core_state = {
+			add_to_temp_array = { core_state_pops = state_population_k }
+		}
+	}
+	# yea i couldve done this via a recursive scripted trigger but im kinda lazy soooo
+	find_highest_in_array = {
+		array = core_state_pops
+		index = most_populous_state
+	}
+	remove_from_temp_array = { array = core_state_pops index = most_populous_state }
+	find_highest_in_array = {
+		array = core_state_pops
+		index = second_most_populous_state
+	}
+	if = {
+		limit = {
+			check_variable = { core_state_pops^num > 0 }
+		}
+		remove_from_temp_array = { array = core_state_pops index = second_most_populous_state }
+	}
+	find_highest_in_array = {
+		array = core_state_pops
+		index = third_most_populous_state
+	}
+	if = {
+		limit = {
+			check_variable = { core_state_pops^num > 0 }
+		}
+		remove_from_temp_array = { array = core_state_pops index = third_most_populous_state }
+	}
+	OR = {
+		state = var:ROOT.core_states^most_populous_state
+		state = var:ROOT.core_states^second_most_populous_state
+		state = var:ROOT.core_states^third_most_populous_state
+	}
+}
+
+PB_state_focus_4_ai = {
+	add_to_temp_array = { temp_resources = token:grain }
+	add_to_temp_array = { temp_resources = token:chromium }
+	add_to_temp_array = { temp_resources = token:steel }
+	add_to_temp_array = { temp_resources = token:tungsten }
+	add_to_temp_array = { temp_resources = token:rubber }
+	add_to_temp_array = { temp_resources = token:aluminium }
+	add_to_temp_array = { temp_resources = token:oil }
+	any_of = {
+		array = temp_resources
+		check_variable = { ROOT.resource@var:v < 0 }
+		meta_trigger = {
+			text = { [V] = > 0 }
+			V = "[?v.GetTokenKey]"
+		}
+	}
+}
+
+PB_state_focus_options_temp_init = {
+	add_to_temp_array = { PB_state_focus_options_temp = 0 }
+	if = {
+		limit = {
+			check_variable = { PB_state_focus_options_temp^num < 5 }
+		}
+		PB_state_focus_options_temp_init = yes
+	}
+}
+
+#
+#	Credit to the Kaiserreich team
+#
+
+# checks whether the country in scope has the same government as ROOT (the country running the event/focus)
+has_same_government_as_ROOT = {
+	OR = {
+		AND = {
+			has_government = jc
+			ROOT = { has_government = jc }
+		}
+		AND = {
+			has_government = ss
+			ROOT = { has_government = ss }
+		}
+		AND = {
+			has_government = lb
+			ROOT = { has_government = lb }
+		}
+		AND = {
+			has_government = cn
+			ROOT = { has_government = cn }
+		}
+		AND = {
+			has_government = an
+			ROOT = { has_government = an }
+		}
+		AND = {
+			has_government = rc
+			ROOT = { has_government = rc }
+		}
+		AND = {
+			has_government = ds
+			ROOT = { has_government = ds }
+		}
+		AND = {
+			has_government = ni
+			ROOT = { has_government = ni }
+		}
+    }
+}
+
+# checks if nation has specific government ideas related to democracy
+has_democratic_government = {
+	OR = {
+		has_idea = PB_Parliamentary_Republic
+        has_idea = PB_Parliamentary_Monarchy
+        has_idea = PB_Prussian_Constitutionalism
+        has_idea = PB_Federal_Assembly
+        has_idea = PB_Merchant_Republic
+        has_idea = PB_Workers_Republic
+    }
+}
+
+# checks if nation has specific government ideas related to authoritarianism
+has_authoritarian_government = {
+	OR = {
+		has_idea = PB_Absolute_Monarchy
+        has_idea = PB_Presidential_Dictatorship
+        has_idea = PB_Bourgeois_Dictatorship
+        has_idea = PB_Military_Government
+        has_idea = PB_Ultranationalist_Dictatorship
+        has_idea = PB_Revolutionary_Republic
+        has_idea = PB_Colonial_Government
+        has_idea = PB_Puppet_Government
+        has_idea = PB_Holy_See
+        has_idea = PB_Celestial_Empire
+    }
+}
+
+# checks if nation has specific government ideas related to republicanism
+has_republican_government = {
+	OR = {
+		has_idea = PB_Parliamentary_Republic
+        has_idea = PB_Presidential_Dictatorship
+        has_idea = PB_Bourgeois_Dictatorship
+        has_idea = PB_Military_Government
+        has_idea = PB_Ultranationalist_Dictatorship
+        has_idea = PB_Revolutionary_Republic
+        has_idea = PB_Federal_Assembly
+        has_idea = PB_Merchant_Republic
+        has_idea = PB_Workers_Republic
+    }
+}
+
+# checks if nation has specific government ideas related to monarchism
+has_monarchist_government = {
+	OR = {
+        has_idea = PB_Parliamentary_Monarchy
+        has_idea = PB_Prussian_Constitutionalism
+		has_idea = PB_Absolute_Monarchy
+    }
+}
+
+# checks whether the country in scope has the same government type as ROOT (the country running the event/focus)
+# note that it's not the exact same government - just the general type, as above
+same_government_type_as_ROOT = {
+	OR = {
+		AND = {
+			has_democratic_government = yes
+			ROOT = { has_democratic_government = yes }
+		}
+		AND = {
+			has_authoritarian_government = yes
+			ROOT = { has_authoritarian_government = yes }
+		}
+	}
+}
+
+is_great_power = {
+	OR = {
+		original_tag = ENG
+		original_tag = FRA
+		original_tag = AME
+		original_tag = GER
+        original_tag = RUS
+        original_tag = JAP
+        original_tag = CHI
+	}
+}
+
+is_AM_and_EN = {
+	OR = {
+		original_tag = ENG
+		original_tag = AME
+	}
+}
+
+# the following triggers will check if the country in scope is on a particular continent
+# note that these are continents as per the game - asia and middle-east are considered separate continents
+is_in_asia = {
+	capital_scope = {
+		is_on_continent = asia
+	}
+}
+
+is_in_europe = {
+	capital_scope = {
+		is_on_continent = europe
+	}
+}
+
+is_in_africa = {
+	capital_scope = {
+		is_on_continent = africa
+	}
+}
+
+is_in_north_america = {
+	capital_scope = {
+		is_on_continent = north_america
+	}
+}
+
+is_in_south_america = {
+	capital_scope = {
+		is_on_continent = south_america
+	}
+}
+
+is_in_middle_east = {
+	capital_scope = {
+		is_on_continent = middle_east
+	}
+}
+
+is_in_australia = {
+	capital_scope = {
+		is_on_continent = australia
+	}
+}
