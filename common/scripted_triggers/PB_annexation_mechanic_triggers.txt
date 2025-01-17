@@ -1,0 +1,216 @@
+# Useful triggers for the annexation codebase
+is_valid_annexation_state = {
+	custom_trigger_tooltip = {
+		tooltip = is_valid_annexation_state
+		is_owned_by = ROOT
+		is_allowed_annexation_state = yes
+	}
+}
+
+is_allowed_annexation_state = {
+	NOT = { is_claimed_by = ROOT }
+	NOT = { is_core_of = ROOT }
+	hidden_trigger = {
+		NOT = { has_state_flag = retain_state_@ROOT }
+		NOT = { check_variable = { retain_state_@THIS = 1 } }
+		NOT = { has_state_flag = occupied_by_@ROOT }
+		NOT = { check_variable = { occupied_by_@THIS = 1 } }
+	}
+}
+
+is_allowed_annexation_state_for_owner = {
+	NOT = { is_claimed_by = owner }
+	NOT = { is_core_of = owner }
+	hidden_trigger = {
+		NOT = { check_variable = { retain_state_@THIS = 1 } }
+		NOT = { check_variable = { occupied_by_@THIS = 1 } }
+		owner = {
+			PREV = {
+				NOT = { has_state_flag = retain_state_@PREV }
+				NOT = { has_state_flag = occupied_by_@PREV }
+			}
+		}
+	}
+}
+
+can_select_annexation_decision = {
+	hidden_trigger = { NOT = { has_country_flag = open_annexation_event } }
+}
+
+is_claim_or_core_of_target = {
+	OR = {
+		is_claimed_by = var:tag_to_release
+		is_core_of = var:tag_to_release
+	}
+}
+
+ROOT_can_grant_land = {
+	ROOT = { is_subject = no }
+	exists = yes
+	NOT = { tag = ROOT }
+	if = {
+		limit = { has_autonomy_state = colonial_government }
+		is_subject_of = ROOT
+	}
+	else = {
+		OR = {
+			is_ally_with = ROOT
+			AND = {
+				NOT = { has_truce_with = ROOT }
+				ROOT = { both_socialist_or_both_not_socialist = yes }
+				at_war_with_or_justifying_wargoal_against_ROOT = no
+			}
+		}
+	}
+}
+
+ROOT_can_grant_land_ignore_ideology = {
+	ROOT = { is_subject = no }
+	exists = yes
+	NOT = { tag = ROOT }
+	if = {
+		limit = { has_autonomy_state = colonial_government }
+		is_subject_of = ROOT
+	}
+	else = {
+		NOT = { has_truce_with = ROOT }
+		at_war_with_or_justifying_wargoal_against_ROOT = no
+	}
+}
+
+stt_no_conflict_game_rules = {
+	if = {
+		limit = { has_game_rule = { rule = state_transfer_tool_options option = MULTIPLAYER } }
+		OR = {
+			is_owned_by = ROOT
+			owner = { is_subject_of = ROOT }
+		}
+	}
+	else_if = {
+		limit = { has_game_rule = { rule = state_transfer_tool_options option = MP_NO_SUBJECT } }
+		is_owned_by = ROOT
+	}
+}
+
+remove_cores_of_tag_if_non_existent = {
+	OR = {
+		is_american_tag = yes
+		is_italian_tag = yes
+		is_indian_tag = yes
+		is_chinese_tag = yes
+		original_tag = KUM
+		original_tag = LEC
+		original_tag = MAF
+		original_tag = GEA
+		original_tag = SPA
+		original_tag = GAL
+		original_tag = HAU
+		original_tag = KBR
+		original_tag = ADA
+		original_tag = RWA
+		original_tag = BRD
+		original_tag = KIV
+		original_tag = TKE
+		original_tag = BRT
+		original_tag = PAL
+		original_tag = FER
+		original_tag = RSA
+		original_tag = IKH
+		#add new entries here as needed - remember to update the exceptions in clear_cores_of_tag_if_possible
+	}
+	NOT = { has_country_flag = reserved_dynamic_tag }
+}
+
+annexations_required_state_is_owned_by_either_side = {
+	OR = {
+		is_owned_by = PREV
+		is_valid_annexation_state = yes
+	}
+}
+
+annexations_state_owner_is_valid_grant_target = {
+	OR = {
+		is_claim_or_core_of_owner = yes
+		owner = { PREV = { has_state_flag = annexation_recent_transfer_@PREV } }
+	}
+}
+
+annexations_can_annex = {
+	has_event_target = can_annex
+}
+
+annexations_is_allowed_to_cancel = {
+	annexations_can_annex = no
+}
+
+annexations_should_give_lands_to_overlord = {
+	is_subject = yes
+	annexations_can_annex = no
+}
+
+annexations_can_make_alliance_offer = {
+	is_subject = no
+	is_in_faction = yes
+	OR = {
+		is_major = yes
+		is_ai = no
+	}
+}
+
+annexations_is_valid_target_for_alliance_offer = {
+	exists = yes
+	is_subject = no
+	NOT = { has_truce_with = ROOT }
+	NOT = { is_in_faction_with = ROOT }
+	has_capitulated = no
+	both_socialist_or_both_not_socialist = yes
+	at_war_with_or_justifying_wargoal_against_ROOT = no
+	at_peace_or_same_enemies_as_ROOT = yes
+}
+
+annexations_no_occupation_penalty = {
+	OR = {
+		has_state_flag = no_occupation_penalty
+		has_variable = can_integrate_@ROOT
+	}
+}
+
+annexations_state_is_tied_to_annexation_decision = {
+	check_variable = { PREV.annexation_target = THIS }
+	annexations_check_highest_scores_for_regional_annexation = yes
+}
+
+annexations_check_highest_scores_for_regional_annexation = {
+	if = {
+		limit = { has_variable = annexation_target:annexation_extra_states^num }
+		check_variable = { priority_state_@var:annexation_target = PREV }
+		check_variable = { priority_country_@var:annexation_target = ROOT }
+	}
+}
+
+annexations_state_has_valid_annexation = {
+	OR = {
+		is_valid_annexation_state = yes
+		has_variable = has_valid_state_@var:annexation_target
+	}
+}
+
+annexations_is_valid_annexation_region = {
+	if = {
+		limit = { NOT = { has_variable = annexation_target:annexation_extra_states } }
+		is_valid_annexation_state = yes
+	}
+	else = {
+		any_of_scopes = {
+			array = annexation_target:annexation_extra_states
+			is_valid_annexation_state = yes
+		}
+	}
+}
+
+add_state_to_resistance_target_array = {
+	if = {
+		limit = { NOT = { is_in_array = { resistance_target_states = annexation_target } } }
+		add_to_temp_array = { resistance_target_states = annexation_target }
+	}
+}
