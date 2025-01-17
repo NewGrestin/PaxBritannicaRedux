@@ -1,0 +1,363 @@
+###########################
+# Annexation Events concerning Europe
+###########################
+# By lots of folks
+# Converted from on_actions to decisions by Rylock and Dr_Njitram
+# Any new post-annexation events need to have their triggers in the KR_on_actions file
+###########################
+###########################
+# Thanks KR ;) - Pax Team
+###########################
+
+## the bottom table of context and other events need to be adjusted to Pax - Lexus
+## i left one event as example for the rest of the events, if you're not sure check out KR code
+
+# Table of Contents
+#	This might sound arcane to you, but we are following a center-west-north-east-south route. You'll get the hang of it
+#
+# Europe
+#	Central Europe
+#		Germany
+#			Alsace
+#			Luxemburg
+#			Rheinland
+#			North Germany
+#			Schleswig
+#			Prussia (+ East & West Prussia)
+#			Posen
+#			Masuria
+#			Memel
+#			Upper Silesia
+#			Bavaria
+#		Poland
+#			Bialystok
+#		UBD
+#			Estonia
+#			Latvia
+#		Lithuania
+#			Vilnius
+#		Austria
+#			Austria proper
+#			Bohemia
+#			Galicia
+#				Bukovina
+#			Hungary
+#				Slovakia
+#				Transcarpathia
+#				Transylvania
+#				West Banat
+#				Vojvodina
+#				Burgenland
+#			Croatia
+#				Dalmatia
+#				Istria
+#			Triest
+#			Slovenia
+#			Trentino
+#		Switzerland
+#			Romandy
+#			Ticino
+#
+#	Western Europe
+#		France
+#			Brittany
+#			Pas-de-Calais
+#		Britain
+#			Scotland
+#			Wales
+#		Ireland
+#		Netherlands
+#		Belgium
+#			Wallonia
+#
+#	Northern Europe
+#		Denmark
+#			Iceland
+#			Greenland
+#		Norway
+#		Sweden
+#			Aland
+#		Finland
+#			Karelia
+#
+#	Eastern Europe
+#		Ukraine
+#			Brest
+#		White Ruthenia
+#			Eastern White Ruth.
+#		European Russia
+#			Dvinsk
+#			Siberia
+#
+#	Southeastern Europe
+#		Albania
+#		Montenegro
+#		Bosnia
+#		Kosovo
+#		Serbia
+#			Nis
+#			Macedonia
+#		Romania
+#		Bulgaria
+#		Constantinople
+#		Greece
+#			Thessaloniki
+#			Keraferia
+#			Northern Epirus
+#
+#	Southern Europe
+#		Spain
+#			Galicia
+#			Euskadi
+#			Catalonia
+#		Portugal
+#		Southern France
+#		Corsica
+#		Italy
+#			Aosta
+#			Piedmont
+#			Lombardy
+#			Venetia
+#			Emilia
+#			Tuscany
+#			Central Italy
+#			Rome
+#			Southern Italy
+#			Sardinia
+#		Malta
+
+add_namespace = annexation
+
+#####################################
+##   C E N T R A L   E U R O P E   ##
+#####################################
+
+country_event = { #Fate of Alsace-Lorraine
+	id = annexation.1001
+	title = annexation_alsace_lorraine
+	desc = annexation_alsace_lorraine_desc
+	picture = GFX_report_event_generic_conference2
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					785 = { is_claim_or_core_of_ROOT = yes } #Lorraine
+					42 = { is_claim_or_core_of_ROOT = yes } #Palatinate
+					780 = { is_claim_or_core_of_ROOT = yes } #Baden
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				785 = { #Lorraine
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:785.owner = { save_event_target_as = france }
+		}
+		if = {
+			limit = {
+				42 = { #Palatinate
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:france }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:42.owner = { save_event_target_as = german_palatinate }
+		}
+		if = {
+			limit = {
+				780 = { #Baden
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:france }
+						NOT = { tag = event_target:german_palatinate }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:780.owner = { save_event_target_as = german_baden }
+		}
+	}
+
+	option = { #Give to France
+		log = "[GetLogInfo]: event annexation.1001 option annexation.give_to_france"
+		name = annexation.give_to_france
+		trigger = {
+			has_event_target = france
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:france }
+				is_ally_with = event_target:german_palatinate
+				OR = {
+					annexations_AI_country_wants_to_dismantle_germany = no
+					event_target:german_palatinate = { is_german_tag = no }
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:france }
+				is_ally_with = event_target:german_baden
+				OR = {
+					annexations_AI_country_wants_to_dismantle_germany = no
+					event_target:german_baden = { is_german_tag = no }
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		28 = { transfer_state_and_notify = yes } #Alsace-Lorraine
+		recheck_annexations = yes
+	}
+
+	option = { #Give to German tag 1 (owner of Palatinate)
+		log = "[GetLogInfo]: event annexation.1001 option annexation.1001.a"
+		name = annexation.1001.a
+		trigger = {
+			has_event_target = german_palatinate
+		}
+		ai_chance = {
+			base = 15
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				event_target:german_palatinate = { is_german_tag = yes }
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:france
+				event_target:france = {
+					is_french_tag = yes
+					is_subject = no
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:german_palatinate }
+				is_ally_with = event_target:france
+				OR = {
+					annexations_AI_country_wants_to_dismantle_germany = no
+					event_target:france = { is_german_tag = no }
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:german_palatinate }
+				is_ally_with = event_target:german_baden
+				OR = {
+					annexations_AI_country_wants_to_dismantle_germany = no
+					event_target:german_baden = { is_german_tag = no }
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:german_palatinate = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:german_palatinate }
+		28 = { transfer_state_and_notify = yes } #Alsace-Lorraine
+		recheck_annexations = yes
+	}
+
+	option = { #Give to German tag 2 (owner of Baden)
+		log = "[GetLogInfo]: event annexation.1001 option annexation.1001.b"
+		name = annexation.1001.b
+		trigger = {
+			has_event_target = german_baden
+		}
+		ai_chance = {
+			base = 15
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				event_target:german_baden = { is_german_tag = yes }
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:france
+				event_target:france = {
+					is_french_tag = yes
+					is_subject = no
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:german_baden }
+				is_ally_with = event_target:france
+				OR = {
+					annexations_AI_country_wants_to_dismantle_germany = no
+					event_target:france = { is_german_tag = no }
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:german_baden }
+				is_ally_with = event_target:german_palatinate
+				OR = {
+					annexations_AI_country_wants_to_dismantle_germany = no
+					event_target:german_palatinate = { is_german_tag = no }
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:german_baden = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:german_baden }
+		28 = { transfer_state_and_notify = yes } #Alsace-Lorraine
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annexation.1001 option annexation.give_to_overlord"
+		name = annexation.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		28 = { transfer_state_and_notify = yes } #Alsace-Lorraine
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annexation.1001 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		28 = { add_claim_of_ROOT = yes } #Alsace-Lorraine
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1001 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}

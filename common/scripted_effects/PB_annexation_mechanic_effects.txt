@@ -1,1656 +1,2639 @@
-start_regional_annexation_vars = {
-	add_to_regional_annexation_array = yes
-	set_state_as_annexation_target = yes
+# state scope
+occupy_state = {
+	set_state_flag = occupied_by_@PREV
+	set_temp_variable = { occupied_by_@THIS = 1 }
 }
 
-set_state_as_annexation_target = {
-	if = {
-		limit = { NOT = { has_variable = PREV.annexation_target } }
-		set_variable = { PREV.annexation_target = THIS }
-	}
+# state scope
+clear_occupy_state = {
+	clr_state_flag = occupied_by_@PREV
+	set_temp_variable = { occupied_by_@THIS = 0 } #clear_variable doesn't work for temp variables
 }
 
-add_to_regional_annexation_array = {
-	if = {
-		limit = { NOT = { is_in_array = { annexation_extra_states = PREV } } }
-		add_to_array = { annexation_extra_states = PREV }
-	}
-}
-
-block_annexation_decision_selection = {
-	clear_retained_states = yes
-	FROM = {
-		if = {
-			limit = { has_variable = annexation_target }
-			var:annexation_target = { save_event_target_as = targeted_annexation_state }
-		}
-		else = {
-			save_event_target_as = targeted_annexation_state
-		}
-	}
-	set_country_flag = { flag = open_annexation_event days = 16 value = 1 }
-}
-
-allow_annexation_decision_selection = {
-	clr_country_flag = open_annexation_event
-	clear_retained_states = yes
-}
-
-recheck_annexations_base = {
-	clear_array = valid_italian_targets_grant
-	clear_array = valid_italian_targets_offer
-	clear_array = offered_states_array
-	allow_annexation_decision_selection = yes
-}
-
-recheck_annexations = {
-	recheck_annexations_base = yes
+# state scope
+state_given_notification_effect = {
 	hidden_effect = {
-		country_event = { id = annex.1 days = 1 random_days = 3 }
-		refresh_occupation_penalties = yes
-	}
-}
-
-recheck_annexations_immediate = {
-	recheck_annexations_base = yes
-	hidden_effect = {
-		country_event = annex.1
-		refresh_occupation_penalties = yes
-	}
-}
-
-refresh_occupation_penalties = {
-	for_each_scope_loop = {
-		array = annexation_resistance_states
 		if = {
-			limit = {
-				OR = {
-					NOT = { is_owned_by = PREV }
-					is_claimed_by = PREV
-					is_core_of = PREV
-					has_state_flag = retain_state_@PREV
-					has_state_flag = occupied_by_@PREV
-					has_variable = can_integrate_@PREV
-				}
-			}
-			add_to_temp_array = { states_to_remove = THIS }
-			clr_state_flag = annexations_resistance_@ROOT
-			meta_effect = {
-				text = { remove_resistance_target = [ID] }
-				ID = "[?ROOT.annexation_resistance_target_id]"
-			}
+			limit = { owner = { is_ai = no } }
+			save_event_target_as = granted_land
+			state_event = { id = annexation.2 trigger_for = owner }
 		}
 	}
+}
+
+# state scope
+retain_state = {
+	set_state_flag = { flag = retain_state_@ROOT days = 16 value = 1 }
+	set_temp_variable = { retain_state_@THIS = 1 }
+}
+
+# state scope
+clear_retain_state = {
+	clr_state_flag = retain_state_@PREV
+	set_temp_variable = { retain_state_@THIS = 0 } #clear_variable doesn't work for temp variables
+}
+
+# country scope
+clear_retained_states = {
+	hidden_effect = { every_state = { clear_retain_state = yes } }
+}
+
+# state scope
+change_transfer_flag_target = {
+	owner = { PREV = { clr_state_flag = annexation_recent_transfer_@PREV } }
+	var:tag_to_release = { PREV = { set_state_flag = { flag = annexation_recent_transfer_@PREV value = 1 days = 60 } } }
+}
+
+# state scope
+transfer_state_without_overriding_occupation = {
+	save_current_factory_count = yes
 	if = {
-		limit = { check_variable = { annexation_resistance_states^num = states_to_remove^num } }
-		clear_array = annexation_resistance_states
+		limit = { is_fully_controlled_by = owner }
+		transfer_state_to = var:tag_to_release
 	}
 	else = {
-		for_each_scope_loop = {
-			array = states_to_remove
-			remove_from_array = { PREV.annexation_resistance_states = THIS }
+		set_state_owner_to = var:tag_to_release
+		set_state_province_controller = {
+			controller = var:tag_to_release
+			limit = { NOT = { has_war_with = ROOT } }
 		}
+	}
+	restore_previous_factory_count = yes
+	if = {
+		limit = { is_claim_or_core_of_target = no }
+		var:tag_to_release = { PREV = { set_state_flag = { flag = annexation_recent_transfer_@PREV value = 1 days = 60 } } }
 	}
 }
 
-build_annexation_temp_arrays = {
-	if = {
-		limit = { has_variable = annexation_target:annexation_extra_states^num }
+# state scope
+temporarily_disable_country_annexation = {
+	hidden_effect = {
+		every_core_state = { set_state_flag = { flag = temporarily_disabled_annexation_@ROOT value = 1 days = 32 } }
+	}
+}
+
+# state scope
+temporarily_disable_annexation = {
+	hidden_effect = {
+		set_state_flag = { flag = temporarily_disabled_annexation_@ROOT value = 1 days = 32 }
+	}
+}
+
+# state scope
+save_to_offered_states = {
+	hidden_effect = {
 		if = {
-			limit = { var:annexation_target = { is_valid_annexation_state = yes } }
-			set_temp_variable = { priority_state_@var:annexation_target = annexation_target }
-			for_each_scope_loop = {
-				array = annexation_target:annexation_extra_states
-				if = {
-					limit = {
-						is_allowed_annexation_state_for_owner = yes
-						impassable = no
-					}
-
-					### build owners array
-					if = {
-						limit = { NOT = { is_in_array = { owners_@PREV = owner } } }
-						add_to_temp_array = { owners_@PREV = owner }
-					}
-
-					### add up total owned strategic value
-					add_to_temp_variable = { total_score_@var:owner = state_strategic_value }
+			limit = { check_variable = { id < 0 } } #== is a state
+			clear_retain_state = yes
+			if = {
+				limit = {
+					NOT = { is_claimed_by = ROOT }
+					NOT = { is_core_of = ROOT }
+					NOT = { has_state_flag = occupied_by_@ROOT }
+					NOT = { check_variable = { occupied_by_@THIS = 1 } }
 				}
+				add_to_array = { ROOT.offered_states_array = THIS }
+				set_temp_variable = { offered_state_@THIS = 1 }
+				log = "save_to_offered_states [THIS.GetName]"
 			}
 		}
 		else = {
-			for_each_scope_loop = {
-				array = annexation_target:annexation_extra_states
-				if = {
-					limit = {
-						is_allowed_annexation_state_for_owner = yes
-						impassable = no
-					}
-
-					### build owners array
-					if = {
-						limit = { NOT = { is_in_array = { owners_@PREV = owner } } }
-						add_to_temp_array = { owners_@PREV = owner }
-					}
-
-					### add up total owned strategic value
-					add_to_temp_variable = { total_score_@var:owner = state_strategic_value }
-
-					### select best state to target the decision
-					if = {
-						limit = {
-							is_owned_by = ROOT
-							check_variable = { annexation_target = PREV.annexation_target }
-						}
-						set_temp_variable = { has_valid_state_@var:annexation_target = THIS }
-						if = {
-							limit = { NOT = { has_variable = priority_state_@var:annexation_target } }
-							set_temp_variable = { priority_state_@var:annexation_target = THIS }
-						}
-						else_if = {
-							limit = { var:priority_state_@var:annexation_target = { check_variable = { state_strategic_value < PREV.state_strategic_value } } }
-							set_temp_variable = { priority_state_@var:annexation_target = THIS }
-						}
-						else_if = {
-							limit = { var:priority_state_@var:annexation_target = { check_variable = { id > PREV.id } } }
-							set_temp_variable = { priority_state_@var:annexation_target = THIS }
-						}
-					}
-				}
+			every_core_state = {
+				limit = { is_allowed_annexation_state = yes }
+				add_to_array = { ROOT.offered_states_array = THIS }
+				set_temp_variable = { offered_state_@THIS = 1 }
+				log = "save_to_offered_states [THIS.GetName]"
 			}
 		}
+	}
+}
 
-		### assign total owned strategic value to each owner
-		for_each_loop = {
-			array = owners_@THIS
-			add_to_temp_array = { owner_scores_@THIS = total_score_@var:v }
+# country scope
+offer_states_to_target = {
+	country_event = annexation.5
+	custom_effect_tooltip = if_they_accept_tt
+	effect_tooltip = {
+		ROOT = {
+			every_owned_state = {
+				limit = {
+					OR = {
+						check_variable = { offered_state_@THIS = 1 }
+						any_country_with_core = { check_variable = { offered_state_@THIS = 1 } }
+					}
+					is_allowed_annexation_state = yes
+				}
+				transfer_state_to = PREV.PREV
+			}
+			faction_leader = { add_to_faction = PREV.PREV }
 		}
-
-		### select country with the highest total owned strategic value
-		find_highest_in_array = { array = owner_scores_@THIS }
-		set_temp_variable = { priority_country_@var:annexation_target = owners_@THIS^i }
 	}
 }
 
-check_possible_annexations_europe = {
+# state scope
+transfer_state_and_notify = {
+	transfer_state_without_overriding_occupation = yes
+	state_given_notification_effect = yes
+}
+
+# state scope
+remove_claim_and_add_core_of_ROOT = {
+	effect_tooltip = {
+		if = {
+			limit = { is_claimed_by = ROOT }
+			remove_claim_by = ROOT
+		}
+		if = {
+			limit = { NOT = { is_core_of = ROOT } }
+			add_core_of = ROOT
+		}
+	}
+	hidden_effect = {
+		remove_claim_by = ROOT
+		add_core_of = ROOT
+	}
+}
+
+# state scope
+remove_claim_and_add_core_of_target = {
+	effect_tooltip = {
+		if = {
+			limit = { is_claimed_by = var:tag_to_release }
+			remove_claim_by = var:tag_to_release
+		}
+		if = {
+			limit = { NOT = { is_core_of = var:tag_to_release } }
+			add_core_of = var:tag_to_release
+		}
+	}
+	hidden_effect = {
+		remove_claim_by = var:tag_to_release
+		add_core_of = var:tag_to_release
+	}
+}
+
+# state scope
+add_claim_of_ROOT = {
+	effect_tooltip = {
+		if = {
+			limit = { is_claim_or_core_of_ROOT = no }
+			add_claim_by = ROOT
+		}
+	}
+	hidden_effect = {
+		if = {
+			limit = { NOT = { is_core_of = ROOT } }
+			add_claim_by = ROOT
+		}
+	}
+}
+
+# country scope
+add_claim_of_ROOT_on_valid_cores = {
+	every_core_state = {
+		limit = {
+			is_allowed_annexation_state = yes
+			is_claim_or_core_of_ROOT = no
+		}
+		add_claim_by = ROOT
+	}
+}
+
+# state scope
+add_claim_of_target = {
+	effect_tooltip = {
+		if = {
+			limit = { is_claim_or_core_of_target = no }
+			add_claim_by = var:tag_to_release
+		}
+	}
+	hidden_effect = {
+		if = {
+			limit = { NOT = { is_core_of = var:tag_to_release } }
+			add_claim_by = var:tag_to_release
+		}
+	}
+}
+
+# country scope
+add_claim_of_target_on_valid_cores = {
+	every_core_state = {
+		limit = {
+			is_allowed_annexation_state = yes
+			is_claim_or_core_of_target = no
+		}
+		add_claim_by = var:tag_to_release
+	}
+}
+
+# state scope
+transfer_if_owned = {
 	if = {
-		limit = { can_release_adrianople = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_adrianople target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_aegean_coast = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_aegean_coast target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_aland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_aland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_albania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_albania target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_alsace_lorraine = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_alsace_lorraine target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_verviers = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_verviers target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_aosta = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_aosta target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_austria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_austria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_basque_country = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_basque_country target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_south_germany = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_south_germany target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_belarus = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_belarus target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bessarabia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bessarabia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bialystok = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bialystok target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bohemia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bohemia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bosnia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bosnia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_brest = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_brest target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_brittany = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_brittany target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bulgaria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bulgaria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_burgenland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_burgenland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_catalonia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_catalonia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_cernauti = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_cernauti target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_chelm = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_chelm target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_croatia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_croatia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_constantinople = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_constantinople target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_constantza = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_constantza target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_corsica = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_corsica target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_cyprus = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_cyprus target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_dalmatia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_dalmatia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_danubian_plain = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_danubian_plain target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_denmark = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_denmark target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_dunkirk = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_dunkirk target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_latgale = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_latgale target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_eastern_belarus = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_eastern_belarus target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_emilia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_emilia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_britain = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_britain target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_estonia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_estonia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_finland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_finland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_flanders = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_flanders target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_fiume = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_fiume target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_france = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_france target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_spanish_galicia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_spanish_galicia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_gibraltar = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_gibraltar target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_gomel = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_gomel target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_gorizia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_gorizia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_greece = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_greece target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_north_germany = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_north_germany target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_holstein = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_schleswig_holstein target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_hungary = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_hungary target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_iceland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_iceland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ireland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ireland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_northern_ireland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_northern_ireland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_istria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_istria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_karavanks = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_karavanks target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kardzhali = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kardzhali target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_karelia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_karelia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_komotini = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_komotini target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kosovo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kosovo target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kotor = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kotor target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_krakow = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_krakow target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kuban = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kuban target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_labourd = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_labourd target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_latvia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_latvia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_lille = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_lille target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_limburg = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_limburg target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_lithuania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_lithuania target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_lwow = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_lwow target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_lombardy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_lombardy target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_luxembourg = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_luxembourg target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_macedonia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_macedonia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_malta = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_malta target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_mura = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_mura target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_montenegro = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_montenegro target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_netherlands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_netherlands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_nice = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_nice target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_nish = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_nish target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_northern_england = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_northern_england target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_northern_epirus = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_northern_epirus target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_north_caucasus = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_north_caucasus target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_norway = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_norway target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_central_italy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_central_italy target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_pas_de_calais = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_pas_de_calais target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_piedmont = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_piedmont target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_poland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_poland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_west_prussia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_west_prussia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_east_prussia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_east_prussia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_poznan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_poznan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_masuria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_masuria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_upper_silesia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_upper_silesia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_memel = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_memel target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_polesia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_polesia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_portugal = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_portugal target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_pressburg = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_pressburg target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_prussia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_prussia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_rhineland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_rhineland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_romania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_romania target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_rome = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_rome target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_roussillon = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_roussillon target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_russia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_russia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_aegean_macedonia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_aegean_macedonia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sardinia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sardinia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_saxony = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_saxony target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_savoy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_savoy target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_schleswig = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_northern_schleswig target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_scotland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_scotland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_serbia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_serbia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_serres = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_serres target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_silistria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_silistria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_slovakia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_slovakia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_slovenia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_slovenia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_south_tyrol = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_south_tyrol target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_southern_italy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_southern_italy target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_stanislawow = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_stanislawow target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_suceava = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_suceava target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_spain = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_spain target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sweden = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sweden target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_switzerland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_switzerland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_syrmia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_syrmia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tesin = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tesin target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_trentino = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_trentino target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_chalcidice = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_chalcidice target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_transcarpathia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_transcarpathia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_transylvania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_transylvania target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_trieste = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_trieste target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tuscany = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tuscany target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ukraine = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ukraine target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_venice = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_venice target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_vilnius = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_vilnius target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_volkovysk = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_volkovysk target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_vojvodina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_vojvodina target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_vorarlberg = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_vorarlberg target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_wales = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_wales target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_wallonia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_wallonia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_west_banat = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_west_banat target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_westerscheldt = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_westerscheldt target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_romandy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_romandy target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ticino = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ticino target = PREV } }
+		limit = { is_valid_annexation_state = yes }
+		transfer_state_without_overriding_occupation = yes
+		state_given_notification_effect = yes
 	}
 }
 
-check_possible_annexations_north_america = {
+# country scope
+set_transfer_target_cores = {
+	set_temp_variable = { transfer_target_@THIS = 1 }
+}
+
+# state scope
+set_transfer_target_state = {
+	set_temp_variable = { state_transfer_target_@THIS = 1 }
+}
+
+# country scope
+annex_splinter_tag = {
+	var:tag_to_release = {
+		every_owned_state = { change_transfer_flag_target = yes }
+		annex_country = { target = PREV transfer_troops = yes }
+	}
+}
+
+# global scope
+transfer_targeted_territory = {
+	every_owned_state = {
+		limit = {
+			OR = {
+				has_variable = state_transfer_target_@THIS
+				any_country_with_core = { has_variable = transfer_target_@THIS }
+			}
+			is_allowed_annexation_state = yes
+		}
+		transfer_state_without_overriding_occupation = yes
+		state_given_notification_effect = yes
+	}
+}
+
+release_targeted_tag_state_transfer_effect = {
 	if = {
-		limit = { can_release_alaska = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_alaska target = PREV } }
+		limit = { has_variable = claims }
+		every_owned_state = {
+			limit = {
+				is_claim_or_core_of_target = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_without_overriding_occupation = yes
+		}
 	}
-	else_if = {
-		limit = { can_release_america = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_united_states target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_canada = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_canada target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_new_england = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_new_england target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_greenland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_greenland target = PREV } }
-	}
-}
-
-check_possible_annexations_central_america = {
-	if = {
-		limit = { can_release_belize = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_belize target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_british_caribbean = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_british_caribbean target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_costa_rica = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_costa_rica target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_cuba = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_cuba target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_curacao = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_curacao target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_dominican_republic = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_dominican_republic target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_el_salvador = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_el_salvador target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_french_caribbean = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_french_caribbean target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_guatemala = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_guatemala target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_haiti = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_haiti target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_honduras = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_honduras target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_jamaica = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_jamaica target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_mexico = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_mexico target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_nicaragua = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_nicaragua target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_panama = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_panama target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_panama_canal = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_panama_canal target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_puerto_rico = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_puerto_rico target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_saint_martin = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_saint_martin target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_trinidad = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_trinidad target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_yucatan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_yucatan target = PREV } }
+	else = {
+		every_owned_state = {
+			limit = {
+				is_core_of = var:tag_to_release
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_without_overriding_occupation = yes
+		}
 	}
 }
 
-check_possible_annexations_south_america = {
-	if = {
-		limit = { can_release_acre = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_acre target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_amazon_basin = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_amazon_basin target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_antofagasta = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_antofagasta target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_argentina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_argentina target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_arica = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_arica target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_misiones = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_misiones target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bahia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bahia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bolivia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bolivia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_northern_chaco = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_northern_chaco target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_southern_chaco = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_southern_chaco target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_upper_chaco = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_upper_chaco target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_chile = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_chile target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_colombia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_colombia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_east_guyana = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_east_guyana target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ecuador = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ecuador target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_falkland_islands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_falkland_islands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_brazilian_hinterland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_brazilian_hinterland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_northeastern_brazil = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_northeastern_brazil target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_guyana = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_guyana target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_essequibo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_essequibo target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_paraguay = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_paraguay target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_pontapora = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ponta_pora target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_iguassu = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_iguassu target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_pastaza = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_pastaza target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_brazilian_borderlands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_brazilian_borderlands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_putumayo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_putumayo target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_southeast_brazil = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_southeast_brazil target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sao_paulo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sao_paulo target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_peru = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_peru target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_suriname = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_suriname target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tarapaca = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tarapaca target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tierra_del_fuego = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tierra_del_fuego target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_uruguay = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_uruguay target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_venezuela = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_venezuela target = PREV } }
-	}
+# global scope
+release_targeted_tag_with_claims = {
+	set_temp_variable = { claims = 1 }
+	release_targeted_tag_state_transfer_effect = yes
+	puppet_released_tag = yes
 }
 
-check_possible_annexations_australia = {
-	if = {
-		limit = { can_release_australasia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_australia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_hawaii = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_hawaii target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_new_zealand = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_new_zealand target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_pacific_islands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_pacific_islands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_papua = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_papua target = PREV } }
-	}
+# global scope
+release_targeted_tag_with_claims_nocosmetic = {
+	set_temp_variable = { claims = 1 }
+	release_targeted_tag_state_transfer_effect = yes
+	puppet_released_tag_nocosmetic = yes
 }
 
-check_possible_annexations_central_asia = {
-	if = {
-		limit = { can_release_bukhara = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bukhara target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kazakhstan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kazakhstan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_khiva = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_khiva target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_turkestan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_turkestan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_badakhshan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_badakhshan target = PREV } }
-	}
+# global scope
+release_targeted_tag = {
+	release_targeted_tag_state_transfer_effect = yes
+	puppet_released_tag = yes
 }
 
-check_possible_annexations_asia = {
-	if = {
-		limit = { can_release_battambang = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_battambang target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_burma = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_burma target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_cambodia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_cambodia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_china = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_china target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_east_timor = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_east_timor target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_grey_wedge = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_grey_wedge target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_inner_mongolia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_inner_mongolia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_insulindia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_indonesia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_japan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_japan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kachin = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kachin target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_korea = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_korea target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kuril_islands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kuril_islands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_laos = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_laos target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_shanghai = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_shanghai target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_legation_ports = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_legation_ports target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_malaysia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_malaysia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_manchuria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_manchuria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_mongolia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_mongolia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_moulmein = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_moulmein target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_naga_hills = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_naga_hills target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_northern_malaya = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_northern_malaya target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_philippines = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_philippines target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sakhalin = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sakhalin target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_samaburi = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_samaburi target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sarawak = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sarawak target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_shan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_shan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_siam = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_siam target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_siberia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_siberia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_singapore = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_singapore target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_stung_treng = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_stung_treng target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_taiwan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_taiwan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tenasserim = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tenasserim target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tibet = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tibet target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tibetan_borderlands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tibetan_borderlands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_russian_far_east = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_russian_far_east target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tuva = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tuva target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_vietnam = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_vietnam target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_xinjiang = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_xinjiang target = PREV } }
-	}
+# global scope
+release_targeted_tag_nocosmetic = {
+	release_targeted_tag_state_transfer_effect = yes
+	puppet_released_tag_nocosmetic = yes
 }
 
-check_possible_annexations_india = {
-	if = {
-		limit = { can_release_andaman_islands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_andaman_islands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_andhra = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_andhra target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_aksai_chin = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_aksai_chin target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_assam = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_assam target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bengal = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bengal target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bhutan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bhutan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ceylon = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ceylon target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bombay = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_maharashtra target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_chhatisgarh = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_chhatisgarh target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_darjeeling = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_darjeeling target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_gujarat = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_gujarat target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_central_india = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_central_india target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_hyderabad = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_hyderabad target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_indian_ocean_islands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_indian_ocean_islands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_indian_treaty_ports = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_indian_treaty_ports target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kashmir = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kashmir target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_madras = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_madras target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_mysore = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_mysore target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_nepal = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_nepal target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_orissa = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_orissa target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_punjab = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_punjab target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_east_punjab = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_east_punjab target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_quetta = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_quetta target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_peshawar = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_peshawar target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_rajputana = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_rajputana target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sikkim = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sikkim target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sindh = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sindh target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tawang = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tawang target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_travancore = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_travancore target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_uttarakhand = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_uttarakhand target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_vizagapatnam = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_vizagapatnam target = PREV } }
-	}
+# global scope
+puppet_released_tag = {
+	puppet_released_tag_nocosmetic = yes
+	var:tag_to_release = { drop_cosmetic_tag = yes }
 }
 
-check_possible_annexations_middle_east = {
-	if = {
-		limit = { can_release_abkhazia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_abkhazia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_adana = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_adana target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_aegean_coast = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_aegean_coast target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_afghanistan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_afghanistan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_arabia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_arabia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_armenia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_armenia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_asir = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_asir target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ashkhabad = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ashkhabad target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_azerbaijan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_azerbaijan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_bahrain = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_bahrain target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_baluchistan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_baluchistan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_basra = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_basra target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_batumi = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_batumi target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_dhofar = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_dhofar target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_georgia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_georgia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_hasa = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_hasa target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_hejaz = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_hejaz target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_iraq = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_iraq target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kars = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kars target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_karabakh = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_karabakh target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_khasab = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_khasab target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kurdistan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kurdistan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_lazistan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_lazistan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_lebanon = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_lebanon target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_levant = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_levant target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_najran = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_najran target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_oman = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_oman target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_persia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_persia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_khuzestan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_khuzestan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sinai = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sinai target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_suez = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_suez_canal target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_trucial_states = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_trucial_states target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_turkey = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_anatolia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_yemen = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_yemen target = PREV } }
+# global scope
+puppet_released_tag_nocosmetic = {
+	puppet = var:tag_to_release
+	var:tag_to_release = {
+		mark_focus_tree_layout_dirty = yes
+		hidden_effect = {
+			transfer_technology_without_doctrines = yes
+			remove_ideas = ready_to_surrender
+			if = {
+				limit = { has_elections = yes }
+				set_politics = {
+					ruling_party = var:current_party_ideology_group
+					elections_allowed = no
+				}
+			}
+			every_possible_country = {
+				clear_embargo_PREV = yes
+				clear_volunteers_to_PREV = yes
+				PREV = { clear_volunteers_to_PREV = yes }
+			}
+		}
 	}
 }
+#below commented out for now, as example - Lexus
 
-check_possible_annexations_africa = {
-	if = {
-		limit = { can_release_algeria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_algeria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_angola = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_angola target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_burkina_faso = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_upper_volta target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_botswana = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_botswana target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_urundi = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_urundi target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_cabinda = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_cabinda target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_cameroon = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_cameroon target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_chad = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_chad target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_congo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_congo target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_cyrenaica = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_libya target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_dahomey = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_dahomey target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_egypt = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_egypt target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_equatorial_guinea = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_equatorial_guinea target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_eritrea = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_eritrea target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ethiopia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ethiopia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_gabon = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_gabon target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_gebaia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_gebaia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_djibouti = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_djibouti target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_gambia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_gambia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ghana = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ghana target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_guinea = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_guinea target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ifni = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ifni target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_indian_ocean_islands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_indian_ocean_islands target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ivory_coast = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ivory_coast target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_jubaland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_jubaland target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_kenya = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_kenya target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_liberia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_liberia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_lourenco_marques = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_lourenco_marques target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_madagascar = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_madagascar target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_mali = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_mali target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_malawi = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_malawi target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_mauritania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_mauritania target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_middle_congo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_middle_congo target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_morocco = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_morocco target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_mozambique = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_mozambique target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_namibia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_namibia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_niger = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_niger target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_nigeria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_nigeria target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ogaden = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ogaden target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_rif = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_rif target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_rio_de_oro = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_rio_de_oro target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_rwanda = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_rwanda target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_senegal = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_senegal target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sierra_leone = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sierra_leone target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_somalia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_somalia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_south_africa = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_south_africa target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_sudan = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_sudan target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tanzania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tanzania target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_togo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_togo target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tripolitania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tripolitania target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_tunisia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_tunisia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_ubangi_shari = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_ubangi_shari target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_uganda = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_uganda target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_zambia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_zambia target = PREV } }
-	}
-	else_if = {
-		limit = { can_release_zimbabwe = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_zimbabwe target = PREV } }
-	}
-}
-
+### COUNTRY-SPECIFIC EFFECTS ###
+#release_spain = {
+#	hidden_effect = {
+#		every_state = {
+#			limit = { is_spain = yes }
+#			remove_claim_by = SPK
+#			remove_claim_by = SPR
+#			remove_claim_by = SWF
+#			remove_core_of = SPK
+#			remove_core_of = SPR
+#			remove_core_of = SWF
+#			remove_claim_and_add_core_of_target = yes
+#		}
+#	}
+#	release_targeted_tag_nocosmetic = yes
+#	hidden_effect = {
+#		var:tag_to_release = {
+#			if = {
+#				limit = { 41 = { is_owned_and_controlled_by = PREV } }
+#				set_capital = { state = 41 remember_old_capital = no }
+#			}
+#		}
+#	}
+#}
+#
+#release_chinese_government = {
+#	every_owned_state = {
+#		limit = { is_china_proper = yes }
+#		add_claim_of_target = yes
+#	}
+#	release_targeted_tag_with_claims = yes
+#	if = {
+#		limit = { var:tag_to_release = { original_tag = FNG } }
+#		set_autonomy = {
+#			target = var:tag_to_release
+#			autonomy_state = special_autonomous_dependency
+#			end_wars = no
+#		}
+#	}
+#	if = {
+#		limit = { original_tag = JAP }
+#		clr_global_flag = JAP_defeated_by_china
+#		var:tag_to_release = { add_ideas = unequal_treaties_japan }
+#	}
+#}
+#
+#release_chinese_government_in_manchuria = {
+#	every_owned_state = {
+#		limit = { is_manchuria = yes }
+#		add_claim_of_target = yes
+#	}
+#	release_targeted_tag_with_claims = yes
+#	if = {
+#		limit = { var:tag_to_release = { original_tag = FNG } }
+#		set_autonomy = {
+#			target = var:tag_to_release
+#			autonomy_state = special_autonomous_dependency
+#			end_wars = no
+#		}
+#	}
+#	if = {
+#		limit = { original_tag = JAP }
+#		clr_global_flag = JAP_defeated_by_china
+#		var:tag_to_release = { add_ideas = unequal_treaties_japan }
+#	}
+#}
+#
+#### IMPORTANT: all checks here need to be exactly the same as the ones in the has_valid_chinese_ally scripted trigger!!!
+#determine_chinese_ally = {
+#	hidden_effect = {
+#		if = {
+#			limit = {
+#				is_subject = no
+#				is_chinese_tag = no
+#			}
+#			if = {
+#				limit = { any_subject_country = { china_is_potential_government = yes } }
+#				random_subject_country = {
+#					limit = { china_is_potential_government = yes }
+#					save_event_target_as = china_ally_target
+#					add_to_array = { ROOT.potential_grant_targets = THIS }
+#				}
+#			}
+#			else_if = {
+#				limit = { any_allied_country = { china_is_potential_government = yes } }
+#				random_other_country = {
+#					limit = {
+#						is_in_faction_with = PREV
+#						china_is_potential_government = yes
+#					}
+#					save_event_target_as = china_ally_target
+#					add_to_array = { ROOT.potential_grant_targets = THIS }
+#				}
+#			}
+#			else_if = {
+#				limit = {
+#					original_tag = JAP
+#					has_global_flag = JAP_defeated_by_china
+#					any_of_scopes = {
+#						array = global.china_tags_array
+#						china_is_potential_government = yes
+#						exists = yes
+#						is_subject = no
+#						NOT = { has_war_with = JAP }
+#					}
+#				}
+#				get_highest_scored_country_temp = { scorer = strongest_chinese_government }
+#				var:highest_scored_country = { save_event_target_as = japan_forced_return }
+#			}
+#			else_if = {
+#				limit = {
+#					OR = {
+#						has_socialist_government = yes
+#						AND = {
+#							tag = INC
+#							has_government = social_democrat
+#						}
+#					}
+#				}
+#				if = {
+#					limit = {
+#						CHI = {
+#							exists = yes
+#							china_annexation_valid_tag = yes
+#						}
+#					}
+#					CHI = {
+#						save_event_target_as = china_ally_target
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#				else_if = {
+#					limit = { NOT = { country_exists = CHI } }
+#					CHI = { save_event_target_as = china_release_target }
+#				}
+#			}
+#			else_if = {
+#				limit = {
+#					OR = {
+#						tag = GER
+#						tag = GEA
+#						tag = GEX
+#					}
+#				}
+#				if = {
+#					limit = {
+#						QIE = {
+#							exists = yes
+#							NOT = {
+#								has_global_flag = QIE_manchu_restoration
+#								has_country_flag = wu_intervenes_proANQ
+#								has_country_flag = wu_no_intervene
+#							}
+#							china_annexation_valid_tag = yes
+#						}
+#					}
+#					QIE = {
+#						save_event_target_as = china_ally_target
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#				else_if = {
+#					limit = {
+#						LEP = {
+#							exists = yes
+#							china_annexation_valid_tag = yes
+#						}
+#					}
+#					LEP = {
+#						save_event_target_as = china_ally_target
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#				else_if = {
+#					limit = { NOT = { country_exists = LEP } }
+#					LEP = { save_event_target_as = china_release_target }
+#				}
+#			}
+#			else_if = {
+#				limit = { tag = JAP }
+#				if = {
+#					limit = {
+#						FNG = {
+#							exists = yes
+#							FNG_JAP_hostile = no
+#							china_annexation_valid_tag = yes
+#						}
+#					}
+#					FNG = {
+#						save_event_target_as = china_ally_target
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#				else_if = {
+#					limit = { NOT = { country_exists = FNG } }
+#					FNG = { save_event_target_as = china_release_target }
+#				}
+#			}
+#			else_if = {
+#				limit = { tag = RUS }
+#				if = {
+#					limit = {
+#						OR = {
+#							is_monarchy = yes
+#							has_country_leader = { character = RUS_pyotr_wrangel }
+#						}
+#					}
+#					if = {
+#						limit = {
+#							QIE = {
+#								exists = yes
+#								OR = {
+#									has_country_flag = wu_intervenes_proANQ
+#									has_global_flag = QIE_manchu_restoration
+#									has_country_flag = wu_no_intervene
+#								}
+#								china_annexation_valid_tag = yes
+#							}
+#						}
+#						QIE = {
+#							save_event_target_as = china_ally_target
+#							add_to_array = { ROOT.potential_grant_targets = THIS }
+#						}
+#					}
+#					else_if = {
+#						limit = { NOT = { country_exists = QIE } }
+#						QIE = { save_event_target_as = china_release_target }
+#					}
+#				}
+#				else_if = {
+#					limit = { has_authoritarian_government = yes }
+#					if = {
+#						limit = {
+#							GXC = {
+#								exists = yes
+#								has_country_leader = { character = GXC_li_zongren }
+#								china_annexation_valid_tag = yes
+#							}
+#						}
+#						GXC = {
+#							save_event_target_as = china_ally_target
+#							add_to_array = { ROOT.potential_grant_targets = THIS }
+#						}
+#					}
+#					else_if = {
+#						limit = { NOT = { country_exists = GXC } }
+#						GXC = { save_event_target_as = china_release_target }
+#					}
+#				}
+#				else = {
+#					if = {
+#						limit = {
+#							GXC = {
+#								exists = yes
+#								china_is_aligned_with_federalists = yes
+#								china_annexation_valid_tag = yes
+#							}
+#						}
+#						GXC = {
+#							save_event_target_as = china_ally_target
+#							add_to_array = { ROOT.potential_grant_targets = THIS }
+#						}
+#					}
+#					else_if = {
+#						limit = { NOT = { country_exists = GXC } }
+#						GXC = { save_event_target_as = china_release_target }
+#					}
+#				}
+#			}
+#			else_if = {
+#				limit = { has_authoritarian_government = yes }
+#				if = {
+#					limit = {
+#						QIE = {
+#							exists = yes
+#							NOT = { has_country_leader = { character = QIE_aisin_gioro_puyi } }
+#							china_annexation_valid_tag = yes
+#						}
+#					}
+#					QIE = {
+#						save_event_target_as = china_ally_target
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#				else_if = {
+#					limit = { NOT = { country_exists = QIE } }
+#					QIE = { save_event_target_as = china_release_target }
+#				}
+#			}
+#			else = {
+#				if = {
+#					limit = {
+#						GXC = {
+#							exists = yes
+#							china_is_aligned_with_federalists = yes
+#							china_annexation_valid_tag = yes
+#						}
+#					}
+#					GXC = {
+#						save_event_target_as = china_ally_target
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#				else_if = {
+#					limit = { NOT = { country_exists = GXC } }
+#					GXC = { save_event_target_as = china_release_target }
+#				}
+#			}
+#		}
+#	}
+#}
+#
+#release_canada = {
+#	if = {
+#		limit = { has_war = yes }
+#		every_owned_state = {
+#			limit = {
+#				CAN = { PREV = { is_core_of = PREV } }
+#				is_claim_or_core_of_ROOT = no
+#				NOT = { has_state_flag = retain_state_@PREV }
+#				NOT = { check_variable = { retain_state_@THIS = 1 } }
+#			}
+#			if = {
+#				limit = { is_fully_controlled_by = owner }
+#				CAN = { transfer_state = PREV }
+#			}
+#			else = {
+#				CAN = { set_state_owner = PREV }
+#				set_state_province_controller = {
+#					controller = CAN
+#					limit = { NOT = { has_war_with = CAN } }
+#				}
+#			}
+#		}
+#	}
+#	else = {
+#		every_owned_state = {
+#			limit = {
+#				CAN = { PREV = { is_core_of = PREV } }
+#				is_claim_or_core_of_ROOT = no
+#				NOT = { has_state_flag = retain_state_@PREV }
+#				NOT = { check_variable = { retain_state_@THIS = 1 } }
+#			}
+#			CAN = { transfer_state = PREV }
+#		}
+#	}
+#	puppet = CAN
+#	CAN = {
+#		hidden_effect = {
+#			mark_focus_tree_layout_dirty = yes
+#			transfer_technology_without_doctrines = yes
+#			remove_ideas = ready_to_surrender
+#			set_politics = {
+#				ruling_party = var:current_party_ideology_group
+#				elections_allowed = no
+#			}
+#		}
+#	}
+#	if = {
+#		limit = {
+#			OR = {
+#				tag = event_target:KR_king_base
+#				tag = ENT
+#			}
+#		}
+#		CAN = {
+#			set_cosmetic_tag = CAN_entente
+#			random_list = {
+#				1 = {
+#					set_politics = {
+#						ruling_party = social_conservative
+#						elections_allowed = yes
+#					}
+#				}
+#				1 = {
+#					set_politics = {
+#						ruling_party = market_liberal
+#						elections_allowed = yes
+#					}
+#				}
+#			}
+#			hidden_effect = {
+#				set_popularities = {
+#					totalist = 1
+#					radical_socialist = 1
+#					syndicalist = 1
+#					social_democrat = 2
+#					social_liberal = 10
+#					market_liberal = 42
+#					social_conservative = 30
+#					authoritarian_democrat = 1
+#					paternal_autocrat = 2
+#					national_populist = 10
+#				}
+#			}
+#			if = {
+#				limit = { NOT = { country_exists = GBR } }
+#				CAN_create_monarchy = yes
+#				hidden_effect = {
+#					add_ideas = CAN_bastion_of_the_old_order
+#					save_event_target_as = king_flees_to
+#					CAN_transfer_king_base = yes
+#					GBR = {
+#						every_unit_leader = {
+#							add_unit_leader_trait = GBR_british_exile_trait
+#							set_nationality = CAN
+#						}
+#						every_character = {
+#							limit = { has_character_flag = GBR_character }
+#							set_nationality = CAN
+#						}
+#					}
+#					CAN_revert_british_pm_slots = yes
+#					CAN_add_british_pm = yes
+#				}
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_france_event_target = {
+#	if = {
+#		limit = { is_subject = no }
+#		if = {
+#			limit = {
+#				var:21.owner = { #Provence
+#					is_french_tag = yes
+#					is_ally_of_ROOT = yes
+#					OR = {
+#						has_socialist_government = no
+#						is_subject = no
+#					}
+#				}
+#			}
+#			var:21.owner = {
+#				save_event_target_as = france
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#		else_if = {
+#			limit = {
+#				NFA = {
+#					is_ally_of_ROOT = yes
+#					has_socialist_government = no
+#				}
+#			}
+#			NFA = {
+#				save_event_target_as = france
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_non_socialist_france_event_target = {
+#	if = {
+#		limit = { is_subject = no }
+#		if = {
+#			limit = {
+#				var:21.owner = { #Provence
+#					is_french_tag = yes
+#					is_ally_of_ROOT = yes
+#					has_socialist_government = no
+#				}
+#			}
+#			var:21.owner = {
+#				save_event_target_as = france
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#		else_if = {
+#			limit = {
+#				NFA = {
+#					is_ally_of_ROOT = yes
+#					has_socialist_government = no
+#				}
+#			}
+#			NFA = {
+#				save_event_target_as = france
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_britain_event_target = {
+#	if = {
+#		limit = { is_subject = no }
+#		if = {
+#			limit = {
+#				event_target:KR_king_base = {
+#					annexations_is_valid_britain = yes
+#					is_ally_of_ROOT = yes
+#					is_subject = no
+#				}
+#			}
+#			event_target:KR_king_base = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#		else_if = {
+#			limit = {
+#				var:126.owner = { #Greater London
+#					annexations_is_valid_britain = yes
+#					is_ally_of_ROOT = yes
+#					OR = {
+#						has_socialist_government = no
+#						is_subject = no
+#					}
+#				}
+#			}
+#			var:126.owner = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#		else_if = {
+#			limit = {
+#				IMP = {
+#					annexations_is_valid_britain = yes
+#					is_ally_of_ROOT = yes
+#				}
+#			}
+#			IMP = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_non_puppet_britain_event_target = {
+#	if = {
+#		limit = { is_subject = no }
+#		if = {
+#			limit = {
+#				event_target:KR_king_base = {
+#					is_ally_of_ROOT = yes
+#					is_subject = no
+#				}
+#			}
+#			event_target:KR_king_base = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#		else_if = {
+#			limit = {
+#				var:126.owner = { #Greater London
+#					annexations_is_valid_britain = yes
+#					is_ally_of_ROOT = yes
+#					is_subject = no
+#				}
+#			}
+#			var:126.owner = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#		else_if = {
+#			limit = {
+#				IMP = {
+#					OR = {
+#						tag = GBR
+#						NOT = { country_exists = GBR }
+#					}
+#					is_ally_of_ROOT = yes
+#					is_monarchy = yes
+#					is_subject = no
+#					NOT = { has_country_flag = GBR_decolonize }
+#				}
+#			}
+#			IMP = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_non_socialist_britain_event_target = {
+#	if = {
+#		limit = { is_subject = no }
+#		if = {
+#			limit = {
+#				var:126.owner = { #Greater London
+#					annexations_is_valid_britain = yes
+#					is_ally_of_ROOT = yes
+#					has_socialist_government = no
+#				}
+#			}
+#			var:126.owner = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#		else_if = {
+#			limit = {
+#				IMP = {
+#					OR = {
+#						tag = GBR
+#						NOT = { country_exists = GBR }
+#					}
+#					is_ally_of_ROOT = yes
+#					is_monarchy = yes
+#					NOT = { has_country_flag = GBR_decolonize }
+#				}
+#			}
+#			IMP = {
+#				save_event_target_as = britain
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_portugal_event_target = {
+#	if = {
+#		limit = {
+#			is_subject = no
+#			POR = {
+#				is_ally_of_ROOT = yes
+#				OR = {
+#					has_socialist_government = no
+#					is_subject = no
+#				}
+#			}
+#		}
+#		POR = {
+#			save_event_target_as = portugal
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_non_socialist_portugal_event_target = {
+#	if = {
+#		limit = {
+#			is_subject = no
+#			POR = {
+#				is_ally_of_ROOT = yes
+#				has_socialist_government = no
+#			}
+#		}
+#		POR = {
+#			save_event_target_as = portugal
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_spain_event_target = {
+#	if = {
+#		limit = { is_subject = no }
+#		random_country_with_original_tag = {
+#			original_tag_to_check = SPA
+#			limit = {
+#				is_ally_of_ROOT = yes
+#				has_socialist_government = no
+#			}
+#			save_event_target_as = spain
+#		}
+#	}
+#}
+#
+#annexations_create_mittelafrika_event_target = {
+#	if = {
+#		limit = { MAF = { ROOT_can_grant_land = yes } }
+#		MAF = {
+#			save_event_target_as = mittelafrika
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_south_africa_event_target = {
+#	if = {
+#		limit = { SAF = { ROOT_can_grant_land = yes } }
+#		SAF = {
+#			save_event_target_as = south_africa
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_azania_event_target = {
+#	if = {
+#		limit = { TZN = { ROOT_can_grant_land = yes } }
+#		TZN = {
+#			save_event_target_as = azania
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_egypt_event_target = {
+#	if = {
+#		limit = { EGY = { ROOT_can_grant_land = yes } }
+#		EGY = {
+#			save_event_target_as = egypt
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_ethiopia_event_target = {
+#	if = {
+#		limit = { ETH = { ROOT_can_grant_land = yes } }
+#		ETH = {
+#			save_event_target_as = ethiopia
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_somalia_event_target = {
+#	if = {
+#		limit = { SOM = { ROOT_can_grant_land = yes } }
+#		SOM = {
+#			save_event_target_as = somalia
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_zimbabwe_event_target = {
+#	if = {
+#		limit = { ZIM = { ROOT_can_grant_land = yes } }
+#		ZIM = {
+#			save_event_target_as = zimbabwe
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#transfer_colonial_territory_to_european_country = {
+#	set_transfer_target_cores = yes
+#	ROOT = {
+#		transfer_targeted_territory = yes
+#		recheck_annexations = yes
+#	}
+#	hidden_effect = {
+#		var:tag_to_release = {
+#			if = {
+#				limit = { original_tag = NFA }
+#				NFA_Resistance_Policy_on_colony_states = yes
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_russia_event_target = {
+#	if = {
+#		limit = { var:global.russia = { ROOT_can_grant_land = yes } }
+#		var:global.russia = {
+#			save_event_target_as = russia
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_german_east_asia_event_target = {
+#	if = {
+#		limit = { GEA = { ROOT_can_grant_land = yes } }
+#		GEA = {
+#			save_event_target_as = german_east_asia
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_dutch_east_indies_event_target = {
+#	if = {
+#		limit = { DEI = { ROOT_can_grant_land = yes } }
+#		DEI = {
+#			save_event_target_as = dutch_east_indies
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_legation_cities_event_target = {
+#	if = {
+#		limit = { annexations_can_give_to_legation_cities = yes }
+#		LEC = {
+#			save_event_target_as = legation_cities
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_japan_event_target = {
+#	if = {
+#		limit = { JAP = { ROOT_can_grant_land = yes } }
+#		JAP = {
+#			save_event_target_as = japan
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_australia_event_target = {
+#	if = {
+#		limit = { AST = { ROOT_can_grant_land = yes } }
+#		AST = {
+#			save_event_target_as = australia
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_greece_event_target = {
+#	if = {
+#		limit = { GRE = { ROOT_can_grant_land = yes } }
+#		GRE = {
+#			save_event_target_as = greece
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_create_turkey_event_target = {
+#	if = {
+#		limit = { TUR = { ROOT_can_grant_land = yes } }
+#		TUR = {
+#			save_event_target_as = turkey
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_reset_yugoslavian_cores_claims = {
+#	if = {
+#		limit = { NOT = { country_exists = CRO } }
+#		CRO_reset_cores_and_claims = yes
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = SLV } }
+#		every_state = {
+#			limit = { is_slovenia = no }
+#			remove_core_of = SLV
+#			remove_claim_by = SLV
+#		}
+#		SLV = {
+#			drop_cosmetic_tag = yes
+#			SER_disable_yugoslavia_integration = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = BOS } }
+#		every_state = {
+#			limit = { is_bosnia = no }
+#			remove_core_of = BOS
+#			remove_claim_by = BOS
+#		}
+#		BOS = {
+#			drop_cosmetic_tag = yes
+#			SER_disable_yugoslavia_integration = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = SER } }
+#		every_state = {
+#			limit = { is_serbia = no }
+#			remove_core_of = SER
+#			remove_claim_by = SER
+#		}
+#		SER = {
+#			set_cosmetic_tag = SER_republic
+#			SER_disable_yugoslavia_integration = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = MNT } }
+#		every_state = {
+#			limit = { is_montenegro = no }
+#			remove_core_of = MNT
+#			remove_claim_by = MNT
+#		}
+#		MNT = {
+#			drop_cosmetic_tag = yes
+#			SER_disable_yugoslavia_integration = yes
+#		}
+#	}
+#}
+#
+#annexations_reset_central_asian_tags = {
+#	if = {
+#		limit = { NOT = { country_exists = KAZ } }
+#		KAZ = { drop_cosmetic_tag = yes }
+#		every_state = {
+#			if = {
+#				limit = { is_alash = no }
+#				remove_core_of = KAZ
+#			}
+#			else = {
+#				add_core_of = KAZ
+#			}
+#			remove_claim_by = KAZ
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = TRK } }
+#		TRK = { drop_cosmetic_tag = yes }
+#		every_state = {
+#			if = {
+#				limit = { is_turkestan = no }
+#				remove_core_of = TRK
+#			}
+#			else = {
+#				add_core_of = TRK
+#			}
+#			remove_claim_by = TRK
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = BUK } }
+#		BUK = { drop_cosmetic_tag = yes }
+#		every_state = {
+#			if = {
+#				limit = { is_bukhara = no }
+#				remove_core_of = BUK
+#			}
+#			else = {
+#				add_core_of = BUK
+#			}
+#			remove_claim_by = BUK
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = KHI } }
+#		KHI = { drop_cosmetic_tag = yes }
+#		every_state = {
+#			if = {
+#				limit = { is_khiva = no }
+#				remove_core_of = KHI
+#			}
+#			else = {
+#				add_core_of = KHI
+#			}
+#			remove_claim_by = KHI
+#		}
+#	}
+#}
+#
+#annexations_release_united_central_asia = {
+#	every_state = {
+#		limit = {
+#			is_central_asia = yes
+#			NOT = { is_core_of = var:tag_to_release }
+#		}
+#		add_claim_by = var:tag_to_release
+#	}
+#	release_targeted_tag_with_claims = yes
+#	var:tag_to_release = {
+#		save_global_event_target_as = united_central_asia
+#		set_cosmetic_tag = CA_united
+#	}
+#}
+#
+#annexations_reset_belgian_tags = {
+#	if = {
+#		limit = { NOT = { country_exists = BEL } }
+#		every_state = {
+#			if = {
+#				limit = {
+#					OR = {
+#						state = 6 #Flanders
+#						state = 34 #Hainaut
+#						state = 741 #Verviers
+#						state = 925 #Brabant
+#						state = 948 #Liège
+#					}
+#				}
+#				add_core_of = BEL
+#			}
+#			else = {
+#				remove_core_of = BEL
+#			}
+#			remove_claim_by = BEL
+#		}
+#		BEL = {
+#			drop_cosmetic_tag = yes
+#			BEL_remove_monarchy = yes
+#			if = {
+#				limit = { has_character = BEL_belgian_parliament }
+#				BEL_belgian_parliament = { remove_all_country_leader_roles = yes }
+#			}
+#			load_focus_tree = {
+#				tree = BEL_Independent_focus
+#				keep_completed = yes
+#			}
+#			set_party_name = {
+#				ideology = authoritarian_democrat
+#				name = BEL_interim_government
+#				long_name = BEL_interim_government
+#			}
+#			remove_ideas = {
+#				generic_neutral_foreign_policy
+#				BEL_anti_german_sentiment1
+#				BEL_anti_german_sentiment2
+#				BEL_anti_german_sentiment3
+#				BEL_anti_german_sentiment4
+#				BEL_anti_german_sentiment5
+#			}
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = FLA } }
+#		FLA = {
+#			clear_cores_of_tag_if_possible = yes
+#			drop_cosmetic_tag = yes
+#			BEL_remove_monarchy = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = WAL } }
+#		WAL = {
+#			clear_cores_of_tag_if_possible = yes
+#			drop_cosmetic_tag = yes
+#			BEL_remove_monarchy = yes
+#			set_party_name = {
+#				ideology = authoritarian_democrat
+#				name = BEL_interim_government
+#				long_name = BEL_interim_government
+#			}
+#			WAL_reset_focus_tree_and_ideas = yes
+#		}
+#	}
+#}
+#
+#annexations_reset_central_american_tags = {
+#	if = {
+#		limit = { NOT = { country_exists = GUA } }
+#		every_state = {
+#			if = {
+#				limit = { is_guatemala = no }
+#				remove_core_of = GUA
+#			}
+#			else = {
+#				add_core_of = GUA
+#			}
+#			remove_claim_by = GUA
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = ELS } }
+#		every_state = {
+#			if = {
+#				limit = { is_el_salvador = no }
+#				remove_core_of = ELS
+#			}
+#			else = {
+#				add_core_of = ELS
+#			}
+#			remove_claim_by = ELS
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = HON } }
+#		every_state = {
+#			if = {
+#				limit = { is_honduras = no }
+#				remove_core_of = HON
+#			}
+#			else = {
+#				add_core_of = HON
+#			}
+#			remove_claim_by = HON
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = NIC } }
+#		every_state = {
+#			if = {
+#				limit = { is_nicaragua = no }
+#				remove_core_of = NIC
+#			}
+#			else = {
+#				add_core_of = NIC
+#			}
+#			remove_claim_by = NIC
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = COS } }
+#		every_state = {
+#			if = {
+#				limit = { is_costa_rica = no }
+#				remove_core_of = COS
+#			}
+#			else = {
+#				add_core_of = COS
+#			}
+#			remove_claim_by = COS
+#		}
+#		CEN = {
+#			every_character = {
+#				limit = { has_character_flag = COS_character }
+#				clr_character_flag = COS_character
+#				set_nationality = COS
+#			}
+#		}
+#		COS = {
+#			COS_rafael_angel_calderon_guardia = {
+#				set_nationality = PREV
+#				promote_character = social_democrat_subtype
+#			}
+#			COS_jose_figueres_ferrer = {
+#				set_nationality = PREV
+#				if = {
+#					limit = { has_ideology = social_democrat_subtype }
+#					promote_character = social_democrat_subtype
+#				}
+#			}
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = PAN } }
+#		every_state = {
+#			if = {
+#				limit = { is_panama = no }
+#				remove_core_of = PAN
+#			}
+#			else = {
+#				add_core_of = PAN
+#			}
+#			remove_claim_by = PAN
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = CEN } }
+#		CEN = {
+#			clear_cores_of_tag_if_possible = yes
+#			CEN_reset_ideas = yes
+#			every_character = {
+#				limit = { has_character_flag = COS_character }
+#				clr_character_flag = COS_character
+#				set_nationality = COS
+#			}
+#		}
+#		GUA_restore_missing_characters = yes
+#		ELS_restore_missing_characters = yes
+#		HON_restore_missing_characters = yes
+#		NIC_restore_missing_characters = yes
+#	}
+#}
+#
+#annexations_release_united_central_america = {
+#	311 = { retain_state = yes } #Belize
+#	685 = { retain_state = yes } #Panama Canal
+#
+#	set_temp_variable = { tag_to_release = CEN }
+#	every_state = {
+#		limit = {
+#			OR = {
+#				is_core_of = GUA
+#				is_core_of = ELS
+#				is_core_of = NIC
+#				is_core_of = HON
+#			}
+#		}
+#		add_core_of = var:tag_to_release
+#	}
+#	release_targeted_tag = yes
+#	every_subject_country = {
+#		limit = {
+#			OR = {
+#				original_tag = GUA
+#				original_tag = ELS
+#				original_tag = HON
+#				original_tag = NIC
+#			}
+#		}
+#		annex_splinter_tag = yes
+#	}
+#	var:tag_to_release = { CEN_puppet_setup = yes }
+#}
+#
+#annexations_reset_indian_tags = {
+#	if = {
+#		limit = { NOT = { country_exists = HND } }
+#		HND = {
+#			set_cosmetic_tag = HND_india
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = RAJ } }
+#		RAJ = {
+#			clear_cores_of_tag_if_possible = yes
+#			set_cosmetic_tag = RAJ_entente
+#			every_character = {
+#				limit = { has_character_flag = HND_character }
+#				clr_character_flag = HND_character
+#				set_nationality = HND
+#			}
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = PRF } }
+#		PRF = {
+#			set_cosmetic_tag = PRF_india
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#}
+#
+#annexations_india_retain_special_states = {
+#	281 = { retain_state = yes } #Maldives
+#	422 = { retain_state = yes } #Ceylon
+#	442 = { retain_state = yes } #Peshawar
+#	444 = { retain_state = yes } #Baluchistan
+#	445 = { retain_state = yes } #Quetta
+#	710 = { retain_state = yes } #Diego Garcia
+#	814 = { retain_state = yes } #Uttarakhand
+#	858 = { retain_state = yes } #Tawang
+#	887 = { retain_state = yes } #Darjeeling
+#	888 = { retain_state = yes } #Sikkim
+#	897 = { retain_state = yes } #Aksai Chin
+#	if = {
+#		limit = { has_socialist_government = no }
+#		321 = { retain_state = yes } #Goa
+#		818 = { retain_state = yes } #Pondicherry
+#	}
+#}
+#
+#annexations_release_india = {
+#	log = "KR_Event_Logging;INDIA IS CONQUERED BY FOREIGN POWER;[GetDateText]"
+#	annexations_india_retain_special_states = yes
+#	every_state = {
+#		limit = { is_india = yes }
+#		if = {
+#			limit = { is_owned_by = ROOT }
+#			remove_claim_and_add_core_of_target = yes
+#		}
+#		else = {
+#			add_claim_of_target = yes
+#		}
+#	}
+#	release_targeted_tag_nocosmetic = yes
+#	every_subject_country = {
+#		limit = {
+#			is_indian_tag = yes
+#			is_indian_unifier_tag = no
+#			NOT = { has_cosmetic_tag = pakistan }
+#			NOT = { has_cosmetic_tag = MDR_DRAV }
+#			NOT = { has_cosmetic_tag = MDR_TAMIL }
+#			is_ai = yes
+#		}
+#		annex_splinter_tag = yes
+#	}
+#	var:tag_to_release = {
+#		if = {
+#			limit = { original_tag = HND }
+#			HND_puppet_setup = yes
+#		}
+#		else_if = {
+#			limit = { original_tag = PRF }
+#			PRF_puppet_setup = yes
+#		}
+#	}
+#}
+#
+#annexations_give_india_to_target = {
+#	annexations_india_retain_special_states = yes
+#	every_owned_state = {
+#		limit = {
+#			is_india = yes
+#			is_valid_annexation_state = yes
+#		}
+#		transfer_state_and_notify = yes
+#	}
+#}
+#
+#annexations_create_allied_india_event_target = {
+#	random_country = {
+#		limit = {
+#			is_indian_unifier_tag = yes
+#			is_ally_of_ROOT = yes
+#		}
+#		save_event_target_as = india
+#		add_to_array = { ROOT.potential_grant_targets = THIS }
+#	}
+#}
+#
+#annexations_create_indian_event_targets = {
+#	if = {
+#		limit = {
+#			is_indian_unifier_tag = no
+#			is_subject = no
+#		}
+#		annexations_create_allied_india_event_target = yes
+#		if = {
+#			limit = { NOT = { has_event_target = india } }
+#			if = {
+#				limit = { tag = event_target:KR_king_base }
+#				if = {
+#					limit = { NOT = { country_exists = RAJ } }
+#					save_event_target_as = british_india_available
+#				}
+#			}
+#			else_if = {
+#				limit = {
+#					event_target:KR_king_base = {
+#						is_ally_with = ROOT
+#						is_subject = no
+#					}
+#				}
+#				event_target:KR_king_base = {
+#					save_event_target_as = britain
+#					add_to_array = { ROOT.potential_grant_targets = THIS }
+#				}
+#			}
+#			else = {
+#				if = {
+#					limit = { NOT = { country_exists = HND } }
+#					save_event_target_as = republican_india_available
+#				}
+#				if = {
+#					limit = {
+#						has_socialist_government = no
+#						NOT = { country_exists = PRF }
+#						NOT = { country_exists = HYD }
+#						427 = { is_valid_annexation_state = yes } #Hyderabad
+#					}
+#					save_event_target_as = princely_india_available
+#				}
+#				annexations_create_indian_unifier_event_targets = yes
+#				if = {
+#					limit = {
+#						var:126.owner = { #Greater London
+#							annexations_is_valid_britain = yes
+#							is_ally_of_ROOT = yes
+#							is_subject = no
+#							OR = {
+#								has_event_target = republican_india_available
+#								AND = {
+#									has_socialist_government = no
+#									has_event_target = princely_india_available
+#								}
+#							}
+#						}
+#					}
+#					var:126.owner = {
+#						save_event_target_as = britain
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#				else_if = {
+#					limit = {
+#						IMP = {
+#							is_ally_of_ROOT = yes
+#							is_monarchy = yes
+#							is_subject = no
+#							NOT = { has_country_flag = GBR_decolonize }
+#							OR = {
+#								has_event_target = republican_india_available
+#								AND = {
+#									has_socialist_government = no
+#									has_event_target = princely_india_available
+#								}
+#							}
+#						}
+#					}
+#					IMP = {
+#						save_event_target_as = britain
+#						add_to_array = { ROOT.potential_grant_targets = THIS }
+#					}
+#				}
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_indian_unifier_event_targets = {
+#	if = {
+#		limit = { HND = { ROOT_can_grant_land = yes } }
+#		HND = {
+#			save_event_target_as = india
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#	if = {
+#		limit = { PRF = { ROOT_can_grant_land = yes } }
+#		PRF = {
+#			save_event_target_as = india_princely
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#	if = {
+#		limit = { RAJ = { ROOT_can_grant_land = yes } }
+#		RAJ = {
+#			save_event_target_as = india_british
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#}
+#
+#annexations_reset_italian_tags = {
+#	every_state = {
+#		limit = {
+#			has_variable = italy_default_core
+#			check_variable = { core_countries^num = 1 }
+#		}
+#		if = {
+#			limit = { NOT = { country_exists = var:italy_default_core } }
+#			add_core_of = var:italy_default_core
+#		}
+#		else_if = {
+#			limit = { NOT = { country_exists = ITA } }
+#			add_core_of = ITA
+#		}
+#		else_if = {
+#			limit = { NOT = { country_exists = SRI } }
+#			add_core_of = SRI
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = ITA } }
+#		ITA = {
+#			ITA_remove_monarchy = yes
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = LOM } }
+#		LOM = {
+#			clr_country_flag = italian_unifier
+#			drop_cosmetic_tag = yes
+#			if = {
+#				limit = { has_character = ITA_marcello_visconti_di_modrone }
+#				ITA_marcello_visconti_di_modrone = {
+#					set_character_name = ITA_marcello_visconti_di_modrone
+#					remove_all_country_leader_roles = yes
+#					add_country_leader_role = {
+#						country_leader = {
+#							desc = ITA_marcello_visconti_di_modrone_leader_desc
+#							ideology = authoritarian_democrat_subtype
+#						}
+#						promote_leader = yes
+#					}
+#				}
+#			}
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = VNC } }
+#		VNC = {
+#			clr_country_flag = italian_unifier
+#			if = {
+#				limit = { NOT = { has_character = VNC_giuseppe_volpi } }
+#				VNC_giuseppe_volpi = {
+#					set_nationality = PREV
+#					set_character_as_republican = yes
+#					remove_country_leader_role_paternal_autocrat = yes
+#					add_country_leader_role = {
+#						country_leader = { ideology = paternal_autocrat_subtype }
+#						promote_leader = yes
+#					}
+#				}
+#			}
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = SRI } }
+#		SRI = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = EMI } }
+#		EMI = {
+#			clr_country_flag = italian_unifier
+#			if = {
+#				limit = { has_character = EMI_roberto_este }
+#				EMI_roberto_este = {
+#					set_character_name = EMI_roberto_este
+#					remove_all_country_leader_roles = yes
+#					retire = yes
+#				}
+#			}
+#			if = {
+#				limit = { has_character = EMI_elia_borbone }
+#				EMI_elia_borbone = {
+#					set_character_name = EMI_elia_borbone
+#					remove_all_country_leader_roles = yes
+#					retire = yes
+#				}
+#			}
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = TUS } }
+#		TUS = {
+#			clr_country_flag = italian_unifier
+#			if = {
+#				limit = { has_character = ITA_pietro_ferdinando }
+#				ITA_pietro_ferdinando = {
+#					set_character_name = ITA_pietro_ferdinando
+#					remove_all_country_leader_roles = yes
+#					retire = yes
+#				}
+#			}
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = SRD } }
+#		SRD = {
+#			SRD_restore_amedeo = yes
+#			clr_country_flag = italian_unifier
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = PAP } }
+#		PAP = {
+#			if = {
+#				limit = { has_idea = PAP_exiled_holy_see }
+#				remove_ideas = PAP_exiled_holy_see
+#			}
+#			clr_country_flag = italian_unifier
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = SIC } }
+#		SIC = {
+#			clr_country_flag = italian_unifier
+#			clr_country_flag = SIC_confed
+#			clr_country_flag = SIC_empire
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#}
+#
+#annexations_release_italy = {
+#	every_state = {
+#		limit = { is_european_italy = yes }
+#		if = {
+#			limit = { is_owned_by = ROOT }
+#			remove_claim_and_add_core_of_target = yes
+#		}
+#		else = {
+#			add_claim_of_target = yes
+#		}
+#	}
+#	release_targeted_tag = yes
+#	italy_annex_puppets_into_newly_released_italy = yes
+#	var:tag_to_release = {
+#		set_country_flag = italian_unifier
+#		italy_set_rome_as_capital = yes
+#		if = {
+#			limit = { original_tag = ITA }
+#			if = {
+#				limit = { has_variable = ITA_release_as_federation }
+#				ITA_release_as_federation = yes
+#			}
+#			else = {
+#				ITA_release_as_republic = yes
+#			}
+#		}
+#		else_if = {
+#			limit = { original_tag = SRD }
+#			set_cosmetic_tag = SRD_ITA
+#			if = {
+#				limit = { NOT = { has_completed_focus = SRD_return_to_the_mainland } }
+#				unlock_national_focus = SRD_return_to_the_mainland
+#			}
+#			if = {
+#				limit = { NOT = { has_completed_focus = SRD_italia_riunita } }
+#				complete_national_focus = SRD_italia_riunita
+#			}
+#		}
+#	}
+#	hidden_effect = {
+#		for_each_scope_loop = {
+#			array = global.italian_tags_array
+#			if = {
+#				limit = { exists = no }
+#				clear_cores_of_tag_if_possible = yes
+#			}
+#		}
+#	}
+#}
+#
+#annexations_create_italian_event_targets = {
+#	if = {
+#		limit = {
+#			is_italian_unifier_tag = no
+#			is_subject = no
+#		}
+#		random_other_country = {
+#			limit = {
+#				is_italian_unifier_tag = yes
+#				NOT = { original_tag = var:exclude }
+#				is_ally_with = ROOT
+#			}
+#			save_event_target_as = italy
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#		if = {
+#			limit = { NOT = { has_event_target = italy } }
+#			if = {
+#				limit = { annexations_can_make_alliance_offer = yes }
+#				every_other_country = {
+#					limit = {
+#						is_italian_unifier_tag = yes
+#						NOT = { original_tag = var:exclude }
+#						ROOT_can_grant_land = yes
+#					}
+#					if = {
+#						limit = {
+#							annexations_is_valid_target_for_alliance_offer = yes
+#							NOT = { has_country_flag = offered_italy_@ROOT }
+#						}
+#						add_to_array = { ROOT.valid_italian_targets_offer = THIS }
+#					}
+#					else = {
+#						add_to_array = { ROOT.valid_italian_targets_grant = THIS }
+#					}
+#				}
+#			}
+#			else = {
+#				every_other_country = {
+#					limit = {
+#						is_italian_unifier_tag = yes
+#						NOT = { original_tag = var:exclude }
+#						ROOT_can_grant_land = yes
+#					}
+#					add_to_array = { ROOT.valid_italian_targets_grant = THIS }
+#				}
+#			}
+#			if = {
+#				limit = { check_variable = { valid_italian_targets_grant^num = 1 } }
+#				var:valid_italian_targets_grant^0 = {
+#					save_event_target_as = italy
+#					add_to_array = { ROOT.potential_grant_targets = THIS }
+#				}
+#				clear_array = valid_italian_targets_grant
+#			}
+#		}
+#	}
+#}
+#
+#annexations_give_italy_to_target = {
+#	if = {
+#		limit = { has_event_target = italy }
+#		set_temp_variable = { tag_to_release = event_target:italy }
+#		every_owned_state = {
+#			limit = {
+#				is_european_italy = yes
+#				is_allowed_annexation_state = yes
+#			}
+#			transfer_state_and_notify = yes
+#		}
+#		recheck_annexations = yes
+#	}
+#	else = {
+#		hidden_effect = {
+#			every_owned_state = {
+#				limit = {
+#					is_european_italy = yes
+#					is_allowed_annexation_state = yes
+#				}
+#				save_to_offered_states = yes
+#			}
+#		}
+#		country_event = annexation.200
+#	}
+#}
+#
+#annexations_offer_italy_to_target = {
+#	ITA = { save_to_offered_states = yes }
+#	SRI = { save_to_offered_states = yes }
+#	SIC = { save_to_offered_states = yes }
+#	SRD = { save_to_offered_states = yes }
+#	PAP = { save_to_offered_states = yes }
+#	VNC = { save_to_offered_states = yes }
+#	EMI = { save_to_offered_states = yes }
+#	TUS = { save_to_offered_states = yes }
+#	LOM = { save_to_offered_states = yes }
+#	if = {
+#		limit = { check_variable = { valid_italian_targets_offer^num > 1 } }
+#		country_event = annexation.201
+#	}
+#	else = {
+#		var:valid_italian_targets_offer^0 = {
+#			set_country_flag = offered_italy_@ROOT
+#			offer_states_to_target = yes
+#		}
+#	}
+#}
+#
+#annexations_reset_brazilian_tags = {
+#	if = {
+#		limit = { NOT = { country_exists = BRA } }
+#		every_state = {
+#			if = {
+#				limit = { is_brazil = yes }
+#				add_core_of = BRA
+#			}
+#			else = {
+#				remove_core_of = BRA
+#			}
+#			remove_claim_by = BRA
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = PIR } }
+#		PIR = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = BAH } }
+#		BAH = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = AMA } }
+#		AMA = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = SPO } }
+#		SPO = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = VCR } }
+#		VCR = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = GRP } }
+#		GRP = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = GOY } }
+#		GOY = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#}
+#
+#annexations_release_brazil = {
+#	855 = { retain_state = yes } #Acre
+#	1040 = { retain_state = yes } #Acre Jungle
+#	1041 = { retain_state = yes } #Iguassú
+#	1043 = { retain_state = yes } #Ponta Porã
+#	set_temp_variable = { tag_to_release = BRA }
+#	release_targeted_tag = yes
+#	every_subject_country = {
+#		limit = {
+#			is_brazilian_tag = yes
+#			NOT = { tag = var:tag_to_release }
+#			is_ai = yes
+#		}
+#		annex_splinter_tag = yes
+#	}
+#	BRA_puppet_setup = yes
+#}
+#
+#annexations_create_brazilian_event_targets = {
+#	if = {
+#		limit = { is_brazilian_tag = yes }
+#		save_event_target_as = can_annex
+#	}
+#	if = {
+#		limit = { BRA = { ROOT_can_grant_land = yes } }
+#		BRA = {
+#			save_event_target_as = brazil
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#	else_if = {
+#		limit = {
+#			NOT = { original_tag = BRA }
+#			var:500.owner = { #Rio de Janeiro
+#				has_cosmetic_tag = BRA
+#				ROOT_can_grant_land = yes
+#			}
+#		}
+#		var:500.owner = {
+#			save_event_target_as = brazil
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { has_event_target = brazil } }
+#		if = {
+#			limit = {
+#				has_variable = brazil_grant_targets^0
+#				var:brazil_grant_targets^0 = {
+#					annexations_state_owner_is_valid_grant_target = yes
+#					owner = {
+#						ROOT_can_grant_land = yes
+#						OR = {
+#							is_in_faction = no
+#							is_faction_leader = yes
+#							is_in_faction_with = ROOT
+#						}
+#						OR = {
+#							is_subject = no
+#							is_subject_of = ROOT
+#						}
+#					}
+#				}
+#			}
+#			var:brazil_grant_targets^0 = {
+#				owner = {
+#					save_event_target_as = brazil_one
+#					add_to_array = { ROOT.potential_grant_targets = THIS }
+#				}
+#			}
+#		}
+#		if = {
+#			limit = {
+#				has_variable = brazil_grant_targets^1
+#				var:brazil_grant_targets^1 = {
+#					annexations_state_owner_is_valid_grant_target = yes
+#					owner = {
+#						NOT = { tag = event_target:brazil_one }
+#						ROOT_can_grant_land = yes
+#						OR = {
+#							is_in_faction = no
+#							is_faction_leader = yes
+#							is_in_faction_with = ROOT
+#						}
+#						OR = {
+#							is_subject = no
+#							is_subject_of = ROOT
+#						}
+#					}
+#				}
+#			}
+#			var:brazil_grant_targets^1 = {
+#				owner = {
+#					save_event_target_as = brazil_two
+#					add_to_array = { ROOT.potential_grant_targets = THIS }
+#				}
+#			}
+#		}
+#		if = {
+#			limit = {
+#				has_variable = brazil_grant_targets^2
+#				var:brazil_grant_targets^2 = {
+#					annexations_state_owner_is_valid_grant_target = yes
+#					owner = {
+#						NOT = { tag = event_target:brazil_one }
+#						NOT = { tag = event_target:brazil_two }
+#						ROOT_can_grant_land = yes
+#						OR = {
+#							is_in_faction = no
+#							is_faction_leader = yes
+#							is_in_faction_with = ROOT
+#						}
+#						OR = {
+#							is_subject = no
+#							is_subject_of = ROOT
+#						}
+#					}
+#				}
+#			}
+#			var:brazil_grant_targets^2 = {
+#				owner = {
+#					save_event_target_as = brazil_three
+#					add_to_array = { ROOT.potential_grant_targets = THIS }
+#				}
+#			}
+#		}
+#	}
+#}
+#
+#annexations_give_brazil_to_target = {
+#	every_owned_state = {
+#		limit = {
+#			is_brazil = yes
+#			is_allowed_annexation_state = yes
+#		}
+#		transfer_state_and_notify = yes
+#	}
+#}
+#
+#annexations_reset_german_tags = {
+#	GER = {
+#		GER_wilhelm_iv = {
+#			if = {
+#				limit = {
+#					can_be_country_leader = yes
+#					is_retired = yes
+#				}
+#				remove_all_country_leader_roles = yes
+#				set_nationality = PREV
+#			}
+#		}
+#	}
+#	FRA = {
+#		FRA_marie_pierre_koenig = {
+#			if = {
+#				limit = {
+#					can_be_country_leader = yes
+#					is_retired = yes
+#				}
+#				remove_all_country_leader_roles = yes
+#				set_nationality = PREV
+#			}
+#		}
+#	}
+#	ENG = {
+#		ENG_bernard_paget = {
+#			if = {
+#				limit = {
+#					can_be_country_leader = yes
+#					is_retired = yes
+#				}
+#				remove_all_country_leader_roles = yes
+#				set_nationality = PREV
+#			}
+#		}
+#	}
+#	RUS = {
+#		RUS_vasily_blyukher = {
+#			if = {
+#				limit = {
+#					can_be_country_leader = yes
+#					owner = { exists = no }
+#				}
+#				remove_all_country_leader_roles = yes
+#				set_nationality = PREV
+#			}
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = GRU } }
+#		GRU = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = RHI } }
+#		RHI = {
+#			remove_ideas = RHI_rhenish_reparations
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = NGF } }
+#		NGF = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { country_exists = PRE } }
+#		PRE = {
+#			drop_cosmetic_tag = yes
+#			clear_cores_of_tag_if_possible = yes
+#		}
+#	}
+#}
+#
+#annexations_germany_retain_special_states = {
+#	hidden_effect = {
+#		if = {
+#			limit = { event_target:targeted_annexation_state = { is_rhineland = no } }
+#			42 = { retain_state = yes } #Palatinate
+#			51 = { retain_state = yes } #Eastern Rhineland
+#			781 = { retain_state = yes } #Western Rhineland
+#		}
+#	}
+#}
+#
+#annexations_release_republican_germany = {
+#	if = {
+#		limit = {
+#			any_country_with_original_tag = {
+#				original_tag_to_check = GRU
+#				is_ally_of_ROOT = yes
+#				set_temp_variable = { tag_to_release = THIS }
+#			}
+#		}
+#		every_owned_state = {
+#			limit = {
+#				is_germany = yes
+#				is_valid_annexation_state = yes
+#			}
+#			transfer_state_and_notify = yes
+#		}
+#	}
+#	else = {
+#		annexations_germany_retain_special_states = yes
+#		generate_new_german_puppet = yes
+#		every_subject_country = {
+#			limit = {
+#				is_germany_or_splinter_tag = yes
+#				is_german_unifier_tag = no
+#				NOT = { original_tag = RHI }
+#				NOT = { original_tag = EPR }
+#				is_ai = yes
+#			}
+#			annex_splinter_tag = yes
+#		}
+#		var:tag_to_release = { german_puppet_setup = yes }
+#	}
+#}
+#
+#annexations_release_hohenzollern_germany = {
+#	if = {
+#		limit = {
+#			any_country_with_original_tag = {
+#				original_tag_to_check = GRU
+#				is_ally_of_ROOT = yes
+#				set_temp_variable = { tag_to_release = THIS }
+#			}
+#		}
+#		every_owned_state = {
+#			limit = {
+#				is_germany = yes
+#				is_valid_annexation_state = yes
+#			}
+#			transfer_state_and_notify = yes
+#		}
+#	}
+#	else = {
+#		annexations_germany_retain_special_states = yes
+#		generate_new_german_puppet = yes
+#		every_subject_country = {
+#			limit = {
+#				is_germany_or_splinter_tag = yes
+#				is_german_unifier_tag = no
+#				NOT = { original_tag = RHI }
+#				NOT = { original_tag = EPR }
+#				is_ai = yes
+#			}
+#			annex_splinter_tag = yes
+#		}
+#		var:tag_to_release = {
+#			effect_tooltip = { set_cosmetic_tag = GRU_empire }
+#			GER_create_wilhelm_iv = yes
+#			german_puppet_setup = yes
+#		}
+#	}
+#}
+#
+#annexations_release_romanov_germany = {
+#	if = {
+#		limit = {
+#			any_country_with_original_tag = {
+#				original_tag_to_check = GRU
+#				is_ally_of_ROOT = yes
+#				set_temp_variable = { tag_to_release = THIS }
+#			}
+#		}
+#		every_owned_state = {
+#			limit = {
+#				is_germany = yes
+#				is_valid_annexation_state = yes
+#			}
+#			transfer_state_and_notify = yes
+#		}
+#	}
+#	else = {
+#		annexations_germany_retain_special_states = yes
+#		generate_new_german_puppet = yes
+#		every_subject_country = {
+#			limit = {
+#				is_germany_or_splinter_tag = yes
+#				is_german_unifier_tag = no
+#				NOT = { original_tag = RHI }
+#				NOT = { original_tag = EPR }
+#				is_ai = yes
+#			}
+#			annex_splinter_tag = yes
+#		}
+#		var:tag_to_release = {
+#			effect_tooltip = { set_cosmetic_tag = GRU_empire }
+#			german_puppet_setup = yes
+#		}
+#	}
+#}
+#
+#annexations_release_prussia = {
+#	set_temp_variable = { tag_to_release = PRE }
+#	every_state = {
+#		limit = { is_prussia = yes }
+#		remove_claim_and_add_core_of_target = yes
+#	}
+#	release_targeted_tag = yes
+#}
+#
+#annexations_create_german_event_targets = {
+#	if = {
+#		limit = {
+#			is_german_unifier_tag = no
+#			is_subject = no
+#		}
+#		random_other_country = {
+#			limit = {
+#				is_german_unifier_tag = yes
+#				is_ally_with = ROOT
+#			}
+#			save_event_target_as = germany
+#			add_to_array = { ROOT.potential_grant_targets = THIS }
+#		}
+#		if = {
+#			limit = { NOT = { has_event_target = germany } }
+#			random_other_country = {
+#				limit = {
+#					is_german_unifier_tag = yes
+#					ROOT_can_grant_land = yes
+#					if = {
+#						limit = { original_tag = MAF }
+#						NOT = { ROOT = { has_country_flag = world_tension_joined_radical_faction } }
+#					}
+#				}
+#				save_event_target_as = germany
+#				add_to_array = { ROOT.potential_grant_targets = THIS }
+#			}
+#		}
+#	}
+#}
+#
+#annexations_release_danubia = {
+#	set_temp_variable = { tag_to_release = AUS }
+#	71 = { clear_retain_state = yes } #Danubian Plain
+#	784 = { clear_retain_state = yes } #Burgenland
+#	1090 = { clear_retain_state = yes } #Pressburg
+#
+#	every_state = {
+#		limit = {
+#			OR = {
+#				is_core_austria = yes
+#				is_core_hungary = yes
+#				is_bohemia = yes
+#				AND = {
+#					is_slovakia = yes
+#					NOT = { state = 73 } #Transcarpathia
+#				}
+#			}
+#		}
+#		remove_claim_and_add_core_of_target = yes
+#	}
+#	release_targeted_tag = yes
+#	if = {
+#		limit = { has_variable = monarchy }
+#		var:tag_to_release = {
+#			set_cosmetic_tag = AUS_united_states
+#			AUS_create_karl = yes
+#		}
+#	}
+#	else = {
+#		var:tag_to_release = { set_cosmetic_tag = AUS_danubia }
+#		hidden_effect = {
+#			SLO = {
+#				SLO_milan_hodza = {
+#					if = {
+#						limit = {
+#							OR = {
+#								is_country_leader = no
+#								is_retired = yes
+#								owner = { exists = no }
+#							}
+#						}
+#						set_nationality = var:tag_to_release
+#						promote_character = social_liberal_subtype
+#					}
+#				}
+#			}
+#			HUN = {
+#				HUN_istvan_friedrich = {
+#					if = {
+#						limit = {
+#							OR = {
+#								is_country_leader = no
+#								is_retired = yes
+#							}
+#						}
+#						set_nationality = var:tag_to_release
+#						promote_character = market_liberal_subtype
+#					}
+#				}
+#				HUN_janos_zichy = {
+#					if = {
+#						limit = {
+#							OR = {
+#								is_country_leader = no
+#								is_retired = yes
+#							}
+#						}
+#						set_nationality = var:tag_to_release
+#						promote_character = authoritarian_democrat_subtype
+#					}
+#				}
+#			}
+#			CRO = {
+#				CRO_ivo_pilar = {
+#					if = {
+#						limit = {
+#							OR = {
+#								is_country_leader = no
+#								is_retired = yes
+#							}
+#						}
+#						set_nationality = var:tag_to_release
+#						promote_character = paternal_autocrat_subtype
+#						promote_character = national_populist_subtype
+#					}
+#				}
+#			}
+#		}
+#	}
+#	hidden_effect = {
+#		var:tag_to_release = { AUS_enable_danubian_integration = yes }
+#	}
+#}
+#
+#annexations_reset_danubian_characters = {
+#	if = {
+#		limit = {
+#			has_character = SLO_milan_hodza
+#			NOT = { original_tag = SLO }
+#		}
+#		SLO_milan_hodza = {
+#			set_nationality = SLO
+#			promote_character = social_democrat_subtype
+#			promote_character = social_liberal_subtype
+#			promote_character = market_liberal_subtype
+#			promote_character = social_conservative_subtype
+#			promote_character = authoritarian_democrat_subtype
+#			promote_character = paternal_autocrat_subtype
+#			promote_character = national_populist_subtype
+#		}
+#	}
+#	if = {
+#		limit = { NOT = { original_tag = HUN } }
+#		if = {
+#			limit = { has_character = HUN_istvan_friedrich }
+#			HUN_istvan_friedrich = {
+#				set_nationality = HUN
+#				promote_character = market_liberal_subtype
+#			}
+#		}
+#		if = {
+#			limit = { has_character = HUN_janos_zichy }
+#			HUN_janos_zichy = {
+#				set_nationality = HUN
+#				promote_character = authoritarian_democrat_subtype
+#			}
+#		}
+#	}
+#	if = {
+#		limit = {
+#			has_character = CRO_ivo_pilar
+#			NOT = { original_tag = CRO }
+#		}
+#		CRO_ivo_pilar = {
+#			set_nationality = CRO
+#			promote_character = paternal_autocrat_subtype
+#			promote_character = national_populist_subtype
+#		}
+#	}
+#}
