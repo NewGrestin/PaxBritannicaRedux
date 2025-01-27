@@ -1,0 +1,390 @@
+enable_country_integration_50_compliance = {
+	set_temp_variable = { integration_threshold = 50 }
+	enable_country_integration = yes
+}
+
+enable_country_integration_80_compliance = {
+	set_temp_variable = { integration_threshold = 80 }
+	enable_country_integration = yes
+}
+
+enable_country_integration = {
+	effect_tooltip = {
+		every_core_state = {
+			limit = {
+				is_owned_and_controlled_by = PREV.PREV
+				compliance > var:integration_threshold?50
+				NOT = { check_variable = { can_integrate_@PREV.PREV = integration_threshold?50 } }
+				NOT = { is_core_of = PREV.PREV }
+			}
+			add_state_core_upon_reaching_compliance_threshold = yes
+		}
+		every_core_state = {
+			limit = {
+				NOT = { check_variable = { can_integrate_@PREV.PREV = integration_threshold?50 } }
+				NOT = { is_core_of = PREV.PREV }
+				OR = {
+					NOT = { is_owned_and_controlled_by = PREV.PREV }
+					NOT = { compliance > var:integration_threshold?50 }
+				}
+			}
+			state_integration_tooltip = yes
+		}
+	}
+	hidden_effect = {
+		every_core_state = {
+			limit = { NOT = { check_variable = { can_integrate_@PREV.PREV = integration_threshold?50 } } }
+			set_variable = { can_integrate_@PREV.PREV = integration_threshold?50 }
+			if = {
+				limit = {
+					is_owned_and_controlled_by = PREV.PREV
+					compliance > var:integration_threshold?50
+				}
+				add_state_core_upon_reaching_compliance_threshold = yes
+			}
+			else = {
+				if = {
+					limit = {
+						is_controlled_by = PREV.PREV
+						NOT = { is_core_of = PREV.PREV }
+						impassable = no
+					}
+					start_state_integration_resistance = yes
+				}
+			}
+		}
+		force_update_map_mode = { mapmode = cores_claims_map_mode }
+	}
+}
+
+disable_country_integration = {
+	effect_tooltip = {
+		every_core_state = {
+			limit = {
+				has_variable = can_integrate_@PREV.PREV
+				is_controlled_by = PREV.PREV
+				NOT = { is_core_of = PREV.PREV }
+			}
+			custom_effect_tooltip = state_integration_disabled_tooltip
+		}
+	}
+	hidden_effect = {
+		every_core_state = {
+			limit = { has_variable = can_integrate_@PREV.PREV }
+			clear_variable = PREV.can_integrate_@PREV.PREV
+			if = {
+				limit = { is_controlled_by = PREV.PREV }
+				clear_state_integration_resistance = yes
+			}
+		}
+		force_update_map_mode = { mapmode = cores_claims_map_mode }
+	}
+}
+
+enable_state_integration_50_compliance = {
+	set_temp_variable = { integration_threshold = 50 }
+	enable_state_integration = yes
+}
+
+enable_state_integration_80_compliance = {
+	set_temp_variable = { integration_threshold = 80 }
+	enable_state_integration = yes
+}
+
+enable_state_integration = {
+	if = {
+		limit = { NOT = { check_variable = { can_integrate_@PREV = integration_threshold?50 } } }
+		set_variable = { can_integrate_@PREV = integration_threshold?50 }
+		if = {
+			limit = {
+				is_owned_and_controlled_by = PREV
+				compliance > var:integration_threshold?50
+			}
+			add_state_core_upon_reaching_compliance_threshold = yes
+		}
+		else = {
+			if = {
+				limit = { NOT = { is_core_of = PREV } }
+				state_integration_tooltip = yes
+			}
+			hidden_effect = {
+				if = {
+					limit = {
+						is_controlled_by = PREV
+						NOT = { is_core_of = PREV }
+						impassable = no
+					}
+					start_state_integration_resistance = yes
+				}
+				force_update_map_mode = { mapmode = cores_claims_map_mode }
+			}
+		}
+	}
+}
+
+disable_state_integration = {
+	if = {
+		limit = { has_variable = can_integrate_@PREV }
+		clear_variable = can_integrate_@PREV
+		if = {
+			limit = { NOT = { is_core_of = PREV } }
+			custom_effect_tooltip = state_integration_disabled_tooltip
+		}
+		hidden_effect = {
+			if = {
+				limit = { is_controlled_by = PREV }
+				clear_state_integration_resistance = yes
+			}
+			force_update_map_mode = { mapmode = cores_claims_map_mode }
+		}
+	}
+}
+
+enable_state_integration_50_tooltip = {
+	set_temp_variable = { integration_threshold = 50 }
+	state_integration_tooltip = yes
+}
+
+enable_state_integration_80_tooltip = {
+	set_temp_variable = { integration_threshold = 80 }
+	state_integration_tooltip = yes
+}
+
+state_integration_tooltip = {
+	custom_effect_tooltip = state_integration_enabled_tooltip
+	custom_effect_tooltip = state_integration_law_unlocked
+}
+
+#requires a temp variable target
+copy_integration_of_TARGET = {
+	effect_tooltip = {
+		every_state = {
+			limit = { check_variable = { can_integrate_@var:target = 80 } }
+			enable_state_integration_80_compliance = yes
+		}
+		every_state = {
+			limit = { check_variable = { can_integrate_@var:target = 50 } }
+			enable_state_integration_50_compliance = yes
+		}
+	}
+	hidden_effect = {
+		every_state = {
+			limit = { has_variable = can_integrate_@var:target }
+			set_temp_variable = { integration_threshold = can_integrate_@var:target }
+			enable_state_integration = yes
+		}
+	}
+}
+
+add_state_core_upon_reaching_compliance_threshold = {
+	add_core_of = var:controller
+	hidden_effect = {
+		every_neighbor_state = {
+			limit = {
+				impassable = yes
+				if = {
+					limit = { has_variable = paired_impassable }
+					var:paired_impassable = { is_core_of = PREV.PREV.controller }
+				}
+				else = {
+					is_owned_by = var:PREV.controller
+				}
+			}
+			add_core_of = var:PREV.controller
+			remove_claim_by = var:PREV.controller
+		}
+		remove_claim_by = var:controller
+
+		#disable resistance if set
+		clear_state_integration_resistance = yes
+
+		#check all cores in state, remove cores of dead tags if set
+		for_each_scope_loop = {
+			array = core_countries
+			if = {
+				limit = {
+					exists = no
+					remove_cores_of_tag_if_non_existent = yes
+				}
+				add_to_temp_array = { cores_to_remove = THIS }
+			}
+		}
+		for_each_loop = {
+			array = cores_to_remove
+			remove_core_of = var:v
+		}
+
+		#fire notification if player
+		if = {
+			limit = {
+				var:controller = { is_ai = no }
+				NOT = { is_in_array = { controller:state_integration_alerts = THIS } }
+			}
+			set_variable = { controller:integration_progressbar_value_@THIS = -317 }
+			set_variable = { controller:integration_alert_timer_@THIS = 0 }
+			add_to_array = { controller:state_integration_alerts = THIS }
+			save_event_target_as = integrated_state
+			var:controller = { scoped_sound_effect = coring_sfx }
+			state_event = { id = generic_events.40 hours = 1 trigger_for = controller }
+			set_variable_to_random = global.kaiserreich_alerts_dirty
+		}
+
+		#update mapmode
+		force_update_map_mode = { mapmode = cores_claims_map_mode }
+
+		#fire tag-specific effects
+		fire_country_specific_integration_content = yes
+	}
+}
+
+#fire_country_specific_integration_content = {
+#	if = {
+#		limit = {
+#			state = 463 #Alaska
+#			controller = { USA_has_america_cosmetic_tag = yes }
+#		}
+#		controller = { country_event = ustates.153 } #Alaska statehood
+#	}
+#	else_if = {
+#		limit = {
+#			state = 629 #Hawaii
+#			controller = { USA_has_america_cosmetic_tag = yes }
+#		}
+#		controller = { country_event = ustates.154 } #Hawaii statehood
+#	}
+#	else_if = {
+#		limit = {
+#			state = 686 #Puerto Rico
+#			controller = { USA_has_america_cosmetic_tag = yes }
+#		}
+#		controller = { country_event = ustates.155 } #Puerto Rico statehood
+#	}
+#	else_if = {
+#		limit = {
+#			state = 541 #Damaraland
+#			controller = { original_tag = SAF }
+#		}
+#		controller = { country_event = { id = saf.314 days = 90 random_days = 30 } }
+#	}
+#	else_if = {
+#		limit = {
+#			state = 950 #Lourenço Marques
+#			controller = { original_tag = SAF }
+#		}
+#		controller = { country_event = { id = saf.313 days = 90 random_days = 30 } }
+#	}
+#	else_if = {
+#		limit = { controller = { original_tag = ANQ } }
+#		controller = { country_event = { id = anq.181 days = 1 } }
+#	}
+#}
+#
+#clear_cores_of_tag_if_possible = {
+#	if = {
+#		limit = { exists = no }
+#		every_core_state = {
+#			limit = {
+#				check_variable = { core_countries^num > 1 } #is not the state's last core
+#				if = {
+#					limit = { PREV = { is_american_tag = yes } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						is_american_tag = yes
+#					}
+#				}
+#				else_if = {
+#					limit = { PREV = { is_italian_tag = yes } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						is_italian_tag = yes
+#					}
+#				}
+#				else_if = {
+#					limit = { PREV = { is_indian_tag = yes } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						is_indian_tag = yes
+#					}
+#				}
+#				else_if = {
+#					limit = { PREV = { is_chinese_tag = yes } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						is_chinese_tag = yes
+#					}
+#				}
+#				else_if = {
+#					limit = { PREV = { is_arabian_tag = yes } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						is_arabian_tag = yes
+#					}
+#				}
+#				else_if = {
+#					limit = { PREV = { original_tag = KUM } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						OR = {
+#							original_tag = ETS
+#							original_tag = SIK
+#						}
+#					}
+#				}
+#				else_if = {
+#					limit = { PREV = { original_tag = LEC } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						is_chinese_tag = yes
+#					}
+#				}
+#				else_if = {
+#					limit = { PREV = { original_tag = GAL } }
+#					any_country_with_core = {
+#						NOT = { tag = PREV.PREV }
+#						OR = {
+#							tag = POL
+#							tag = UKR
+#							tag = ROM
+#						}
+#					}
+#				}
+#			}
+#			remove_core_of = PREV
+#		}
+#		every_state = { remove_claim_by = PREV }
+#		force_update_map_mode = { mapmode = cores_claims_map_mode }
+#	}
+#}
+#
+#start_state_integration_resistance = {
+#	if = {
+#		limit = { NOT = { occupied_country_tag = XXA } }
+#		if = {
+#			limit = { has_resistance = yes }
+#			set_temp_variable = { previous_compliance = compliance }
+#			set_temp_variable = { previous_resistance = resistance }
+#			cancel_resistance = yes
+#		}
+#		add_core_of = XXA
+#		start_resistance = XXA
+#		set_compliance = var:previous_compliance?0
+#		set_resistance = var:previous_resistance?0
+#	}
+#	hidden_effect = { clear_state_integration_resistance = yes }
+#	controller = { XXA = { set_occupation_law_where_available = territorial_integration } }
+#}
+#
+#clear_state_integration_resistance = {
+#	XXA = {
+#		every_core_state = {
+#			limit = {
+#				OR = {
+#					is_core_of = controller
+#					NOT = { has_variable = can_integrate_@var:controller }
+#				}
+#			}
+#			remove_core_of = XXA
+#		}
+#	}
+#}
+#
