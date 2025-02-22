@@ -31,4 +31,146 @@ on_actions = {
 			}
 		}
 	}
+	on_annex = {
+		effect = {
+			log = "on_annex [GetLogRoot] [GetLogFrom]"
+			FROM = {
+				leave_economic_sphere = yes
+				clr_country_flag = KR_can_raise_autonomy_level
+				clr_country_flag = KR_can_become_free
+				clr_country_flag = KR_operative_nationality_check
+				clr_country_flag = GER_capitulated
+
+				# reset dynamic tags
+				if = {
+					limit = {
+						is_dynamic_country = yes
+						NOT = { has_country_flag = reserved_dynamic_tag }
+					}
+					drop_cosmetic_tag = yes
+					clear_government_flags = yes
+					every_state = { remove_claim_by = PREV }
+
+					clr_country_flag = dynamic_tag_setup_done
+
+					clr_country_flag = is_in_north_america
+					clr_country_flag = is_in_central_america
+					clr_country_flag = is_in_caribbean
+					clr_country_flag = is_in_south_america
+					clr_country_flag = is_in_americas
+					clr_country_flag = is_in_europe
+					clr_country_flag = is_in_india
+					clr_country_flag = is_in_asia
+					clr_country_flag = is_in_oceania
+					clr_country_flag = is_in_north_africa
+					clr_country_flag = is_in_africa
+					clr_country_flag = is_in_middle_east
+
+					if = {
+						limit = { is_in_array = { global.south_american_tags_array = THIS } }
+						remove_from_array = { global.south_american_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.central_american_tags_array = THIS } }
+						remove_from_array = { global.central_american_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.caribbean_tags_array = THIS } }
+						remove_from_array = { global.caribbean_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.north_american_tags_array = THIS } }
+						remove_from_array = { global.north_american_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.american_tags_array = THIS } }
+						remove_from_array = { global.american_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.european_tags_array = THIS } }
+						remove_from_array = { global.european_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.asian_tags_array = THIS } }
+						remove_from_array = { global.asian_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.indian_tags_array = THIS } }
+						remove_from_array = { global.indian_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.oceania_tags_array = THIS } }
+						remove_from_array = { global.oceania_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.north_african_tags_array = THIS } }
+						remove_from_array = { global.north_african_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.african_tags_array = THIS } }
+						remove_from_array = { global.african_tags_array = THIS }
+					}
+					if = {
+						limit = { is_in_array = { global.middle_eastern_tags_array = THIS } }
+						remove_from_array = { global.middle_eastern_tags_array = THIS }
+					}
+
+					clr_country_flag = had_war
+					clr_country_flag = KR_operative_nationality_check
+					clr_country_flag = has_demobilization_check
+					clr_country_flag = has_reduce_units_check
+					clr_country_flag = open_annexation_event
+					clr_country_flag = world_tension_joined_conservative_faction
+					clr_country_flag = world_tension_joined_radical_faction
+				}
+
+				# clear notifications
+				if = {
+					limit = { is_in_array = { global.faction_joining_alerts = THIS } }
+					clear_faction_joining_alert = yes
+				}
+				for_each_loop = {
+					array = state_integration_alerts
+					clear_variable = integration_alert_timer_@var:v
+					clear_variable = integration_progressbar_value_@var:v
+				}
+				for_each_loop = {
+					array = country_integration_alerts
+					clear_variable = integration_alert_timer_@var:v
+					clear_variable = integration_progressbar_value_@var:v
+				}
+				clear_array = state_integration_alerts
+				clear_array = country_integration_alerts
+
+				# clear tag cores and claims if set to
+				if = {
+					limit = { remove_cores_of_tag_if_non_existent = yes }
+					clear_cores_of_tag_if_possible = yes
+				}
+
+				every_possible_country = {
+					limit = { NOT = { tag = PREV } }
+
+					#clear embargo flags
+					clear_embargo_PREV = yes
+
+					#clear volunteers
+					clear_volunteers_to_PREV = yes
+					PREV = { clear_volunteers_to_PREV = yes }
+				}
+			}
+
+			recheck_annexations = yes
+
+			#emergency countermeasure if GER is somehow annexed before WK2 starts
+			if = {
+				limit = {
+					FROM = { tag = GER }
+					NOT = { has_global_flag = second_weltkrieg_has_started }
+				}
+				country_event = ai_events.200
+				set_global_flag = second_weltkrieg_has_ended
+			}
+		}
+	}
 }
