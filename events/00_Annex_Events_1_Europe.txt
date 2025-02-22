@@ -644,3 +644,373 @@ country_event = { #Fate of Burgundy
 #
 #	is_triggered_only = yes
 #}
+
+country_event = { #Fate of Portugal
+	id = annexation.1016
+	title = annexation_portugal
+	desc = annexation_portugal_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+
+		171 = { retain_state = yes } #Galicia
+
+		hidden_effect = {
+			#if = {
+			#	limit = { NOT = { country_exists = POR } }
+			#	every_state = {
+			#		if = {
+			#			limit = { is_portugal = no }
+			#			remove_core_of = POR
+			#		}
+			#		else = {
+			#			add_core_of = POR
+			#		}
+			#		remove_claim_by = POR
+			#	}
+			#	POR = { POR_remove_monarchy = yes }
+			#}
+			if = {
+				limit = {
+					original_tag = SPA
+					#has_socialist_government = yes
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					SPA = {
+						ROOT_can_grant_land = yes
+						#OR = {
+						#	is_subject = no
+						#	has_socialist_government = yes
+						#}
+					}
+				}
+				SPA = { save_event_target_as = spain }
+			}
+			if = {
+				limit = {
+					PEF = {
+						ROOT_can_grant_land = yes
+						#OR = {
+						#	is_subject = no
+						#	has_socialist_government = yes
+						#}
+					}
+				}
+				PEF = { save_event_target_as = portuguese_monarchy }
+			}
+		}
+	}
+
+	option = { #Liberate a republican Portugal - as a puppet
+		log = "[GetLogInfo]: event annexation.1016 option annexation.1016.a"
+		name = annexation.1016.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			#modifier = {
+			#	factor = 0
+			#	NOT = { country_exists = POR }
+			#	OR = {
+			#		is_monarchy = yes
+			#		is_german_tag = yes
+			#	}
+			#}
+			#modifier = {
+			#	factor = 0
+			#	is_ally_with = event_target:spain
+			#	OR = {
+			#		is_major = no
+			#		has_socialist_government = yes
+			#	}
+			#}
+		}
+		if = {
+			limit = { country_exists = POR }
+			custom_effect_tooltip = POR_puppet_tooltip
+			
+		}
+		else = {
+			set_temp_variable = { tag_to_release = POR }
+			release_targeted_tag = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Restore the Portuguese monarchy/empire as a puppet
+		log = "[GetLogInfo]: event annexation.1016 option annexation.1016.b"
+		name = annexation.1016.b
+		trigger = {
+			is_subject = no
+			NOT = { country_exists = PEF }
+		}
+		ai_chance = {
+			base = 50
+			#modifier = {
+			#	factor = 25
+			#	country_exists = PEF
+			#}
+		}
+		set_temp_variable = { tag_to_release = PEF }
+		release_targeted_tag = yes
+
+		#var:tag_to_release = { POR_monarchy_setup = yes }
+		recheck_annexations = yes
+	}
+
+	option = { #Give it to the Portuguese monarchy/empire
+		log = "[GetLogInfo]: event annexation.1016 option annexation.1016.b"
+		name = annexation.1016.c
+		trigger = {
+			has_event_target = portuguese_monarchy
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 25
+				country_exists = PEF
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:portuguese_monarchy }
+		POR = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+		#recheck_annexations = yes
+
+		#var:tag_to_release = { POR_monarchy_setup = yes }
+		recheck_annexations = yes
+	}
+
+
+	option = { #give to Spain
+		log = "[GetLogInfo]: event annexation.1016 option annexation.give_to_spain"
+		name = annexation.give_to_spain
+		trigger = {
+			has_event_target = spain
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:spain }
+		POR = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate - for Spain - lets see if i should do pef
+		log = "[GetLogInfo]: event annexation.1016 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		POR = { add_claim_of_ROOT_on_valid_cores = yes }
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1016 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Galicia
+	id = annexation.1017
+	title = annexation_spanish_galicia
+	desc = annexation_spanish_galicia_desc
+	picture = GFX_report_event_generic_conference2
+
+	is_triggered_only = yes
+
+	immediate = {
+
+		if = {
+			limit = {
+				OR = {
+					174 = { is_claim_or_core_of_ROOT = yes } #León
+					793 = { is_claim_or_core_of_ROOT = yes } #Asturias
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				174 = { #León
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:174.owner = { save_event_target_as = spain_leon }
+		}
+		if = {
+			limit = {
+				1193 = { #Asturias
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:spain_leon }
+					}
+				}
+			}
+			var:1193.owner = { save_event_target_as = spain_asturias }
+		}
+		if = {
+			limit = {
+				180 = { #Porto
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:180.owner = { save_event_target_as = porto_owner }
+		}
+	}
+
+	#option = { #puppet
+	#	log = "[GetLogInfo]: event annex.1085 option annex.1085.a"
+	#	name =annexation.1017.a
+	#	trigger = {
+	#		is_subject = no
+	#	}
+	#	ai_chance = { base = 0 }
+	#	set_temp_variable = { tag_to_release = GLC }
+	#	release_targeted_tag = yes
+	#	recheck_annexations = yes
+	#}
+
+	option = { #give to Spanish owner of León
+		log = "[GetLogInfo]: event annexation.1017 option annexation.1017.b"
+		name = annexation.1017.b
+		trigger = {
+			has_event_target = spain_leon
+		}
+		ai_chance = {
+			base = 40
+			#modifier = {
+			#	factor = 0
+			#	annexations_can_annex = yes
+			#}
+			#modifier = {
+			#	factor = 0
+			#	NOT = { is_ally_with = event_target:spain_leon }
+			#	OR = {
+			#		is_ally_with = event_target:spain_asturias
+			#		is_ally_with = event_target:portugal
+			#	}
+			#}
+			#modifier = {
+			#	factor = 0.1
+			#	event_target:spain_leon = { is_subject = yes }
+			#}
+		}
+		set_temp_variable = { tag_to_release = event_target:spain_leon }
+		171 = { transfer_state_and_notify = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
+
+	option = { #give to Spanish owner of Asturias
+		log = "[GetLogInfo]: event annexation.1017 option annexation.1017.c"
+		name = annexation.1017.c
+		trigger = {
+			has_event_target = spain_asturias
+		}
+		ai_chance = {
+			base = 30
+			#modifier = {
+			#	factor = 0
+			#	annexations_can_annex = yes
+			#}
+			#modifier = {
+			#	factor = 0
+			#	NOT = { is_ally_with = event_target:spain_asturias }
+			#	OR = {
+			#		is_ally_with = event_target:spain_leon
+			#		is_ally_with = event_target:portugal
+			#	}
+			#}
+			#modifier = {
+			#	factor = 0.1
+			#	event_target:spain_asturias = { is_subject = yes }
+			#}
+		}
+		set_temp_variable = { tag_to_release = event_target:spain_asturias }
+		171 = { transfer_state_and_notify = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
+
+	option = { #give to Spanish owner of Porto
+		log = "[GetLogInfo]: event annexation.1017 option annexation.1017.c"
+		name = annexation.1017.d
+		trigger = {
+			has_event_target = porto_owner
+		}
+		ai_chance = {
+			base = 30
+			#modifier = {
+			#	factor = 0
+			#	annexations_can_annex = yes
+			#}
+			#modifier = {
+			#	factor = 0
+			#	NOT = { is_ally_with = event_target:spain_asturias }
+			#	OR = {
+			#		is_ally_with = event_target:spain_leon
+			#		is_ally_with = event_target:portugal
+			#	}
+			#}
+			#modifier = {
+			#	factor = 0.1
+			#	event_target:spain_asturias = { is_subject = yes }
+			#}
+		}
+		set_temp_variable = { tag_to_release = event_target:porto_owner}
+		171 = { transfer_state_and_notify = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
+
+	#option = { #Give to overlord
+	#	log = "[GetLogInfo]: event annex.1085 option annex.give_to_overlord"
+	#	name = annex.give_to_overlord
+	#	trigger = {
+	#		annexations_should_give_lands_to_overlord = yes
+	#	}
+	#	set_temp_variable = { tag_to_release = overlord }
+	#	GLC = { set_transfer_target_cores = yes }
+	#	transfer_targeted_territory = yes
+	#	recheck_annexations = yes
+	#}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annexation.1017 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		#GLC = { add_claim_of_ROOT_on_valid_cores = yes }
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1017 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
