@@ -43,4 +43,4 @@ replace_path = "gfx/fonts"
 replace_path = "music"
 
 picture="thumbnail.png"
-supported_version="1.15.*"
+supported_version="1.16.*"
