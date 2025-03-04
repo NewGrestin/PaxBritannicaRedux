@@ -9,6 +9,8 @@ NDefines.NGraphics.COUNTRY_COLOR_SATURATION_MODIFIER = 0.55
 --NDefines.NGraphics.COUNTRY_COLOR_HUE_MODIFIER = 0
 NDefines.NGraphics.TREE_FADE_NEAR = 150.0
 NDefines.NGraphics.TREE_FADE_FAR = 300.0
+NDefines.NGraphics.RAILWAY_Y_OFFSET = 0.3
+NDefines.NGraphics.RAILWAY_BRIDGE_Y_OFFSET = 0.1
 NDefines_Graphics.NFrontend.CAMERA_MIN_HEIGHT = 25.0
 NDefines_Graphics.NFrontend.CAMERA_MAX_HEIGHT = 3500.0
 
