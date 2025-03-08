@@ -151,56 +151,61 @@ country_event = { #Fate of France
 	is_triggered_only = yes
 
 	immediate = {
+
+		17 = { retain_state = yes } #Meurthe
+		29 = { retain_state = yes } #Pas-de-Calais
+		31 = { retain_state = yes } #Roussillon
+		735 = { retain_state = yes } #Savoy
+		785 = { retain_state = yes } #Picardy
+		831 = { retain_state = yes } #Nice
+		832 = { retain_state = yes } #Upper Savoy
+		841 = { retain_state = yes } #Apurdi
+		972 = { retain_state = yes } #Nauchatel
+		1206 = { retain_state = yes } #Moselle
+		1207 = { retain_state = yes } #Sedan
+		27 = { retain_state = yes } #Bourgogne
+		18 = { retain_state = yes } #Champagne
+		685 = { retain_state = yes } #Champagne-Ardenne
+
 		hidden_effect = {
-			if = {
-				limit = { NOT = { country_exists = FRA } }
-				#FRA = { clear_cores_of_tag_if_possible = yes }
-			}
-			if = {
-				limit = { NOT = { country_exists = OFA } }
-				#OFA = { clear_cores_of_tag_if_possible = yes }
-			}
-			random_other_country = {
-				limit = {
-					is_ally_with = ROOT
-					OR = {
-						is_subject = no
-						is_subject_of = ROOT
-					}
-				}
-				save_event_target_as = france
-			}
-			if = {
-				limit = { NOT = { has_event_target = france } }
-				if = {
-					limit = { FRA = { ROOT_can_grant_land = yes } }
-					FRA = { save_event_target_as = france }
-				}
-				else_if = {
-					limit = { OFA = { ROOT_can_grant_land = yes } }
-					OFA = { save_event_target_as = france }
-				}
-			}
-			17 = { retain_state = yes } #Meurthe
-			29 = { retain_state = yes } #Pas-de-Calais
-			31 = { retain_state = yes } #Roussillon
-			735 = { retain_state = yes } #Savoy
-			785 = { retain_state = yes } #Picardy
-			831 = { retain_state = yes } #Nice
-			832 = { retain_state = yes } #Upper Savoy
-			841 = { retain_state = yes } #Apurdi
-			972 = { retain_state = yes } #Nauchatel
-			1206 = { retain_state = yes } #Moselle
-			1207 = { retain_state = yes } #Sedan
-			27 = { retain_state = yes } #Bourgogne
-			18 = { retain_state = yes } #Champagne
-			685 = { retain_state = yes } #Champagne-Ardenne
+			#if = {
+			#	limit = { NOT = { country_exists = FRA } }
+			#	#FRA = { clear_cores_of_tag_if_possible = yes }
+			#}
+			#if = {
+			#	limit = { NOT = { country_exists = OFA } }
+			#	#OFA = { clear_cores_of_tag_if_possible = yes }
+			#}
+			#random_other_country = {
+			#	limit = {
+			#			is_ally_with = ROOT
+			#		OR = {
+			#			is_subject = no
+			#			is_subject_of = ROOT
+			#		}
+			#	}
+			#	save_event_target_as = france
+			#}
+			#if = {
+			#	limit = { NOT = { has_event_target = france } }
+			#	if = {
+			#		limit = { FRA = { ROOT_can_grant_land = yes } }
+			#		FRA = { save_event_target_as = france }
+			#	}
+			#	else_if = {
+			#		limit = { OFA = { ROOT_can_grant_land = yes } }
+			#		OFA = { save_event_target_as = france }
+			#	}
+			#}
 		}
 	}
 
 	option = {
-		log = "[GetLogInfo]: event annex.1001 option annex.release_france"
-		name = annexation.release_france
+		log = "[GetLogInfo]: event annex.1001 option annexation.1001.a"
+		name = annexation.1001.a
+		trigger = {
+			is_subject = no
+		}
 		ai_chance = {
 			base = 100
 			modifier = {
@@ -208,15 +213,23 @@ country_event = { #Fate of France
 				#annexations_AI_release_puppet_default_logic = yes
 			}
 		}
-		set_temp_variable = { tag_to_release = FRA }
-		every_state = {
-			limit = { is_starting_french_state = yes }
-			add_claim_by = var:tag_to_release
-			add_core_of = var:tag_to_release
+		if = {
+			limit = { country_exists = FRA }
+			custom_effect_tooltip = FRA_puppet_tooltip
+			
 		}
-
+		else = {
+		set_temp_variable = { tag_to_release = FRA }
 		release_targeted_tag = yes
+		}
 		recheck_annexations = yes
+		#every_state = {
+		#	limit = { is_starting_french_state = yes }
+		#	add_claim_by = var:tag_to_release
+		#	add_core_of = var:tag_to_release
+		#}
+
+		#release_targeted_tag = yes
 
 		if = {
 			limit = {
@@ -243,17 +256,22 @@ country_event = { #Fate of France
 	}
 
 	option = {
-		log = "[GetLogInfo]: event annex.1001 option annex.split_france"
-		name = annexation.split_france
+		log = "[GetLogInfo]: event annex.1001 option annexation.1001.b"
+		name = annexation.1001.b
 		trigger = {
 			is_subject = no
 		}
+
 		ai_chance = { base = 0 }
+
 		set_temp_variable = { tag_to_release = FRA }
-		every_state = {
-			limit = { is_only_releasable_france = yes }
-		}
+
+		#every_state = {
+		#	limit = { is_only_releasable_france = yes }
+		#}
+
 		release_targeted_tag = yes
+
 		recheck_annexations = yes
 
 		if = {
@@ -280,7 +298,7 @@ country_event = { #Fate of France
 	}
 
 	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1001 option annex.give_to_overlord"
+		log = "[GetLogInfo]: event annex.1001 option annexation.give_to_overlord"
 		name = annex.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
@@ -297,7 +315,7 @@ country_event = { #Fate of France
 	}
 
 	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1001 option annex.integration"
+		log = "[GetLogInfo]: event annex.1001 option annexation.integration"
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
@@ -310,7 +328,7 @@ country_event = { #Fate of France
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1001 option annex.cancel"
+		log = "[GetLogInfo]: event annex.1001 option annexation.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
