@@ -151,12 +151,10 @@ country_event = { #Fate of France
 	is_triggered_only = yes
 
 	immediate = {
-
-		17 = { retain_state = yes } #Meurthe
 		29 = { retain_state = yes } #Pas-de-Calais
+		17 = { retain_state = yes } #Meurthe
 		31 = { retain_state = yes } #Roussillon
 		735 = { retain_state = yes } #Savoy
-		785 = { retain_state = yes } #Picardy
 		831 = { retain_state = yes } #Nice
 		832 = { retain_state = yes } #Upper Savoy
 		841 = { retain_state = yes } #Apurdi
@@ -166,38 +164,19 @@ country_event = { #Fate of France
 		27 = { retain_state = yes } #Bourgogne
 		18 = { retain_state = yes } #Champagne
 		685 = { retain_state = yes } #Champagne-Ardenne
-
-		hidden_effect = {
-			#if = {
-			#	limit = { NOT = { country_exists = FRA } }
-			#	#FRA = { clear_cores_of_tag_if_possible = yes }
-			#}
-			#if = {
-			#	limit = { NOT = { country_exists = OFA } }
-			#	#OFA = { clear_cores_of_tag_if_possible = yes }
-			#}
-			#random_other_country = {
-			#	limit = {
-			#			is_ally_with = ROOT
-			#		OR = {
-			#			is_subject = no
-			#			is_subject_of = ROOT
-			#		}
-			#	}
-			#	save_event_target_as = france
-			#}
-			#if = {
-			#	limit = { NOT = { has_event_target = france } }
-			#	if = {
-			#		limit = { FRA = { ROOT_can_grant_land = yes } }
-			#		FRA = { save_event_target_as = france }
-			#	}
-			#	else_if = {
-			#		limit = { OFA = { ROOT_can_grant_land = yes } }
-			#		OFA = { save_event_target_as = france }
-			#	}
-			#}
-		}
+		22 = { retain_state = yes } #Languedoc
+		1205 = { retain_state = yes } #Ardeche
+		21 = { retain_state = yes } #Provence
+		32 = { retain_state = yes } #Alpes
+		809 = { retain_state = yes } #Franche-Comté
+		20 = { retain_state = yes } #Rhone
+		26 = { retain_state = yes } #Auvergne
+		1203 = { retain_state = yes } #Ain
+		557 = { retain_state = yes } #Midi Pyrenees
+		1202 = { retain_state = yes } #Garonne
+		25 = { retain_state = yes } #Limousin
+		15 = { retain_state = yes } #Normandy
+		1204 = { retain_state = yes } #Seine-Maritime
 	}
 
 	option = {
@@ -210,26 +189,18 @@ country_event = { #Fate of France
 			base = 100
 			modifier = {
 				factor = 0
-				#annexations_AI_release_puppet_default_logic = yes
 			}
 		}
+
 		if = {
 			limit = { country_exists = FRA }
 			custom_effect_tooltip = FRA_puppet_tooltip
-			
 		}
 		else = {
-		set_temp_variable = { tag_to_release = FRA }
-		release_targeted_tag = yes
+			set_temp_variable = { tag_to_release = FRA }
+			release_targeted_tag = yes
 		}
 		recheck_annexations = yes
-		#every_state = {
-		#	limit = { is_starting_french_state = yes }
-		#	add_claim_by = var:tag_to_release
-		#	add_core_of = var:tag_to_release
-		#}
-
-		#release_targeted_tag = yes
 
 		if = {
 			limit = {
@@ -252,7 +223,6 @@ country_event = { #Fate of France
 				set_cosmetic_tag = FRA_Occupied_Republic
 			}
 		}
-
 	}
 
 	option = {
@@ -266,12 +236,14 @@ country_event = { #Fate of France
 
 		set_temp_variable = { tag_to_release = FRA }
 
-		#every_state = {
-		#	limit = { is_only_releasable_france = yes }
-		#}
-
-		release_targeted_tag = yes
-
+		if = {
+			limit = { country_exists = FRA }
+			custom_effect_tooltip = FRA_puppet_tooltip
+		}
+		else = {
+			set_temp_variable = { tag_to_release = FRA }
+			release_targeted_tag = yes
+		}
 		recheck_annexations = yes
 
 		if = {
@@ -281,7 +253,7 @@ country_event = { #Fate of France
 				}
 			}
 			FRA = {
-				set_cosmetic_tag = FRA_Occupied_Monarchy
+				set_cosmetic_tag = FRA_Occupied_Monarchy_Split
 			}
 		}
 
@@ -292,7 +264,7 @@ country_event = { #Fate of France
 				}
 			}
 			FRA = {
-				set_cosmetic_tag = FRA_Occupied_Republic
+				set_cosmetic_tag = FRA_Occupied_Republic_Split
 			}
 		}
 	}
@@ -335,14 +307,141 @@ country_event = { #Fate of France
 	}
 }
 
-#country_event = { #Fate of Occitania
-#	id = annexation.1002
-#	title = annexation_occitania
-#	desc = annexation_occitania_desc
-#	picture = GFX_report_event_generic_map_france
-#
-#	is_triggered_only = yes
-#}
+country_event = { #Fate of Occitania
+	id = annexation.1002
+	title = annexation_occitania
+	desc = annexation_occitania_desc
+	picture = GFX_report_event_generic_map_france
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = { 20 = { is_claim_or_core_of_ROOT = yes } } #Lyon
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				20 = { #Lyon
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:30.owner = { save_event_target_as = france }
+		}
+	}
+
+	option = { #Liberate Occitania
+		log = "[GetLogInfo]: event annexation.1002 option annexation.1002.a"
+		name = annexation.1002.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = OCT }
+		1203 = { remove_claim_and_add_core_of_target = yes } 
+		32 = { remove_claim_and_add_core_of_target = yes } 
+		735 = { remove_claim_and_add_core_of_target = yes } 
+		21 = { remove_claim_and_add_core_of_target = yes } 
+		1205 = { remove_claim_and_add_core_of_target = yes } 
+		26 = { remove_claim_and_add_core_of_target = yes } 
+		22 = { remove_claim_and_add_core_of_target = yes } 
+		25 = { remove_claim_and_add_core_of_target = yes } 
+		1202 = { remove_claim_and_add_core_of_target = yes } 
+		31 = { remove_claim_and_add_core_of_target = yes } 
+		557 = { remove_claim_and_add_core_of_target = yes } 
+		20 = { remove_claim_and_add_core_of_target = yes } 
+		release_targeted_tag = yes
+		recheck_annexations = yes
+	}
+
+	option = { #give to France
+		log = "[GetLogInfo]: event annexation.1002 option annexation.give_to_france"
+		name = annexation.give_to_france
+		trigger = {
+			has_event_target = france
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		1203 = { transfer_if_owned = yes } 
+		32 = { transfer_if_owned = yes } 
+		735 = { transfer_if_owned = yes } 
+		21 = { transfer_if_owned = yes } 
+		1205 = { transfer_if_owned = yes } 
+		26 = { transfer_if_owned = yes } 
+		22 = { transfer_if_owned = yes } 
+		25 = { transfer_if_owned = yes } 
+		1202 = { transfer_if_owned = yes } 
+		31 = { transfer_if_owned = yes } 
+		557 = { transfer_if_owned = yes } 
+		20 = { transfer_if_owned = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #give to overlord
+		log = "[GetLogInfo]: event annexation.1002 option annexation.give_to_overlord"
+		name = annexation.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1203 = { transfer_if_owned = yes } 
+		32 = { transfer_if_owned = yes } 
+		735 = { transfer_if_owned = yes } 
+		21 = { transfer_if_owned = yes } 
+		1205 = { transfer_if_owned = yes } 
+		26 = { transfer_if_owned = yes } 
+		22 = { transfer_if_owned = yes } 
+		25 = { transfer_if_owned = yes } 
+		1202 = { transfer_if_owned = yes } 
+		31 = { transfer_if_owned = yes } 
+		557 = { transfer_if_owned = yes } 
+		20 = { transfer_if_owned = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annexation.1002 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1203 = { add_claim_of_ROOT = yes } 
+		32 = { add_claim_of_ROOT = yes } 
+		735 = { add_claim_of_ROOT = yes } 
+		21 = { add_claim_of_ROOT = yes } 
+		1205 = { add_claim_of_ROOT = yes } 
+		26 = { add_claim_of_ROOT = yes } 
+		22 = { add_claim_of_ROOT = yes } 
+		25 = { add_claim_of_ROOT = yes } 
+		1202 = { add_claim_of_ROOT = yes } 
+		31 = { add_claim_of_ROOT = yes } 
+		557 = { add_claim_of_ROOT = yes } 
+		20 = { add_claim_of_ROOT = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1002 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
 
 country_event = { #Fate of Burgundy
 	id = annexation.1003
@@ -381,8 +480,32 @@ country_event = { #Fate of Burgundy
 		27 = { remove_claim_and_add_core_of_target = yes } #Bourgogne
 		685 = { remove_claim_and_add_core_of_target = yes } #Champagne-Ardenne
 		809 = { remove_claim_and_add_core_of_target = yes } #Franche-Comte
+		1207 = { remove_claim_and_add_core_of_target = yes } #Sedan
+		1206 = { remove_claim_and_add_core_of_target = yes } #Moselle
 		release_targeted_tag = yes
 		recheck_annexations = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			BRG = {
+				set_cosmetic_tag = BRG_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			BRG = {
+				set_cosmetic_tag = BRG_Occupied_Republic
+			}
+		}
 	}
 
 	option = { #give to France
@@ -436,8 +559,11 @@ country_event = { #Fate of Burgundy
 		trigger = {
 			annexations_can_annex = yes
 		}
-		14 = { add_claim_of_ROOT = yes } #Upper Brittany
-		983 = { add_claim_of_ROOT = yes } #Brittany
+		17 = { add_claim_of_ROOT = yes } #Meurthe
+		18 = { add_claim_of_ROOT = yes } #Champagne
+		27 = { add_claim_of_ROOT = yes } #Bourgogne
+		685 = { add_claim_of_ROOT = yes } #Champagne-Ardenne
+		809 = { add_claim_of_ROOT = yes } #Franche-Comte
 		recheck_annexations = yes
 	}
 
@@ -449,23 +575,195 @@ country_event = { #Fate of Burgundy
 	}
 }
 
-#country_event = { #Fate of Normandy
-#	id = annexation.1004
-#	title = annexation_normandy
-#	desc = annexation_normandy_desc
-#	picture = GFX_report_event_generic_map_france
-#
-#	is_triggered_only = yes
-#}
-#
-#country_event = { #Fate of Brittany
-#	id = annexation.1005
-#	title = annexation_brittany
-#	desc = annexation_brittany_desc
-#	picture = GFX_report_event_generic_map_france
-#
-#	is_triggered_only = yes
-#}
+country_event = { #Fate of Normandy
+	id = annexation.1004
+	title = annexation_Normandy
+	desc = annexation_Normandy_desc
+	picture = GFX_report_event_generic_map_france
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = { 15 = { is_claim_or_core_of_ROOT = yes } } 
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				15 = { 
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:30.owner = { save_event_target_as = france }
+		}
+	}
+
+	option = { #Liberate Normandy
+		log = "[GetLogInfo]: event annexation.1004 option annexation.1004.a"
+		name = annexation.1004.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = NRM }
+		15 = { remove_claim_and_add_core_of_target = yes } 
+		1204 = { remove_claim_and_add_core_of_target = yes } 
+		release_targeted_tag = yes
+		recheck_annexations = yes
+	}
+
+	option = { #give to France
+		log = "[GetLogInfo]: event annexation.1004 option annexation.give_to_france"
+		name = annexation.give_to_france
+		trigger = {
+			has_event_target = france
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		15 = { transfer_if_owned = yes } 
+		1204 = { transfer_if_owned = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #give to overlord
+		log = "[GetLogInfo]: event annexation.1004 option annexation.give_to_overlord"
+		name = annexation.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		15 = { transfer_if_owned = yes } 
+		1204 = { transfer_if_owned = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annexation.1004 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		15 = { add_claim_of_ROOT = yes } 
+		1204 = { add_claim_of_ROOT = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1004 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Brittany
+	id = annexation.1005
+	title = annexation_brittany
+	desc = annexation_brittany_desc
+	picture = GFX_report_event_generic_map_france
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = { 14 = { is_claim_or_core_of_ROOT = yes } } #Lyon
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				14 = { #Lyon
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:30.owner = { save_event_target_as = france }
+		}
+	}
+
+	option = { #Liberate Brittany
+		log = "[GetLogInfo]: event annexation.1005 option annexation.1005.a"
+		name = annexation.1005.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = BRT }
+		14 = { remove_claim_and_add_core_of_target = yes } 
+		release_targeted_tag = yes
+		recheck_annexations = yes
+	}
+
+	option = { #give to France
+		log = "[GetLogInfo]: event annexation.1005 option annexation.give_to_france"
+		name = annexation.give_to_france
+		trigger = {
+			has_event_target = france
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		14 = { transfer_if_owned = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #give to overlord
+		log = "[GetLogInfo]: event annexation.1005 option annexation.give_to_overlord"
+		name = annexation.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		14 = { transfer_if_owned = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annexation.1005 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		14 = { add_claim_of_ROOT = yes } 
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1005 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+
 #
 #country_event = { #Fate of Picardy
 #	id = annexation.1006
@@ -476,14 +774,79 @@ country_event = { #Fate of Burgundy
 #	is_triggered_only = yes
 #}
 #
-#country_event = { #Fate of Pas-de-Calais
-#	id = annexation.1007
-#	title = annexation_pas_de_calais
-#	desc = annexation_pas_de_calais_desc
-#	picture = GFX_report_event_generic_map_france
-#
-#	is_triggered_only = yes
-#}
+
+country_event = { #Fate of Pas-de-Calais
+	id = annexation.1007
+	title = annexation_pasdecalais
+	desc = annexation_pasdecalais_desc
+	picture = GFX_report_event_generic_map_france
+
+	is_triggered_only = yes
+
+	option = { #give to Wallonia
+		log = "[GetLogInfo]: event annexation.1007 option annexation.give_to_france"
+		name = annexation.give_to_wallonia
+		trigger = {
+			WLA = {
+				exists = yes
+				owns_state = 855
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:wallonia = { is_subject = yes }
+			}
+		}
+		29 = { transfer_state_to = WLA } 
+		recheck_annexations = yes
+	}
+
+	option = { #give to France
+		log = "[GetLogInfo]: event annexation.1007 option annexation.give_to_france"
+		name = annexation.give_to_france
+		trigger = {
+			FRA = {
+				exists = yes
+				owns_state = 785
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		29 = { transfer_state_to = FRA }
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1007 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
 #
 #country_event = { #Fate of Aquitaine
 #	id = annexation.1008
@@ -521,14 +884,113 @@ country_event = { #Fate of Burgundy
 #	is_triggered_only = yes
 #}
 #
-#country_event = { #Fate of Nauchatel
-#	id = annexation.1012
-#	title = annexation_nauchatel
-#	desc = annexation_nauchatel_desc
-#	picture = GFX_report_event_generic_map_france
-#
-#	is_triggered_only = yes
-#}
+
+country_event = { #Fate of Nauchatel
+	id = annexation.1012
+	title = annexation_nauchatel
+	desc = annexation_nauchatel_desc
+	picture = GFX_report_event_generic_map_france
+
+	is_triggered_only = yes
+
+	option = { #give to Burgundy
+		log = "[GetLogInfo]: event annexation.1012 option annexation.give_to_france"
+		name = annexation.give_to_wallonia
+		trigger = {
+			BRG = {
+				exists = yes
+				owns_state = 17
+				owns_state = 809
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:wallonia = { is_subject = yes }
+			}
+		}
+		972 = { transfer_state_to = BRG } 
+		recheck_annexations = yes
+	}
+
+	option = { #give to France
+		log = "[GetLogInfo]: event annexation.1012 option annexation.give_to_france"
+		name = annexation.give_to_france
+		trigger = {
+			FRA = {
+				exists = yes
+				owns_state = 17
+				owns_state = 809
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		972 = { transfer_state_to = FRA }
+		recheck_annexations = yes
+	}
+
+	option = { #give to Switzerland
+		log = "[GetLogInfo]: event annexation.1012 option annexation.give_to_france"
+		name = annexation.give_to_switzerland
+		trigger = {
+			SWI = {
+				exists = yes
+				owns_state = 940
+			}
+			NOT = {
+				SWI = {
+					owns_state = 972
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		972 = { transfer_state_to = SWI }
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1012 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
 
 country_event = { #Fate of Portugal
 	id = annexation.1016
