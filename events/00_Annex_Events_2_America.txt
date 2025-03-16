@@ -35,54 +35,42 @@ country_event = { #Fate of Acadia
 
 	immediate = {
 
-		#171 = { retain_state = yes } #Galicia
+
+			if = {
+				limit = {
+					OR = {
+						941 = { is_claim_or_core_of_ROOT = yes } #New Dixie
+						957 = { is_claim_or_core_of_ROOT = yes } #UC or Dixie
+						370 = { is_claim_or_core_of_ROOT = yes } #UC or Dixie
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					957 = { 
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+						owner = { tag = AME }
+					}
+				}
+				AME = { save_event_target_as = uc_owner }
+			}
+			if = {
+				limit = {
+					957 = { 
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+						owner = { tag = FSA }
+					}
+				}
+				var:957.owner = { save_event_target_as = dixie_owner }
+			}
 
 		hidden_effect = {
 			#if = {
-			#	limit = { NOT = { country_exists = POR } }
-			#	every_state = {
-			#		if = {
-			#			limit = { is_portugal = no }
-			#			remove_core_of = POR
-			#		}
-			#		else = {
-			#			add_core_of = POR
-			#		}
-			#		remove_claim_by = POR
-			#	}
-			#	POR = { POR_remove_monarchy = yes }
-			#}
-			#if = {
-			#	limit = {
-			#		original_tag = SPA
-			#		#has_socialist_government = yes
-			#	}
-			#	save_event_target_as = can_annex
-			#}
-			#if = {
-			#	limit = {
-			#		SPA = {
-			#			ROOT_can_grant_land = yes
-			#			#OR = {
-			#			#	is_subject = no
-			#			#	has_socialist_government = yes
-			#			#}
-			#		}
-			#	}
-			#	SPA = { save_event_target_as = spain }
-			#}
-			#if = {
-			#	limit = {
-			#		PEF = {
-			#			ROOT_can_grant_land = yes
-			#			#OR = {
-			#			#	is_subject = no
-			#			#	has_socialist_government = yes
-			#			#}
-			#		}
-			#	}
-			#	PEF = { save_event_target_as = portuguese_monarchy }
-			#}
+			
+
 		}
 	}
 
@@ -98,22 +86,6 @@ country_event = { #Fate of Acadia
 				factor = 0
 				annexations_can_annex = yes
 			}
-			#modifier = {
-			#	factor = 0
-			#	NOT = { country_exists = POR }
-			#	OR = {
-			#		is_monarchy = yes
-			#		is_german_tag = yes
-			#	}
-			#}
-			#modifier = {
-			#	factor = 0
-			#	is_ally_with = event_target:spain
-			#	OR = {
-			#		is_major = no
-			#		has_socialist_government = yes
-			#	}
-			#}
 		}
 		if = {
 			limit = { country_exists = ACD }
@@ -127,79 +99,89 @@ country_event = { #Fate of Acadia
 		recheck_annexations = yes
 	}
 
-	#option = { #Restore the Portuguese monarchy/empire as a puppet
-	#	log = "[GetLogInfo]: event annexation.1016 option annexation.1016.b"
-	#	name = annexation.1016.b
-	#	trigger = {
-	#		is_subject = no
-	#		NOT = { country_exists = PEF }
-	#	}
-	#	ai_chance = {
-	#		base = 50
-	#		#modifier = {
-	#		#	factor = 25
-	#		#	country_exists = PEF
-	#		#}
-	#	}
-	#	set_temp_variable = { tag_to_release = PEF }
-	#	release_targeted_tag = yes
-#
-	#	#var:tag_to_release = { POR_monarchy_setup = yes }
-	#	recheck_annexations = yes
-	#}
-#
-	#option = { #Give it to the Portuguese monarchy/empire
-	#	log = "[GetLogInfo]: event annexation.1016 option annexation.1016.c"
-	#	name = annexation.1016.c
-	#	trigger = {
-	#		has_event_target = portuguese_monarchy
-	#	}
-	#	ai_chance = {
-	#		base = 50
-	#		modifier = {
-	#			factor = 25
-	#			country_exists = PEF
-	#		}
-	#	}
-#
-	#	set_temp_variable = { tag_to_release = event_target:portuguese_monarchy }
-	#	POR = { set_transfer_target_cores = yes }
-	#	transfer_targeted_territory = yes
-	#	#recheck_annexations = yes
-#
-	#	#var:tag_to_release = { POR_monarchy_setup = yes }
-	#	recheck_annexations = yes
-	#}
+
+	option = { #Give it to the Commonwealth
+		log = "[GetLogInfo]: event annexation.1100 option annexation.1100.a"
+		name = annexation.1100.b
+		trigger = {
+			has_event_target = uc_owner
+			NOT = {
+				OR = {
+					tag = KLL
+					tag = NRT
+					tag = OSA
+					tag = MRN
+					tag = GRN
+					tag = CMC
+					tag = STA
+					tag = DER
+					tag = APA
+					tag = NEV
+					tag = SHO
+					tag = DES
+					tag = TAB
+					tag = FRE
+					tag = NWA
+					tag = NVI
+					tag = MEI
+					tag = NDX
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:uc_owner }
+		ACD = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
 
 
-	#option = { #give to Spain
-	#	log = "[GetLogInfo]: event annexation.1016 option annexation.give_to_spain"
-	#	name = annexation.give_to_spain
-	#	trigger = {
-	#		has_event_target = spain
-	#	}
-	#	ai_chance = {
-	#		base = 100
-	#		modifier = {
-	#			factor = 0
-	#			annexations_can_annex = yes
-	#		}
-	#	}
-	#	set_temp_variable = { tag_to_release = event_target:spain }
-	#	POR = { set_transfer_target_cores = yes }
-	#	transfer_targeted_territory = yes
-	#	recheck_annexations = yes
-	#}
-
-	#option = { #Integrate - for Spain - lets see if i should do pef
-	#	log = "[GetLogInfo]: event annexation.1016 option annexation.integration"
-	#	name = annexation.integration
-	#	trigger = {
-	#		annexations_can_annex = yes
-	#	}
-	#	POR = { add_claim_of_ROOT_on_valid_cores = yes }
-	#	recheck_annexations = yes
-	#}
+	option = { #Give it to the Dixie Free States
+		log = "[GetLogInfo]: event annexation.1100 option annexation.1100.a"
+		name = annexation.1100.c
+		trigger = {
+			has_event_target = dixie_owner
+			NOT = {
+				OR = {
+					tag = KLL
+					tag = NRT
+					tag = OSA
+					tag = MRN
+					tag = GRN
+					tag = CMC
+					tag = STA
+					tag = DER
+					tag = APA
+					tag = NEV
+					tag = SHO
+					tag = DES
+					tag = TAB
+					tag = FRE
+					tag = NWA
+					tag = NVI
+					tag = MEI
+					#tag = NDX
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:dixie_owner }
+		FSA = { transfer_state_and_notify = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annexation.1110 option annexation.cancel"
@@ -208,6 +190,174 @@ country_event = { #Fate of Acadia
 		recheck_annexations = yes
 	}
 }
+
+
+
+############################ WWW NATIONS
+
+
+country_event = { #Fate of Apacheria
+	id = annexation.1101
+	title = annexation_apacheria
+	desc = annexation_apacheria_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+
+
+			if = {
+				limit = {
+					tag_is_eligible_for_wild_west_generic_tree = yes
+				}
+				save_event_target_as = can_annex_www
+			}
+			#if = {
+			#	limit = {
+			#		957 = { 
+			#			annexations_state_owner_is_valid_grant_target = yes
+			#			owner = { ROOT_can_grant_land = yes }
+			#			owner = { tag = AME }
+			#		}
+			#	}
+			#	AME = { save_event_target_as = uc_owner }
+			#}
+			#if = {
+			#	limit = {
+			#		957 = { 
+			#			annexations_state_owner_is_valid_grant_target = yes
+			#			owner = { ROOT_can_grant_land = yes }
+			#			owner = { tag = FSA }
+			#		}
+			#	}
+			#	var:957.owner = { save_event_target_as = dixie_owner }
+			#}
+
+		hidden_effect = {
+			#if = {
+			
+
+		}
+	}
+
+	option = { #Liberate Acadia
+		log = "[GetLogInfo]: event annexation.1100 option annexation.1100.a"
+		name = annexation.1100.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		if = {
+			limit = { country_exists = ACD }
+			custom_effect_tooltip = ACD_puppet_tooltip
+			
+		}
+		else = {
+			set_temp_variable = { tag_to_release = ACD }
+			release_targeted_tag = yes
+		}
+		recheck_annexations = yes
+	}
+
+
+	option = { #Give it to the Commonwealth
+		log = "[GetLogInfo]: event annexation.1100 option annexation.1100.a"
+		name = annexation.1100.b
+		trigger = {
+			has_event_target = uc_owner
+			NOT = {
+				OR = {
+					tag = KLL
+					tag = NRT
+					tag = OSA
+					tag = MRN
+					tag = GRN
+					tag = CMC
+					tag = STA
+					tag = DER
+					tag = APA
+					tag = NEV
+					tag = SHO
+					tag = DES
+					tag = TAB
+					tag = FRE
+					tag = NWA
+					tag = NVI
+					tag = MEI
+					tag = NDX
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:uc_owner }
+		ACD = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
+
+
+	option = { #Give it to the Dixie Free States
+		log = "[GetLogInfo]: event annexation.1100 option annexation.1100.a"
+		name = annexation.1100.c
+		trigger = {
+			has_event_target = dixie_owner
+			NOT = {
+				OR = {
+					tag = KLL
+					tag = NRT
+					tag = OSA
+					tag = MRN
+					tag = GRN
+					tag = CMC
+					tag = STA
+					tag = DER
+					tag = APA
+					tag = NEV
+					tag = SHO
+					tag = DES
+					tag = TAB
+					tag = FRE
+					tag = NWA
+					tag = NVI
+					tag = MEI
+					#tag = NDX
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:dixie_owner }
+		FSA = { transfer_state_and_notify = yes }
+		transfer_targeted_territory = yes
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.1110 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
 
 #country_event = { #Fate of Galicia
 #	id = annexation.1017
