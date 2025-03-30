@@ -2905,3 +2905,154 @@ country_event = { #Fate of Valais
 		recheck_annexations = yes
 	}
 }
+
+country_event = { #Fate of Wallonia
+	id = annexation.1025
+	title = annexation_wallonia
+	desc = annexation_wallonia_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		855 = { retain_state = yes }
+	}
+
+	option = { #Release Wallonia
+		log = "[GetLogInfo]: event annex.1025 option annexation.1025.a"
+		name = annexation.1025.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		if = {
+			limit = { country_exists = WLA }
+			custom_effect_tooltip = FRA_puppet_tooltip
+		}
+		else = {
+			set_temp_variable = { tag_to_release = WLA }
+			release_targeted_tag = yes
+		}
+		recheck_annexations = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			WLA = {
+				set_cosmetic_tag = WLA_Occupied_Monarchy
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1025 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1025 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			#limit = { is_mainland_france_state = yes }
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1025 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Calais Corridor
+	id = annexation.1026
+	title = annexation_calais_corridor
+	desc = annexation_calais_corridor_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	option = { #Return it to Wallonia
+		log = "[GetLogInfo]: event annex.1026 option annexation.1026.a"
+		name = annexation.1026.a
+		trigger = {
+			is_subject = no
+			WLA = {
+				exists = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		WLA = {
+			transfer_state = 855
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Return it to France
+		log = "[GetLogInfo]: event annex.1026 option annexation.1026.b"
+		name = annexation.1026.b
+		trigger = {
+			is_subject = no
+			FRA = {
+				exists = yes
+			}
+		}
+		FRA = {
+			transfer_state = 855
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1026 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			#limit = { is_mainland_france_state = yes }
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1026 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
