@@ -1,0 +1,41 @@
+on_actions = {
+	on_startup = {
+		effect = {
+			every_country = {
+				resize_array = { PB_social_development = 6 }
+				for_loop_effect = {
+					start = token:social_development_category_poverty
+					end = token:social_development_category_military_modernization
+					compare = less_than_or_equals
+					value = category
+					meta_effect = {
+						text = {
+							add_dynamic_modifier = { modifier = PB_[CATEGORY]_modifier }
+						}
+						CATEGORY = "[?category.GetTokenKey]"
+					}
+				}
+            }
+			random_state = { PB_setup_social_development = yes }
+		}
+	}
+
+	on_monthly = {
+		effect = {
+			for_loop_effect = {
+				start = token:social_development_category_poverty
+				end = token:social_development_category_military_modernization
+				compare = less_than_or_equals
+				value = category
+				meta_effect = {
+					text = {
+						set_temp_variable = { category = constant:PB_social_development_categories.[CATEGORY].index }
+						set_temp_variable = { amount = modifier@[CATEGORY]_monthly }
+						PB_social_development_progress_adjust = yes
+					}
+					CATEGORY = "[?category.GetTokenKey]"
+				}
+			}
+		}
+	}
+}
