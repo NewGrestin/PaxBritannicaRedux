@@ -1,136 +1,136 @@
-# :catstunned:
-# - sprinkles
-# :catnerd:
-# - sprinkles
-
-@MAP_ICON_MULTILOGO_SPACING = 100	# for instances where there are multiple megacorps w/the same cz as their hq, define the spacing b/w them in pixels along the x axis
-
-# i listened to same 4 charli xcx songs the entire time while coding this fyi
-# xoxo sprinkles
-scripted_gui = {
-	PB_megacorporate_map_icons = {
-		window_name = "PB_megacorporate_map_icons_window"
-		context_type = state_mapicon
-		dirty = megacorporation_dirty
-		mapmode = PB_megacorp_map_mode
-		mapicon_targets = {
-			target_array = global.corporate_zone_central_states
-			target_trigger = {
-				any_of = {
-					array = global.megacorporations
-					value = current_megacorp
-					any_of_scopes = {
-						array = global.corporate_zone_states@var:global.megacorp_headquarters@var:current_megacorp
-						state = FROM
-					}
-				}
-			}
-		}
-
-		triggers = {
-			megacorp_map_icon_visible = {
-				any_of_scopes = {
-					array = global.corporate_zone_states@var:global.megacorp_headquarters@var:current_megacorporation
-					state = PREV
-				}
-				# yes ik i couldve just nested some gridboxes or just dynamically fetched an entry window
-				# no i will not be doing that bc thats the BORING pdxcuck option
-				clear_temp_array = other_megacorps_same_with_same_corporate_zone_hq
-				clear_temp_array = megacorps_same_with_same_corporate_zone_hq
-				all_of = {
-					array = global.megacorporations
-					value = current_megacorp
-					if = {
-						limit = {
-							NOT = {
-								check_variable = { current_megacorp = current_megacorporation }
-							}
-						}
-						all_of_scopes = {
-							array = global.corporate_zone_states@var:global.megacorp_headquarters@var:current_megacorp
-							if = {
-								limit = { state = PREV }
-								add_to_temp_array = { other_megacorps_same_with_same_corporate_zone_hq = current_megacorp }
-							}
-						}
-					}
-				}
-				if = {
-					limit = {
-						check_variable = { other_megacorps_same_with_same_corporate_zone_hq^num > 0 }
-					}
-					all_of = {
-						array = global.megacorporations
-						if = {
-							limit = {
-								OR = {
-									is_in_array = { other_megacorps_same_with_same_corporate_zone_hq = v }
-									check_variable = { current_megacorporation = v }
-								}
-							}
-							add_to_temp_array = { megacorps_same_with_same_corporate_zone_hq = v }
-						}
-					}
-					any_of = {
-						array = megacorps_same_with_same_corporate_zone_hq
-						check_variable = { current_megacorporation = v }
-						set_temp_variable = { megacorp_map_icon_x = i }
-					}
-					set_temp_variable = { median_idx = megacorps_same_with_same_corporate_zone_hq^num }
-					subtract_from_temp_variable = { median_idx = 1 }
-					divide_temp_variable = { median_idx = 2 }
-					subtract_from_temp_variable = { megacorp_map_icon_x = median_idx }
-					multiply_temp_variable = { megacorp_map_icon_x = @MAP_ICON_MULTILOGO_SPACING }
-				}
-			}
-		}
-
-		properties = {
-			megacorp_map_icon = {
-				image = "GFX_logo_[?current_megacorporation.GetTokenKey]"
-				x = megacorp_map_icon_x
-			}
-		}
-
-		effects = {
-			megacorp_map_icon_click = {
-				set_variable = { selected_megacorporation = current_megacorporation }
-			}
-		}
-
-		dynamic_lists = {
-			megacorp_map_icons_gridbox = {
-				array = global.megacorporations
-				value = current_megacorporation
-				entry_container = "megacorp_map_icons_entry_container"
-			}
-		}
-
-		ai_enabled = { always = no }
-	}
-	
-	PB_corporate_zone_info = {
-		window_name = "PB_corporate_zone_info_window"
-		context_type = selected_state_context
-		parent_window_token = selected_state_view
-		dirty = corporate_zone_dirty
-		mapmode = PB_megacorp_map_mode
-	}
-
-	#PB_megacorporation_side_menu_open = {
-	#	window_name = "PB_megacorporation_side_menu_open"
-	#	context_type = player_context
-	#	dirty = megacorporation_dirty
-	#	mapmode = PB_megacorp_map_mode
-	#	visible = {
-	#		NOT = { has_variable = selected_megacorporation }
-	#	}
-	#}
-	#
-	#PB_megacorporation_side_menu = {
-	#	window_name = "PB_megacorporation_info"
-	#	context_type = player_context
-	#	dirty = megacorporation_dirty
-	#	visible = { has_variable = selected_megacorporation }
-	#}
-}
+## :catstunned:
+## - sprinkles
+## :catnerd:
+## - sprinkles
+#
+#@MAP_ICON_MULTILOGO_SPACING = 100	# for instances where there are multiple megacorps w/the same cz as their hq, define the spacing b/w them in pixels along the x axis
+#
+## i listened to same 4 charli xcx songs the entire time while coding this fyi
+## xoxo sprinkles
+#scripted_gui = {
+#	PB_megacorporate_map_icons = {
+#		window_name = "PB_megacorporate_map_icons_window"
+#		context_type = state_mapicon
+#		dirty = megacorporation_dirty
+#		mapmode = PB_megacorp_map_mode
+#		mapicon_targets = {
+#			target_array = global.corporate_zone_central_states
+#			target_trigger = {
+#				any_of = {
+#					array = global.megacorporations
+#					value = current_megacorp
+#					any_of_scopes = {
+#						array = global.corporate_zone_states@var:global.megacorp_headquarters@var:current_megacorp
+#						state = FROM
+#					}
+#				}
+#			}
+#		}
+#
+#		triggers = {
+#			megacorp_map_icon_visible = {
+#				any_of_scopes = {
+#					array = global.corporate_zone_states@var:global.megacorp_headquarters@var:current_megacorporation
+#					state = PREV
+#				}
+#				# yes ik i couldve just nested some gridboxes or just dynamically fetched an entry window
+#				# no i will not be doing that bc thats the BORING pdxcuck option
+#				clear_temp_array = other_megacorps_same_with_same_corporate_zone_hq
+#				clear_temp_array = megacorps_same_with_same_corporate_zone_hq
+#				all_of = {
+#					array = global.megacorporations
+#					value = current_megacorp
+#					if = {
+#						limit = {
+#							NOT = {
+#								check_variable = { current_megacorp = current_megacorporation }
+#							}
+#						}
+#						all_of_scopes = {
+#							array = global.corporate_zone_states@var:global.megacorp_headquarters@var:current_megacorp
+#							if = {
+#								limit = { state = PREV }
+#								add_to_temp_array = { other_megacorps_same_with_same_corporate_zone_hq = current_megacorp }
+#							}
+#						}
+#					}
+#				}
+#				if = {
+#					limit = {
+#						check_variable = { other_megacorps_same_with_same_corporate_zone_hq^num > 0 }
+#					}
+#					all_of = {
+#						array = global.megacorporations
+#						if = {
+#							limit = {
+#								OR = {
+#									is_in_array = { other_megacorps_same_with_same_corporate_zone_hq = v }
+#									check_variable = { current_megacorporation = v }
+#								}
+#							}
+#							add_to_temp_array = { megacorps_same_with_same_corporate_zone_hq = v }
+#						}
+#					}
+#					any_of = {
+#						array = megacorps_same_with_same_corporate_zone_hq
+#						check_variable = { current_megacorporation = v }
+#						set_temp_variable = { megacorp_map_icon_x = i }
+#					}
+#					set_temp_variable = { median_idx = megacorps_same_with_same_corporate_zone_hq^num }
+#					subtract_from_temp_variable = { median_idx = 1 }
+#					divide_temp_variable = { median_idx = 2 }
+#					subtract_from_temp_variable = { megacorp_map_icon_x = median_idx }
+#					multiply_temp_variable = { megacorp_map_icon_x = @MAP_ICON_MULTILOGO_SPACING }
+#				}
+#			}
+#		}
+#
+#		properties = {
+#			megacorp_map_icon = {
+#				image = "GFX_logo_[?current_megacorporation.GetTokenKey]"
+#				x = megacorp_map_icon_x
+#			}
+#		}
+#
+#		effects = {
+#			megacorp_map_icon_click = {
+#				set_variable = { selected_megacorporation = current_megacorporation }
+#			}
+#		}
+#
+#		dynamic_lists = {
+#			megacorp_map_icons_gridbox = {
+#				array = global.megacorporations
+#				value = current_megacorporation
+#				entry_container = "megacorp_map_icons_entry_container"
+#			}
+#		}
+#
+#		ai_enabled = { always = no }
+#	}
+#	
+#	PB_corporate_zone_info = {
+#		window_name = "PB_corporate_zone_info_window"
+#		context_type = selected_state_context
+#		parent_window_token = selected_state_view
+#		dirty = corporate_zone_dirty
+#		mapmode = PB_megacorp_map_mode
+#	}
+#
+#	#PB_megacorporation_side_menu_open = {
+#	#	window_name = "PB_megacorporation_side_menu_open"
+#	#	context_type = player_context
+#	#	dirty = megacorporation_dirty
+#	#	mapmode = PB_megacorp_map_mode
+#	#	visible = {
+#	#		NOT = { has_variable = selected_megacorporation }
+#	#	}
+#	#}
+#	#
+#	#PB_megacorporation_side_menu = {
+#	#	window_name = "PB_megacorporation_info"
+#	#	context_type = player_context
+#	#	dirty = megacorporation_dirty
+#	#	visible = { has_variable = selected_megacorporation }
+#	#}
+#}
