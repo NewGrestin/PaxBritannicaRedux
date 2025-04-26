@@ -7,7 +7,9 @@ NDefines.NCountry.BASE_MAX_COMMAND_POWER = 150.0
 NDefines.NMilitary.MAX_ARMY_EXPERIENCE = 750
 NDefines.NMilitary.MAX_NAVY_EXPERIENCE = 750
 NDefines.NMilitary.MAX_AIR_EXPERIENCE = 750
-NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2;
+NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2
+
+NDefines.NMilitary.SLOWEST_SPEED =2 -- yes i had to change this
 
 NDefines.NMilitary.UNIT_LEADER_INITIAL_TRAIT_SLOT = { 				-- trait slot for 0 level leader
 2.0, -- field marshal  vanilla 1
