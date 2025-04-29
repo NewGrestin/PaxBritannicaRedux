@@ -919,6 +919,9 @@ set_starting_social_development_variables = {
 	set_variable = { social_development_military_modernization_count = 0 }
 	set_variable = { social_development_civilization_status_count = 0 }
 
+    set_variable = { social_development_economic_health_monthly_change_civ_base = 0 }
+	set_variable = { social_development_military_modernization_monthly_change_mil_base = 0 }
+
     update_social_development = yes
 }
 
@@ -929,8 +932,6 @@ every_country_socdev_variables = {
 }
 social_development_variables_monthly_tick = {
     calculate_socdev_additional = yes
-    add_to_temp_variable = { social_development_military_modernization_count = socdev_mil_industry_base }
-    add_to_temp_variable = { social_development_economic_health_count = socdev_civ_industry_base }
 
 	add_to_variable = { social_development_poverty_rate_count = social_development_poverty_rate_monthly_change }
 	add_to_variable = { social_development_industrialization_count = social_development_industrialization_monthly_change }
@@ -945,6 +946,7 @@ social_development_variables_monthly_tick = {
 	add_to_variable = { social_development_economic_health_count = modifier@social_development_economic_health_growth_monthly }
 	add_to_variable = { social_development_military_modernization_count = modifier@social_development_military_modernization_growth_monthly }
 	add_to_variable = { social_development_civilization_status_count = modifier@social_development_civilization_status_growth_monthly }
+
 
     update_social_development = yes
 
@@ -967,7 +969,8 @@ clamp_social_development_variables = {
 	clamp_variable = { var = social_development_civilization_status_monthly_change min = -100 max = 100 }
 }
 social_development_monthly_effect = {
-	social_development_variables_monthly_tick = yes
+	every_country = {
+        social_development_variables_monthly_tick = yes
 
 	if = {
 		limit = {
@@ -1099,6 +1102,7 @@ social_development_monthly_effect = {
 	force_update_map_mode = {
 		mapmode = social_development_map_mode
 	}
+    }
 }
 
 calculate_social_development = {
@@ -1115,7 +1119,7 @@ calculate_socdev_additional = {
 }
 calculate_socdev_military_industry = {
     # remove last month gain before recalculating to avoid stacking values
-    subtract_from_variable = { social_development_military_modernization_monthly_change = last_socdev_mil_industry_base }
+    subtract_from_variable = { social_development_military_modernization_monthly_change_mil_base = last_socdev_mil_industry_base }
     # initialize base values
     set_variable = { socdev_mil_industry_base_core = 1 }
     set_variable = { socdev_mil_industry_base_owned = 1 }
@@ -1141,14 +1145,15 @@ calculate_socdev_military_industry = {
     add_to_variable = { socdev_mil_industry_base = socdev_mil_industry_base_occupied }
     log = "Final socdev_mil_industry_base: [?socdev_mil_industry_base]"
      # add this month value to the monthly change
-    add_to_variable = { social_development_military_modernization_monthly_change = socdev_mil_industry_base }
+    add_to_variable = { social_development_military_modernization_monthly_change_mil_base = socdev_mil_industry_base }
+    add_to_variable = { social_development_military_modernization_count = social_development_military_modernization_monthly_change_mil_base }
     # store this for next month to subtract to avoid stacking
     set_variable = { last_socdev_mil_industry_base = socdev_mil_industry_base }
 }
 
 calculate_socdev_civilian_industry = {
     # remove last month gain before recalculating to avoid stacking values
-    subtract_from_variable = { social_development_economic_health_monthly_change = last_socdev_civ_industry_base }
+    subtract_from_variable = { social_development_economic_health_monthly_change_civ_base = last_socdev_civ_industry_base }
     # initialize base values
     set_variable = { socdev_civ_industry_base_core = 1 }
     set_variable = { socdev_civ_industry_base_owned = 1 }
@@ -1174,7 +1179,12 @@ calculate_socdev_civilian_industry = {
     add_to_variable = { socdev_civ_industry_base = socdev_civ_industry_base_occupied }
     log = "Final socdev_civ_industry_base: [?socdev_civ_industry_base]"
     # add this month value to the monthly change
-    add_to_variable = { social_development_economic_health_monthly_change = socdev_civ_industry_base }
+    add_to_variable = { social_development_economic_health_monthly_change_civ_base = socdev_civ_industry_base }
+    add_to_variable = { social_development_economic_health_count = social_development_economic_health_monthly_change_civ_base }
     # store this for next month to subtract to avoid stacking
     set_variable = { last_socdev_civ_industry_base = socdev_civ_industry_base }
+}
+
+test_effect = {
+    log = "[?social_development_economic_health_monthly_change_civ_base]  [?social_development_military_modernization_monthly_change_mil_base]"
 }
