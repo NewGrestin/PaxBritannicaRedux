@@ -3,6 +3,7 @@
 ##################
 
 add_namespace = GEA
+add_namespace = GEA_Orders
 
 country_event = {		#German East Asia Intro
 	id = GEA.1
@@ -42,6 +43,14 @@ country_event = {		#Release Overbeck
 			transfer_state = 1148
 			transfer_state = 1352
 		}
+			
+		puppet = {
+   		    target = SSL
+  		    end_wars = no
+		}
+		DAS = {
+		    country_event = GEA.9
+		}
 	}
 	
 	option = {
@@ -55,8 +64,367 @@ country_event = {		#Release Overbeck
 
 		DAS = {
 			change_tag_from = SSL
+			
+		puppet = {
+   		    target = SSL
+  		    end_wars = no
+		}
+		SSL = {
+			change_tag_from = DAS
 			add_ideas = SSL_Moro_War
+		}
+		DAS = {
+		    country_event = GEA.9
 		}
 	}
 }
 
+country_event = {		#Aproach the Magdalo Faction
+	id = GEA.3
+	title = GEA.3.t
+	desc = GEA.3.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes 
+
+	fire_only_once = yes
+
+
+
+	option = {
+		name = GEA.2.a
+        activate_mission = PHI_Cease_Fire_Countdown
+		remove_mission = PHI_War_Countdown
+	}
+	option = {
+		name = GEA.2.b #Nothing RN.
+	}
+}
+
+country_event = { #The Ceasefire
+	id = GEA.4
+	title = GEA.4.t
+	desc = GEA.4.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes 
+
+	fire_only_once = yes
+
+	immediate = { #MAKE THIS HIDDEN ALSO
+		if = {
+			limit = {
+				PHI = {
+				controls_state = 624
+				}
+			}
+			PHI = {
+			transfer_state = 624
+			}
+	    }
+		if = {
+			limit = {
+				PHI = {
+				controls_state = 628
+				}
+			}
+			PHI = {
+			transfer_state = 628
+			}
+	    }
+		if = {
+			limit = {
+				PHI = {
+				controls_state = 625
+				}
+			}
+			DAS = {
+			transfer_state = 625
+			}
+	    }
+		if = {
+			limit = {
+				PHI = {
+				controls_state = 626
+				}
+			}
+			DAS = {
+			transfer_state = 626
+			}
+	    }
+		if = {
+			limit = {
+				PHI = {
+				controls_state = 627
+				}
+			}
+			DAS = {
+			transfer_state = 627
+			}
+	    }
+	}
+
+	option = {
+		name = GEA.4.a
+        remove_ideas = PB_Colonial_Insurrection
+		white_peace = {
+  	    tag = PHI
+	    message = my_peace_tt
+        }
+        DAS = {
+            country_event = GEA.5
+        }
+		DAS = {
+		    country_event = GEA.9
+		}
+    }
+}
+
+country_event = {		#Ceasefire p2 GAMEPLAN ABOUT THIS LATER
+	id = GEA.5
+	title = GEA.5.t
+	desc = GEA.5.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes 
+
+	fire_only_once = yes
+
+	option = {
+		name = GEA.5.a
+	}
+}
+
+country_event = {		#Post-War Peace
+	id = GEA.7
+	title = GEA.7.t
+	desc = GEA.7.d
+	picture = GFX_report_PB_PHI_Aperture
+	is_triggered_only = yes 
+
+	fire_only_once = yes
+
+	trigger = {
+		PHI = {
+		has_capitulated	= yes
+		}
+	}
+	
+	option = { #Establish Captaincy
+		name = GEA.7.a
+		PHI = {
+				transfer_state = 623
+				transfer_state = 327
+				transfer_state = 624
+				transfer_state = 628
+				transfer_state = 625	
+				set_cosmetic_tag = PHI_German
+		}
+		if = {
+			limit = {
+				DAS = {
+				controls_state = 627
+				}
+			}
+		PHI = {
+		transfer_state = 627
+		}
+	}
+		if = {
+			limit = {
+				DAS = {
+				controls_state = 1352
+				}
+			}
+		PHI = {
+		transfer_state = 1352
+		}
+	}
+		if = {
+			limit = {
+				DAS = {
+				controls_state = 1414
+				}
+			}
+		PHI = {
+		transfer_state = 1414
+		}
+	}
+		puppet = {
+   		    target = PHI
+  		    end_wars = no
+		}
+		remove_ideas = PB_Colonial_Insurrection
+	}
+	option = { #Direct Rule (Pacific Commonwealth is fully Expanded and centered on Manila)
+		name = GEA.7.b
+		custom_effect_tooltip = GEA_Bund_Rise_tt
+		DAS = {
+		country_event = GEA.8
+		}
+		set_capital = {
+			state = 327
+			remember_old_capital = yes
+		}
+		swap_ideas	= {
+			remove_idea = PB_Colonial_Insurrection
+			add_idea = PB_Idea_DAS_Colonial_Occupation
+		}
+	}
+}
+
+country_event = {		#Bund Rises!
+	id = GEA.8
+	title = GEA.8.t
+	desc = GEA.8.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes 
+
+	fire_only_once = yes
+
+
+
+	option = {
+		name = GEA.8.a
+		hidden_effect = {
+			if = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_1
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_1
+				add_idea = PB_Idea_DAS_Bundestag_Patience_2
+				}
+			}
+			else_if = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_2
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_2
+				add_idea = PB_Idea_DAS_Bundestag_Patience_3
+				}
+			}
+			else_if = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_3
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_3
+				add_idea = PB_Idea_DAS_Bundestag_Patience_4
+				}
+			}
+			else_if = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_4
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_4
+				add_idea = PB_Idea_DAS_Bundestag_Patience_5
+				}
+			}
+			else = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_5
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_5
+				add_idea = PB_Idea_DAS_Bundestag_Patience_6
+				}
+			}
+		}
+	}
+}
+
+country_event = {		#Bund Lowers!
+	id = GEA.9
+	title = GEA.9.t
+	desc = GEA.9.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes 
+
+	fire_only_once = yes
+
+
+
+	option = {
+		name = GEA.9.a
+		hidden_effect = {
+			if = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_2
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_2
+				add_idea = PB_Idea_DAS_Bundestag_Patience_1
+				}
+			}
+			else_if = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_3
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_3
+				add_idea = PB_Idea_DAS_Bundestag_Patience_2
+				}
+			}
+			else_if = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_4
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_4
+				add_idea = PB_Idea_DAS_Bundestag_Patience_3
+				}
+			}
+			else = {
+				limit = {
+					DAS = {
+					has_idea = PB_Idea_DAS_Bundestag_Patience_5
+					}
+				}
+				swap_ideas	= {
+				remove_idea = PB_Idea_DAS_Bundestag_Patience_5
+				add_idea = PB_Idea_DAS_Bundestag_Patience_4
+				}
+			}
+		}
+	}
+}
+
+country_event = {		#Ceasefire p2 Germany Orders You! (Nothing yet)
+	id = GEA_Orders.1
+	title = GEA_Orders.1.t
+	desc = GEA_Orders.1.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes 
+
+	fire_only_once = yes
+
+
+
+	option = {
+		name = GEA_Orders.1.a
+	
+	}
+}
+# PS, future 2and2, make it so German East Asia can commit to a ceasefire later on.
