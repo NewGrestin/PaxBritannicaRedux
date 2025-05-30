@@ -63,3 +63,164 @@ country_event = { #Fate of Persia
 	recheck_annexations = yes
     }
 }
+
+country_event = { #Fate of Greek Anatolia
+	id = annexation.6001
+	title = annexation_decision_greek_anatolia
+	desc = annexation_decision_greek_anatolia_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	option = { #Transfer it to Greece
+		log = "[GetLogInfo]: event annex.6001 option annexation.6001.a"
+		name = annexation.6001.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 822
+				}
+			}
+			GRE = {
+				transfer_state = 822
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 339
+				}
+			}
+			GRE = {
+				transfer_state = 339
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 823
+				}
+			}
+			GRE = {
+				transfer_state = 823
+			}
+		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Transfer it to turkey
+		log = "[GetLogInfo]: event annex.6001 option annexation.6001.b"
+		name = annexation.6001.b
+		trigger = {
+			is_subject = no
+			TUR = {
+				exists = yes
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 822
+				}
+			}
+			TUR = {
+				transfer_state = 822
+			}
+			822 = {
+				remove_core_of = GRE
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 339
+				}
+			}
+			TUR = {
+				transfer_state = 339
+			}
+			339 = {
+				remove_core_of = GRE
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 823
+				}
+			}
+			TUR = {
+				transfer_state = 823
+			}
+			823 = {
+				remove_core_of = GRE
+			}
+		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6001 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6001 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				original_tag = NWL
+				annexations_can_annex = yes
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6001 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}

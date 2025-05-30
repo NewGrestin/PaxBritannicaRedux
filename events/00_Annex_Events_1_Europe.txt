@@ -2139,52 +2139,6 @@ country_event = { #Fate of Spain
 		}
 	}
 
-	option = { #Split Up Spain
-		log = "[GetLogInfo]: event annex.1018 option annexation.1018.b"
-		name = annexation.1018.b
-		trigger = {
-			is_subject = no
-		}
-
-		ai_chance = { base = 0 }
-
-		custom_effect_tooltip = annexations_country_to_be_divided_tt
-
-		set_global_flag = PB_GLOBAL_Spain_Divided
-
-		if = {
-			limit = { country_exists = SPR }
-			custom_effect_tooltip = FRA_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = SPR }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-				}
-			}
-			SPR = {
-				set_cosmetic_tag = SPR_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_republican_government = yes
-				}
-			}
-			SPR = {
-				set_cosmetic_tag = SPR_Occupied_Republic
-			}
-		}
-	}
-
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.1018 option annexation.give_to_overlord"
 		name = annex.give_to_overlord
@@ -2299,9 +2253,6 @@ country_event = { #Fate of Catalonia
 		name = annexation.1019.b
 		trigger = {
 			is_subject = no
-			NOT = {
-				has_global_flag = PB_GLOBAL_Spain_Divided
-			}
 		}
 
 		ai_chance = { base = 0 }
@@ -2430,9 +2381,6 @@ country_event = { #Fate of Andalusia
 		name = annexation.1020.b
 		trigger = {
 			is_subject = no
-			NOT = {
-				has_global_flag = PB_GLOBAL_Spain_Divided
-			}
 		}
 
 		ai_chance = { base = 0 }
@@ -10540,8 +10488,8 @@ country_event = { #Fate of Northern Epirus
 
 country_event = { #Fate of Greece
 	id = annexation.1095
-	title = annexation_decision_northern_epirus
-	desc = annexation_decision_northern_epirus_desc
+	title = annexation_decision_greece
+	desc = annexation_decision_greece_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -10924,15 +10872,26 @@ country_event = { #Fate of East Thrace
 	}
 }
 
-country_event = { #Fate of Troas
+country_event = { #Fate of Sardinia
 	id = annexation.1099
-	title = annexation_decision_troas
-	desc = annexation_decision_troas_desc
+	title = annexation_sardinia
+	desc = annexation_sardinia_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
-	option = { #Transfer it to Greece
+	immediate = {
+		if = {
+			limit = {
+				ITA = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			ITA = { save_event_target_as = italy }
+		}
+	}
+
+	option = { #Release Sardinia
 		log = "[GetLogInfo]: event annex.1099 option annexation.1099.a"
 		name = annexation.1099.a
 		trigger = {
@@ -10945,40 +10904,55 @@ country_event = { #Fate of Troas
 			}
 		}
 
-		GRE = {
-			transfer_state = 822
+		set_temp_variable = { tag_to_release = SRD }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			SRD = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SRD_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			SRD = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SRD_Occupied_Republic
+			}
 		}
 
 		recheck_annexations = yes
 	}
 
-	option = { #Transfer it to turkey
+	option = { #Give Sardinia to Italy
 		log = "[GetLogInfo]: event annex.1099 option annexation.1099.b"
 		name = annexation.1099.b
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-				OR = {
-					is_subject_of = ROOT
-					is_in_faction_with = ROOT
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
+			NOT = {
+				has_global_flag = PB_GLOBAL_Splitaly
 			}
 		}
 
-		TUR = {
-			transfer_state = 822
+		ai_chance = { base = 0 }
+
+		ITA = {
+			transfer_state = 114
 		}
 
 		recheck_annexations = yes
 	}
-
+	
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.1099 option annexation.give_to_overlord"
 		name = annex.give_to_overlord
@@ -11013,196 +10987,6 @@ country_event = { #Fate of Troas
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1099 option annexation.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Smyrna
-	id = annexation.1100
-	title = annexation_decision_smyrna
-	desc = annexation_decision_smyrna_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	option = { #Transfer it to Greece
-		log = "[GetLogInfo]: event annex.1100 option annexation.1100.a"
-		name = annexation.1100.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		GRE = {
-			transfer_state = 339
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Transfer it to turkey
-		log = "[GetLogInfo]: event annex.1100 option annexation.1100.b"
-		name = annexation.1100.b
-		trigger = {
-			is_subject = no
-			TUR = {
-				exists = yes
-				OR = {
-					is_subject_of = ROOT
-					is_in_faction_with = ROOT
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		TUR = {
-			transfer_state = 339
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1100 option annexation.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1100 option annexation.integration"
-		name = annex.integration
-		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1100 option annexation.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Aydin
-	id = annexation.1101
-	title = annexation_decision_aydin
-	desc = annexation_decision_aydin_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	option = { #Transfer it to Greece
-		log = "[GetLogInfo]: event annex.1101 option annexation.1101.a"
-		name = annexation.1101.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		GRE = {
-			transfer_state = 823
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Transfer it to turkey
-		log = "[GetLogInfo]: event annex.1101 option annexation.1101.b"
-		name = annexation.1101.b
-		trigger = {
-			is_subject = no
-			TUR = {
-				exists = yes
-				OR = {
-					is_subject_of = ROOT
-					is_in_faction_with = ROOT
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		TUR = {
-			transfer_state = 823
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1101 option annexation.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1101 option annexation.integration"
-		name = annex.integration
-		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1101 option annexation.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
