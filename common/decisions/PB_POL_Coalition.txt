@@ -26,15 +26,15 @@ PB_POL_Coalition = {
 		}
 
 		visible = {
-			check_variable = { POL_Namiestniks_Influence > 59 }
+			check_variable = { POL_Namiestniks_Influence > 29 }
 			has_government = rc
 		}
 
 		available = {
 			has_completed_focus = PB_POL_Enlarge_Modlin_Garrison
 			custom_trigger_tooltip = {
-				tooltip = PB_POL_Namiestniks_Influence_More_59_tt
-				check_variable = { POL_Namiestniks_Influence > 59 }
+				tooltip = PB_POL_Namiestniks_Influence_More_29_tt
+				check_variable = { POL_Namiestniks_Influence > 29 }
 			}
 			NOT = {
 				has_country_flag = POL_coalition_takeover
@@ -645,6 +645,85 @@ PB_POL_Coalition = {
 		}
 	}
 
+	PB_POL_Give_Concessions_To_Russian_Companies = {
+		icon = generic_decision
+
+		cost = 100
+		ai_will_do = {
+			
+		}
+
+		visible = {
+			NOT = {
+				has_government = ds
+			}
+		}
+
+		available = {
+			
+		}
+
+		complete_effect = {
+			
+		}
+
+		days_re_enable = 150
+
+		days_remove = 10
+
+		remove_effect = {
+			PB_POL_Increse_Namiestnik_Support = yes
+			PB_POL_Decrease_Moderates_Support = yes
+			PB_POL_Increse_Industralists_Influence = yes
+		}
+	}
+
+	PB_POL_Warsaw_Subway_Construction = {
+		icon = generic_decision
+
+		cost = 150
+		ai_will_do = {
+			
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_completed_focus = PB_POL_1933_Budget
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Industralist_Support_More_49_tt
+				check_variable = { POL_Industralist_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_More_49_tt
+				check_variable = { POL_Namiestniks_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Radicals_Support_More_49_tt
+				check_variable = { POL_Radicals_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Moderates_Support_More_49_tt
+				check_variable = { POL_Modarates_Support>49 }
+			}
+		}
+
+		complete_effect = {
+			
+		}
+
+		days_remove = 10
+
+		remove_effect = {
+			country_event = {
+				id = pol.71
+			}
+		}
+	}
+
 	PB_POL_Magic = {
 		icon = generic_decision
 
@@ -671,7 +750,187 @@ PB_POL_Coalition = {
 		days_remove = 3
 
 		remove_effect = {
+			set_variable = { var = POL_Namiestniks_Support value = 100 }
+				set_variable = { var = POL_Radicals_Support value = 100 }
+				set_variable = { var = POL_Modarates_Support value = 100 }
+				set_variable = { var = POL_Industralist_Support value = 100 }
+		}
+	}
+
+	PB_POL_Better_Polish_Than_Russian = {
+		icon = generic_decision
+
+		cost = 100
+		ai_will_do = {
+			
+		}
+
+		visible = {
+			has_global_flag = PB_POL_Joint_Military_Occupation
+			PGA = {
+				exists = yes
+			}
+		}
+
+		available = {
+			divisions_in_state = {
+				state = 88
+				size > 3
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_More_29_tt
+				check_variable = { POL_Namiestniks_Support>29 }
+			}
+		}
+
+		complete_effect = {
+			
+		}
+
+		fire_only_once = yes
+
+		days_remove = 10
+
+		remove_effect = {
+			annex_country = {
+				target = PGA
+				transfer_troops = yes
+			}
 			PB_POL_Decrease_Namiestnik_Support = yes
+			hidden_effect = {
+				PB_POL_Increse_Moderates_Support = yes
+				PB_POL_Increse_Industralists_Support = yes
+				PB_POL_Increse_Radicals_Support = yes
+				if = {
+					limit = {
+						NOT = {
+							has_country_flag = PB_POL_Red_Book
+						}
+					}
+					every_controlled_state = {
+						limit = {
+								is_core_of = PGA
+						}
+						set_compliance = 15
+						set_resistance = 25
+						add_resistance_target = 25
+						
+					}
+					else = {
+						every_controlled_state = {
+							limit = {
+									is_core_of = PGA
+							}
+							set_compliance = 20
+							set_resistance = 10
+							add_resistance_target = 10
+						}
+					}
+				}
+			}
+		}
+			
+	}
+
+	PB_POL_Peace_In_Galicia = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 35
+
+		cost = 50
+
+		available = {
+			if = {
+				limit = {
+					has_country_flag = PB_POL_Beaucracy_Integration
+				}
+				compliance > 40
+				resistance < 30
+				else = {
+					compliance > 50
+					resistance < 20
+				}
+			}
+			
+		}
+
+		visible = {
+			has_completed_focus = PB_POL_Reunited_At_Last
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				
+				is_claimed_by = POL
+				is_core_of = PGA
+			}
+		}
+
+		complete_effect = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.5
+		}
+
+		remove_effect = {
+
+			FROM = {
+				add_core_of = POL
+				remove_core_of = PGA
+			}
+			
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+
+	POL_Russian_Intervention  = {
+
+		icon = GFX_decision_generic_civil_support
+		
+		activation = {
+			original_tag = POL
+			has_country_flag = POL_Emergency_Cabinet
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_Less_30_tt
+				check_variable = { POL_Namiestniks_Support < 30 }
+			}
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+		}
+
+		available = {
+			OR = {
+				has_country_flag = POL_Full_Power
+				custom_trigger_tooltip = {
+					tooltip = PB_POL_Namiestniks_Support_More_39_tt
+					check_variable = { POL_Namiestniks_Support >39 }
+				}
+			}
+			
+		}  
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = no
+				
+		days_mission_timeout = 5
+
+		timeout_effect = {
+			country_event = {
+				id = pol.70	
+			}
 		}
 	}
 
@@ -681,16 +940,19 @@ PB_POL_Coalition = {
 		
 		activation = { 
 			original_tag = POL
-			has_country_flag = POL_Emergency_Cabinet   
+			has_country_flag = POL_Emergency_Cabinet
 			NOT = {
 				has_country_flag = POL_Full_Power
+				has_government = rc
 			}         
 		}
 
 		available = {
-			has_country_flag = POL_Full_Power
-
-		}  
+			OR = {
+				has_country_flag = POL_Full_Power
+				has_government = rc
+			}
+		}
 
 		selectable_mission = no
 
@@ -704,39 +966,5 @@ PB_POL_Coalition = {
 			PB_POL_Increse_Namiestnik_Influence = yes
 		}
 	}
-	POL_Incoming_Russian_Intervention = {
-
-		icon = GFX_decision_generic_civil_support
-		
-		activation = { 
-			original_tag = POL
-			check_variable = { POL_Namiestniks_Support < 30 }
-			NOT = {
-				has_country_flag = POL_Full_Power
-			}
-		}
-
-		available = {
-			has_country_flag = POL_Full_Power
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = PB_POL_Namiestniks_Influence_Less_30_tt
-					check_variable = { POL_Namiestniks_Support < 30 }
-				}
-			}
-		}  
-
-		selectable_mission = no
-
-		is_good = no
-		fire_only_once = no
-				
-		days_mission_timeout = 90
-
-		timeout_effect = {
-			country_event = {
-				id = pol.70	
-			}
-		}
-	}
+	
 }
