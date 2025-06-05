@@ -11663,3 +11663,148 @@ country_event = { #Fate of South Bucovina
 		recheck_annexations = yes
 	}
 }
+
+country_event = { #Fate of Russia
+	id = annexation.1107
+	title = annexation_russia
+	desc = annexation_russia_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		195 = { retain_state = yes } #Saint-Petersburg
+		219 = { retain_state = yes } #Moscow
+	}
+
+	option = { #Release Russia Whole
+		log = "[GetLogInfo]: event annex.1107 option annexation.1107.a"
+		name = annexation.1107.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		if = {
+			limit = { country_exists = RUS }
+			custom_effect_tooltip = RUS_puppet_tooltip
+		}
+		else = {
+			set_temp_variable = { tag_to_release = RUS }
+			release_targeted_tag = yes
+		}
+		recheck_annexations = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			RUS = {
+				set_cosmetic_tag = RUS_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			RUS = {
+				set_cosmetic_tag = RUS_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Split Up Russia
+		log = "[GetLogInfo]: event annex.1107 option annexation.1107.b"
+		name = annexation.1107.b
+		trigger = {
+			is_subject = no
+		}
+
+		ai_chance = { base = 0 }
+
+		set_temp_variable = { tag_to_release = RUS }
+
+		set_global_flag = PB_France_Delenda_Est
+
+		custom_effect_tooltip = annexations_country_to_be_divided_tt
+
+		if = {
+			limit = { country_exists = RUS }
+			custom_effect_tooltip = FRA_puppet_tooltip
+		}
+		else = {
+			set_temp_variable = { tag_to_release = RUS }
+			release_targeted_tag = yes
+		}
+		recheck_annexations = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			RUS = {
+				set_cosmetic_tag = RUS_Occupied_Monarchy_Split
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			RUS = {
+				set_cosmetic_tag = RUS_Occupied_Republic_Split
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1107 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_russia_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1107 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			#limit = { is_mainland_russia_state = yes }
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1107 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
