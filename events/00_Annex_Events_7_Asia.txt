@@ -1752,7 +1752,6 @@ country_event = { #Fate of Manchuria
 				}
 				RUS = {
 					exists = yes
-					is_free_or_subject_of_root = yes
 				}
 			}
 		}
@@ -1786,8 +1785,8 @@ country_event = { #Fate of Manchuria
 				AND = {
 					has_monarchist_government = yes
 					OR = {
-						has_ideology = rc
-						has_ideology = ni
+						has_government = rc
+						has_government = ni
 					}
 				}
 			}
@@ -1846,11 +1845,11 @@ country_event = { #Fate of Area Zero
 				ROOT = {
 					is_subject = no
 					OR = {
-						has_ideology = ni
-						has_ideology = ds
-						has_ideology = rc
-						has_ideology = an
-						has_ideology = cn
+						has_government = ni
+						has_government = ds
+						has_government = rc
+						has_government = an
+						has_government = cn
 					}
 				}
 			}
@@ -2932,6 +2931,118 @@ country_event = { #Fate of Cambodia
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7017 option annexation.cancel"
+		name = annexation.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Siam
+	id = annexation.7018
+	title = annexation_decision_siam
+	desc = annexation_decision_siam_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	option = { #Release Siam
+		log = "[GetLogInfo]: event annex.7018 option annexation.7018.a"
+		name = annexation.7018.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = SIA }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+					NOT = {
+						original_tag = ENG
+					}
+				}
+			}
+			SIA = {
+				drop_cosmetic_tag = yes
+			}
+		}
+		
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+					original_tag = ENG
+				}
+			}
+			SIA = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SIA_Occupied_Monarchy_ENG
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			KOR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SIA_Occupied_Republic
+			}
+		}
+		recheck_annexations = yes
+	}
+	
+	option = { #Split it between Burma and Indochina
+		log = "[GetLogInfo]: event annex.7018 option annexation.siam_split"
+		name = annexation.siam_split
+		trigger = {
+			country_exists = BFE
+			country_exists = RAJ
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+			}
+		}
+		
+		BFE = {
+			transfer_state = 1416
+			transfer_state = 1117
+			transfer_state = 1415
+			transfer_state = 1120
+		}
+		RAJ = {
+			transfer_state = 1121
+			transfer_state = 1118
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7018 option annexation.integration"
+		name = annexation.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.7018 option annexation.cancel"
 		name = annexation.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
