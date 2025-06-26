@@ -916,29 +916,29 @@ annexations_AI_dont_give_to_non_puppet_if_major = {
 #	}
 #}
 #
-#annexations_AI_wants_to_annex = {
-#	annexations_can_annex = yes
-#	NOT = { has_event_target = AI_dont_annex }
-#}
-#
-#annexations_AI_prefer_giving_to_allies = {
-#	NOT = { is_ally_with = ROOT }
-#	any_of_scopes = {
-#		array = ROOT.potential_grant_targets
-#		is_ally_with = ROOT
-#		annexations_AI_wants_to_dismantle_target = no
-#	}
-#}
-#
-#annexations_AI_prefer_giving_to_non_puppets = {
-#	is_subject = yes
-#	any_of_scopes = {
-#		array = ROOT.potential_grant_targets
-#		is_subject = no
-#		annexations_AI_wants_to_dismantle_target = no
-#		annexations_AI_dont_give_lands_to_opposing_factions = no
-#	}
-#}
+annexations_AI_wants_to_annex = {
+	annexations_can_annex = yes
+	NOT = { has_event_target = AI_dont_annex }
+}
+
+annexations_AI_prefer_giving_to_allies = {
+	NOT = { is_ally_with = ROOT }
+	any_of_scopes = {
+		array = ROOT.potential_grant_targets
+		is_ally_with = ROOT
+		annexations_AI_wants_to_dismantle_target = no
+	}
+}
+
+annexations_AI_prefer_giving_to_non_puppets = {
+	is_subject = yes
+	any_of_scopes = {
+		array = ROOT.potential_grant_targets
+		is_subject = no
+		annexations_AI_wants_to_dismantle_target = no
+		annexations_AI_dont_give_lands_to_opposing_factions = no
+	}
+}
 #
 #annexations_AI_wants_to_dismantle_target = {
 #	OR = {
@@ -1040,26 +1040,105 @@ annexations_AI_dont_give_to_non_puppet_if_major = {
 #	}
 #}
 
-#annexations_AI_release_puppet_default_logic = {
-#	OR = {
-#		annexations_AI_wants_to_annex = yes
-#		annexations_AI_prefer_giving_to_allies = yes
-#		AND = {
-#			ROOT = { is_major = no }
-#			any_of_scopes = {
-#				array = ROOT.potential_grant_targets
-#				annexations_AI_wants_to_dismantle_target = no
-#				annexations_AI_dont_give_lands_to_opposing_factions = no
-#			}
-#		}
-#	}
-#}
-#
-#annexations_AI_grant_land_default_logic = {
-#	OR = {
-#		annexations_AI_wants_to_annex = yes
-#		annexations_AI_wants_to_dismantle_target = yes
-#		annexations_AI_prefer_giving_to_allies = yes
-#		annexations_AI_prefer_giving_to_non_puppets = yes
-#	}
-#}
+annexations_AI_release_puppet_default_logic = {
+	OR = {
+		annexations_AI_wants_to_annex = yes
+		annexations_AI_prefer_giving_to_allies = yes
+		AND = {
+			ROOT = { is_major = no }
+			any_of_scopes = {
+				array = ROOT.potential_grant_targets
+				annexations_AI_wants_to_dismantle_target = no
+				annexations_AI_dont_give_lands_to_opposing_factions = no
+			}
+		}
+	}
+}
+
+annexations_AI_grant_land_default_logic = {
+	OR = {
+		annexations_AI_wants_to_annex = yes
+		annexations_AI_wants_to_dismantle_target = yes
+		annexations_AI_prefer_giving_to_allies = yes
+		annexations_AI_prefer_giving_to_non_puppets = yes
+	}
+}
+
+annexations_allowed_to_annex_strategic_territories = {
+	has_socialist_government = no
+	is_subject = no
+	naval_base > 0
+}
+
+annexations_major_can_annex_strategic_territories = {
+	annexations_allowed_to_annex_strategic_territories = yes
+	is_actual_major = yes
+}
+
+annexations_AI_wants_to_own_suez = {
+	annexations_allowed_to_annex_strategic_territories = yes
+	OR = {
+		original_tag = NFA
+		original_tag = GER
+		original_tag = RUS
+		is_british_tag = yes
+		is_italian_tag = yes
+	}
+}
+
+annexations_AI_wants_to_own_singapore = {
+	annexations_allowed_to_annex_strategic_territories = yes
+	OR = {
+		original_tag = NFA
+		original_tag = GER
+		is_british_tag = yes
+		has_authoritarian_government = yes
+	}
+}
+
+annexations_AI_wants_to_own_panama_canal = {
+	annexations_allowed_to_annex_strategic_territories = yes
+	OR = {
+		original_tag = NFA
+		original_tag = GER
+		original_tag = RUS
+		is_british_tag = yes
+		is_american_tag = yes
+	}
+}
+
+annexations_AI_wants_to_own_gibraltar = {
+	annexations_allowed_to_annex_strategic_territories = yes
+	OR = {
+		original_tag = NFA
+		original_tag = GER
+		original_tag = RUS
+		is_italian_tag = yes
+		has_authoritarian_government = yes
+	}
+}
+
+annexations_AI_wants_to_own_malta = {
+	annexations_allowed_to_annex_strategic_territories = yes
+	OR = {
+		original_tag = NFA
+		original_tag = GER
+		original_tag = AUS
+	}
+}
+
+annexations_AI_dont_offer_if_target_involved_in_separate_major_war = {
+	has_war = yes
+	any_enemy_country = {
+		NOT = { has_war_with = ROOT }
+		has_capitulated = no
+		OR = {
+			is_ai = no
+			is_actual_major = yes
+			AND = {
+				same_continent_as_PREV = no
+				NOT = { any_home_area_neighbor_country = { is_ally_with = ROOT } }
+			}
+		}
+	}
+}
