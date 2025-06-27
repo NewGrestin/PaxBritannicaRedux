@@ -155,8 +155,8 @@ decrease_poverty_rate_level = {
     }
 }
 
-increase_industralization_level = {
-    custom_effect_tooltip = increase_industralization_level_tt
+increase_industrialization_level = {
+    custom_effect_tooltip = increase_industrialization_level_tt
     if = {
         limit = {
             has_idea = PB_Subsistence_Agriculture
@@ -195,8 +195,8 @@ increase_industralization_level = {
     }
 }
 
-decrease_industralization_level = {
-    custom_effect_tooltip = decrease_industralization_level_tt
+decrease_industrialization_level = {
+    custom_effect_tooltip = decrease_industrialization_level_tt
     if = {
         limit = {
             has_idea = PB_Post_Industrial
@@ -892,11 +892,7 @@ civilization_status_growth_regress_high = {
     add_to_variable = { social_development_civilization_status_monthly_change = -0.75 }
     update_social_development = yes
 }
-
-
 update_social_development = {
-	clamp_social_development_variables = yes
-	force_update_dynamic_modifier = yes
 	if = {
 		limit = { is_ai = no }
 		add_to_variable = { PB_socdev_dirty = 1 }
@@ -921,17 +917,11 @@ set_starting_social_development_variables = {
 
     set_variable = { social_development_economic_health_monthly_change_civ_base = 0 }
 	set_variable = { social_development_military_modernization_monthly_change_mil_base = 0 }
+}
 
+social_development_monthly_effect = {
     update_social_development = yes
-}
 
-every_country_socdev_variables = {
-    every_country = {
-        set_starting_social_development_variables = yes
-        clamp_social_development_variables = yes
-    }
-}
-social_development_variables_monthly_tick = {
     calculate_socdev_additional = yes
 
 	add_to_variable = { social_development_poverty_rate_count = social_development_poverty_rate_monthly_change }
@@ -942,36 +932,11 @@ social_development_variables_monthly_tick = {
 	add_to_variable = { social_development_civilization_status_count = social_development_civilization_status_monthly_change }
 
 	add_to_variable = { social_development_poverty_rate_count = modifier@social_development_poverty_rate_growth_monthly }
-	add_to_variable = { social_development_industrialization_count = modifier@social_development_industralization_growth_monthly }
+	add_to_variable = { social_development_industrialization_count = modifier@social_development_industrialization_growth_monthly }
 	add_to_variable = { social_development_literacy_count = modifier@social_development_literacy_growth_monthly }
 	add_to_variable = { social_development_economic_health_count = modifier@social_development_economic_health_growth_monthly }
 	add_to_variable = { social_development_military_modernization_count = modifier@social_development_military_modernization_growth_monthly }
 	add_to_variable = { social_development_civilization_status_count = modifier@social_development_civilization_status_growth_monthly }
-
-
-    update_social_development = yes
-
-
-    #subtract_from_variable = { social_development_military_modernization_monthly_change = socdev_mil_industry_base } ## resets value so it doesnt add up every month
-}
-clamp_social_development_variables = {
-	clamp_variable = { var = social_development_poverty_rate_count min = -100 max = 100  }
-	clamp_variable = { var = social_development_industrialization_count min = -100 max = 100}
-	clamp_variable = { var = social_development_literacy_count min = -100 max = 100 }
-	clamp_variable = { var = social_development_economic_health_count min = -100 max = 100 }
-	clamp_variable = { var = social_development_military_modernization_count min = -100 max = 100 }
-	clamp_variable = { var = social_development_civilization_status_count min = -100 max = 100 }
-
-	clamp_variable = { var = social_development_poverty_rate_monthly_change min = -100 max = 100  }
-	clamp_variable = { var = social_development_industrialization_monthly_change min = -100 max = 100}
-	clamp_variable = { var = social_development_literacy_monthly_change min = -100 max = 100 }
-	clamp_variable = { var = social_development_economic_health_monthly_change min = -100 max = 100 }
-	clamp_variable = { var = social_development_military_modernization_monthly_change min = -100 max = 100 }
-	clamp_variable = { var = social_development_civilization_status_monthly_change min = -100 max = 100 }
-}
-social_development_monthly_effect = {
-	every_country = {
-        social_development_variables_monthly_tick = yes
 
 	if = {
 		limit = {
@@ -1000,7 +965,7 @@ social_development_monthly_effect = {
 			check_variable = { social_development_industrialization_count > 99.99 } 
 			NOT = { has_idea = PB_Post_Industrial }
 		   }
-		increase_industralization_level = yes
+		increase_industrialization_level = yes
 		country_event = PB_social_development.21
 		add_to_variable = { social_development_industrialization_count = -100 }
 		multiply_variable = { social_development_industrialization_monthly_change = 0.25 }
@@ -1010,7 +975,7 @@ social_development_monthly_effect = {
 			check_variable = { social_development_industrialization_count < -99.99 } 
 			NOT = {has_idea = PB_Subsistence_Agriculture }
 		   }
-		decrease_industralization_level = yes
+		decrease_industrialization_level = yes
 		country_event = PB_social_development.11
 		add_to_variable = { social_development_industrialization_count = 100 }
 		multiply_variable = { social_development_industrialization_monthly_change = 0.25 }
@@ -1103,17 +1068,14 @@ social_development_monthly_effect = {
 	force_update_map_mode = {
 		mapmode = social_development_map_mode
 	}
+}
+
+socdev_monthly = {
+    every_country = {
+        social_development_monthly_effect = yes
     }
 }
 
-calculate_social_development = {
-	set_variable = { social_development_poverty_rate_count_actual = social_development_poverty_rate_count }
-	set_variable = { social_development_industrialization_count_actual = social_development_industrialization_count }
-	set_variable = { social_development_literacy_count_actual = social_development_literacy_count }
-	set_variable = { social_development_economic_health_count_actual = social_development_economic_health_count }
-	set_variable = { social_development_military_modernization_count_actual = social_development_military_modernization_count }
-	set_variable = { social_development_civilization_status_count_actual = social_development_civilization_status_count }
-}
 calculate_socdev_additional = {
     calculate_socdev_military_industry = yes
     calculate_socdev_civilian_industry = yes
