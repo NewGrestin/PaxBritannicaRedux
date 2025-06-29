@@ -1,4 +1,4 @@
-start_regional_annexation_vars = {
+initialise_regional_annexation_variables = {
 	add_to_regional_annexation_array = yes
 	set_state_as_annexation_target = yes
 }
@@ -17,7 +17,7 @@ add_to_regional_annexation_array = {
 	}
 }
 
-block_annexation_decision_selection = {
+annexation_decision_effect = {
 	clear_retained_states = yes
 	FROM = {
 		if = {
@@ -29,6 +29,34 @@ block_annexation_decision_selection = {
 		}
 	}
 	set_country_flag = { flag = open_annexation_event days = 16 value = 1 }
+	if = {
+		limit = {
+			OR = { ## KR USES THIS FOR INSIGNIFICANT OCEANIC ISLANDS, REPLACE IF NEEDED
+				#check_variable = { FROM.annexation_target:annexation_event = 2057 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3076 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3075 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3074 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3019 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3083 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3078 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3071 }
+				#check_variable = { FROM.annexation_target:annexation_event = 3067 }
+				#check_variable = { FROM.annexation_target:annexation_event = 5052 }
+			}
+		}
+		FROM = {
+			meta_effect = {
+				text = { state_event = { id = [EVENT] trigger_for = ROOT } }
+				EVENT = "annex.[?annexation_target:annexation_event]"
+			}
+		}
+	}
+	else = {
+		meta_effect = {
+			text = { country_event = [EVENT] }
+			EVENT = "annex.[?FROM.annexation_target:annexation_event]"
+		}
+	}
 }
 
 allow_annexation_decision_selection = {
@@ -44,9 +72,13 @@ recheck_annexations_base = {
 }
 
 recheck_annexations = {
+	if = {
+		limit = { check_variable = { active_annexation_decisions < 1 } }
+		set_variable = { active_annexation_decisions = 1 }
+	}
 	recheck_annexations_base = yes
 	hidden_effect = {
-		country_event = { id = annexation.1 days = 1 random_days = 3 }
+		country_event = { id = annex.1 days = 1 random_days = 3 }
 		refresh_occupation_penalties = yes
 	}
 }
@@ -54,7 +86,7 @@ recheck_annexations = {
 recheck_annexations_immediate = {
 	recheck_annexations_base = yes
 	hidden_effect = {
-		country_event = annexation.1
+		country_event = annex.1
 		refresh_occupation_penalties = yes
 	}
 }
@@ -63,6 +95,10 @@ refresh_occupation_penalties = {
 	for_each_scope_loop = {
 		array = annexation_resistance_states
 		if = {
+			limit = { NOT = { has_dynamic_modifier = { modifier = annexation_resistance_target scope = ROOT } } }
+			add_to_temp_array = { states_to_remove = THIS }
+		}
+		else_if = {
 			limit = {
 				OR = {
 					NOT = { is_owned_by = PREV }
@@ -74,11 +110,7 @@ refresh_occupation_penalties = {
 				}
 			}
 			add_to_temp_array = { states_to_remove = THIS }
-			clr_state_flag = annexations_resistance_@ROOT
-			#meta_effect = {
-			#	text = { remove_resistance_target = [ID] }
-			#	ID = "[?ROOT.annexation_resistance_target_id]"
-			#}
+			remove_dynamic_modifier = { modifier = annexation_resistance_target scope = ROOT }
 		}
 	}
 	if = {
@@ -95,7 +127,11 @@ refresh_occupation_penalties = {
 
 build_annexation_temp_arrays = {
 	if = {
-		limit = { has_variable = annexation_target:annexation_extra_states^num }
+		limit = {
+			has_variable = annexation_target:annexation_extra_states^num
+			check_variable = { priority_country_@var:annexation_target = 0 } #== already evaluated once through a different state, no need to redo it
+			check_variable = { priority_state_@var:annexation_target = 0 } #== already evaluated once through a different state, no need to redo it
+		}
 		if = {
 			limit = { var:annexation_target = { is_valid_annexation_state = yes } }
 			set_temp_variable = { priority_state_@var:annexation_target = annexation_target }
@@ -111,6 +147,7 @@ build_annexation_temp_arrays = {
 					if = {
 						limit = { NOT = { is_in_array = { owners_@PREV = owner } } }
 						add_to_temp_array = { owners_@PREV = owner }
+						set_temp_variable = { total_score_@var:owner = 0 }
 					}
 
 					### add up total owned strategic value
@@ -131,6 +168,7 @@ build_annexation_temp_arrays = {
 					if = {
 						limit = { NOT = { is_in_array = { owners_@PREV = owner } } }
 						add_to_temp_array = { owners_@PREV = owner }
+						set_temp_variable = { total_score_@var:owner = 0 }
 					}
 
 					### add up total owned strategic value
@@ -142,9 +180,8 @@ build_annexation_temp_arrays = {
 							is_owned_by = ROOT
 							check_variable = { annexation_target = PREV.annexation_target }
 						}
-						set_temp_variable = { has_valid_state_@var:annexation_target = THIS }
 						if = {
-							limit = { NOT = { has_variable = priority_state_@var:annexation_target } }
+							limit = { check_variable = { priority_state_@var:annexation_target = 0 } }
 							set_temp_variable = { priority_state_@var:annexation_target = THIS }
 						}
 						else_if = {
@@ -171,532 +208,19 @@ build_annexation_temp_arrays = {
 		set_temp_variable = { priority_country_@var:annexation_target = owners_@THIS^i }
 	}
 }
-#below commented out for now, as example - Lexus
 
-check_possible_annexations_europe = {
+check_possible_annexations = {
 	if = {
-		limit = { can_release_france = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_france target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_burgundy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_burgundy target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_occitania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_occitania target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_normandy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_normandy target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_brittany = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_brittany target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_pasdecalais = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_pas_de_calais target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_seinemaritime = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_seine_maritime target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_moselle = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_moselle target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_savoy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_savoy target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_nauchatel = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_nauchatel target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_switzerland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_switzerland target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_ticino = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_ticino target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_valais = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_valais target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_ragusa = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_ragusa target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_portugal = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_portugal target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_galicia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_galicia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_spain = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_spain target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_catalonia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_catalonia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_andalusia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_andalusia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_britain = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_britain target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_wales = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_wales target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_scotland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_scotland target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_wallonia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_wallonia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_calais_corridor = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_walloon_calais target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_netherlands = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_netherlands target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_flanders = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_flanders target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_italy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_italy target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_central_italy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_central_italy target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_tuscany = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_tuscany target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_modena = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_modena target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_parma = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_parma target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_venice = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_venice target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_lombardy = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_lombardy target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_piedmont = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_piedmont target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_sardinia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_sardinia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_vatican = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_vatican target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_san_marino = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_san_marino target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_monaco = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_monaco target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_corsica = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_corsica target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_germany = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_germany target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_luxembourg = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_luxembourg target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_rhineland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_rhineland target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_wurttemberg = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_wurttemberg target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_bavaria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_bavaria target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_austria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_austria target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_saxony = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_saxony target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_hannover = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_hannover target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_brandenburg_prussia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_brandenburg_prussia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_bohemia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_bohemia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_slovenia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_slovenia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_friaul = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_friaul target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_south_tyrol = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_south_tyrol target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_alsace = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_alsace target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_silesia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_silesia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_sudetenland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_sudetenland target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_rijeka = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_rijeka target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_basque = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_basque target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_apurdi = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_apurdi target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_holstein = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_holstein target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_denmark = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_denmark target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_sweden = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_sweden target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_danish_west_indies = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_danish_west_indies target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_scania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_scania target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_nordland = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_nordland target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_finnmark = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_finnmark target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_dinaric = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_dinaric target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_krajina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_krajina target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_tropolje = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_tropolje target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_west_herzegovina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_west_herzegovina target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_croatia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_croatia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_ragusa = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_ragusa target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_serbia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_serbia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_bosnia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_bosnia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_banja_luka = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_banja_luka target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_east_herzegovina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_east_herzegovina target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_montenegro = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_montenegro target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_kotor = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_kotor target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_posavina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_posavina target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_hungary = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_hungary target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_vojvodina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_vojvodina target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_banat = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_banat target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_west_banat = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_west_banat target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_transylvania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_transylvania target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_slovakia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_slovakia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_wallachia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_wallachia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_moldova = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_moldova target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_bulgaria = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_bulgaria target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_morava = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_morava target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_vardar = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_vardar target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_albania = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_albania target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_debar = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_debar target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_kosovo = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_kosovo target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_north_epirus = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_northern_epirus target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_greece = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_greece target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_thessaloniki = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_thessaloniki target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_west_thrace = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_west_thrace target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_east_thrace = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_east_thrace target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_constantinople = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_constantinople target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_polish_galicia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_polish_galicia target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_lwow = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_lwow target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_tarnopol = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_tarnopol target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_stanislawow = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_stanislawow target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_bucovina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_bucovina target = PREV } }
-	}
-
-	else_if = {
-		limit = { can_release_south_bucovina = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_south_bucovina target = PREV } }
-	}
-	
-	else_if = {
-		limit = { can_release_russia = yes }
-		ROOT = { activate_targeted_decision = { decision = annexation_decision_russia target = PREV } }
+		limit = {
+			meta_trigger = {
+				text = { can_release_[STATE] = yes }
+				STATE = "[?THIS.annexation_target.GetID]"
+			}
+		}
+		ROOT = {
+			add_to_variable = { active_annexation_decisions = 1 }
+			activate_targeted_decision = { decision = annexation_decision target = PREV }
+		}
 	}
 }
 
