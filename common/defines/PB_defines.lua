@@ -24,3 +24,6 @@ NDefines.NMilitary.UNIT_LEADER_TRAIT_SLOT_PER_LEVEL = { 			-- num extra traits o
 0.75, -- navy general  vanilla 0.5
 0.0, -- operative
 }
+-- Career Profile
+NDefines.NCareerProfile.MOD_STATISTICS_GROUP = "pax_britannica_career_profile"
+NDefines.NCareerProfile.MOD_STATISTICS_GROUP_NAME = "PAX_BRITANNICA_CAREER_PROFILE"
