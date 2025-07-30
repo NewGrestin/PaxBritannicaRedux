@@ -1026,43 +1026,62 @@ PB_DAS_Influence_category = {
 	# NOTE, eventually make these Events to annex
 PB_DAS_Zitronella_Dissolving = {
 
-        DAS_OSTHANSA_Begin = {
+        DAS_Zitronella_Begin = {
 			icon = GFX_decision_hand_bag
 			cost = 20
 			available = {
 			tag = DAS 
 				NOT = {
-				   has_active_mission = DAS_OSTHANSA_Timer
+				   has_active_mission = DAS_Zitronella_Timer
+				   has_country_flag = DAS_Warning_Finalization
 				}
 			}
+
+			priority = 4
+
 			visible = {
-			has_country_flag = clicked_on_OSTHANSA
-			is_debug = yes
-			tag = DAS
+			NOT = {
+				has_active_mission = DAS_Zitronella_Timer
 			}
+			}
+
 			complete_effect = { 
-			    activate_mission = DAS_OSTHANSA_Timer
+			    country_event = GEA_Zitronella_Deal.3
+				set_country_flag = DAS_Warning_Finalization
 				set_country_flag = Zitronella_Turn_Locked
+				custom_effect_tooltip = PB_spacing_tt
+				custom_effect_tooltip = DAS_Can_Not_Be_Reversed_tt
+				custom_effect_tooltip = PB_spacing_tt
+				custom_effect_tooltip = DAS_Initiate_Blocker_tt
 			}
 		}
-        DAS_OSTHANSA_Finalize_Deal = {
+        DAS_Zitronella_Finalize_Deal = {
 			icon = GFX_decision_hand_bag
 			cost = 4
+
 			available = {
 			tag = DAS 
-			has_active_mission = DAS_OSTHANSA_Timer
+			has_active_mission = DAS_Zitronella_Timer
+			NOT = {
+				has_country_flag = DAS_Warning_Finalization
 			}
+			}
+
 			visible = {
-			has_country_flag = clicked_on_OSTHANSA
+			has_active_mission = DAS_Zitronella_Timer
 			is_debug = yes
 			tag = DAS
 			}
+
+			priority = 3
+
 			complete_effect = {
-			    remove_mission = DAS_OSTHANSA_Timer
-				clr_country_flag = Zitronella_Turn_Locked
+				country_event = GEA_Zitronella_Deal.1
+				set_country_flag = DAS_Warning_Finalization
+				custom_effect_tooltip = DAS_Can_Not_Be_Reversed_tt
 			}
 		}
-		DAS_OSTHANSA_Timer = {
+		DAS_Zitronella_Timer = {
 
 			icon = GFX_decision_prosp
 
@@ -1073,9 +1092,10 @@ PB_DAS_Zitronella_Dissolving = {
 				always = no
 			}
 			fire_only_once = yes
-			
+
+			priority = 2
+
 			visible = {
-			    has_country_flag = clicked_on_OSTHANSA
 				always = no
 			}
 
@@ -1088,45 +1108,78 @@ PB_DAS_Zitronella_Dissolving = {
 			days_mission_timeout = 30
 
 			timeout_effect = {
-				#DAS = {
-				#	country_event = hur dur
-				#}
+				DAS = {
+					country_event = GEA_Zitronella_Deal.4
+				}
 			}
         }
-		DAS_OSTHANSA_Add_1 = {
+		DAS_Zitronella_Coup_Timer = {
+
+			icon = GFX_decision_prosp
+
+			available = {  
+				var:zitronella_shares = {
+					value < 0
+				}
+			}
+			
+			allowed = {
+				always = no
+			}
+
+			fire_only_once = yes
+
+			priority = 2
+
+			visible = {
+				always = no
+			}
+
+			is_good = no
+
+			ai_will_do = {
+				factor = 40
+			}
+
+			days_mission_timeout = 150
+
+            complete_effect = {
+				DAS = {
+					country_event = GEA_Zitronella_Deal.6
+				}
+			}
+			timeout_effect = {
+				DAS = {
+					country_event = GEA_Zitronella_Deal.5
+				}
+			}
+        }
+		DAS_Zitronella_DEBUG_Add_1 = {
 			icon = GFX_decision_bag_money
 			cost = 11
 			available = {
-			tag = DAS 
+			has_active_mission = DAS_Zitronella_Timer
 			}
 			visible = {
-			has_country_flag = clicked_on_OSTHANSA
+			has_active_mission = DAS_Zitronella_Timer
 			is_debug = yes
 			tag = DAS
 			}
 			complete_effect = {
-			    add_to_variable = {
-                    var = Ost-Hansa_Cut
-                    value = 1
-                }
+			    DAS_ZIT_Add_1 = yes
 			}
 		}
-		DAS_OSTHANSA_Request_Loan = {
+		DAS_Zitronella_Request_Loan = {
 			icon = GFX_decision_prosp
 			cost = 11
 			available = {
-			tag = DAS 
+			has_active_mission = DAS_Zitronella_Timer
 			}
 			visible = {
-			has_country_flag = clicked_on_OSTHANSA
-			is_debug = yes
-			tag = DAS
+			has_active_mission = DAS_Zitronella_Timer
 			}
 			complete_effect = {
-			    add_to_variable = {
-                    var = Ost-Hansa_Cut
-                    value = 1
-                }
+				country_event = GEA_Zitronella_Deal.2
 			}
 		}
 		DAS_OSTHANSA_Blackmail = {
@@ -1136,31 +1189,34 @@ PB_DAS_Zitronella_Dissolving = {
 			tag = DAS 
 			}
 			visible = {
-			has_country_flag = clicked_on_OSTHANSA
+			AND = {
+                has_active_mission = DAS_Zitronella_Timer
+			    has_country_flag = clicked_on_OSTHANSA
+			}
 			is_debug = yes
 			tag = DAS
 			}
 			complete_effect = {
-			    add_to_variable = {
-                    var = Ost-Hansa_Cut
-                    value = 1
-                }
 			}
 		}
 		DAS_OSTHANSA_Sell_Assets = {
 			icon = GFX_decision_assets
 			cost = 11
 			available = {
-			tag = DAS 
+			AND = {
+                has_active_mission = DAS_Zitronella_Timer
+			    has_country_flag = clicked_on_OSTHANSA
+			}
 			}
 			visible = {
-			has_country_flag = clicked_on_OSTHANSA
-			is_debug = yes
-			tag = DAS
+			AND = {
+                has_active_mission = DAS_Zitronella_Timer
+			    has_country_flag = clicked_on_OSTHANSA
+			}
 			}
 			complete_effect = {
 			    add_to_variable = {
-                    var = Ost-Hansa_Cut
+                    var = OstHansa_Cut
                     value = 1
                 }
 			}
@@ -1172,13 +1228,14 @@ PB_DAS_Zitronella_Dissolving = {
 			tag = DAS 
 			}
 			visible = {
-			has_country_flag = clicked_on_OSTHANSA
-			is_debug = yes
-			tag = DAS
+			AND = {
+                has_active_mission = DAS_Zitronella_Timer
+			    has_country_flag = clicked_on_OSTHANSA
+			}
 			}
 			complete_effect = {
 			    add_to_variable = {
-                    var = Ost-Hansa_Cut
+                    var = OstHansa_Cut
                     value = 1
                 }
 			}
@@ -1205,59 +1262,7 @@ PB_DAS_Zitronella_Dissolving = {
 			clr_country_flag = clicked_on_HUGENBURG
 			}
 		}
-	 }
-PB_DAS_Pacific_Periphery = {
-	Papua_Purchase = { #Possibility to transfer our HQ to Manila or Schliefenshaven, puppeting the PNG
-	    icon = GFX_decision_generic_colonial_hat_german
-		cost = 25
-		available = {
-		tag = DAS #temporary
-		}
-		visible = {
-		is_debug = yes
-		tag = DAS
-		}
-		complete_effect = {
-		DAS = {
-			country_event = GEA.10
-		}
-		}
 	}
-	
-	Mollucas_Purchase = {
-        icon = GFX_decision_generic_colonial_hat_german
-		cost = 25
-		available = {
-		tag = DAS #temporary
-		}
-		visible = {
-		is_debug = yes
-		tag = DAS
-		}
-		complete_effect = {
-		PNG = {
-			country_event = GEA.17
-		}
-		}
-	}
-	
-	#Australien_Withdrawal = {
-    #    icon = GFX_decision_generic_colonial_hat_german
-	#	cost = 25
-	#	available = {
-	#	tag = DAS #temporary
-	#	}
-	#	visible = {
-	#	is_debug = yes
-	#	tag = DAS
-	#	}
-	#	complete_effect = {
-	#	FST = {
-	#		country_event = GEA.13
-	#	}
-	#	}
-	#} #Australie doesnt own Solomons rn
-}
 
 PB_DAS_Evacuations = {
 	Evacuate_327 = {
@@ -1266,8 +1271,9 @@ PB_DAS_Evacuations = {
 		custom_cost_trigger = {
 			AND = {
 				has_equipment = {
-			    convoy > 50
-		        }
+					type = convoy
+					amount > 50
+				}
 			}
 		}
 
@@ -1695,6 +1701,69 @@ PB_DAS_Evacuations = {
 		highlight_states = {
 			highlight_state_targets = {
 				state = 1414
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+}
+
+PB_DAS_Influence_category = {
+	DAS_Construct_Tent_Cities = {
+        icon = GFX_decision_generic_colonial_hat_german
+		
+		custom_cost_trigger = {
+			AND = {
+				has_equipment = {
+					convoy > 50
+				}
+			}
+		}
+		custom_cost_text = PB_DAS_decision_cost_evacuation
+
+		available = {
+			has_equipment = {
+				support_equipment > 15000
+				has_completed_focus = PB_DAS_Slum_Breaking
+			}
+			controls_state = 1414
+		}
+
+		visible = {
+			has_completed_focus = PB_DAS_Rapid_Reorganization
+		}
+
+		days_remove = 100
+		fire_only_once = yes
+		complete_effect = {
+			add_equipment_to_stockpile = {
+				type = convoy
+				amount = -50
+			}
+		}
+
+		cancel_trigger = {
+			NOT = {
+				controls_state = 1414
+			}
+		}	
+		cancel_effect = {
+			add_war_support = -0.1
+		}	
+		remove_effect = {
+			decrease_poverty_rate_level = yes
+			624 = {
+				add_manpower = 30000
+			}
+			custom_effect_tooltip = PB_spacing_tt
+			add_equipment_to_stockpile = {
+				type = convoy
+				amount = 50
+			}
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 624
 			}
 			highlight_color_while_active = 3
 			highlight_color_before_active = 2
