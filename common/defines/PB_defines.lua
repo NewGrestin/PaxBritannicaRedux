@@ -7,7 +7,9 @@ NDefines.NCountry.BASE_MAX_COMMAND_POWER = 150.0
 NDefines.NMilitary.MAX_ARMY_EXPERIENCE = 750
 NDefines.NMilitary.MAX_NAVY_EXPERIENCE = 750
 NDefines.NMilitary.MAX_AIR_EXPERIENCE = 750
-NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2;
+NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2
+
+NDefines.NMilitary.SLOWEST_SPEED =2 -- yes i had to change this
 
 NDefines.NMilitary.UNIT_LEADER_INITIAL_TRAIT_SLOT = { 				-- trait slot for 0 level leader
 2.0, -- field marshal  vanilla 1
@@ -22,3 +24,6 @@ NDefines.NMilitary.UNIT_LEADER_TRAIT_SLOT_PER_LEVEL = { 			-- num extra traits o
 0.75, -- navy general  vanilla 0.5
 0.0, -- operative
 }
+-- Career Profile
+NDefines.NCareerProfile.MOD_STATISTICS_GROUP = "pax_britannica_career_profile"
+NDefines.NCareerProfile.MOD_STATISTICS_GROUP_NAME = "PAX_BRITANNICA_CAREER_PROFILE"

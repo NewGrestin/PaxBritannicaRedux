@@ -1,0 +1,297 @@
+add_namespace = annex
+
+#####################################
+##   P E R S I A   ##
+#####################################
+
+
+country_event = { #Fate of Persia
+	id = annex.6000
+	title = annexation_persia
+	desc = annexation_persia_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	immediate = {
+		1426 = { retain_state = yes } #Urmia
+		419 = { retain_state = yes } #Tibriz
+		420 = { retain_state = yes } #Gilan
+		416 = { retain_state = yes } #North Khorasan
+		418 = { retain_state = yes } #Semnan
+		1425 = { retain_state = yes } #South Khorasan
+		410 = { retain_state = yes } #Sistan
+		414 = { retain_state = yes } #Kerman
+		412 = { retain_state = yes } #Far
+		413 = { retain_state = yes } #Khuzestan
+		1423 = { retain_state = yes } #Ilam
+		421 = { retain_state = yes } #Kurdistan
+		417 = { retain_state = yes } #Hamadan
+		411 = { retain_state = yes } #Isfahan
+		1424 = { retain_state = yes } #Yazd
+	}
+	
+	option = { #Release Persia Whole
+		log = "[GetLogInfo]: event annex.6000 option annexation.6000.a"
+		name = annex.6000.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		if = {
+			limit = { country_exists = PER }
+			custom_effect_tooltip = PER_puppet_tooltip
+		}
+		else = {
+			set_temp_variable = { tag_to_release = PER }
+			release_targeted_tag = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+	log = "[GetLogInfo]: event annexation.6000 option annexation.cancel"
+	name = annex.cancel
+	ai_chance = { base = 0 }
+	recheck_annexations = yes
+    }
+}
+
+country_event = { #Fate of Greek Anatolia
+	id = annex.6001
+	title = annexation_decision_greek_anatolia
+	desc = annexation_decision_greek_anatolia_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	option = { #Transfer it to Greece
+		log = "[GetLogInfo]: event annex.6001 option annexation.6001.a"
+		name = annex.6001.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 822
+				}
+			}
+			GRE = {
+				transfer_state = 822
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 339
+				}
+			}
+			GRE = {
+				transfer_state = 339
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 823
+				}
+			}
+			GRE = {
+				transfer_state = 823
+			}
+		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Transfer it to turkey
+		log = "[GetLogInfo]: event annex.6001 option annexation.6001.b"
+		name = annex.6001.b
+		trigger = {
+			is_subject = no
+			TUR = {
+				exists = yes
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 822
+				}
+			}
+			TUR = {
+				transfer_state = 822
+			}
+			822 = {
+				remove_core_of = GRE
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 339
+				}
+			}
+			TUR = {
+				transfer_state = 339
+			}
+			339 = {
+				remove_core_of = GRE
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					owns_state = 823
+				}
+			}
+			TUR = {
+				transfer_state = 823
+			}
+			823 = {
+				remove_core_of = GRE
+			}
+		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6001 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6001 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				original_tag = NWL
+				annexations_can_annex = yes
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6001 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Uskudar
+	id = annex.6002
+	title = annexation_eastern_bosporus
+	desc = annexation_eastern_bosporus_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = { #Grant it to the Greeks
+		log = "[GetLogInfo]: event annex.6002 option annexation.6002.a"
+		name = annex.6002.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 10
+				OR = {
+					ROOT = {
+						original_tag = RUS
+					}
+				}
+			}
+		}
+
+		GRE = {
+			transfer_state = 1244
+		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Give it to Turkey
+		log = "[GetLogInfo]: event annex.6002 option annexation.6002.b"
+		name = annex.6002.b
+		trigger = {
+			is_subject = no
+		}
+
+		ai_chance = { 
+			base = 10
+			modifier = {
+				factor = 10
+				OR = {
+					ROOT = {
+						original_tag = ENG
+						original_tag = GER
+					}
+				}
+			}
+		}
+
+		TUR = {
+			transfer_state = 1244
+		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6002 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
