@@ -1,42 +1,49 @@
 PB_state_focus_0_ai = {
-	has_war = no
-	free_building_slots = {
-		building = industrial_complex
-		size > 0
-		include_locked = no
+	if = {
+		limit = {
+			has_war = no
+		}
+		free_building_slots = {
+			building = industrial_complex
+			size > 0
+			include_locked = no
+		}
 	}
-	# this should be a low priority and only done when you dont need to do the others
-	PB_state_focus_1_ai = no
-	PB_state_focus_3_ai = no
-	PB_state_focus_4_ai = no
+	
+	if = {
+		limit = {
+			ROOT = {
+				OR = {
+					check_variable = { ai_attitude_is_threatened = 1 }
+					AND = {
+						has_war = yes
+						all_allied_country = {
+							add_to_temp_variable = { our_side_mils = num_of_military_factories }
+						}
+						add_to_temp_variable = { our_side_mils = num_of_military_factories }
+						all_enemy_country = {
+							add_to_temp_variable = { enemy_side_mils = num_of_military_factories }
+						}
+						multiply_temp_variable = { enemy_side_mils = 1.1 }
+						check_variable = { enemy_side_mils > our_side_mils }
+					}
+				}
+			}
+		}
+		free_building_slots = {
+			building = arms_factory
+			size > 0
+			include_locked = no
+		}
+		free_building_slots = {
+			building = dockyard
+			size > 0
+			include_locked = no
+		}
+	}
 }
 
 PB_state_focus_1_ai = {
-	ROOT = {
-		OR = {
-			check_variable = { ai_attitude_is_threatened = 1 }
-			AND = {
-				has_war = yes
-				all_allied_country = {
-					add_to_temp_variable = { our_side_mils = num_of_military_factories }
-				}
-				add_to_temp_variable = { our_side_mils = num_of_military_factories }
-				all_enemy_country = {
-					add_to_temp_variable = { enemy_side_mils = num_of_military_factories }
-				}
-				multiply_temp_variable = { enemy_side_mils = 1.1 }
-				check_variable = { enemy_side_mils > our_side_mils }
-			}
-		}
-	}
-	free_building_slots = {
-		building = arms_factory
-		size > 0
-		include_locked = no
-	}
-}
-
-PB_state_focus_2_ai = {
 	free_building_slots = {
 		building = infrastructure
 		size > 0
@@ -49,7 +56,7 @@ PB_state_focus_2_ai = {
 	PB_state_focus_4_ai = no
 }
 
-PB_state_focus_3_ai = {
+PB_state_focus_2_ai = {
 	is_core_of = ROOT
 	ROOT = {
 		NOT = { has_idea = disarmed_nation }
@@ -96,7 +103,7 @@ PB_state_focus_3_ai = {
 	}
 }
 
-PB_state_focus_4_ai = {
+PB_state_focus_3_ai = {
 	add_to_temp_array = { temp_resources = token:grain }
 	add_to_temp_array = { temp_resources = token:chromium }
 	add_to_temp_array = { temp_resources = token:steel }
@@ -112,4 +119,62 @@ PB_state_focus_4_ai = {
 			V = "[?v.GetTokenKey]"
 		}
 	}
+	if = {
+		limit = {
+			ROOT = {
+				has_war = yes
+				fuel_ratio < 0.2
+			}
+		}
+		free_building_slots = {
+			building = synthetic_refinery
+			size > 0
+			include_locked = no
+		}
+	}
+
+	if = {
+		limit = {
+			ROOT = {
+				has_war = yes
+				OR = {
+					steel < 1
+					tungsten < 1
+					chromium < 1
+					aluminium < 1
+				}
+
+			}
+		}
+		free_building_slots = {
+			building = steel_mill
+			size > 0
+			include_locked = no
+		}
+	}
+
+	# this should be a low priority and only done when you dont need to do the others
+	PB_state_focus_0_ai = no
+}
+
+PB_state_focus_4_ai = {
+	if = {
+		limit = {
+			ROOT = {
+				is_special_project_completed = sp:sp_nuclear_reactor
+			}
+		}
+		free_building_slots = {
+			building = nuclear_reactor
+			size > 0
+			include_locked = no
+		}
+		free_building_slots = {
+			building = nuclear_reactor_heavy_water
+			size > 0
+			include_locked = no
+		}
+	}
+	PB_state_focus_0_ai = no
+	PB_state_focus_3_ai = no
 }
