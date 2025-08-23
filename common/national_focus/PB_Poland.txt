@@ -2153,6 +2153,38 @@ focus_tree = {
 
 	focus = {
 		
+		id = PB_POL_Little_Green_Men
+ 		prerequisite = { focus = PB_POL_Smoke_And_Mirrors }
+
+		x = 0
+		y = 1
+
+		relative_position_id = PB_POL_Smoke_And_Mirrors
+
+		cost = 14
+
+		available = {
+
+		}
+
+		icon = GFX_goal_POL_Ministry_Of_Security
+
+		ai_will_do = {
+			base = 5
+		}
+
+		available_if_capitulated = no
+
+		search_filters = {FOCUS_FILTER_POLITICAL}
+
+		cancel_if_invalid = yes
+		
+		completion_reward = {
+		}
+	}
+
+	focus = {
+		
 		id = PB_POL_The_Weaker_Ones
  		prerequisite = { focus = PB_POL_Smoke_And_Mirrors }
 		prerequisite = { focus = PB_POL_Our_Propaganda_Good_Propaganda }
@@ -2292,38 +2324,6 @@ focus_tree = {
  		prerequisite = { focus = PB_POL_The_Stronger_One }
 
 		x = 0
-		y = 1
-
-		relative_position_id = PB_POL_The_Stronger_One
-
-		cost = 14
-
-		available = {
-
-		}
-
-		icon = GFX_goal_POL_Ministry_Of_Security
-
-		ai_will_do = {
-			base = 5
-		}
-
-		available_if_capitulated = no
-
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
-		cancel_if_invalid = yes
-		
-		completion_reward = {
-		}
-	}
-
-	focus = {
-		
-		id = PB_POL_Little_Green_Men
- 		prerequisite = { focus = PB_POL_The_Stronger_One }
-
-		x = 2
 		y = 1
 
 		relative_position_id = PB_POL_The_Stronger_One
@@ -3098,7 +3098,7 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
-			PB_Literacy_Small_Progress_Increase = yes
+			literacy_growth_progress_moderate = yes
 			add_ideas = PB_Universal_Higher
 			country_event = {
 				id = pol.43
@@ -4707,9 +4707,21 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
-			add_timed_idea = {
-				idea = PB_POL_Introduction_Of_Cyrillic
-				days = 100
+			IF = {
+				limit = {
+					NOT = {
+						RUS = {
+							OR = {
+								has_completed_focus = PB_RUS_Russian_Bilingualism
+								has_completed_focus = PB_RUS_State_Enforced_Russian
+							}
+						}
+					}
+				}
+				add_timed_idea = {
+					idea = PB_POL_Introduction_Of_Cyrillic
+					days = 100
+				}
 			}
 			IF = {
 				limit = {
@@ -4968,7 +4980,7 @@ focus_tree = {
 		icon = GFX_goal_POL_Pro_Russian
 		relative_position_id = PB_POL_Reaffirm_Entail_Status
 
-		cost = 50
+		cost = 56
 
 		available = {
 			has_government = cn
@@ -5047,7 +5059,7 @@ focus_tree = {
 		icon = GFX_goal_POL_Pro_Russian
 		relative_position_id = PB_POL_Our_Time
 
-		cost = 14
+		cost = 30
 
 		available = {
 			has_government = cn
@@ -5072,7 +5084,11 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
-			
+			PB_POL_Increse_Conservatives_Influence = yes
+			add_political_power = 50
+			country_event = {
+				id = pol.115
+			}
 		}
 	}
 
@@ -5087,10 +5103,17 @@ focus_tree = {
 		icon = GFX_goal_POL_Pro_Russian
 		relative_position_id = PB_POL_Rular_Cooperatives
 
-		cost = 14
+		cost = 35
 
 		available = {
 			has_government = cn
+			cn > 0.20
+
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Conservatives_Influence_More_49_tt
+				check_variable = { POL_Conservatives_Influence > 49 }
+			}
+
 		}
 
 
@@ -5105,7 +5128,11 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
-			
+			add_popularity = {
+				ideology = cn
+				popularity = 0.1
+			}
+			PB_POL_Increse_Conservatives_Influence = yes
 		}
 	}
 
@@ -5120,7 +5147,7 @@ focus_tree = {
 		icon = GFX_goal_POL_Pro_Russian
 		relative_position_id = PB_POL_Polish_Green_Revolution
 
-		cost = 14
+		cost = 50
 
 		available = {
 			has_government = cn
@@ -5138,7 +5165,7 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
-			
+			poverty_rate_growth_progress_high = yes
 		}
 	}
 
@@ -5153,7 +5180,7 @@ focus_tree = {
 		icon = GFX_goal_POL_Pro_Russian
 		relative_position_id = PB_POL_Christianization_Of_Schools
 
-		cost = 14
+		cost = 56
 
 		available = {
 			has_government = cn
@@ -5171,7 +5198,56 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
-			
+			literacy_growth_progress_high = yes
+			add_popularity = {
+				ideology = cn
+				popularity = 0.05
+			}
+			random_owned_controlled_state = {
+				prioritize = { 1434}
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 0
+					}
+				}
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			random_owned_controlled_state = {
+				prioritize = { 90 }
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 0
+					}
+				}
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			random_owned_controlled_state = {
+				prioritize = { 1435 }
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 0
+					}
+				}
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
 		}
 	}
 
@@ -6530,6 +6606,7 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
+			PB_POL_Increse_Namiestnik_Support = yes
 			add_war_support = -0.1
 			add_political_power = -25
 			country_event = {
@@ -10448,7 +10525,11 @@ focus_tree = {
 			modify_building_resources = {
 				building = steel_mill
 				resource = steel
-				amount = 5
+				amount = 3
+			}
+			add_victory_points = {
+				province = 14523
+				value = 5
 			}
 		}
 	}
