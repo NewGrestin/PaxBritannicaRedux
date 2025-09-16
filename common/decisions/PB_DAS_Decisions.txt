@@ -4,12 +4,15 @@ PB_DAS_Influence_category = {
 		    icon = GFX_decision_zitronella
             cost = 25
 			allowed = {
-				original_tag = DAS
+    			original_tag = DAS
 			}
             available = {
                 has_political_power > 49
                 check_variable = { zitronella_shares < 100 }
             }
+			visible = {
+				is_debug = yes
+			}
             complete_effect = {
                 add_to_variable = { var = zitronella_shares value = 10 }
                 add_political_power = -50
@@ -29,6 +32,9 @@ PB_DAS_Influence_category = {
                 has_political_power > 49
                 check_variable = { zitronella_shares > 0 }
             }
+			visible = {
+				is_debug = yes
+			}
             complete_effect = {
                 add_to_variable = { var = zitronella_shares value = -10 }
                 add_political_power = -50
@@ -47,6 +53,9 @@ PB_DAS_Influence_category = {
                 has_political_power > 50
                 check_variable = { Bundestag_Patience < 6 }
             }
+			visible = {
+				is_debug = yes
+			}
             complete_effect = {
 			    custom_effect_tooltip = GEA_Bund_Rise_tt
 		    	hidden_effect = {
@@ -69,6 +78,9 @@ PB_DAS_Influence_category = {
                 has_political_power > 50
                 check_variable = { Bundestag_Patience > 1 }
             }
+			visible = {
+				is_debug = yes
+			}
             complete_effect = {
 			    custom_effect_tooltip = GEA_Bund_Lower_tt
 		    	hidden_effect = {
@@ -180,8 +192,11 @@ PB_DAS_Influence_category = {
 			target_trigger = {
 				FROM = {
 					infrastructure > 0
-					is_controlled_by = PHI
+					is_controlled_by = DAS
 				}
+			}
+			visible = {
+				has_completed_focus = PB_DAS_Snakes_and_Ladders
 			}
 			target_array = DAS.phillipine_states
 			on_map_mode = map_and_decisions_view
@@ -333,25 +348,28 @@ PB_DAS_Influence_category = {
 			icon = GFX_decision_generic_militia
 
 			activation = {
+				has_country_flag = third_filipino_independence_war
 				NOT = {
-					has_country_flag = third_filipino_independence_war
-					NOT = {
-						has_active_mission = PHI_Cease_Fire_Countdown
-					}
+					has_country_flag = DAS_Ceasefire
 				}
 			}
+
+			available = {
+				always = no
+			}
+
 			fire_only_once = yes
 			
 			visible = {
 				has_country_flag = third_filipino_independence_war
 				NOT = {
-					has_active_mission = PHI_Cease_Fire_Countdown
+					has_country_flag = DAS_Ceasefire
 				}
 			}
 
-			is_good = yes
+			is_good = no
 
-			cost = num_battalions?0
+			selectable_mission = no
 
 			ai_will_do = {
 				factor = 4000
@@ -376,12 +394,21 @@ PB_DAS_Influence_category = {
 		PHI_Cease_Fire_Countdown = {
 
 			icon = GFX_decision_generic_handshake
+			activation = {
+				has_country_flag = DAS_Ceasefire
+			}
 
 			allowed = {
+				has_country_flag = DAS_Ceasefire
+			}
+
+			available = {
 				always = no
 			}
+
 			fire_only_once = yes
 			
+			selectable_mission = no
 
 			is_good = yes
 
@@ -389,7 +416,7 @@ PB_DAS_Influence_category = {
 				factor = 4000
 			}
 
-			days_mission_timeout = 365
+			days_mission_timeout = 70
 
 			timeout_effect = {
 				DAS = {
@@ -397,41 +424,6 @@ PB_DAS_Influence_category = {
 				}
 			}
         }
-
-	PHI_Cease_Fire_Manila = {
-
-        icon = GFX_decision_generic_handshake
-
-        allowed = {
-            always = yes
-        }
-        fire_only_once = yes
-
-        visible = {
-            always = yes
-        }
-
-        is_good = yes
-
-        ai_will_do = {
-            factor = 4000
-        }
-
-        days_mission_timeout = 100
-
-		cancel_trigger = {
-			has_completed_focus = PB_DAS_Open_City
-		}
-
-        timeout_effect = {
-            DAS = {
-                add_stability = -0.1
-                add_war_support = -0.1
-                country_event = GEA.18
-            }
-        }
-    }
-
 }
 	# NOTE, eventually make these Events to annex
 PB_DAS_Zitronella_Dissolving = {
@@ -512,6 +504,11 @@ PB_DAS_Zitronella_Dissolving = {
     }
 	DAS_Zitronella_Coup_Timer = {
 		icon = GFX_decision_prosp
+
+		activation = {
+		has_completed_focus = PB_DAS_Dissolve_Zitronella
+		}
+
 		allowed = {
 			original_tag = DAS
 		}
@@ -522,7 +519,7 @@ PB_DAS_Zitronella_Dissolving = {
 		}
 		
 		fire_only_once = yes
-		priority = 2
+		priority = 9
 		is_good = no
 		ai_will_do = {
 			factor = 40
@@ -616,6 +613,9 @@ PB_DAS_Zitronella_Dissolving = {
 		allowed = {
 			original_tag = DAS
 		}
+		visible = {
+			is_debug = yes
+		}
 		complete_effect = {
 		clr_country_flag = Finalized_on_OSTHANSA
 		clr_country_flag = clicked_on_OVBD
@@ -660,6 +660,9 @@ PB_DAS_Evacuations = {
 					is_controlled_by = DAS
 				}
 			}
+		}
+		visible = {
+			has_completed_focus = PB_DAS_Evacuate_Civilians
 		}
 		target_array = DAS.phillipine_states
 		on_map_mode = map_and_decisions_view
@@ -776,7 +779,9 @@ PB_DAS_FernostCrisis_category = {
 	DAS_Fernost_Countdown = {
 
 		icon = GFX_decision_generic_militia
-
+		activation = {
+			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
+		}
 		allowed = {
 			original_tag = DAS
 		}
