@@ -181,6 +181,7 @@ PB_DAS_Influence_category = {
 		DAS_Plunder_state = {
 			icon = GFX_decision_generic_guns_and_bullets
 			state_target = yes
+
 			allowed = {
 				original_tag = DAS
 			}
@@ -198,8 +199,9 @@ PB_DAS_Influence_category = {
 			visible = {
 				has_completed_focus = PB_DAS_Snakes_and_Ladders
 			}
+			
 			target_array = DAS.phillipine_states
-			on_map_mode = map_and_decisions_view
+			on_map_mode = map_only
 			fire_only_once = yes
 			cost = 50
 			days_remove = 15
@@ -342,7 +344,6 @@ PB_DAS_Influence_category = {
 				}
 			}
 		}
-		
 		PHI_War_Countdown = {
 
 			icon = GFX_decision_generic_militia
@@ -776,41 +777,6 @@ PB_DAS_Influence_category = {
 	}
 }
 
-PB_DAS_FernostCrisis_category = {
-	DAS_Fernost_Countdown = {
-
-		icon = GFX_decision_generic_militia
-		activation = {
-			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
-		}
-		allowed = {
-			original_tag = DAS
-		}
-
-		fire_only_once = yes
-		
-		visible = {
-			has_country_flag = DAS_Fernost_Crisis
-		}
-
-		is_good = no
-
-		cost = num_battalions?0
-
-		ai_will_do = {
-			factor = 4000
-		}
-
-		days_mission_timeout = 365
-
-		timeout_effect = {
-			DAS = {
-				country_event = GEA.17
-			}
-		}
-	}
-}
-
 PB_DAS_Investigations_category = {
 	DAS_Investigate_Tacloban = {
 		allowed = {
@@ -830,5 +796,217 @@ PB_DAS_Investigations_category = {
 		complete_effect = {
 			country_event = GEA_Zitronella_Raid.3
 		}
+	}
+}
+PB_DAS_Far_Eastern_Crisis = {
+	DAS_Raise_Division = {
+
+		icon = GFX_decision_generic_militia
+		state_target = yes
+
+		available = {
+			has_active_mission = DAS_Fernost_Countdown
+			NOT = { has_country_flag = DAS_Fernost_Cooldown }
+		}
+		
+		target_root_trigger = {
+			original_tag = DAS
+			NOT = { has_country_flag = DAS_Fernost_Cooldown }
+		}
+
+		target_trigger = {
+			FROM = {
+				is_core_of = DAS
+				NOT = {
+					has_state_flag = DAS_Fernost_Owner_DAS
+				}
+			}
+		}
+
+		allowed = {
+			original_tag = DAS
+		}
+
+		visible = {
+			has_country_flag = DAS_Far_East_Crisis
+		}
+		priority = 2
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_remove = 25
+
+		complete_effect = {
+			set_country_flag = {
+				flag = DAS_Fernost_Cooldown
+				days = 25
+			}
+		}
+		remove_effect = {
+			FROM = {
+				create_unit = {
+					division = "name = \"Volunteer Corps\" division_template = \"Infanterie-Division\" start_experience_factor = 0.5 start_equipment_factor = 1"
+					owner = DAS
+				}
+				set_state_flag = {
+					flag = DAS_Fernost_Owner_DAS
+					value = 1
+				}
+			}
+		}
+	}
+	
+	DAS_Fernost_Countdown = { #Pacific POV
+
+		icon = GFX_decision_generic_militia
+
+		available = {
+			always = no
+		}
+
+		activation = {
+			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
+		}
+
+		allowed = {
+			original_tag = DAS
+		}
+
+		visible = {
+			has_country_flag = DAS_Far_East_Crisis
+		}
+		priority = 2
+		is_good = no
+		fire_only_once = yes
+		selectable_mission = no
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_mission_timeout = 365
+
+		timeout_effect = {
+			DAS = {
+				country_event = GEA.17
+			}
+		}
+	}
+}
+PB_GER_Far_Eastern_Crisis = {
+	GER_Fernost_Raise_Division = {
+
+		icon = GFX_decision_generic_militia
+		state_target = yes
+
+		available = {
+			AND = {
+				has_active_mission = GER_Fernost_Countdown
+				NOT = { has_country_flag = GER_Fernost_Cooldown }
+			}
+		}
+		
+		target_root_trigger = {
+			original_tag = GER
+			NOT = { has_country_flag = GER_Fernost_Cooldown }
+		}
+
+		target_trigger = {
+			FROM = {
+				is_core_of = DAS
+				NOT = {
+					has_state_flag = DAS_Fernost_Owner_SSL
+				}
+			}
+		}
+
+		allowed = {
+			original_tag = GER
+		}
+
+		visible = {
+			has_country_flag = GER_Far_East_Crisis
+		}
+		priority = 2
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_remove = 25
+
+		complete_effect = {
+			set_country_flag = {
+				flag = GER_Fernost_Cooldown
+				days = 25
+			}
+		}
+		remove_effect = {
+			FROM = {
+				set_state_flag = {
+					flag = DAS_Fernost_Owner_SSL
+					value = 1
+				}
+			}
+		}
+	}
+	
+	GER_Fernost_Countdown = { #German POV
+
+		icon = GFX_decision_generic_militia
+
+		available = {
+			always = no
+		}
+
+		activation = {
+			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
+		}
+
+		allowed = {
+			original_tag = GER
+		}
+
+		visible = {
+			has_country_flag = GER_Far_East_Crisis
+		}
+		priority = 2
+		is_good = no
+		fire_only_once = yes
+		selectable_mission = no
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_mission_timeout = 365
+
+		timeout_effect = {
+		}
+	}
+	
+	GER_Fernost_View = { #WIP VIEW
+
+		icon = GFX_decision_generic_militia
+
+		available = {
+			always = no
+		}
+
+		allowed = {
+			original_tag = GER
+		}
+
+		visible = {
+			has_country_flag = GER_Far_East_Crisis
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				has_state_flag = DAS_Fernost_Owner_SSL
+			}
+		}
+		priority = 1
 	}
 }
