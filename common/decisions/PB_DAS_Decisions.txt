@@ -712,71 +712,6 @@ PB_DAS_Evacuations = {
 	}
 }
 
-PB_DAS_Influence_category = {
-	DAS_Construct_Tent_Cities = {
-        icon = GFX_decision_generic_colonial_hat_german
-		allowed = {
-			original_tag = DAS
-		}
-		custom_cost_trigger = {
-			AND = {
-				has_equipment = {
-					convoy > 50
-				}
-			}
-		}
-		custom_cost_text = PB_DAS_decision_cost_evacuation
-
-		available = {
-			has_equipment = {
-				support_equipment > 15000
-			}
-			has_completed_focus = PB_DAS_Slum_Breaking
-			controls_state = 1414
-		}
-
-		visible = {
-			has_completed_focus = PB_DAS_Rapid_Reorganization
-		}
-
-		days_remove = 100
-		fire_only_once = yes
-		complete_effect = {
-			add_equipment_to_stockpile = {
-				type = convoy
-				amount = -50
-			}
-		}
-
-		cancel_trigger = {
-			NOT = {
-				controls_state = 1414
-			}
-		}	
-		cancel_effect = {
-			add_war_support = -0.1
-		}	
-		remove_effect = {
-			decrease_poverty_rate_level = yes
-			624 = {
-				add_manpower = 30000
-			}
-			custom_effect_tooltip = PB_spacing_tt
-			add_equipment_to_stockpile = {
-				type = convoy
-				amount = 50
-			}
-		}
-		highlight_states = {
-			highlight_state_targets = {
-				state = 624
-			}
-			highlight_color_while_active = 3
-			highlight_color_before_active = 2
-		}
-	}
-}
-
 PB_DAS_Investigations_category = {
 	DAS_Investigate_Tacloban = {
 		allowed = {
@@ -798,216 +733,142 @@ PB_DAS_Investigations_category = {
 		}
 	}
 }
-PB_DAS_Far_Eastern_Crisis = {
-	DAS_Raise_Division = {
 
-		icon = GFX_decision_generic_militia
+PB_DAS_diplomacy_category = {
 
-		state_target = yes
-
-		available = {
-			has_active_mission = DAS_Fernost_Countdown
-			NOT = { has_country_flag = DAS_Fernost_Countdown_On }
-		}
-		
-		target_root_trigger = {
-			original_tag = DAS
-			FROM = { has_state_flag = DAS_Fernost_Owner_DAS }
-		}
-
-		target_trigger = {
-			FROM = {
-				is_core_of = DAS
-				NOT = {
-					has_state_flag = DAS_Fernost_Owner_DAS
-				}
-			}
-		}
+	
+	demand_papua_new_guinea_decision = {
+		icon = GFX_decision_generic_colonial_hat_german
 
 		allowed = {
 			original_tag = DAS
 		}
 
-		visible = {
-			has_country_flag = DAS_Far_East_Crisis
+		available = {
+			is_neighbor_of = FROM
+			NOT = { has_non_aggression_pact_with = FROM }
+			FROM = {
+				owns_state = 1354
+				owns_state = 1353
+			}
+			can_declare_war_on = FROM
 		}
-		priority = 2
 
-		ai_will_do = {
-			factor = 4000
-		}
-
-		days_remove = 25
-
-		complete_effect = {
-			set_country_flag = {
-				flag = DAS_Fernost_Countdown_On
-				days = 25
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				NOT = { FROM = { owns_state = 1354 } }
+				NOT = { FROM = { owns_state = 1353 } }
+				NOT = { is_neighbor_of = FROM }
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
 			}
 		}
+
+		targets = { 1354.OWNER 1353.OWNER }
+		target_root_trigger = { }
+		target_trigger = {
+			can_declare_war_on = FROM
+			FROM = {
+				owns_state = 1354
+				owns_state = 1353
+			}
+		}
+
+		cost = 0
+		days_remove = 30
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
 		remove_effect = {
 			FROM = {
-				create_unit = {
-					division = "name = \"Volunteer Corps\" division_template = \"Infanterie-Division\" start_experience_factor = 0.5 start_equipment_factor = 1"
-					owner = DAS
-				}
-				set_state_flag = {
-					flag = DAS_Fernost_Owner_DAS
-					value = 1
-				}
+				country_event = DAS_Diplomacy.1
 			}
 		}
 	}
 	
-	DAS_Fernost_Countdown = { #Pacific POV
-
-		icon = GFX_decision_generic_militia
-
-		available = {
-			always = no
+	DAS_invite_condor_club_decision = {
+		target_root_trigger = {
+			has_completed_focus = PB_DAS_Condor
 		}
-
-		activation = {
-			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
+		targets = { INS SUL BOR SWK DEL BFE RAJ HNK }
+		targets_dynamic = yes
+		target_trigger = {
+			NOT = { is_in_faction_with = DAS }
 		}
+		icon = GFX_decision_generic_operation
+		cost = 20
+		war_with_target_on_complete = yes
+		days_remove = 10
+		remove_effect = {
+			FROM = {
+				country_event = {
+					id = DAS_CondorClub.1
+					days = 2
+				}
+			}
+		}
+	}
 
+	DAS_Strike_Corsairs = {
 		allowed = {
 			original_tag = DAS
 		}
-
-		visible = {
-			has_country_flag = DAS_Fernost_Owner_DAS
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
 		}
-		priority = 2
-		is_good = no
-		fire_only_once = yes
-		selectable_mission = no
-
-		ai_will_do = {
-			factor = 4000
+		targets = {
+			CCO
 		}
+		
+		days_remove = 10
 
-		days_mission_timeout = 365
-
-		timeout_effect = {
+		cancel_effect = {
+			
+		}
+		
+		remove_effect = {
+			if = {
+				limit = {
+					INS = { has_country_flag = DAS_Corsair_Invite }
+				}
+				INS = {
+					declare_war_on = {
+					target = CCO
+					}
+				}
+				DAS = {
+					declare_war_on = {
+					target = CCO
+					}
+				}
+			}
 			DAS = {
-				country_event = DAS.17
+				declare_war_on = {
+					target = CCO
+				}
 			}
-		}
-	}
-}
-PB_GER_Far_Eastern_Crisis = {
-	GER_Fernost_Raise_Division = {
-
-		icon = GFX_decision_generic_militia
-		state_target = yes
-
-		available = {
-			AND = {
-				has_active_mission = GER_Fernost_Countdown
-				NOT = { has_country_flag = GER_Fernost_Cooldown }
+			damage_units = {
+				state = 334
+				region = 93
+				damage = 0.5
+				org_damage = 0.5
+				str_damage = 0.5
+				ratio = yes
+				army = yes
+				navy = yes
 			}
 		}
 		
-		target_root_trigger = {
-			original_tag = GER
-			NOT = { has_country_flag = GER_Fernost_Cooldown }
-		}
-
-		target_trigger = {
-			FROM = {
-				is_core_of = DAS
-				NOT = {
-					has_state_flag = DAS_Fernost_Owner_SSL
-				}
-			}
-		}
-
-		allowed = {
-			original_tag = GER
-		}
-
-		visible = {
-			has_active_mission = GER_Fernost_Countdown
-		}
-		priority = 2
-
-		ai_will_do = {
-			factor = 4000
-		}
-
-		days_remove = 25
-
-		complete_effect = {
-			set_country_flag = {
-				flag = GER_Fernost_Cooldown
-				days = 25
-			}
-		}
-		remove_effect = {
-			FROM = {
-				set_state_flag = {
-					flag = DAS_Fernost_Owner_SSL
-					value = 1
-				}
-			}
-		}
-	}
-	
-	GER_Fernost_Countdown = { #German POV
-
-		icon = GFX_decision_generic_militia
-
-		available = {
-			always = no
-		}
-
-		activation = {
-			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
-		}
-
-		allowed = {
-			original_tag = GER
-		}
-
-		visible = {
-			has_country_flag = GER_Far_East_Crisis
-		}
-		priority = 2
-		is_good = no
-		fire_only_once = yes
-		selectable_mission = no
-
-		ai_will_do = {
-			factor = 4000
-		}
-
-		days_mission_timeout = 365
-
-		timeout_effect = {
-		}
-	}
-	
-	GER_Fernost_View = { #WIP VIEW
-
-		icon = GFX_decision_generic_militia
-
-		available = {
-			always = no
-		}
-
-		allowed = {
-			original_tag = GER
-		}
-
-		visible = {
-			has_country_flag = GER_Far_East_Crisis
-		}
-		highlight_states = {
-			highlight_states_trigger = {
-				has_state_flag = DAS_Fernost_Owner_SSL
-			}
-		}
-		priority = 1
 	}
 }

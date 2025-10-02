@@ -9,6 +9,8 @@ add_namespace = DAS_Zitronella_Deal
 add_namespace = DAS_Normal_Path
 add_namespace = DAS_Zitronella_Raid
 add_namespace = DAS_FarEastCrisis
+add_namespace = DAS_Diplomacy
+add_namespace = DAS_CondorClub
 
 country_event = { # German East Asia Intro
 	id = DAS.1
@@ -758,7 +760,7 @@ country_event = { # Pro-German Option
 			modifier = {
 				add = -30
 				DAS = {
-					completed_national_focus = PB_DAS_Development_Issues
+					has_completed_focus = PB_DAS_Development_Issues
 				}
 			}
 			modifier = {
@@ -1567,10 +1569,318 @@ country_event = { # Remind Germany to check the Far East
 	fire_only_once = no
 	option = { # Reminder
 	    name = DAS_FarEastCrisis.1.a
+		DAS = {
+			set_country_flag = DAS_Far_East_Crisis
+			activate_mission = DAS_Fernost_Countdown
+		}
 		GER = {
 			activate_mission = GER_Fernost_Countdown
 			set_country_flag = ger_far_east_crisis
 			activate_decision = GER_Fernost_Raise_Division
 		}
 	}
+}
+
+# DIPLOMACY
+
+country_event = { #DAS Demands Papua
+	id = DAS_Diplomacy.1
+	title = DAS_Diplomacy.1.t
+	desc = DAS_Diplomacy.1.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	trigger = {
+		NOT = { has_war_with = FROM }
+	}
+
+	option = { # Concede to their demands
+		name = DAS_Diplomacy.1.a
+		add_political_power = -15
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 4
+				has_war_with_major = yes
+			}
+		}
+		FROM = {
+			country_event = DAS_Diplomacy.2
+		}
+		effect_tooltip = {
+			1354 = { transfer_state_to = FROM }
+			1353 = { transfer_state_to = FROM }
+		}
+	}
+
+	option = { # We will not bow to them!
+		name = DAS_Diplomacy.1.a
+		add_political_power = -15
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 2
+				FROM = { has_war_with_major = yes }
+			}
+		}
+		FROM = {
+			country_event = DAS_Diplomacy.3
+		}
+	}
+}
+
+country_event = { # Papua Agrees To Concede to DAS
+	id = DAS_Diplomacy.2
+	title = DAS_Diplomacy.2.t
+	desc = DAS_Diplomacy.2.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # they are wise
+		name = DAS_Diplomacy.2.a
+		add_political_power = 10
+		1354 = { transfer_state_to = ROOT }
+		1353 = { transfer_state_to = ROOT }
+	}
+}
+
+country_event = { # Papua Refuses to Concede to DAS
+	id = DAS_Diplomacy.3
+	title = DAS_Diplomacy.3.t
+	desc = DAS_Diplomacy.3.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # they are fools
+		name = DAS_Diplomacy.3.a
+		create_wargoal = {
+			target = FROM
+			type = annex_everything
+		}
+	}
+}
+
+country_event = { # The White Rajahs
+	id = DAS_Diplomacy.4
+	title = DAS_Diplomacy.4.t
+	desc = DAS_Diplomacy.4.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Support Bertram's idea
+		name = DAS_Diplomacy.4.a
+		
+	}
+
+	option = { # Back down from the crisis
+		name = DAS_Diplomacy.4.b
+		
+	}
+}
+
+country_event = { # The Corsair Confederacy
+	id = DAS_Diplomacy.10
+	title = DAS_Diplomacy.10.t
+	desc = DAS_Diplomacy.10.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Coordinate with Dutch forces
+		name = DAS_Diplomacy.10.a
+		INS = {
+			country_event = {
+				id = DAS_Diplomacy.5
+			}
+		}
+	}
+
+	option = { # Back down from attacking the CCO
+		name = DAS_Diplomacy.10.b
+		add_political_power = 20
+	}
+}
+
+country_event = { # Dutch Government Response
+	id = DAS_Diplomacy.5
+	title = DAS_Diplomacy.5.t
+	desc = DAS_Diplomacy.5.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # agree to the coordinated strike
+		name = DAS_Diplomacy.5.a
+		add_stability = 0.1
+		INS = {
+			add_country_flag = DAS_Corsair_Invite
+		}
+		DAS = {
+			country_event = {
+				id = DAS_Diplomacy.7
+			}
+		}
+	}
+
+	option = { # we will not risk a war with the Corsairs
+		name = DAS_Diplomacy.5.a
+		add_stability = 0.1
+		DAS = {
+			country_event = {
+				id = DAS_Diplomacy.6
+			}
+		}
+	}
+}
+
+country_event = { # Dutch Refusal
+	id = DAS_Diplomacy.6
+	title = DAS_Diplomacy.6.t
+	desc = DAS_Diplomacy.6.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # then we will go without them
+		name = DAS_Diplomacy.6.a
+		add_stability = 0.1
+		activate_decision = DAS_Strike_Corsairs
+	}
+
+	option = { # Back down from intervening
+		name = DAS_Diplomacy.6.b
+		add_stability = 0.1
+	}
+}
+
+country_event = { # Dutch Agree to Cooperate
+	id = DAS_Diplomacy.7
+	title = DAS_Diplomacy.7.t
+	desc = DAS_Diplomacy.7.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Good!
+		name = DAS_Diplomacy.7.a
+		add_stability = 0.1
+		activate_decision = DAS_Strike_Corsairs
+	}
+}
+
+country_event = { # Second Batavian Expedition
+	id = DAS_Diplomacy.8
+	title = DAS_Diplomacy.8.t
+	desc = DAS_Diplomacy.8.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Cooperation with the Dutch must Continue!
+		name = DAS_Diplomacy.8.a
+		INS = {
+			give_military_access = DAS
+			give_guarantee = DAS
+		}
+		DAS = {
+			give_military_access = INS
+			give_guarantee = INS
+		}
+	}
+}
+
+country_event = { #Condor
+	id = DAS_CondorClub.5
+	title = DAS_CondorClub.5.t
+	desc = DAS_CondorClub.5.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Formation of the Condor Pact
+		name = DAS_CondorClub.5.a
+		add_stability = 0.1
+		add_political_power = 10
+	}
+	
+}
+
+country_event = {
+	id = DAS_CondorClub.1
+	title = DAS_CondorClub.1.t
+	desc = DAS_CondorClub.1.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+
+	option = { # Observer
+		log = "[GetLogInfo]: [From.GetAdjective] DAS_CondorClub.1 option DAS_CondorClub.1.a"
+		name = DAS_CondorClub.1.a
+		add_ideas = CONDOR_Observer
+		DAS = {
+			country_event = {
+				id = DAS_CondorClub.2
+			}
+		}
+	}
+	option = { # Full Member
+		log = "[GetLogInfo]: [From.GetAdjective] DAS_CondorClub.1 option DAS_CondorClub.1.b"
+		name = DAS_CondorClub.1.b
+		add_ideas = CONDOR_FullMember
+		DAS = {
+			country_event = {
+				id = DAS_CondorClub.3
+			}
+		}
+	}
+	option = { # Reject
+		log = "[GetLogInfo]: [From.GetAdjective] DAS_CondorClub.1 option DAS_CondorClub.1.c"
+		name = DAS_CondorClub.1.c
+		DAS = {
+			country_event = {
+				id = DAS_CondorClub.4
+			}
+		}
+	}
+}
+
+country_event = {
+	id = DAS_CondorClub.2
+	title = DAS_CondorClub.2.t
+	desc = DAS_CondorClub.2.d
+	picture = GFX_report_PB_PHI_Aperture
+	is_triggered_only = yes
+	option = { name = DAS_CondorClub.2.a }
+}
+
+country_event = {
+	id = DAS_CondorClub.3
+	title = DAS_CondorClub.3.t
+	desc = DAS_CondorClub.3.d
+	picture = GFX_report_PB_PHI_Aperture
+	is_triggered_only = yes
+	option = { name = DAS_CondorClub.3.a }
+}
+
+country_event = {
+	id = DAS_CondorClub.4
+	title = DAS_CondorClub.4.t
+	desc = DAS_CondorClub.4.d
+	picture = GFX_report_PB_PHI_Aperture
+	is_triggered_only = yes
+	option = { name = DAS_CondorClub.4.a }
 }
