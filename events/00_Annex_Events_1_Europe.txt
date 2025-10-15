@@ -14253,105 +14253,272 @@ country_event = { #Fate of Malta
 
 country_event = { #Fate of Gibraltar
 	id = annex.1141
-	title = annexation_gibraltar
-	desc = annexation_gibraltar_desc
+	title = annexation_118
+	desc = annexation_118_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					169 = { is_claim_or_core_of_ROOT = yes } #Andalusia
+					173 = { is_claim_or_core_of_ROOT = yes } #Granada
+					annexations_AI_wants_to_own_gibraltar = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		else_if = {
+			limit = { annexations_major_can_annex_strategic_territories = yes }
+			save_event_target_as = can_annex
+			save_event_target_as = AI_dont_annex
+		}
+		if = {
+			limit = {
+				169 = { #Andalusia
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:britain }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:169.owner = { save_event_target_as = spain_andalusia }
+		}
+		if = {
+			limit = {
+				173 = { #Granada
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:britain }
+						NOT = { tag = event_target:spain_granada }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:173.owner = { save_event_target_as = spain_malaga }
+		}
 	}
 
-	option = { #Grant Gibraltar to Spain
-		log = "[GetLogInfo]: event annex.1141 option annexation.1141.a"
+	option = { #Give to Spanish owner of Andalusia
+		log = "[GetLogInfo]: event annex.1141 option annex.1141.a"
 		name = annex.1141.a
 		trigger = {
-			is_subject = no
-			SPR = {
-				exists = yes
-			}
+			has_event_target = spain_andalusia
 		}
 		ai_chance = {
-			base = 10
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:spain_andalusia }
+				is_ally_with = event_target:spain_granada
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:spain_andalusia }
+				has_event_target = britain
+				#annexations_AI_will_consider_returning_colonies = yes
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = spain_granada }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:spain_andalusia = { is_subject = yes }
+			}
 		}
-
-		SPR = {
-			transfer_state = 118
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:spain_andalusia }
+		118 = { transfer_state_and_notify = yes } #Gibraltar
 	}
 
-	option = { #Grant Gibraltar to Britain
-		log = "[GetLogInfo]: event annex.1141 option annexation.1141.b"
+	option = { #Give to Spanish owner of Granada
+		log = "[GetLogInfo]: event annex.1141 option annex.1141.b"
 		name = annex.1141.b
 		trigger = {
-			is_subject = no
-			ENG = {
-				exists = yes
-			}
+			has_event_target = spain_granada
 		}
 		ai_chance = {
-			base = 10
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:spain_granada }
+				is_ally_with = event_target:spain_andalusia
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:spain_granada }
+				has_event_target = britain
+				#annexations_AI_will_consider_returning_colonies = yes
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = spain_andalusia }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:spain_granada = { is_subject = yes }
+			}
 		}
-
-		ENG = {
-			transfer_state = 118
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:spain_granada }
+		118 = { transfer_state_and_notify = yes } #Gibraltar
 	}
 
-	option = { #Grant Gibraltar to Andalusia
-		log = "[GetLogInfo]: event annex.1141 option annexation.1141.c"
-		name = annex.1141.c
+	option = { #Give to Britain
+		log = "[GetLogInfo]: event annex.1141 option annex.europe.give_to_britain"
+		name = annex.europe.give_to_britain
 		trigger = {
-			is_subject = no
-			ADL = {
-				exists = yes
-			}
+			has_event_target = britain
 		}
 		ai_chance = {
-			base = 10
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#annexations_AI_will_consider_returning_colonies = no
+			}
+			modifier = {
+				factor = 0
+				event_target:britain = { annexations_AI_dont_give_to_non_puppet_if_major = yes }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:britain = { is_subject = yes }
+			}
 		}
+		set_temp_variable = { tag_to_release = event_target:britain }
+		118 = { transfer_state_and_notify = yes } #Gibraltar
+	}
 
-		ADL = {
-			transfer_state = 118
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1141 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
 		}
+		set_temp_variable = { tag_to_release = overlord }
+		118 = { transfer_state_and_notify = yes } #Gibraltar
+	}
 
-		recheck_annexations = yes
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.1141 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		118 = { add_claim_of_ROOT = yes } #Gibraltar
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1141 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.1141 option name annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Cyprus
 	id = annex.1142
-	title = annexation_cyprus
-	desc = annexation_cyprus_desc
+	title = annexation_183
+	desc = annexation_183_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		hidden_effect = {
+			every_state = {
+				remove_core_of = CYP
+				remove_claim_by = CYP
+			}
+			if = {
+				limit = {
+					OR = {
+						original_tag = TUR
+						original_tag = GRE
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = { GRE = { ROOT_can_grant_land = yes } }
+				GRE = {
+					save_event_target_as = greece
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			if = {
+				limit = { TUR = { ROOT_can_grant_land = yes } }
+				TUR = {
+					save_event_target_as = turkey
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			if = {
+				limit = { ENG = { ROOT_can_grant_land = yes } }
+				ENG = {
+					save_event_target_as = britain
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+		}
 	}
 
-	option = { #Release an independent Cyprus
+	option = { #Puppet Cyprus
 		log = "[GetLogInfo]: event annex.1142 option annexation.1142.a"
 		name = annex.1142.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 10
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = greece
+				OR = {
+					is_major = no
+					is_ally_with = event_target:greece
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = turkey
+				OR = {
+					is_major = no
+					is_ally_with = event_target:turkey
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = britain
+				OR = {
+					is_major = no
+					is_ally_with = event_target:britain
+				}
+			}
 		}
-
 		set_temp_variable = { tag_to_release = CYP }
+		183 = { remove_claim_and_add_core_of_target = yes } #Cyprus
 		release_targeted_tag = yes
 
 		if = {
@@ -14377,37 +14544,97 @@ country_event = { #Fate of Cyprus
 				set_cosmetic_tag = CYP_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Integrate Cyprus
-		log = "[GetLogInfo]: event annex.1142 option annexation.1142.b"
-		name = annex.1142.b
+	option = { #Give to Greece
+		log = "[GetLogInfo]: event annex.1142 option annex.europe.give_to_greece"
+		name = annex.europe.give_to_greece
 		trigger = {
-			is_subject = no
-			ROOT = {
-				OR = {
-					original_tag = GRE
-					original_tag = TUR
-				}
-			}
+			has_event_target = greece
 		}
 		ai_chance = {
-			base = 10
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
 		}
+		set_temp_variable = { tag_to_release = GRE }
+		183 = { transfer_state_and_notify = yes } #Cyprus
+	}
 
-		ROOT = {
-			add_state_core = 183
+	option = { #Give to Turkey
+		log = "[GetLogInfo]: event annex.1142 option annex.europe.give_to_turkey"
+		name = annex.europe.give_to_turkey
+		trigger = {
+			has_event_target = turkey
 		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = GRE
+			}
+		}
+		set_temp_variable = { tag_to_release = TUR }
+		183 = { transfer_state_and_notify = yes } #Cyprus
+	}
 
-		recheck_annexations = yes
+	option = { #Give to Britain
+		log = "[GetLogInfo]: event annex.1142 option annex.europe.give_to_britain"
+		name = annex.europe.give_to_britain
+		trigger = {
+			has_event_target = britain
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:britain }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:britain = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:britain }
+		183 = { transfer_state_and_notify = yes } #Cyprus
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1142 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		183 = { transfer_state_and_notify = yes } #Cyprus
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1142 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		183 = { add_claim_of_ROOT = yes } #Cyprus
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1142 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.1142 option name = annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
