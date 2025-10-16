@@ -6,22 +6,21 @@ PB_Military_Decisions = {
 
 		icon = generic_naval
 
-		visible = {
-		tag = GER
+		allowed = {
+			original_tag = GER
 		}
-
 		available = {	
 			OR = {
-			has_war_with = FRA
-			has_war_with = RUS
-			has_war_with = JAP
+				has_war_with = FRA
+				has_war_with = RUS
+				has_war_with = JAP
 			}
 			DAS = { 
-			is_subject = yes 
-			has_capitulated = no
-			has_navy_size = {
-			size > 0
-			}
+				is_subject = yes 
+				has_capitulated = no
+				has_navy_size = {
+					size > 0
+				}
 			}
 		}
 
@@ -32,20 +31,19 @@ PB_Military_Decisions = {
 		fire_only_once = yes
 
 		complete_effect = {
-		DAS = {
-		transfer_navy = {
-    		target = GER
-		}
-		}
+			DAS = {
+				transfer_navy = {
+    				target = GER
+				}
+			}
 		}
 	}
 
 	PB_AME_Clone_Program_Prepare = {
 
 		icon = generic_research
-
+		allowed = { original_tag = AME }
 		visible = {
-			original_tag = AME
 			NOT = {
 				has_country_flag = AME_Cloning_Program_Prepared
 			}
@@ -92,9 +90,8 @@ PB_Military_Decisions = {
 	PB_AME_Clone_Program_Start = {
 
 		icon = generic_research
-
+		allowed = { original_tag = AME }
 		visible = {
-			original_tag = AME
 			NOT = {
 				has_country_flag = AME_Cloning_Program_Active
 			}
@@ -130,9 +127,8 @@ PB_Military_Decisions = {
 	PB_AME_Clone_Program_Sampling_1 = {
 
 		icon = generic_research
-
+		allowed = { original_tag = AME }
 		visible = {
-			original_tag = AME
 			has_country_flag = AME_Cloning_Program_Active
 			NOT = {
 				has_tech = human_cloning
@@ -188,9 +184,8 @@ PB_Military_Decisions = {
 	PB_AME_Clone_Program_Sampling_2 = {
 
 		icon = generic_research
-
+		allowed = { original_tag = AME }
 		visible = {
-			original_tag = AME
 			has_country_flag = AME_Cloning_Program_Active
 			NOT = {
 				has_tech = human_cloning
@@ -246,9 +241,8 @@ PB_Military_Decisions = {
 	PB_AME_Clone_Program_Sampling_3 = {
 
 		icon = generic_research
-
+		allowed = { original_tag = AME }
 		visible = {
-			original_tag = AME
 			has_country_flag = AME_Cloning_Program_Active
 			NOT = {
 				has_tech = human_cloning
@@ -304,9 +298,8 @@ PB_Military_Decisions = {
 	PB_AME_Finalize_Tuskegee = {
 
 		icon = generic_research
-
+		allowed = { original_tag = AME }
 		visible = {
-			original_tag = AME
 			has_country_flag = AME_Cloning_Program_Active
 			NOT = {
 				has_tech = human_cloning
@@ -359,9 +352,7 @@ PB_Military_Decisions = {
 
 		icon = generic_air
 
-		visible = {
-			original_tag = AME
-		}
+		allowed = { original_tag = AME }
 
 		available = {
 			has_completed_focus = PB_AME_Eyes_in_the_Skies
@@ -426,9 +417,7 @@ PB_Military_Decisions = {
 
 		icon = generic_air
 
-		visible = {
-			original_tag = AME
-		}
+		allowed = { original_tag = AME }
 
 		available = {
 			custom_trigger_tooltip = {
@@ -483,9 +472,7 @@ PB_Military_Decisions = {
 
 		icon = generic_air
 
-		visible = {
-			original_tag = AME
-		}
+		allowed = { original_tag = AME }
 
 		available = {
 			custom_trigger_tooltip = {
@@ -555,116 +542,291 @@ PB_Military_Decisions = {
 		}
 	}
 
-	PB_Evolve_Military_1 = {
-
-		custom_cost_trigger = { 
-			has_army_experience > 49 
-		}
-		custom_cost_text = PB_MM_50_XP
-
+	PB_increase_military_socdev_small = {
 		icon = generic_operation
 
-		visible = {
-			has_idea = PB_Pre_Great_War_Army
-		}
-
 		available = {
-			has_idea = PB_Pre_Great_War_Army
+			NOT = {
+				OR = {
+					custom_override_tooltip = {
+						tooltip = took_mil_socdev_decision_last_30_days_tt
+						has_country_flag = took_mil_socdev_decision_last_30_days
+					}
+					custom_override_tooltip = {
+						tooltip = took_mil_monthly_socdev_decision_last_60_days_tt
+						has_country_flag = took_mil_monthly_socdev_decision_last_60_days
+					}
+				}
+			}
+		}
+		visible = {
+			NOT = {
+				has_idea = PB_Fully_Modern_Military
+				check_variable = {
+					social_development_military_modernization_count = 100
+				}
+			}
+		}
+		custom_cost_text = army_xp_mil_socdev_cost_small
+		custom_cost_trigger = {
+			has_army_experience > var:mil_socdev_cost_small
 		}
 
-		ai_will_do = {
-			factor = 5000
-		}
-
-		modifier = {
-			experience_gain_army_factor = -0.1
-		}
-
-		days_remove = 100
-
-		fire_only_once = yes
+		fire_only_once = no
 
 		complete_effect = {
-			army_experience = -50
-		}
-
-		remove_effect = {
-			add_ideas = PB_Great_War_Military
+			military_modernization_growth_progress_small = yes
+			hidden_effect = {
+				set_country_flag = {
+					flag = took_mil_socdev_decision_last_30_days
+					days = 30
+				} 
+				army_experience = mil_socdev_cost_small_neg
+			}
+			add_to_variable = { mil_socdev_cost_small = 5 }
+			clamp_variable = { var = mil_socdev_cost_small min = 0 max = 200 }
+			set_variable = { mil_socdev_cost_small_neg = mil_socdev_cost_small }
+			multiply_variable = { mil_socdev_cost_small_neg = -1 }
 		}
 	}
 
-	PB_Evolve_Military_2 = {
-
-		custom_cost_trigger = { 
-			has_army_experience > 99 
-		}
-		custom_cost_text = PB_MM_100_XP
-
+	PB_increase_military_socdev_medium = {
 		icon = generic_operation
 
-		visible = {
-			has_idea = PB_Great_War_Military
-		}
-
 		available = {
-			has_idea = PB_Great_War_Military
+			NOT = {
+				OR = {
+					custom_override_tooltip = {
+						tooltip = took_mil_socdev_decision_last_30_days_tt
+						has_country_flag = took_mil_socdev_decision_last_30_days
+					}
+					custom_override_tooltip = {
+						tooltip = took_mil_monthly_socdev_decision_last_60_days_tt
+						has_country_flag = took_mil_monthly_socdev_decision_last_60_days
+					}
+				}
+			}
+		}
+		visible = {
+			NOT = {
+				has_idea = PB_Fully_Modern_Military
+				check_variable = {
+					social_development_military_modernization_count = 100
+				}
+			}
+		}
+		custom_cost_text = army_xp_mil_socdev_cost_medium
+		custom_cost_trigger = {
+			has_army_experience > var:mil_socdev_cost_medium
 		}
 
-		ai_will_do = {
-			factor = 50000
-		}
-
-		modifier = {
-			experience_gain_army_factor = -0.1
-		}
-
-		days_remove = 100
-
-		fire_only_once = yes
+		fire_only_once = no
 
 		complete_effect = {
-			army_experience = -100
-		}
-
-		remove_effect = {
-			add_ideas = PB_Semi_Modern_Military
+			military_modernization_growth_progress_moderate = yes
+			hidden_effect = {
+				set_country_flag = {
+					flag = took_mil_socdev_decision_last_30_days
+					days = 30
+				} 
+				army_experience = mil_socdev_cost_medium_neg
+			}
+			add_to_variable = { mil_socdev_cost_medium = 5 }
+			clamp_variable = { var = mil_socdev_cost_medium min = 0 max = 250 }
+			set_variable = { mil_socdev_cost_medium_neg = mil_socdev_cost_medium }
+			multiply_variable = { mil_socdev_cost_medium_neg = -1 }
 		}
 	}
 
-	PB_Evolve_Military_3 = {
-
-		custom_cost_trigger = { 
-			has_army_experience > 149 
-		}
-		custom_cost_text = PB_MM_150_XP
-
+	PB_increase_military_socdev_high = {
 		icon = generic_operation
 
 		available = {
-			has_idea = PB_Semi_Modern_Military
+			NOT = {
+				OR = {
+					custom_override_tooltip = {
+						tooltip = took_mil_socdev_decision_last_30_days_tt
+						has_country_flag = took_mil_socdev_decision_last_30_days
+					}
+					custom_override_tooltip = {
+						tooltip = took_mil_monthly_socdev_decision_last_60_days_tt
+						has_country_flag = took_mil_monthly_socdev_decision_last_60_days
+					}
+				}
+			}
 		}
 		visible = {
-			has_idea = PB_Semi_Modern_Military
+			NOT = {
+				has_idea = PB_Fully_Modern_Military
+				check_variable = {
+					social_development_military_modernization_count = 100
+				}
+			}
+		}
+		custom_cost_text = army_xp_mil_socdev_cost_high
+		custom_cost_trigger = {
+			has_army_experience > var:mil_socdev_cost_high
 		}
 
-		ai_will_do = {
-			factor = 4000
-		}
-
-		modifier = {
-			experience_gain_army_factor = -0.2
-		}
-
-		days_remove = 100
-
-		fire_only_once = yes
+		fire_only_once = no
 
 		complete_effect = {
-			army_experience = -150
+			military_modernization_growth_progress_high = yes
+			hidden_effect = {
+				set_country_flag = {
+					flag = took_mil_socdev_decision_last_30_days
+					days = 30
+				} 
+				army_experience = mil_socdev_cost_high_neg
+			}
+			add_to_variable = { mil_socdev_cost_high = 5 }
+			clamp_variable = { var = mil_socdev_cost_high min = 0 max = 300 }
+			set_variable = { mil_socdev_cost_high_neg = mil_socdev_cost_high }
+			multiply_variable = { mil_socdev_cost_high_neg = -1 }
+		}
+	}
+
+	PB_increase_military_socdev_small_monthly = {
+		icon = generic_operation
+
+		available = {
+			NOT = {
+				OR = {
+					custom_override_tooltip = {
+						tooltip = took_mil_socdev_decision_last_30_days_tt
+						has_country_flag = took_mil_socdev_decision_last_30_days
+					}
+					custom_override_tooltip = {
+						tooltip = took_mil_monthly_socdev_decision_last_60_days_tt
+						has_country_flag = took_mil_monthly_socdev_decision_last_60_days
+					}
+				}
+			}
+		}
+		visible = {
+			NOT = {
+				has_idea = PB_Fully_Modern_Military
+				check_variable = {
+					social_development_military_modernization_count = 100
+				}
+			}
+		}
+		custom_cost_text = army_xp_mil_socdev_cost_small_monthly
+		custom_cost_trigger = {
+			has_army_experience > var:mil_socdev_cost_small_monthly
 		}
 
-		remove_effect = {
-			add_ideas = PB_Fully_Modern_Military
+		fire_only_once = no
+
+		complete_effect = {
+			military_modernization_growth_progress_monthly_small = yes
+			hidden_effect = {
+				set_country_flag = {
+					flag = took_mil_monthly_socdev_decision_last_60_days
+					days = 60
+				} 
+				army_experience = mil_socdev_cost_small_monthly_neg
+			}
+			add_to_variable = { mil_socdev_cost_small_monthly = 5 }
+			clamp_variable = { var = mil_socdev_cost_small_monthly min = 0 max = 230 }
+			set_variable = { mil_socdev_cost_small_monthly_neg = mil_socdev_cost_small_monthly }
+			multiply_variable = { mil_socdev_cost_small_monthly_neg = -1 }
+		}
+	}
+
+	PB_increase_military_socdev_medium_monthly = {
+		icon = generic_operation
+
+		available = {
+			NOT = {
+				OR = {
+					custom_override_tooltip = {
+						tooltip = took_mil_socdev_decision_last_30_days_tt
+						has_country_flag = took_mil_socdev_decision_last_30_days
+					}
+					custom_override_tooltip = {
+						tooltip = took_mil_monthly_socdev_decision_last_60_days_tt
+						has_country_flag = took_mil_monthly_socdev_decision_last_60_days
+					}
+				}
+			}
+		}
+		visible = {
+			NOT = {
+				has_idea = PB_Fully_Modern_Military
+				check_variable = {
+					social_development_military_modernization_count = 100
+				}
+			}
+		}
+		custom_cost_text = army_xp_mil_socdev_cost_medium_monthly
+		custom_cost_trigger = {
+			has_army_experience > var:mil_socdev_cost_medium_monthly
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			military_modernization_growth_progress_monthly_moderate = yes
+			hidden_effect = {
+				set_country_flag = {
+					flag = took_mil_monthly_socdev_decision_last_60_days
+					days = 60
+				} 
+				army_experience = mil_socdev_cost_medium_monthly_neg
+			}
+			add_to_variable = { mil_socdev_cost_medium_monthly = 5 }
+			clamp_variable = { var = mil_socdev_cost_medium_monthly min = 0 max = 280 }
+			set_variable = { mil_socdev_cost_medium_monthly_neg = mil_socdev_cost_medium_monthly }
+			multiply_variable = { mil_socdev_cost_medium_monthly_neg = -1 }
+		}
+	}
+
+	PB_increase_military_socdev_high_monthly = {
+		icon = generic_operation
+
+		available = {
+			NOT = {
+				OR = {
+					custom_override_tooltip = {
+						tooltip = took_mil_socdev_decision_last_30_days_tt
+						has_country_flag = took_mil_socdev_decision_last_30_days
+					}
+					custom_override_tooltip = {
+						tooltip = took_mil_monthly_socdev_decision_last_60_days_tt
+						has_country_flag = took_mil_monthly_socdev_decision_last_60_days
+					}
+				}
+			}
+		}
+		visible = {
+			NOT = {
+				has_idea = PB_Fully_Modern_Military
+				check_variable = {
+					social_development_military_modernization_count = 100
+				}
+			}
+		}
+		custom_cost_text = army_xp_mil_socdev_cost_high_monthly
+		custom_cost_trigger = {
+			has_army_experience > var:mil_socdev_cost_high_monthly
+		}
+
+		fire_only_once = no
+
+		complete_effect = {
+			military_modernization_growth_progress_monthly_high = yes
+			hidden_effect = {
+				set_country_flag = {
+					flag = took_mil_monthly_socdev_decision_last_60_days
+					days = 60
+				} 
+				army_experience = mil_socdev_cost_high_monthly_neg
+			}
+			add_to_variable = { mil_socdev_cost_high_monthly = 5 }
+			clamp_variable = { var = mil_socdev_cost_high_monthly min = 0 max = 350 }
+			set_variable = { mil_socdev_cost_high_monthly_neg = mil_socdev_cost_high_monthly }
+			multiply_variable = { mil_socdev_cost_high_monthly_neg = -1 }
 		}
 	}
 
@@ -675,9 +837,8 @@ PB_Military_Decisions = {
 		custom_cost_text = PB_MM_25_XP
 
 		icon = generic_operation
-
+		allowed = { original_tag = GER }
 		visible = {
-			original_tag = GER
 			has_completed_focus = PB_GER_Military_Focus
 		}
 

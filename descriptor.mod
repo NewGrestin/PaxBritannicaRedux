@@ -1,10 +1,4 @@
 ﻿name="PaxBritannicaRedux Dev Build"
-tags={
-	"Alternative History"
-	"National Focuses"
-	"Events"
-	"Gameplay"
-}
 
 replace_path = "common/ai_equipment"
 replace_path = "common/ai_focuses"
@@ -42,5 +36,13 @@ replace_path = "tests"
 replace_path = "gfx/fonts"
 replace_path = "music"
 
-picture="thumbnail.png"
+tags={
+	"Alternative History"
+	"National Focuses"
+	"Events"
+	"Gameplay"
+}
+
+picture="Pax_Brit.png"
+version="1.4_dev_build"
 supported_version="1.16.*"

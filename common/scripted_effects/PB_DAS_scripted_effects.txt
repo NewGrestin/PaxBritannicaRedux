@@ -1,11 +1,132 @@
+DAS_setup_starting_zitronella_vars = {
+	DAS = {
+		set_variable = { zitronella_shares = 100 }
+		set_variable = { Bundestag_Patience = 2 }
+
+		clamp_variable = { var = zitronella_shares min = 1 max = 100 }
+		clamp_variable = { var = Bundestag_Patience min = 1 max = 6 }
+
+		add_dynamic_modifier = { modifier = DAS_zitronella_influence_dynamic_modifier }
+
+		set_variable = { Bund_Cut = 0 }
+		set_variable = { OVBD_Cut = 0 }
+		set_variable = { Yanco_Cut = 0 }
+		set_variable = { Zobel_Cut = 0 }
+		set_variable = { Maclay_Cut = 0 }
+		set_variable = { OstHansa_Cut = 0 }
+		set_variable = { Hugenburg_Cut = 0 }
+		set_variable = { Lowenstein_Cut = 0 }
+	}
+}
+
+update_DAS_zitronella_influence = {
+	DAS_check_zitronella_influence_dynmod_vars = yes
+}
+
+DAS_starting_phillipines_resistance = {
+	327 = { #Southern Luzon
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 10
+		set_resistance = 60
+		set_garrison_strength = 0.2
+
+		add_province_modifier = {
+			static_modifiers = { Manila_Siege }
+			province = {
+				id = 10265
+			}
+		}
+	}
+	625 = { #Samar
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 15
+		set_resistance = 40
+		set_garrison_strength = 1.0
+	}
+	626 = { #Palawan
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 15
+		set_resistance = 40
+		set_garrison_strength = 1.0
+	}
+	627 = { #Mindanao
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 40
+		set_resistance = 30
+		set_garrison_strength = 1.0
+	}
+	628 = { #Western Visayas
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 15
+		set_resistance = 40
+		set_garrison_strength = 1.0
+	}
+	1352 = { #Zamboanga
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 5
+		set_resistance = 70
+		set_garrison_strength = 0.2
+	}
+	1414 = { #Maguindanao
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 5
+		set_resistance = 70
+		set_garrison_strength = 0.2
+	}
+	1577 = { #Panay
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 15
+		set_resistance = 40
+		set_garrison_strength = 0.2
+	}
+	1578 = { #Leyte
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 15
+		set_resistance = 40
+		set_garrison_strength = 0.2
+	}
+	1579 = { #Sulu
+		if = {
+			limit = { has_resistance = no }
+			start_resistance = yes
+		}
+		set_compliance = 50
+		set_resistance = 20
+		set_garrison_strength = 0.2
+	}
+
+}
+
+
 DAS_start_civil_war = {
 	set_global_flag = DAS_civil_war
-	GER = {
-		puppet = {
-        target = SSL
-        end_wars = no
-        }
-	}
 	DAS = {
 		set_cosmetic_tag = DAS_FREE
 		declare_war_on = {
@@ -23,8 +144,16 @@ DAS_start_civil_war = {
 		limit = { is_claimed_by = DAS }
 		add_claim_by = SSL
 	}
+	every_owned_state = {
+		limit = { has_state_flag = DAS_Fernost_Owner_SSL }
+		transfer_state_to = SSL
+		create_unit = {
+			division = "name = \"Fernost Commandos\" division_template = \"Infanterie-Division\" start_experience_factor = 0.5 start_equipment_factor = 1"
+			owner = SSL
+		}
+	}
 	SSL = {
-	    set_cosmetic_tag = DAS_FERNOST
+		set_cosmetic_tag = DAS_FERNOST
 		set_country_flag = DAS_is_Fernost
 		inherit_technology = DAS
 		set_capital = {
@@ -33,6 +162,7 @@ DAS_start_civil_war = {
 		load_oob = "DAS_Fernost"
 	}
 }
+
 DAS_Raise_Bund = {
 	if = {
 		limit = {
@@ -90,6 +220,7 @@ DAS_Raise_Bund = {
 		}
 	}
 }
+
 DAS_Lower_Bund = {
 	if = {
 		limit = {
@@ -144,6 +275,395 @@ DAS_Lower_Bund = {
 		swap_ideas = {
 			remove_idea = PB_Idea_DAS_Bundestag_Patience_6
 			add_idea = PB_Idea_DAS_Bundestag_Patience_5
+		}
+	}
+}
+
+DAS_ZIT_Finalize_Effect = {
+	if = {
+		limit = { has_country_flag = clicked_on_OSTHANSA }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = OstHansa_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_OSTHANSA
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_YANCO }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = Yanco_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_YANCO
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_OVBD }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = OVBD_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_OVBD
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_MACLAY }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = Maclay_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_MACLAY
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_BUND }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = Bund_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_BUND
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_LOWENSTEIN }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = Lowenstein_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_LOWENSTEIN
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_ZOBEL }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = Zobel_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_ZOBEL
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_HUGENBURG }
+		subtract_from_variable = {
+			var = zitronella_shares
+			value = Hugenburg_Cut
+			tooltip = DAS_Var_Change_Finalization_tt
+		}
+		set_country_flag = Finalized_on_HUGENBURG
+	}
+	else = { }
+	remove_mission = DAS_Zitronella_Timer
+}
+
+DAS_ZIT_Clamp_Effect = {
+	clamp_variable = { var = OstHansa_Cut min = 0 max = 100 }
+	clamp_variable = { var = Yanco_Cut min = 0 max = 100 }
+	clamp_variable = { var = OVBD_Cut min = 0 max = 100 }
+	clamp_variable = { var = Maclay_Cut min = 0 max = 100 }
+	clamp_variable = { var = Bund_Cut min = 0 max = 100 }
+	clamp_variable = { var = Lowenstein_Cut min = 0 max = 100 }
+	clamp_variable = { var = Zobel_Cut min = 0 max = 100 }
+	clamp_variable = { var = Hugenburg_Cut min = 0 max = 100 }
+}
+
+DAS_ZIT_Add_1 = {
+	if = {
+		limit = { has_country_flag = clicked_on_OSTHANSA }
+		add_to_variable = {
+			var = OstHansa_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_YANCO }
+		add_to_variable = {
+			var = Yanco_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_OVBD }
+		add_to_variable = {
+			var = OVBD_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_MACLAY }
+		add_to_variable = {
+			var = Maclay_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_BUND }
+		add_to_variable = {
+			var = Bund_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_LOWENSTEIN }
+		add_to_variable = {
+			var = Lowenstein_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_ZOBEL }
+		add_to_variable = {
+			var = Zobel_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_HUGENBURG }
+		add_to_variable = {
+			var = Hugenburg_Cut
+			value = 1
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+}
+
+DAS_ZIT_Add_5 = {
+	if = {
+		limit = { has_country_flag = clicked_on_OSTHANSA }
+		add_to_variable = {
+			var = OstHansa_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_YANCO }
+		add_to_variable = {
+			var = Yanco_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_OVBD }
+		add_to_variable = {
+			var = OVBD_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_MACLAY }
+		add_to_variable = {
+			var = Maclay_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_BUND }
+		add_to_variable = {
+			var = Bund_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_LOWENSTEIN }
+		add_to_variable = {
+			var = Lowenstein_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_ZOBEL }
+		add_to_variable = {
+			var = Zobel_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_HUGENBURG }
+		add_to_variable = {
+			var = Hugenburg_Cut
+			value = 5
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+}
+
+DAS_ZIT_Add_10 = {
+	if = {
+		limit = { has_country_flag = clicked_on_OSTHANSA }
+		add_to_variable = {
+			var = OstHansa_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_YANCO }
+		add_to_variable = {
+			var = Yanco_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_OVBD }
+		add_to_variable = {
+			var = OVBD_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_MACLAY }
+		add_to_variable = {
+			var = Maclay_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_BUND }
+		add_to_variable = {
+			var = Bund_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_LOWENSTEIN }
+		add_to_variable = {
+			var = Lowenstein_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_ZOBEL }
+		add_to_variable = {
+			var = Zobel_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_HUGENBURG }
+		add_to_variable = {
+			var = Hugenburg_Cut
+			value = 10
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+}
+
+DAS_ZIT_Add_15 = {
+	if = {
+		limit = { has_country_flag = clicked_on_OSTHANSA }
+		add_to_variable = {
+			var = OstHansa_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_YANCO }
+		add_to_variable = {
+			var = Yanco_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_OVBD }
+		add_to_variable = {
+			var = OVBD_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_MACLAY }
+		add_to_variable = {
+			var = Maclay_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_BUND }
+		add_to_variable = {
+			var = Bund_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_LOWENSTEIN }
+		add_to_variable = {
+			var = Lowenstein_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_ZOBEL }
+		add_to_variable = {
+			var = Zobel_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = clicked_on_HUGENBURG }
+		add_to_variable = {
+			var = Hugenburg_Cut
+			value = 15
+			tooltip = DAS_Var_Change_tt
+		}
+	}
+}
+
+DAS_Zit_civil_war = {
+	set_global_flag = DAS_Zit_Civilwar
+	DAS = {
+		declare_war_on = {
+			target = DSA
+			type = annex_everything
+		}
+	}
+	every_core_state = {
+		add_core_of = DSA
+	}
+	every_owned_state = {
+		limit = { is_claimed_by = DAS }
+		add_claim_by = DSA
+	}
+
+	every_owned_state = {
+		limit = {
+			is_controlled_by = ROOT
+			OR = {
+				state = 625 #
+			}
+		}
+		transfer_state_to = DSA
+	}
+	DSA = {
+		inherit_technology = DAS
+		set_capital = {
+			state = 625 #
 		}
 	}
 }
