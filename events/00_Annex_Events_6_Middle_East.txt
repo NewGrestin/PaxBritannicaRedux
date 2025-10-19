@@ -1,37 +1,25 @@
 add_namespace = annex
 
-#####################################
-##   P E R S I A   ##
-#####################################
-
-
 country_event = { #Fate of Persia
 	id = annex.6000
 	title = annexation_persia
 	desc = annexation_persia_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
+	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 	
 	immediate = {
-		1426 = { retain_state = yes } #Urmia
-		419 = { retain_state = yes } #Tibriz
-		420 = { retain_state = yes } #Gilan
-		416 = { retain_state = yes } #North Khorasan
-		418 = { retain_state = yes } #Semnan
-		1425 = { retain_state = yes } #South Khorasan
+		266 = { retain_state = yes } #Mazandaran
 		410 = { retain_state = yes } #Sistan
-		414 = { retain_state = yes } #Kerman
-		412 = { retain_state = yes } #Far
-		413 = { retain_state = yes } #Khuzestan
-		1423 = { retain_state = yes } #Ilam
-		421 = { retain_state = yes } #Kurdistan
-		417 = { retain_state = yes } #Hamadan
-		411 = { retain_state = yes } #Isfahan
-		1424 = { retain_state = yes } #Yazd
+		413 = { retain_state = yes } #Kuzestan
+		419 = { retain_state = yes } #Persian Azeirbadjan
+		420 = { retain_state = yes } #Gilan
+		421 = { retain_state = yes } #Kordestan
+		1423 = { retain_state = yes } #Lorestan
+		1426 = { retain_state = yes } #Orumiyeh
 	}
-	
-	option = { #Release Persia Whole
+
+	option = { #Release Persia
 		log = "[GetLogInfo]: event annex.6000 option annexation.6000.a"
 		name = annex.6000.a
 		trigger = {
@@ -41,27 +29,104 @@ country_event = { #Fate of Persia
 			base = 100
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = PER }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			PER = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PER_Occupied_Monarchy
 			}
 		}
 
 		if = {
-			limit = { country_exists = PER }
-			custom_effect_tooltip = PER_puppet_tooltip
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			PER = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PER_Occupied_Republic
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = PER }
-			release_targeted_tag = yes
+		recheck_annexations = yes
+	}
+	
+	option = { #Establish our Dominion over Persia
+		log = "[GetLogInfo]: event annex.6000 option annexation.6000.b"
+		name = annex.6000.b
+		trigger = {
+			is_subject = no
+			OR = {
+				tag = ENG
+				tag = RUS
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = PER }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					tag = ENG
+				}
+			}
+			PER = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PER_ENG_Colonial
+				add_stability = -0.1
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					tag = RUS
+				}
+			}
+			PER = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PER_RUS_Colonial
+				add_stability = -0.1
+			}
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6000 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
 		}
 		recheck_annexations = yes
 	}
 
 	option = { #Cancel
-	log = "[GetLogInfo]: event annexation.6000 option annexation.cancel"
-	name = annex.cancel
-	ai_chance = { base = 0 }
-	recheck_annexations = yes
-    }
+		log = "[GetLogInfo]: event annex.6000 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Greek Anatolia
@@ -290,6 +355,358 @@ country_event = { #Fate of Uskudar
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.6002 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Sistan
+	id = annex.6003
+	title = annexation_sistan
+	desc = annexation_sistan_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	option = { #Grant it to Persia
+		log = "[GetLogInfo]: event annex.6003 option annexation.6003.a"
+		name = annex.6003.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		PER = {
+			transfer_state = 410
+		}
+		
+		recheck_annexations = yes
+	}
+	
+	option = { #Grant it to Balochistan
+		log = "[GetLogInfo]: event annex.6003 option annexation.6003.b"
+		name = annex.6003.b
+		trigger = {
+			is_subject = no
+			BLC = {
+				exists = yes
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+			}
+		}
+
+		BLC = {
+			transfer_state = 410
+		}
+		
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6000 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6000 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Azerbijan
+	id = annex.6004
+	title = annexation_azerbijan
+	desc = annexation_azerbijan_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	option = { #Leave it to Persia
+		log = "[GetLogInfo]: event annex.6004 option annexation.6004.a"
+		name = annex.6004.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		PER = {
+			transfer_state = 419
+		}
+		
+		recheck_annexations = yes
+	}
+	
+	option = { #Grant it to Azerbijan
+		log = "[GetLogInfo]: event annex.6004 option annexation.6004.b"
+		name = annex.6004.b
+		trigger = {
+			is_subject = no
+			AZR = {
+				exists = yes
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+			}
+		}
+
+		AZR = {
+			transfer_state = 419
+		}
+		
+		recheck_annexations = yes
+	}
+	
+	option = { #Grant it to Russia
+		log = "[GetLogInfo]: event annex.6004 option annexation.6004.c"
+		name = annex.6004.c
+		trigger = {
+			is_subject = no
+			RUS = {
+				exists = yes
+				is_subject = no
+			}
+			OR = {
+				RUS = {
+					owns_state = 1086
+				}
+				TRS = {
+					owns_state = 1086
+				}
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+			}
+		}
+		
+		if = {
+			TRS = {
+				exists = yes
+			}
+			TRS = {
+				transfer_state = 419
+			}
+		}
+		else_if = {
+			TRS = {
+				exists = no
+			}
+			RUS = {
+				transfer_state = 419
+			}
+		}
+		
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6004 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6004 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Gilan
+	id = annex.6005
+	title = annexation_gilan
+	desc = annexation_gilan_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	option = { #Leave it to Persia
+		log = "[GetLogInfo]: event annex.6005 option annexation.6005.a"
+		name = annex.6005.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		PER = {
+			transfer_state = 420
+		}
+		
+		recheck_annexations = yes
+	}
+	
+	option = { #Grant it to Russia
+		log = "[GetLogInfo]: event annex.6005 option annexation.6005.b"
+		name = annex.6005.b
+		trigger = {
+			is_subject = no
+			RUS = {
+				exists = yes
+				is_subject = no
+			}
+			OR = {
+				RUS = {
+					owns_state = 1086
+				}
+				TRS = {
+					owns_state = 1086
+				}
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+			}
+		}
+		
+		if = {
+			TRS = {
+				exists = yes
+			}
+			TRS = {
+				transfer_state = 420
+			}
+		}
+		else_if = {
+			TRS = {
+				exists = no
+			}
+			RUS = {
+				transfer_state = 420
+			}
+		}
+		
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6005 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6005 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Kuzestan
+	id = annex.6006
+	title = annexation_kuzestan
+	desc = annexation_kuzestan_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	option = { #Leave it to Persia
+		log = "[GetLogInfo]: event annex.6006 option annexation.6006.a"
+		name = annex.6006.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		PER = {
+			transfer_state = 413
+		}
+		
+		recheck_annexations = yes
+	}
+	
+	option = { #Grant it to the Tripartite Zone
+		log = "[GetLogInfo]: event annex.6006 option annexation.6006.b"
+		name = annex.6006.b
+		trigger = {
+			is_subject = no
+			UAE = {
+				exists = yes
+				owns_state = 1301
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+			}
+		}
+		
+		UAE = {
+			transfer_state = 413
+		}
+		
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6006 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6006 option annexation.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
