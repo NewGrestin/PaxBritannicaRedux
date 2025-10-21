@@ -4608,6 +4608,7 @@ country_event = { #Fate of Philippines
 		1148 = { retain_state = yes } #Sabah
 		1414 = { retain_state = yes } #Maguindanao
 		1352 = { retain_state = yes } #Zamboanga
+		1579 = { retain_state = yes } #Sulu
 	}
 
 	option = { #Release Philippines
@@ -4652,6 +4653,78 @@ country_event = { #Fate of Philippines
 		recheck_annexations = yes
 	}
 
+	option = { #Release Philippines Whole
+		log = "[GetLogInfo]: event annex.7036 option annexation.7036.a"
+		name = annex.7036.b
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = PHI }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			PHI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PHI_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			PHI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PHI_Occupied_Republic
+			}
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1001 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1001 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			#limit = { is_mainland_france_state = yes }
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7036 option annexation.cancel"
 		name = annex.cancel
@@ -4667,10 +4740,6 @@ country_event = { #Fate of Sulu
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-	
-    immediate = {
-		1148 = { retain_state = yes } #Sabah
-	}
 
 	option = { #Release Sulu
 		log = "[GetLogInfo]: event annex.7037 option annexation.7037.a"
@@ -4729,9 +4798,41 @@ country_event = { #Fate of Sulu
 				annexations_can_annex = yes
 			}
 		}
-		set_temp_variable = { tag_to_release = PHI }
-		1414 = { transfer_if_owned = yes } 
-		1352 = { transfer_if_owned = yes }
+		PHI = {
+			transfer_state = 1352
+			transfer_state = 1579
+			transfer_state = 1148
+			transfer_state = 1414
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1001 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1001 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
 		recheck_annexations = yes
 	}
 
@@ -5092,13 +5193,1117 @@ country_event = { #Fate of Punjab
 	}
 }
 
+country_event = { # Fate of Brunei
+	id = annex.7042
+	title = annexation_decision_bru
+	desc = annexation_decision_bru_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	
+	immediate = {
+		if = {
+            limit = {
+                OR = {
+                    original_tag = SWK
+                    AND = {
+						OR = {
+							owns_state = 333 #Sarawak
+							owns_state = 1414 #Sabah
+						}
+                    }
+                }
+            }
+            save_event_target_as = can_annex
+        }
+        if = {
+            limit = { SWK = { ROOT_can_grant_land_ignore_ideology = yes } }
+            SWK = { save_event_target_as = sarawak }
+        }
+        if = {
+            limit = {
+                1149 = { #Eastern Kalimantan
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:sarawak }
+						OR = {
+							owns_state = 333 #Sarawak
+							owns_state = 1414 #Sabah
+						}
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1149.owner = { save_event_target_as = borneo }
+        }
+	}
+
+	option = { # Release an independent Brunei
+		log = "[GetLogInfo]: event annex.7042 option annexation.7042.a"
+		name = annex.7042.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+                factor = 0
+                annexations_can_annex = yes
+            }
+            modifier = {
+                factor = 0
+                has_event_target = borneo
+                OR = {
+                    is_major = no
+                    is_ally_with = event_target:borneo
+                }
+            }
+            modifier = {
+                factor = 0
+                has_event_target = sarawak
+                OR = {
+                    is_major = no
+                    is_ally_with = event_target:sarawak
+                }
+            }
+		}
+
+		set_temp_variable = { tag_to_release = BRU }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			BRU = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BRU_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			BRU = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BRU_Occupied_Republic
+			}
+		}
+	}
+
+	option = { # Give it to Sarawak
+		log = "[GetLogInfo]: event annex.7042 option annexation.7042.b"
+		name = annex.7042.b
+		trigger = {
+           	has_event_target = sarawak
+        }
+		ai_chance = {
+            base = 70
+            modifier = {
+                factor = 0
+                annexations_can_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:sarawak }
+                is_ally_with = event_target:borneo
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+            modifier = {
+                factor = 0.1
+                event_target:sarawak = { is_subject = yes }
+            }
+        }
+		set_temp_variable = { tag_to_release = event_target:sarawak }
+        912 = { transfer_state_and_notify = yes }
+	}
+
+	option = { # Give it to Borneo
+		log = "[GetLogInfo]: event annex.7042 option annexation.7042.b"
+		name = annex.7042.c
+		trigger = {
+           	has_event_target = borneo
+        }
+		ai_chance = {
+            base = 70
+            modifier = {
+                factor = 0
+                annexations_can_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:borneo }
+                is_ally_with = event_target:sarawak
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+            modifier = {
+                factor = 0.1
+                event_target:borneo = { is_subject = yes }
+            }
+        }
+		set_temp_variable = { tag_to_release = event_target:borneo }
+        912 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7042 option annex.asia.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = {
+            annexations_should_give_lands_to_overlord = yes
+        }
+        set_temp_variable = { tag_to_release = overlord }
+        912 = { transfer_state_and_notify = yes } #Brunei
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7042 option annex.integration"
+        name = annex.integration
+        trigger = {
+            annexations_can_annex = yes
+        }
+        119 = { add_claim_of_ROOT = yes } #Ulster
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7042 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Sulawesi
+	id = annex.7043
+	title = annexation_decision_sulawesi
+	desc = annexation_decision_sulawesi_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+	}
+
+	option = { # Release an independent Sulawesi
+		log = "[GetLogInfo]: event annex.7043 option annexation.7043.a"
+		name = annex.7043.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = SUL }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			SUL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SUL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			SUL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SUL_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7043 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7043 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7043 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+country_event = { # Fate of Papua
+	id = annex.7044
+	title = annexation_decision_papua
+	desc = annexation_decision_papua_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		669 = { retain_state = yes } #North Papua
+		954 = { retain_state = yes } #Cordillera Papua
+		523 = { retain_state = yes } #East Papua
+		737 = { retain_state = yes } #Neu Pommern
+		if = {
+            limit = {
+                OR = {
+                    original_tag = DAS
+                    original_tag = INS
+                }
+            }
+            save_event_target_as = can_annex
+        }
+        if = {
+            limit = { INS = { ROOT_can_grant_land_ignore_ideology = yes } }
+            INS = { save_event_target_as = dutch_east_indies }
+        }
+        if = {
+            limit = {
+                737 = { #Rabaul
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:dutch_east_indies }
+                        owns_state = 669 #Northern Papua
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:737.owner = { save_event_target_as = german_pacific }
+        }
+	}
+
+	option = { # Release an independent Papua
+		log = "[GetLogInfo]: event annex.7044 option annexation.7044.a"
+		name = annex.7044.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = PNG }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			PNG = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PNG_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			PNG = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PNG_Occupied_Republic
+			}
+		}
+	}
+
+	option = { # Give it to German Pacific
+		log = "[GetLogInfo]: event annex.7044 option annexation.7044.b"
+		name = annex.7042.b
+		trigger = {
+           	has_event_target = german_pacific
+        }
+		ai_chance = {
+            base = 70
+            modifier = {
+                factor = 0
+                annexations_can_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:german_pacific }
+                is_ally_with = event_target:dutch_east_indies
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+            modifier = {
+                factor = 0.1
+                event_target:german_pacific = { is_subject = yes }
+            }
+        }
+		set_temp_variable = { tag_to_release = event_target:german_pacific }
+        1353 = { transfer_state_and_notify = yes }
+		1354 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { # Give it to Dutch East Indies
+		log = "[GetLogInfo]: event annex.7044 option annexation.7044.b"
+		name = annex.7042.c
+		trigger = {
+           	has_event_target = dutch_east_indies
+        }
+		ai_chance = {
+            base = 70
+            modifier = {
+                factor = 0
+                annexations_can_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:dutch_east_indies }
+                is_ally_with = event_target:german_pacific
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+            modifier = {
+                factor = 0.1
+                event_target:dutch_east_indies = { is_subject = yes }
+            }
+        }
+		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
+        1353 = { transfer_state_and_notify = yes }
+		1354 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7044 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7044 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7044 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Borneo
+	id = annex.7045
+	title = annexation_decision_borneo
+	desc = annexation_decision_borneo_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	option = { # Create Borneo
+		log = "[GetLogInfo]: event annex.7045 option annexation.7045.a"
+		name = annex.7045.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = { 
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = BOR }
+		334 = { remove_claim_and_add_core_of_target = yes } #Eastern Kalimantan
+		1349 = { remove_claim_and_add_core_of_target = yes } #Southern Kalimantan
+		792 = { remove_claim_and_add_core_of_target = yes } #Western Kalimantan
+		1348 = { remove_claim_and_add_core_of_target = yes } #Central Kalimantan
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			BOR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BOR_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			BOR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BOR_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7045 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7045 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7045 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Sumatra
+	id = annex.7046
+	title = annexation_decision_672
+	desc = annexation_decision_672_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = INS
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = { INS = { ROOT_can_grant_land = yes } }
+			INS = { save_event_target_as = dutch_east_indies }
+		}
+	}
+	option = { # Release Sumatra Whole
+		log = "[GetLogInfo]: event annex.7046 option annexation.7046.a"
+		name = annex.7046.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		if = {
+			limit = { country_exists = DEL }
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			DEL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = DEL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			DEL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = DEL_Occupied_Republic
+			}
+		}
+
+		set_temp_variable = { tag_to_release = DEL }
+		1342 = { remove_claim_and_add_core_of_target = yes } #Sumatra Barat
+		1400 = { remove_claim_and_add_core_of_target = yes } #Riau
+		1146 = { remove_claim_and_add_core_of_target = yes } #South Aceh
+		790 = { remove_claim_and_add_core_of_target = yes } #North Aceh
+		1346 = { remove_claim_and_add_core_of_target = yes } #Nias Islands
+		release_targeted_tag = yes
+	}
+
+	option = { #give to INS
+		log = "[GetLogInfo]: event annex.7046 option annex.7046.a"
+		name = annex.7046.a
+		trigger = {
+			has_event_target = dutch_east_indies
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 100
+				has_subject = event_target:dutch_east_indies
+				annexations_can_annex = no
+			}
+			modifier = {
+				add = 100
+				is_ally_with = event_target:dutch_east_indies
+				annexations_can_annex = no
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
+		1342 = { transfer_if_owned = yes } 
+		1400 = { transfer_if_owned = yes } 
+		1146 = { transfer_if_owned = yes } 
+		790 = { transfer_if_owned = yes } 
+		1346 = { transfer_if_owned = yes } 
+		1341 = { transfer_if_owned = yes } 
+		1340 = { transfer_if_owned = yes } 
+		672 = { transfer_if_owned = yes } 
+		1401 = { transfer_if_owned = yes } 
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7046 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1342 = { transfer_if_owned = yes } 
+		1400 = { transfer_if_owned = yes } 
+		1146 = { transfer_if_owned = yes } 
+		790 = { transfer_if_owned = yes } 
+		1346 = { transfer_if_owned = yes } 
+		1341 = { transfer_if_owned = yes } 
+		1340 = { transfer_if_owned = yes } 
+		672 = { transfer_if_owned = yes } 
+		1401 = { transfer_if_owned = yes } 
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7046 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1342 = { add_claim_of_ROOT = yes } 
+		1400 = { add_claim_of_ROOT = yes } 
+		1146 = { add_claim_of_ROOT = yes } 
+		790 = { add_claim_of_ROOT = yes } 
+		1346 = { add_claim_of_ROOT = yes } 
+		1341 = { add_claim_of_ROOT = yes } 
+		1340 = { add_claim_of_ROOT = yes } 
+		672 = { add_claim_of_ROOT = yes } 
+		1401 = { add_claim_of_ROOT = yes } 
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7046 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Sarawak
+	id = annex.7047
+	title = annexation_decision_333
+	desc = annexation_decision_333_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	option = { # Release an independent Sarawak
+		log = "[GetLogInfo]: event annex.7047 option annexation.7047.a"
+		name = annex.7047.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = SWK }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			SWK = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SWK_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			SWK = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SWK_Occupied_Republic
+			}
+		}
+
+	}
+
+	option = { # Give it to Borneo
+		log = "[GetLogInfo]: event annex.7047 option annexation.7047.b"
+		name = annex.7047.b
+		trigger = {
+			is_subject = no
+			BOR = {
+				exists = yes
+			}
+		}
+		BOR = {
+			transfer_state = 333
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7047 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7047 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7047 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { #Fate of Eastern Papua
+	id = annex.7048
+	title = annexation_decision_669
+	desc = annexation_decision_669_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	
+	immediate = {
+		if = {
+            limit = {
+                OR = {
+                    original_tag = DAS
+                    original_tag = INS
+                }
+            }
+            save_event_target_as = can_annex
+        }
+        if = {
+            limit = {
+                1353 = { # West Papua
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1353.owner = { save_event_target_as = west_papua_owner }
+        }
+	}
+
+	option = { #Give East Papua to West Papua
+		log = "[GetLogInfo]: event annex.7048 option annexation.7048.a"
+		name = annex.7048.a
+		trigger = {
+			has_event_target = west_papua_owner
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:west_papua_owner = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:west_papua_owner }
+		669 = { transfer_state_and_notify = yes } # Northern Papua
+		954 = { transfer_state_and_notify = yes } # Cordillera Papua
+		523 = { transfer_state_and_notify = yes } # Eastern Papua
+		737 = { transfer_state_and_notify = yes } # Bismarck Archipelago
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7048 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.7048 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { #Fate of Meranti Islands
+	id = annex.7049
+	title = annexation_decision_1344
+	desc = annexation_decision_1344_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+            limit = {
+                OR = {
+                    original_tag = DEL
+					original_tag = HAR
+					original_tag = ACE
+                }
+            }
+            save_event_target_as = can_annex
+        }
+		if = {
+            limit = {
+                672 = { # Palembang
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:672.owner = { save_event_target_as = sumatra }
+        }
+        if = {
+            limit = {
+                1143 = { # Selangor-Negeri
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1143.owner = { save_event_target_as = malaysia }
+        }
+	}
+
+	option = { #Grant Meranti to Sumatra
+		log = "[GetLogInfo]: event annex.7049 option annexation.7049.a"
+		name = annex.7049.a
+		trigger = {
+			has_event_target = sumatra
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:sumatra }
+                is_ally_with = event_target:malaysia
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+			modifier = {
+				factor = 0.1
+				event_target:sumatra = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:sumatra }
+		1344 = { transfer_state_and_notify = yes } # Meranti
+	}
+	
+	option = { #Grant Meranti to Malaya/BFE
+		log = "[GetLogInfo]: event annex.7049 option annexation.7049.b"
+		name = annex.7049.b
+		trigger = {
+			has_event_target = malaysia
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:malaysia }
+                is_ally_with = event_target:sumatra
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+			modifier = {
+				factor = 0.1
+				event_target:malaysia = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:malaysia }
+		1344 = { transfer_state_and_notify = yes } # Meranti
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7049 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.7049 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { #Fate of Riau Islands
+	id = annex.7050
+	title = annexation_decision_1344
+	desc = annexation_decision_1344_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+            limit = {
+                OR = {
+                    original_tag = DEL
+					original_tag = HAR
+					original_tag = ACE
+                }
+            }
+            save_event_target_as = can_annex
+        }
+		if = {
+            limit = {
+                333 = { # Sarawak
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:333.owner = { save_event_target_as = sarawak }
+        }
+        if = {
+            limit = {
+                1143 = { # Selangor-Negeri
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1143.owner = { save_event_target_as = malaysia }
+        }
+	}
+
+	option = { #Grant Riau to Sarawak
+		log = "[GetLogInfo]: event annex.7050 option annexation.7050.a"
+		name = annex.7050.a
+		trigger = {
+			has_event_target = sarawak
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:sarawak }
+                is_ally_with = event_target:malaysia
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+			modifier = {
+				factor = 0.1
+				event_target:sarawak = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:sarawak }
+		1343 = { transfer_state_and_notify = yes } # Riau
+	}
+	
+	option = { #Grant Riau to Malaya/BFE
+		log = "[GetLogInfo]: event annex.7050 option annexation.7050.b"
+		name = annex.7050.b
+		trigger = {
+			has_event_target = malaysia
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:malaysia }
+                is_ally_with = event_target:sarawak
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+			modifier = {
+				factor = 0.1
+				event_target:malaysia = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:malaysia }
+		1343 = { transfer_state_and_notify = yes } # Riau
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7050 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.7050 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
 country_event = { #Fate of West Sind
 	id = annex.7051
 	title = annexation_decision_west_sind
 	desc = annexation_decision_west_sind_desc
-	picture = GFX_report_PB_Peace_Deals_Asia
-
-	is_triggered_only = yes
 
 	option = { #Leave West Sind to Afghanistan
 		log = "[GetLogInfo]: event annex.7051 option annexation.7051.a"
@@ -5113,13 +6318,13 @@ country_event = { #Fate of West Sind
 			base = 100
 			modifier = {
 				ROOT = {
-					has_country_flag = PB_Indian_Unifier
+				has_country_flag = PB_Indian_Unifier
 				}
 				factor = 0
 			}
 		}
 		AFG = {
-			transfer_state = 1260
+		transfer_state = 1260
 		}
 		recheck_annexations = yes
 	}
@@ -5175,9 +6380,6 @@ country_event = { #Fate of West Sind
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.7051 option annexation.integration"
 		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
 		ai_chance = {
 			base = 0
 			modifier = {
@@ -5186,6 +6388,9 @@ country_event = { #Fate of West Sind
 				}
 				factor = 100
 			}
+		}
+		trigger = {
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -5867,3 +7072,146 @@ country_event = { #Fate of Aksai Chin
 		recheck_annexations = yes
 	}
 }
+
+country_event = { # Fate of Java
+	id = annex.7059
+	title = annexation_decision_1147
+	desc = annexation_decision_1147_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = INS
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = { INS = { ROOT_can_grant_land = yes } }
+			INS = { save_event_target_as = dutch_east_indies }
+		}
+	}
+
+	option = { # Release Java Whole
+		log = "[GetLogInfo]: event annex.7059 option annexation.7059.a"
+		name = annex.7059.a
+		trigger = {
+			NOT = {
+				has_event_target = dutch_east_indies
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_subject = event_target:dutch_east_indies
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:dutch_east_indies
+			}
+		}
+		
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			USS = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = USS_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			USS = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = USS_Occupied_Republic
+			}
+		}
+
+		set_temp_variable = { tag_to_release = USS }
+		335 = { remove_claim_and_add_core_of_target = yes } #West Java
+		1338 = { remove_claim_and_add_core_of_target = yes } #Banten
+		1339 = { remove_claim_and_add_core_of_target = yes } #East Java
+		release_targeted_tag = yes
+	}
+
+	option = { #give to INS
+		log = "[GetLogInfo]: event annex.7059 option annex.7059.b"
+		name = annex.7059.b
+		trigger = {
+			has_event_target = dutch_east_indies
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 100
+				has_subject = event_target:dutch_east_indies
+				annexations_can_annex = no
+			}
+			modifier = {
+				add = 100
+				is_ally_with = event_target:dutch_east_indies
+				annexations_can_annex = no
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
+		335 = { transfer_if_owned = yes } 
+		1338 = { transfer_if_owned = yes } 
+		1339 = { transfer_if_owned = yes } 
+		1147 = { transfer_if_owned = yes } 
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7059 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		335 = { transfer_if_owned = yes } 
+		1338 = { transfer_if_owned = yes } 
+		1339 = { transfer_if_owned = yes } 
+		1147 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7059 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		335 = { add_claim_of_ROOT = yes } 
+		1338 = { add_claim_of_ROOT = yes } 
+		1339 = { add_claim_of_ROOT = yes } 
+		1147 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7059 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+
