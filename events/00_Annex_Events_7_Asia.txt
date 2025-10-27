@@ -5619,6 +5619,18 @@ country_event = { #Fate of Philippines
 		1414 = { retain_state = yes } #Maguindanao
 		1352 = { retain_state = yes } #Zamboanga
 		1579 = { retain_state = yes } #Sulu
+
+		if = {
+            limit = {
+                OR = {
+                    original_tag = DAS
+                }
+				NOT = {
+					has_completed_focus = PB_DAS_Diederichs_Plan
+				}
+            }
+            save_event_target_as = can_annex
+        }
 	}
 
 	option = { #Release Philippines
@@ -6970,6 +6982,27 @@ country_event = { # Fate of Sarawak
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = BOR
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			
+			limit = {
+				1149 = { #East Kalimantan
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			BOR = { save_event_target_as = borneo }
+		}
+	}
+
 	option = { # Release an independent Sarawak
 		log = "[GetLogInfo]: event annex.7047 option annexation.7047.a"
 		name = annex.7047.a
@@ -7013,14 +7046,24 @@ country_event = { # Fate of Sarawak
 		log = "[GetLogInfo]: event annex.7047 option annexation.7047.b"
 		name = annex.7047.b
 		trigger = {
-			is_subject = no
-			BOR = {
-				exists = yes
+			has_event_target = borneo
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 100
+				has_subject = event_target:borneo
+				annexations_can_annex = no
+			}
+			modifier = {
+				add = 100
+				is_ally_with = event_target:borneo
+				annexations_can_annex = no
 			}
 		}
-		BOR = {
-			transfer_state = 333
-		}
+		set_temp_variable = { tag_to_release = event_target:borneo }
+		333 = { transfer_if_owned = yes } 
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Give to overlord
@@ -7162,10 +7205,7 @@ country_event = { #Fate of Meranti Islands
 		if = {
             limit = {
                 672 = { # Palembang
-                    annexations_state_owner_is_valid_grant_target = yes
-                    owner = {
-                        ROOT_can_grant_land = yes
-                    }
+                    owner = { ROOT_can_grant_land = yes }
                 }
             }
             var:672.owner = { save_event_target_as = sumatra }
@@ -7175,6 +7215,7 @@ country_event = { #Fate of Meranti Islands
                 1143 = { # Selangor-Negeri
                     annexations_state_owner_is_valid_grant_target = yes
                     owner = {
+						NOT = { tag = event_target:sumatra }
                         ROOT_can_grant_land = yes
                     }
                 }
@@ -7202,6 +7243,10 @@ country_event = { #Fate of Meranti Islands
                 #annexations_AI_will_consider_returning_colonies = yes
             }
 			modifier = {
+				factor = 2
+				NOT = { has_event_target = malaysia }
+			}
+			modifier = {
 				factor = 0.1
 				event_target:sumatra = { is_subject = yes }
 			}
@@ -7226,8 +7271,11 @@ country_event = { #Fate of Meranti Islands
                 factor = 0
                 NOT = { is_ally_with = event_target:malaysia }
                 is_ally_with = event_target:sumatra
-                #annexations_AI_will_consider_returning_colonies = yes
             }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = sumatra }
+			}
 			modifier = {
 				factor = 0.1
 				event_target:malaysia = { is_subject = yes }
@@ -10097,3 +10145,407 @@ country_event = { # Fate of Chotanagpur/Swarajya
         recheck_annexations = yes
     }
 }
+
+country_event = { # Fate of Timor
+	id = annex.7073
+	title = annexation_decision_1148
+	desc = annexation_decision_1148_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				original_tag = INS
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = { INS = { ROOT_can_grant_land = yes } }
+			INS = { save_event_target_as = dutch_east_indies }
+		}
+		if = {
+			limit = { USS = { exists = yes } }
+			USS = { save_event_target_as = java }
+		}
+	}
+
+	option = { # Give Timor to INS
+		log = "[GetLogInfo]: event annex.7073 option annex.7073.a"
+		name = annex.7073.a
+		trigger = {
+			has_event_target = dutch_east_indies
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:java }
+                is_ally_with = event_target:dutch_east_indies
+                #annexations_AI_will_consider_returning_colonies = yes
+            }
+		}
+		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
+		1148 = { transfer_if_owned = yes } # Timor
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Give Timor to USS (Java)
+		log = "[GetLogInfo]: event annex.7073 option annex.7073.b"
+		name = annex.7073.b
+		trigger = {
+			has_event_target = java
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				add = 60
+				has_subject = event_target:java
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:java
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:java }
+		721 = { transfer_if_owned = yes } # Timor
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Integrate Timor directly
+		log = "[GetLogInfo]: event annex.7073 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		721 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.7073 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		721 = { transfer_if_owned = yes }
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7073 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of the Moluccas
+	id = annex.7074
+	title = annexation_decision_668
+	desc = annexation_decision_668_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				1353 = { # Western Papua
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:1353.owner = { save_event_target_as = papua }
+		}
+
+		if = {
+			limit = {
+				673 = { # North Sulawesi
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:673.owner = { save_event_target_as = sulawesi }
+		}
+	}
+
+	option = { # Give Moluccas to Papua New Guinea
+		log = "[GetLogInfo]: event annex.7074 option annex.7074.a"
+		name = annex.7074.a
+		trigger = {
+			has_event_target = papua
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				add = 60
+				has_subject = event_target:papua
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:papua
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:papua }
+		668 = { transfer_if_owned = yes } # Moluccas
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Give Moluccas to Sulawesi
+		log = "[GetLogInfo]: event annex.7074 option annex.7074.b"
+		name = annex.7074.b
+		trigger = {
+			has_event_target = sulawesi
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				add = 60
+				has_subject = event_target:sulawesi
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:sulawesi
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:sulawesi }
+		668 = { transfer_if_owned = yes } # Moluccas
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Integrate Moluccas directly
+		log = "[GetLogInfo]: event annex.7074 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		668 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.7074 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		668 = { transfer_if_owned = yes }
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7074 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of The Lesser Sunda Islands
+	id = annex.7075
+	title = annexation_decision_667
+	desc = annexation_decision_667_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				original_tag = INS
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = { INS = { ROOT_can_grant_land = yes } }
+			INS = { save_event_target_as = dutch_east_indies }
+		}
+		if = {
+			limit = { USS = { exists = yes } }
+			USS = { save_event_target_as = java }
+		}
+	}
+
+	option = { # Give Lesser Sunda Islands to INS
+		log = "[GetLogInfo]: event annex.7075 option annex.7075.a"
+		name = annex.7075.a
+		trigger = {
+			has_event_target = dutch_east_indies
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
+		667 = { transfer_if_owned = yes } # Lesser Sunda Islands
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Give Lesser Sunda islands to USS (Java)
+		log = "[GetLogInfo]: event annex.7075 option annex.7075.b"
+		name = annex.7075.b
+		trigger = {
+			has_event_target = java
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				add = 60
+				has_subject = event_target:java
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:java
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:java }
+		667 = { transfer_if_owned = yes } # Lesser Sunda Islands
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Integrate Timor directly
+		log = "[GetLogInfo]: event annex.7075 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		667 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.7075 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		667 = { transfer_if_owned = yes }
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7075 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of The Lesser Sunda Islands
+	id = annex.7076
+	title = annexation_decision_1216
+	desc = annexation_decision_1216_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				original_tag = INS
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = { INS = { ROOT_can_grant_land = yes } }
+			INS = { save_event_target_as = dutch_east_indies }
+		}
+		if = {
+			limit = { USS = { exists = yes } }
+			USS = { save_event_target_as = java }
+		}
+	}
+
+	option = { # Give Lesser Sunda Islands to INS
+		log = "[GetLogInfo]: event annex.7076 option annex.7076.a"
+		name = annex.7076.a
+		trigger = {
+			has_event_target = dutch_east_indies
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
+		1216 = { transfer_if_owned = yes } # Lesser Sunda Islands
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Give Lesser Sunda Islands to USS (Java)
+		log = "[GetLogInfo]: event annex.7076 option annex.7076.b"
+		name = annex.7076.b
+		trigger = {
+			has_event_target = java
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				add = 60
+				has_subject = event_target:java
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:java
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:java }
+		1216 = { transfer_if_owned = yes } # Lesser Sunda Islands
+		transfer_targeted_territory = yes
+	}
+
+	option = { # Integrate Lesser Sunda Islands directly
+		log = "[GetLogInfo]: event annex.7076 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1216 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.7076 option annexation.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1216 = { transfer_if_owned = yes }
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7076 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
