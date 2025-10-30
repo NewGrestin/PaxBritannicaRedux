@@ -31,7 +31,6 @@ country_event = { #Fate of France
 				if = {
 					limit = {
 						OR = {
-							##is_starting_french_state = no 
 							state = 17 #Meurthe
 							state = 29 #Pas-de-Calais
 							state = 31 #Roussillon
@@ -45,9 +44,6 @@ country_event = { #Fate of France
 					} 
 					remove_core_of = FRA
 					retain_state = yes
-				}
-				else = {
-					add_core_of = FRA
 				}
 				remove_claim_by = FRA
 			}
@@ -667,7 +663,7 @@ country_event = { #Fate of Loire
 		30 = { #Loire
 			remove_claim_and_add_core_of_target = yes 
 			transfer_state_and_notify = yes
-			}
+		}
 	}
 
 	option = { #give to Brittany
@@ -1379,15 +1375,52 @@ country_event = { #Fate of Savoy
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OCT = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			OCT = { save_event_target_as = Occitania }
+		}
+		if = {
+			limit = {
+				FRA = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			FRA = { save_event_target_as = France }
+		}
+		if = {
+			limit = {
+				IST = {
+					ROOT_can_grant_land = yes
+				}
+				ITA = {
+					exists = no
+				}
+			}
+			IST = { save_event_target_as = NationalItaly }
+		}
+		if = {
+			limit = {
+				ITA = {
+					ROOT_can_grant_land = yes
+				}
+				IST = {
+					exists = no
+				}
+			}
+			ITA = { save_event_target_as = MonarchistItaly }
+		}
+	}
+
 	option = { #give to Occitania
 		log = "[GetLogInfo]: event annex.1011 option annex.give_to_france"
 		name = annex.give_to_occitania
 		trigger = {
-			OCT = {
-				exists = yes
-				owns_state = 32
-				owns_state = 21
-			}
+			has_event_target = Occitania
 		}
 		ai_chance = {
 			base = 100
@@ -1400,19 +1433,17 @@ country_event = { #Fate of Savoy
 				#is_germany_or_splinter_tag = yes
 			}
 		}
-		735 = { transfer_state_to = OCT } 
-		recheck_annexations = yes
+
+		set_temp_variable = { tag_to_release = event_target:Occitania }
+		
+		735 = { transfer_if_owned = yes } #Savoy
 	}
 
 	option = { #give to France
 		log = "[GetLogInfo]: event annex.1011 option annex.give_to_france"
 		name = annex.give_to_france
 		trigger = {
-			FRA = {
-				exists = yes
-				owns_state = 32
-				owns_state = 21
-			}
+			has_event_target = France
 		}
 		ai_chance = {
 			base = 100
@@ -1425,24 +1456,16 @@ country_event = { #Fate of Savoy
 				#is_germany_or_splinter_tag = yes
 			}
 		}
-		735 = { transfer_state_to = FRA }
-		recheck_annexations = yes
+
+		set_temp_variable = { tag_to_release = event_target:France }
+		735 = { transfer_if_owned = yes } #Savoy
 	}
 
-	option = { #give to Italy
-		log = "[GetLogInfo]: event annex.1011 option annex.give_to_france"
+	option = { #give to Nationalist Italy
+		log = "[GetLogInfo]: event annex.1011 option annex.give_to_nationalist_italy"
 		name = annex.give_to_italy
 		trigger = {
-			OR = {
-				ITA = {
-					exists = yes
-					owns_state = 158
-				}
-				IST = {
-					exists = yes
-					owns_state = 158
-				}
-			}
+			has_event_target = NationalItaly
 		}
 		ai_chance = {
 			base = 100
@@ -1455,31 +1478,38 @@ country_event = { #Fate of Savoy
 				#is_germany_or_splinter_tag = yes
 			}
 		}
-		if = {
-			limit = {
-				IST = {
-					exists = yes
-					owns_state = 158
-				}
-			}
-			735 = { transfer_state_to = IST } 
+		set_temp_variable = { tag_to_release = event_target:NationalItaly }
+		735 = { transfer_if_owned = yes } #Savoy
+	}
+
+	option = { #give to Monarchist Italy
+		log = "[GetLogInfo]: event annex.1011 option annex.give_to_nationalist_italy"
+		name = annex.give_to_italy
+		trigger = {
+			has_event_target = NationalItaly
 		}
-		if = {
-			limit = {
-				ITA = {
-					exists = yes
-					owns_state = 158
-				}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
 			}
-			735 = { transfer_state_to = ITA } 
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
 		}
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:MonarchistItaly }
+		735 = { transfer_if_owned = yes } #Savoy
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1011 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -1492,15 +1522,38 @@ country_event = { #Fate of Neuchatel
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				BRG = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			BRG = { save_event_target_as = Burgundy }
+		}
+		if = {
+			limit = {
+				FRA = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			FRA = { save_event_target_as = France }
+		}
+		if = {
+			limit = {
+				SWI = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			SWI = { save_event_target_as = Switzerland }
+		}
+	}
+
 	option = { #give to Burgundy
 		log = "[GetLogInfo]: event annex.1012 option annex.give_to_france"
 		name = annex.give_to_wallonia
 		trigger = {
-			BRG = {
-				exists = yes
-				owns_state = 17
-				owns_state = 809
-			}
+			has_event_target = Burgundy
 		}
 		ai_chance = {
 			base = 100
@@ -1514,22 +1567,18 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:wallonia = { is_subject = yes }
+				event_target:Burgundy = { is_subject = yes }
 			}
 		}
-		972 = { transfer_state_to = BRG } 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:Burgundy }
+		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
 	option = { #give to France
-		log = "[GetLogInfo]: event annex.1012 option annex.give_to_france"
+		log = "[GetLogInfo]: event annex.1012 option annex.give_to_burgundy"
 		name = annex.give_to_france
 		trigger = {
-			FRA = {
-				exists = yes
-				owns_state = 17
-				owns_state = 809
-			}
+			has_event_target = France
 		}
 		ai_chance = {
 			base = 100
@@ -1543,26 +1592,18 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:france = { is_subject = yes }
+				event_target:France = { is_subject = yes }
 			}
 		}
-		972 = { transfer_state_to = FRA }
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:France }
+		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
 	option = { #give to Switzerland
-		log = "[GetLogInfo]: event annex.1012 option annex.give_to_france"
+		log = "[GetLogInfo]: event annex.1012 option annex.give_to_switzerland"
 		name = annex.give_to_switzerland
 		trigger = {
-			SWI = {
-				exists = yes
-				owns_state = 940
-			}
-			NOT = {
-				SWI = {
-					owns_state = 972
-				}
-			}
+			has_event_target = Switzerland
 		}
 		ai_chance = {
 			base = 100
@@ -1576,17 +1617,20 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:france = { is_subject = yes }
+				event_target:Switzerland = { is_subject = yes }
 			}
 		}
-		972 = { transfer_state_to = SWI }
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:Switzerland }
+		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1012 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -1605,7 +1649,6 @@ country_event = { #Fate of Britain
 				if = {
 					limit = {
 						OR = {
-							is_starting_british_state = no 
 							state = 1201 #Northern Wales
 							state = 122 #Wales
 							state = 133 #Lanark
@@ -1667,10 +1710,6 @@ country_event = { #Fate of Britain
 					remove_core_of = ENG
 					retain_state = yes
 				}
-				else = {
-					add_core_of = ENG
-				}
-				remove_claim_by = ENG
 			}
 		}
 	}
@@ -1817,6 +1856,10 @@ country_event = { #Fate of Britain
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
 	}
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Wales
@@ -1869,11 +1912,9 @@ country_event = { #Fate of Wales
 				drop_cosmetic_tag = yes
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Give Wales to Britain
+	option = { #Return Wales to Britain
 		log = "[GetLogInfo]: event annex.1014 option annex.1014.b"
 		name = annex.1014.b
 		trigger = {
@@ -1909,8 +1950,6 @@ country_event = { #Fate of Wales
 				set_cosmetic_tag = ENG_Occupied_Monarchy_with_Wales
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
 	option = { #give to overlord
@@ -1940,7 +1979,12 @@ country_event = { #Fate of Wales
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
 	}
+
+	after = {
+		recheck_annexations = yes
+	}
 }
+
 country_event = { #Fate of Scotland
 	id = annex.1015
 	title = annexation_scotland
@@ -1993,11 +2037,9 @@ country_event = { #Fate of Scotland
 				drop_cosmetic_tag = yes
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Split Up Great Britain
+	option = { #Return Scotland to Great Britain
 		log = "[GetLogInfo]: event annex.1015 option annex.1015.b"
 		name = annex.1015.b
 		trigger = {
@@ -2007,27 +2049,23 @@ country_event = { #Fate of Scotland
 			}
 		}
 
-		ai_chance = { base = 0 }
-
-		ENG = {
-			transfer_state = 133
-			transfer_state = 121
-			transfer_state = 136
-			transfer_state = 120
-		}
-
-		if = {
-			limit = {
-				ENG = {
-					has_cosmetic_tag = ENG_Occupied_Monarchy
-				}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
 			}
-			ENG = {
-				set_cosmetic_tag = ENG_Occupied_Monarchy_with_Wales
+			modifier = {
+				factor = 0.1
+				event_target:england = { is_subject = yes }
 			}
 		}
 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:england }
+		133 = { transfer_if_owned = yes }
+		121 = { transfer_if_owned = yes }
+		136 = { transfer_if_owned = yes }
+		120 = { transfer_if_owned = yes }
 	}
 
 	option = { #Give to overlord
@@ -2037,14 +2075,10 @@ country_event = { #Fate of Scotland
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		133 = { transfer_if_owned = yes }
+		121 = { transfer_if_owned = yes }
+		136 = { transfer_if_owned = yes }
+		120 = { transfer_if_owned = yes }
 	}
 
 	option = { #Integrate
@@ -2057,13 +2091,15 @@ country_event = { #Fate of Scotland
 			#limit = { is_mainland_france_state = yes }
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1015 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
