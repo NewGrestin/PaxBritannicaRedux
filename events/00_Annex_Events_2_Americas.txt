@@ -2475,6 +2475,138 @@ country_event = { # Fate of the Great Plains
 	}
 }
 
+country_event = { #Fate of CAL
+	id = annex.7080
+	title = annexation_california
+	desc = annexation_california_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		484  = { retain_state = yes }
+    }
+	option = { #Liberate CAL
+		log = "[GetLogInfo]: event annexation.7080 option annexation.7080.a"
+		name = annex.7080.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		if = {
+			limit = { country_exists = CAL }
+			custom_effect_tooltip = CAL_puppet_tooltip
+			
+		}
+		else = {		
+			set_temp_variable = { tag_to_release = CAL }
+			release_targeted_tag = yes				
+		}	
+		
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.7080 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of BAJA
+	id = annex.7081
+	title = annexation_baja_california
+	desc = annexation_baja_california_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						original_tag = CAL
+						original_tag = MEX
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = { CAL = { ROOT_can_grant_land = yes } }
+				CAL = {
+					save_event_target_as = california
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			if = {
+				limit = { MEX = { ROOT_can_grant_land = yes } }
+				MEX = {
+					save_event_target_as = mexico
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+		}
+	}
+
+	option = { #Give to California
+		log = "[GetLogInfo]: event annex.7081 option annex.america.give_to_california"
+		name = annex.america.give_to_california
+		trigger = {
+			has_event_target = california
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = CAL }
+		484 = { transfer_state_and_notify = yes } #California
+	}
+
+	option = { #Give to Sexico
+		log = "[GetLogInfo]: event annex.7081 option annex.america.give_to_mexico"
+		name = annex.america.give_to_mexico
+		trigger = {
+			has_event_target = mexico
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = CAL
+			}
+		}
+		set_temp_variable = { tag_to_release = MEX }
+		484 = { transfer_state_and_notify = yes } #California
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annexation.7081 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
 #country_event = { #Fate of Galicia
 #	id = annex.1017
 #	title = annexation_spanish_galicia

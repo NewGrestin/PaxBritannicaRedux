@@ -31,7 +31,6 @@ country_event = { #Fate of France
 				if = {
 					limit = {
 						OR = {
-							is_starting_french_state = no 
 							state = 17 #Meurthe
 							state = 29 #Pas-de-Calais
 							state = 31 #Roussillon
@@ -45,9 +44,6 @@ country_event = { #Fate of France
 					} 
 					remove_core_of = FRA
 					retain_state = yes
-				}
-				else = {
-					add_core_of = FRA
 				}
 				remove_claim_by = FRA
 			}
@@ -667,7 +663,7 @@ country_event = { #Fate of Loire
 		30 = { #Loire
 			remove_claim_and_add_core_of_target = yes 
 			transfer_state_and_notify = yes
-			}
+		}
 	}
 
 	option = { #give to Brittany
@@ -1379,15 +1375,52 @@ country_event = { #Fate of Savoy
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OCT = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			OCT = { save_event_target_as = Occitania }
+		}
+		if = {
+			limit = {
+				FRA = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			FRA = { save_event_target_as = France }
+		}
+		if = {
+			limit = {
+				IST = {
+					ROOT_can_grant_land = yes
+				}
+				ITA = {
+					exists = no
+				}
+			}
+			IST = { save_event_target_as = NationalItaly }
+		}
+		if = {
+			limit = {
+				ITA = {
+					ROOT_can_grant_land = yes
+				}
+				IST = {
+					exists = no
+				}
+			}
+			ITA = { save_event_target_as = MonarchistItaly }
+		}
+	}
+
 	option = { #give to Occitania
 		log = "[GetLogInfo]: event annex.1011 option annex.give_to_france"
 		name = annex.give_to_occitania
 		trigger = {
-			OCT = {
-				exists = yes
-				owns_state = 32
-				owns_state = 21
-			}
+			has_event_target = Occitania
 		}
 		ai_chance = {
 			base = 100
@@ -1400,19 +1433,17 @@ country_event = { #Fate of Savoy
 				#is_germany_or_splinter_tag = yes
 			}
 		}
-		735 = { transfer_state_to = OCT } 
-		recheck_annexations = yes
+
+		set_temp_variable = { tag_to_release = event_target:Occitania }
+		
+		735 = { transfer_if_owned = yes } #Savoy
 	}
 
 	option = { #give to France
 		log = "[GetLogInfo]: event annex.1011 option annex.give_to_france"
 		name = annex.give_to_france
 		trigger = {
-			FRA = {
-				exists = yes
-				owns_state = 32
-				owns_state = 21
-			}
+			has_event_target = France
 		}
 		ai_chance = {
 			base = 100
@@ -1425,24 +1456,16 @@ country_event = { #Fate of Savoy
 				#is_germany_or_splinter_tag = yes
 			}
 		}
-		735 = { transfer_state_to = FRA }
-		recheck_annexations = yes
+
+		set_temp_variable = { tag_to_release = event_target:France }
+		735 = { transfer_if_owned = yes } #Savoy
 	}
 
-	option = { #give to Italy
-		log = "[GetLogInfo]: event annex.1011 option annex.give_to_france"
+	option = { #give to Nationalist Italy
+		log = "[GetLogInfo]: event annex.1011 option annex.give_to_nationalist_italy"
 		name = annex.give_to_italy
 		trigger = {
-			OR = {
-				ITA = {
-					exists = yes
-					owns_state = 158
-				}
-				IST = {
-					exists = yes
-					owns_state = 158
-				}
-			}
+			has_event_target = NationalItaly
 		}
 		ai_chance = {
 			base = 100
@@ -1455,31 +1478,38 @@ country_event = { #Fate of Savoy
 				#is_germany_or_splinter_tag = yes
 			}
 		}
-		if = {
-			limit = {
-				IST = {
-					exists = yes
-					owns_state = 158
-				}
-			}
-			735 = { transfer_state_to = IST } 
+		set_temp_variable = { tag_to_release = event_target:NationalItaly }
+		735 = { transfer_if_owned = yes } #Savoy
+	}
+
+	option = { #give to Monarchist Italy
+		log = "[GetLogInfo]: event annex.1011 option annex.give_to_nationalist_italy"
+		name = annex.give_to_italy
+		trigger = {
+			has_event_target = NationalItaly
 		}
-		if = {
-			limit = {
-				ITA = {
-					exists = yes
-					owns_state = 158
-				}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
 			}
-			735 = { transfer_state_to = ITA } 
+			modifier = {
+				factor = 0
+				#is_germany_or_splinter_tag = yes
+			}
 		}
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:MonarchistItaly }
+		735 = { transfer_if_owned = yes } #Savoy
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1011 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -1492,15 +1522,38 @@ country_event = { #Fate of Neuchatel
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				BRG = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			BRG = { save_event_target_as = Burgundy }
+		}
+		if = {
+			limit = {
+				FRA = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			FRA = { save_event_target_as = France }
+		}
+		if = {
+			limit = {
+				SWI = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			SWI = { save_event_target_as = Switzerland }
+		}
+	}
+
 	option = { #give to Burgundy
 		log = "[GetLogInfo]: event annex.1012 option annex.give_to_france"
 		name = annex.give_to_wallonia
 		trigger = {
-			BRG = {
-				exists = yes
-				owns_state = 17
-				owns_state = 809
-			}
+			has_event_target = Burgundy
 		}
 		ai_chance = {
 			base = 100
@@ -1514,22 +1567,18 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:wallonia = { is_subject = yes }
+				event_target:Burgundy = { is_subject = yes }
 			}
 		}
-		972 = { transfer_state_to = BRG } 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:Burgundy }
+		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
 	option = { #give to France
-		log = "[GetLogInfo]: event annex.1012 option annex.give_to_france"
+		log = "[GetLogInfo]: event annex.1012 option annex.give_to_burgundy"
 		name = annex.give_to_france
 		trigger = {
-			FRA = {
-				exists = yes
-				owns_state = 17
-				owns_state = 809
-			}
+			has_event_target = France
 		}
 		ai_chance = {
 			base = 100
@@ -1543,26 +1592,18 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:france = { is_subject = yes }
+				event_target:France = { is_subject = yes }
 			}
 		}
-		972 = { transfer_state_to = FRA }
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:France }
+		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
 	option = { #give to Switzerland
-		log = "[GetLogInfo]: event annex.1012 option annex.give_to_france"
+		log = "[GetLogInfo]: event annex.1012 option annex.give_to_switzerland"
 		name = annex.give_to_switzerland
 		trigger = {
-			SWI = {
-				exists = yes
-				owns_state = 940
-			}
-			NOT = {
-				SWI = {
-					owns_state = 972
-				}
-			}
+			has_event_target = Switzerland
 		}
 		ai_chance = {
 			base = 100
@@ -1576,17 +1617,20 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:france = { is_subject = yes }
+				event_target:Switzerland = { is_subject = yes }
 			}
 		}
-		972 = { transfer_state_to = SWI }
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:Switzerland }
+		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1012 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -1605,7 +1649,6 @@ country_event = { #Fate of Britain
 				if = {
 					limit = {
 						OR = {
-							is_starting_british_state = no 
 							state = 1201 #Northern Wales
 							state = 122 #Wales
 							state = 133 #Lanark
@@ -1667,10 +1710,6 @@ country_event = { #Fate of Britain
 					remove_core_of = ENG
 					retain_state = yes
 				}
-				else = {
-					add_core_of = ENG
-				}
-				remove_claim_by = ENG
 			}
 		}
 	}
@@ -1817,6 +1856,10 @@ country_event = { #Fate of Britain
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
 	}
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Wales
@@ -1869,11 +1912,9 @@ country_event = { #Fate of Wales
 				drop_cosmetic_tag = yes
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Give Wales to Britain
+	option = { #Return Wales to Britain
 		log = "[GetLogInfo]: event annex.1014 option annex.1014.b"
 		name = annex.1014.b
 		trigger = {
@@ -1909,8 +1950,6 @@ country_event = { #Fate of Wales
 				set_cosmetic_tag = ENG_Occupied_Monarchy_with_Wales
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
 	option = { #give to overlord
@@ -1940,7 +1979,12 @@ country_event = { #Fate of Wales
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
 	}
+
+	after = {
+		recheck_annexations = yes
+	}
 }
+
 country_event = { #Fate of Scotland
 	id = annex.1015
 	title = annexation_scotland
@@ -1993,11 +2037,9 @@ country_event = { #Fate of Scotland
 				drop_cosmetic_tag = yes
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Split Up Great Britain
+	option = { #Return Scotland to Great Britain
 		log = "[GetLogInfo]: event annex.1015 option annex.1015.b"
 		name = annex.1015.b
 		trigger = {
@@ -2007,27 +2049,23 @@ country_event = { #Fate of Scotland
 			}
 		}
 
-		ai_chance = { base = 0 }
-
-		ENG = {
-			transfer_state = 133
-			transfer_state = 121
-			transfer_state = 136
-			transfer_state = 120
-		}
-
-		if = {
-			limit = {
-				ENG = {
-					has_cosmetic_tag = ENG_Occupied_Monarchy
-				}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
 			}
-			ENG = {
-				set_cosmetic_tag = ENG_Occupied_Monarchy_with_Wales
+			modifier = {
+				factor = 0.1
+				event_target:england = { is_subject = yes }
 			}
 		}
 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:england }
+		133 = { transfer_if_owned = yes }
+		121 = { transfer_if_owned = yes }
+		136 = { transfer_if_owned = yes }
+		120 = { transfer_if_owned = yes }
 	}
 
 	option = { #Give to overlord
@@ -2037,14 +2075,10 @@ country_event = { #Fate of Scotland
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		133 = { transfer_if_owned = yes }
+		121 = { transfer_if_owned = yes }
+		136 = { transfer_if_owned = yes }
+		120 = { transfer_if_owned = yes }
 	}
 
 	option = { #Integrate
@@ -2057,167 +2091,167 @@ country_event = { #Fate of Scotland
 			#limit = { is_mainland_france_state = yes }
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1015 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Portugal
 	id = annex.1016
-	title = annexation_portugal
-	desc = annexation_portugal_desc
+	title = annexation_112
+	desc = annexation_112_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-
-		171 = { retain_state = yes } #Galicia
-
 		hidden_effect = {
-			#if = {
-			#	limit = { NOT = { country_exists = POR } }
-			#	every_state = {
-			#		if = {
-			#			limit = { is_portugal = no }
-			#			remove_core_of = POR
-			#		}
-			#		else = {
-			#			add_core_of = POR
-			#		}
-			#		remove_claim_by = POR
-			#	}
-			#	POR = { POR_remove_monarchy = yes }
-			#}
+			if = {
+				limit = { NOT = { country_exists = POR } }
+				POR = { clear_cores_of_tag_if_possible = yes }
+			}
+			if = {
+				limit = { NOT = { country_exists = PEF } }
+				PEF = { clear_cores_of_tag_if_possible = yes }
+			}
 			if = {
 				limit = {
-					original_tag = SPA
-					#has_socialist_government = yes
+					OR = {
+						original_tag = POR
+						original_tag = PEF
+						original_tag = SPR
+					}
 				}
 				save_event_target_as = can_annex
 			}
-			if = {
+			random_other_country = {
 				limit = {
-					SPA = {
-						ROOT_can_grant_land = yes
-						#OR = {
-						#	is_subject = no
-						#	has_socialist_government = yes
-						#}
+					OR = {
+						original_tag = POR
+						original_tag = PEF
+					}
+					is_ally_with = ROOT
+					OR = {
+						is_subject = no
+						is_subject_of = ROOT
 					}
 				}
-				SPA = { save_event_target_as = spain }
+				save_event_target_as = portugal
 			}
 			if = {
-				limit = {
-					PEF = {
-						ROOT_can_grant_land = yes
-						#OR = {
-						#	is_subject = no
-						#	has_socialist_government = yes
-						#}
-					}
+				limit = { NOT = { has_event_target = portugal } }
+				if = {
+					limit = { POR = { ROOT_can_grant_land = yes } }
+					POR = { save_event_target_as = portugal }
 				}
-				PEF = { save_event_target_as = portuguese_monarchy }
+				else_if = {
+					limit = { PEF = { ROOT_can_grant_land = yes } }
+					PEF = { save_event_target_as = portugal }
+				}
 			}
+			if = {
+				limit = { NOT = { has_event_target = spain } }
+				if = {
+					limit = { SPR = { ROOT_can_grant_land = yes } }
+					SPR = { save_event_target_as = spain }
+				}
+			}
+			171 = { retain_state = yes } #Galicia
 		}
 	}
 
-	option = { #Liberate a republican Portugal - as a puppet
+	option = { #Restore portuguese empire
 		log = "[GetLogInfo]: event annex.1016 option annex.1016.a"
 		name = annex.1016.a
 		trigger = {
+			NOT = { country_exists = PEF }
+			NOT = {
+				original_tag = POR
+				original_tag = PEF
+			}
 			is_subject = no
 		}
 		ai_chance = {
-			base = 50
+			base = 100
 			modifier = {
-				factor = -50
-				annexations_can_annex = yes
+				factor = 0
+				annexations_AI_release_puppet_default_logic = yes
 			}
-			#modifier = {
-			#	factor = 0
-			#	NOT = { country_exists = POR }
-			#	OR = {
-			#		is_monarchy = yes
-			#		is_german_tag = yes
-			#	}
-			#}
-			#modifier = {
-			#	factor = 0
-			#	is_ally_with = event_target:spain
-			#	OR = {
-			#		is_major = no
-			#		has_socialist_government = yes
-			#	}
-			#}
 		}
-		if = {
-			limit = { country_exists = POR }
-			custom_effect_tooltip = POR_puppet_tooltip
-			
+		set_temp_variable = { tag_to_release = PEF }
+		every_state = {
+			limit = {
+				is_portugal = yes
+				NOT = { is_core_of = var:tag_to_release }
+			}
+			add_claim_by = var:tag_to_release
 		}
-		else = {
-			set_temp_variable = { tag_to_release = POR }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
+		release_targeted_tag_with_claims = yes
 	}
 
-	option = { #Restore the Portuguese monarchy/empire as a puppet
+	option = { #Restore portuguese monarchy
 		log = "[GetLogInfo]: event annex.1016 option annex.1016.b"
 		name = annex.1016.b
 		trigger = {
+			NOT = { country_exists = POR }
+			NOT = {
+				original_tag = POR
+				original_tag = PEF
+			}
 			is_subject = no
-			NOT = { country_exists = PEF }
 		}
 		ai_chance = {
-			base = 50
-			#modifier = {
-			#	factor = 25
-			#	country_exists = PEF
-			#}
-		}
-		set_temp_variable = { tag_to_release = PEF }
-		release_targeted_tag = yes
-
-		#var:tag_to_release = { POR_monarchy_setup = yes }
-		recheck_annexations = yes
-	}
-
-	option = { #Give it to the Portuguese monarchy/empire
-		log = "[GetLogInfo]: event annex.1016 option annex.1016.c"
-		name = annex.1016.c
-		trigger = {
-			has_event_target = portuguese_monarchy
-		}
-		ai_chance = {
-			base = 50
+			base = 100
 			modifier = {
-				factor = 25
-				country_exists = PEF
+				factor = 0
+				annexations_AI_release_puppet_default_logic = yes
 			}
 		}
-
-		set_temp_variable = { tag_to_release = event_target:portuguese_monarchy }
-		POR = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-		#recheck_annexations = yes
-
-		#var:tag_to_release = { POR_monarchy_setup = yes }
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = POR }
+		every_state = {
+			limit = {
+				is_portugal = yes
+				NOT = { is_core_of = var:tag_to_release }
+			}
+			add_claim_by = var:tag_to_release
+		}
+		release_targeted_tag_with_claims = yes
+	}
+	option = { #Give to Porugal
+		log = "[GetLogInfo]: event annexation_events.1016 option annexation_events.give_to_portugal"
+		name = annex.europe.give_to_portugal
+		trigger = {
+			has_event_target = portugal
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				event_target:portugal = { annexations_AI_grant_land_default_logic = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:portugal }
+		every_owned_state = {
+			limit = {
+				is_portugal = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 
 	option = { #give to Spain
 		log = "[GetLogInfo]: event annex.1016 option annex.give_to_spain"
-		name = annex.give_to_spain
+		name = annex.europe.give_to_spain
 		trigger = {
 			has_event_target = spain
 		}
@@ -2234,28 +2268,49 @@ country_event = { #Fate of Portugal
 		recheck_annexations = yes
 	}
 
-	option = { #Integrate - for Spain - lets see if i should do pef
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1016 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_france = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
 		log = "[GetLogInfo]: event annex.1016 option annex.integration"
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
 		}
-		POR = { add_claim_of_ROOT_on_valid_cores = yes }
-		recheck_annexations = yes
+		every_owned_state = {
+			limit = { is_france = yes }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1016 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Galicia
 	id = annex.1017
-	title = annexation_spanish_galicia
-	desc = annexation_spanish_galicia_desc
+	title = annexation_171
+	desc = annexation_171_desc
 	picture = GFX_report_event_generic_conference2
 
 	is_triggered_only = yes
@@ -2265,8 +2320,11 @@ country_event = { #Fate of Galicia
 		if = {
 			limit = {
 				OR = {
-					174 = { is_claim_or_core_of_ROOT = yes } #León
-					793 = { is_claim_or_core_of_ROOT = yes } #Asturias
+					180 = { is_claim_or_core_of_ROOT = yes } #Porto
+					AND = {
+						174 = { is_claim_or_core_of_ROOT = yes } #León
+						793 = { is_claim_or_core_of_ROOT = yes } #Asturias
+					}
 				}
 			}
 			save_event_target_as = can_annex
@@ -2278,19 +2336,7 @@ country_event = { #Fate of Galicia
 					owner = { ROOT_can_grant_land = yes }
 				}
 			}
-			var:174.owner = { save_event_target_as = spain_leon }
-		}
-		if = {
-			limit = {
-				1193 = { #Asturias
-					annexations_state_owner_is_valid_grant_target = yes
-					owner = {
-						ROOT_can_grant_land = yes
-						NOT = { tag = event_target:spain_leon }
-					}
-				}
-			}
-			var:1193.owner = { save_event_target_as = spain_asturias }
+			var:174.owner = { save_event_target_as = spain }
 		}
 		if = {
 			limit = {
@@ -2299,126 +2345,83 @@ country_event = { #Fate of Galicia
 					owner = { ROOT_can_grant_land = yes }
 				}
 			}
-			var:180.owner = { save_event_target_as = porto_owner }
+			var:180.owner = { save_event_target_as = portugal }
 		}
 	}
 
-	#option = { #puppet
-	#	log = "[GetLogInfo]: event annex.1085 option annex.1085.a"
-	#	name =annexation.1017.a
-	#	trigger = {
-	#		is_subject = no
-	#	}
-	#	ai_chance = { base = 0 }
-	#	set_temp_variable = { tag_to_release = GLC }
-	#	release_targeted_tag = yes
-	#	recheck_annexations = yes
-	#}
-
-	option = { #give to Spanish owner of León
-		log = "[GetLogInfo]: event annex.1017 option annex.1017.b"
-		name = annex.1017.b
+	option = { #puppet Galicia
+		log = "[GetLogInfo]: event annex.1017 option annex.1017.a"
+		name = annex.1017.a
 		trigger = {
-			has_event_target = spain_leon
+			is_subject = no
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = GAL }
+		release_targeted_tag = yes
+	}
+
+	option = { #give to Portugal
+		log = "[GetLogInfo]: event annex.1017 option annex.1017.d"
+		name = annex.europe.give_to_portugal
+		trigger = {
+			has_event_target = portugal
 		}
 		ai_chance = {
 			base = 40
-			#modifier = {
-			#	factor = 0
-			#	annexations_can_annex = yes
-			#}
-			#modifier = {
-			#	factor = 0
-			#	NOT = { is_ally_with = event_target:spain_leon }
-			#	OR = {
-			#		is_ally_with = event_target:spain_asturias
-			#		is_ally_with = event_target:portugal
-			#	}
-			#}
-			#modifier = {
-			#	factor = 0.1
-			#	event_target:spain_leon = { is_subject = yes }
-			#}
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:spain
+			}
+			modifier = {
+				factor = 0.1
+				event_target:spain = { is_subject = yes }
+			}
 		}
-		set_temp_variable = { tag_to_release = event_target:spain_leon }
-		171 = { transfer_state_and_notify = yes }
+		set_temp_variable = { tag_to_release = event_target:portugal }
+		GAL = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
-		recheck_annexations = yes
 	}
 
-	option = { #give to Spanish owner of Asturias
-		log = "[GetLogInfo]: event annex.1017 option annex.1017.c"
-		name = annex.1017.c
+	option = { #give to Spain
+		log = "[GetLogInfo]: event annex.1017 option annex.1017.b"
+		name = annex.europe.give_to_spain
 		trigger = {
-			has_event_target = spain_asturias
+			has_event_target = spain
 		}
 		ai_chance = {
-			base = 30
-			#modifier = {
-			#	factor = 0
-			#	annexations_can_annex = yes
-			#}
-			#modifier = {
-			#	factor = 0
-			#	NOT = { is_ally_with = event_target:spain_asturias }
-			#	OR = {
-			#		is_ally_with = event_target:spain_leon
-			#		is_ally_with = event_target:portugal
-			#	}
-			#}
-			#modifier = {
-			#	factor = 0.1
-			#	event_target:spain_asturias = { is_subject = yes }
-			#}
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:portugal
+			}
+			modifier = {
+				factor = 0.1
+				event_target:spain = { is_subject = yes }
+			}
 		}
-		set_temp_variable = { tag_to_release = event_target:spain_asturias }
-		171 = { transfer_state_and_notify = yes }
+		set_temp_variable = { tag_to_release = event_target:spain }
+		GAL = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
-		recheck_annexations = yes
 	}
 
-	option = { #give to Spanish owner of Porto
-		log = "[GetLogInfo]: event annex.1017 option annex.1017.d"
-		name = annex.1017.d
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1017 option annex.give_to_overlord"
+		name = annex.give_to_overlord
 		trigger = {
-			has_event_target = porto_owner
+			annexations_should_give_lands_to_overlord = yes
 		}
-		ai_chance = {
-			base = 30
-			#modifier = {
-			#	factor = 0
-			#	annexations_can_annex = yes
-			#}
-			#modifier = {
-			#	factor = 0
-			#	NOT = { is_ally_with = event_target:spain_asturias }
-			#	OR = {
-			#		is_ally_with = event_target:spain_leon
-			#		is_ally_with = event_target:portugal
-			#	}
-			#}
-			#modifier = {
-			#	factor = 0.1
-			#	event_target:spain_asturias = { is_subject = yes }
-			#}
-		}
-		set_temp_variable = { tag_to_release = event_target:porto_owner}
-		171 = { transfer_state_and_notify = yes }
+		set_temp_variable = { tag_to_release = overlord }
+		GAL = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
-		recheck_annexations = yes
 	}
-
-	#option = { #Give to overlord
-	#	log = "[GetLogInfo]: event annex.1085 option annex.give_to_overlord"
-	#	name = annex.give_to_overlord
-	#	trigger = {
-	#		annexations_should_give_lands_to_overlord = yes
-	#	}
-	#	set_temp_variable = { tag_to_release = overlord }
-	#	GLC = { set_transfer_target_cores = yes }
-	#	transfer_targeted_territory = yes
-	#	recheck_annexations = yes
-	#}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.1017 option annex.integration"
@@ -2426,36 +2429,49 @@ country_event = { #Fate of Galicia
 		trigger = {
 			annexations_can_annex = yes
 		}
-		#GLC = { add_claim_of_ROOT_on_valid_cores = yes }
-		recheck_annexations = yes
+		GAL = { add_claim_of_ROOT_on_valid_cores = yes }
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1017 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Spain
 	id = annex.1018
-	title = annexation_spain
-	desc = annexation_spain_desc
+	title = annexation_41
+	desc = annexation_41_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-		165 = { retain_state = yes }
-		173 = { retain_state = yes }
-		169 = { retain_state = yes } 
-		1196 = { retain_state = yes } 
-		177 = { retain_state = yes } 
-		701 = { retain_state = yes } 
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_spain = no }
+					remove_core_of = SPR
+				}
+				else = {
+					add_core_of = SPR
+				}
+			}
+			118 = { retain_state = yes } #Gibraltar
+			165 = { retain_state = yes } #Catalonia
+			167 = { retain_state = yes } #Valencia
+			171 = { retain_state = yes } #Galicia
+			177 = { retain_state = yes } #Ibiza & Mallorca
+			701 = { retain_state = yes } #Menorca
+		}
 	}
 
-	option = { #Release Spain Whole
+	option = { #Puppet Spain
 		log = "[GetLogInfo]: event annex.1018 option annex.1018.a"
 		name = annex.1018.a
 		trigger = {
@@ -2465,18 +2481,12 @@ country_event = { #Fate of Spain
 			base = 100
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 		}
 
-		if = {
-			limit = { country_exists = SPR }
-			custom_effect_tooltip = FRA_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = SPR }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = SPR }
+		release_targeted_tag = yes
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
@@ -2500,83 +2510,63 @@ country_event = { #Fate of Spain
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1018 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		every_owned_state = {
-			#limit = { is_mainland_france_state = yes }
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		SPA = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1018 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Catalonia
 	id = annex.1019
-	title = annexation_spain
-	desc = annexation_spain_desc
+	title = annexation_165
+	desc = annexation_165_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		31 = { retain_state = yes } #Roussillon
+		if = {
+			limit = { 1195 = { is_claim_or_core_of_ROOT = yes } } #Huesca
+			save_event_target_as = can_annex
+		}
 		if = {
 			limit = {
-				SPR = {
-					ROOT_can_grant_land = yes
+				1195 = { #Huesca
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
 				}
 			}
-			SPR = { save_event_target_as = spain }
+			var:1195.owner = { save_event_target_as = spain }
 		}
 	}
 
-	option = { #Release Independent Catalonia
+	option = { #puppet Catalonia proper
 		log = "[GetLogInfo]: event annex.1019 option annex.1019.a"
 		name = annex.1019.a
 		trigger = {
 			is_subject = no
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
+		ai_chance = { base = 0 }
 		set_temp_variable = { tag_to_release = CAT }
-		165 = { remove_claim_and_add_core_of_target = yes }
 		release_targeted_tag = yes
-		recheck_annexations = yes
 
 		if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
 					NOT = {
-						OR = {
-							original_tag = ENG
-							original_tag = GER
-						}
+						original_tag = ENG
+						original_tag = GER
 					}
 				}
 			}
@@ -2602,21 +2592,105 @@ country_event = { #Fate of Catalonia
 		}
 	}
 
-	option = { #Grant it to Spain
+	option = { #puppet Catalonia greater
 		log = "[GetLogInfo]: event annex.1019 option annex.1019.b"
 		name = annex.1019.b
 		trigger = {
 			is_subject = no
+			OR = {
+				167 = { is_valid_annexation_state = yes } #Valencia
+				177 = { is_valid_annexation_state = yes } #Ibiza & Mallorca
+			}
 		}
-
 		ai_chance = { base = 0 }
-
-		set_global_flag = PB_GLOBAL_Spain_Divided
-
-		SPR = {
-			transfer_state = 165
+		set_temp_variable = { tag_to_release = CAT }
+		release_targeted_tag = yes
+		167 = { #Valencia
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes 
 		}
-		recheck_annexations = yes
+		177 = { #Ibiza & Mallorca
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes 
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+					NOT = {
+						original_tag = ENG
+						original_tag = GER
+					}
+				}
+			}
+			CAT = {
+				set_cosmetic_tag = CAT_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+					NOT = {
+						OR = {
+							original_tag = FRA
+						}
+					}
+				}
+			}
+			CAT = {
+				drop_cosmetic_tag = yes
+			}
+		}
+	}
+
+	option = { #split with Spain
+		log = "[GetLogInfo]: event annex.1019 option annex.1019.c"
+		name = annex.1019.c
+		trigger = {
+			has_event_target = spain
+			OR = {
+				167 = { is_valid_annexation_state = yes } #Valencia
+				177 = { is_valid_annexation_state = yes } #Ibiza & Mallorca
+			}
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = event_target:spain }
+		167 = { #Valencia
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes 
+		}
+		177 = { #Ibiza & Mallorca
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes 
+		}
+
+		set_temp_variable = { tag_to_release = CAT }
+		release_targeted_tag = yes
+	}
+
+	option = { #give to Spain
+		log = "[GetLogInfo]: event annex.1019 option annex.give_to_spain"
+		name = annex.europe.give_to_spain
+		trigger = {
+			has_event_target = spain
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:spain = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = SPR }
+		CAT = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Give to overlord
@@ -2626,14 +2700,8 @@ country_event = { #Fate of Catalonia
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		CAT = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Integrate
@@ -2642,17 +2710,16 @@ country_event = { #Fate of Catalonia
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			#limit = { is_mainland_france_state = yes }
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		CAT = { add_claim_of_ROOT_on_valid_cores = yes }
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1019 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -2759,7 +2826,7 @@ country_event = { #Fate of Andalusia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -2852,7 +2919,7 @@ country_event = { #Fate of the Balerics
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -2935,7 +3002,7 @@ country_event = { #Fate of Switzerland
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3057,7 +3124,7 @@ country_event = { #Fate of Ticino
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3175,7 +3242,7 @@ country_event = { #Fate of Valais
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3256,7 +3323,7 @@ country_event = { #Fate of Wallonia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3472,7 +3539,7 @@ country_event = { #Fate of Netherlands
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3573,7 +3640,7 @@ country_event = { #Fate of Flanders
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3700,7 +3767,7 @@ country_event = { #Fate of Italy
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3837,7 +3904,7 @@ country_event = { #Fate of Central Italy
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3948,7 +4015,7 @@ country_event = { #Fate of Tuscany
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4059,7 +4126,7 @@ country_event = { #Fate of Modena
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4170,7 +4237,7 @@ country_event = { #Fate of Parma
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4281,7 +4348,7 @@ country_event = { #Fate of Venice
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4392,7 +4459,7 @@ country_event = { #Fate of Lombardy
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4506,7 +4573,7 @@ country_event = { #Fate of Piedmont
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4617,7 +4684,7 @@ country_event = { #Fate of the Civitas Leonina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4728,7 +4795,7 @@ country_event = { #Fate of the San Marino
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4858,7 +4925,7 @@ country_event = { #Fate of Monarco
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -4969,7 +5036,7 @@ country_event = { #Fate of Corsica
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5129,7 +5196,7 @@ country_event = { #Fate of Germany
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5229,7 +5296,7 @@ country_event = { #Fate of Luxembourg
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5332,7 +5399,7 @@ country_event = { #Fate of Rhineland
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5433,7 +5500,7 @@ country_event = { #Fate of Wurttemberg
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5535,7 +5602,7 @@ country_event = { #Fate of Bavaria
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5648,7 +5715,7 @@ country_event = { #Fate of Austria
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5750,7 +5817,7 @@ country_event = { #Fate of Saxony
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5856,7 +5923,7 @@ country_event = { #Fate of Hannover
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -5964,7 +6031,7 @@ country_event = { #Fate of Brandenburg-Prussia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6068,7 +6135,7 @@ country_event = { #Fate of Czechia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6169,7 +6236,7 @@ country_event = { #Fate of Slovenia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6321,7 +6388,7 @@ country_event = { #Fate of Friaul
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6473,7 +6540,7 @@ country_event = { #Fate of South Tyrol
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6565,7 +6632,7 @@ country_event = { #Fate of Alsace
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6677,7 +6744,7 @@ country_event = { #Fate of Silesia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6772,7 +6839,7 @@ country_event = { #Fate of German Bohemia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -6903,7 +6970,7 @@ country_event = { #Fate of Rijeka
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -7007,7 +7074,7 @@ country_event = { #Fate of Basque Country
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -7094,7 +7161,7 @@ country_event = { #Fate of Apurdi
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -7213,7 +7280,7 @@ country_event = { #Fate of Holstein
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -7285,6 +7352,40 @@ country_event = { #Fate of Denmark
 				set_cosmetic_tag = DEN_Occupied_Republic
 			}
 		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1061 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				#is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1061 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				original_tag = NWL
+				annexations_can_annex = yes
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
 	}
 
 	option = { #Cancel
@@ -7351,6 +7452,30 @@ country_event = { #Fate of Sweden
 			set_temp_variable = { tag_to_release = SWE }
 			release_targeted_tag = yes
 		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				#is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1062 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				original_tag = NWL
+				annexations_can_annex = yes
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
 	}
 
 	option = { #Cancel
@@ -7424,7 +7549,7 @@ country_event = { #Fate of Schleswig
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -7500,6 +7625,40 @@ country_event = { #Fate of Scania
 			transfer_state = 138
 			add_state_core = 138
 		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1064 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				#is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1064 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				original_tag = NWL
+				annexations_can_annex = yes
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
 	}
 
 	option = { #Cancel
@@ -7571,10 +7730,23 @@ country_event = { #Fate of Nordland
             exists = yes
 		    }
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				#is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1065 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				original_tag = NWL
 				annexations_can_annex = yes
 			}
 		}
@@ -7653,10 +7825,23 @@ country_event = { #Fate of Finmark
             owns_state = 1363
 		    }
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				#is_starting_french_state = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1066 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				original_tag = NWL
 				annexations_can_annex = yes
 			}
 		}
@@ -8190,7 +8375,7 @@ country_event = { #Fate of Lika
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -8307,7 +8492,7 @@ country_event = { #Fate of Krajina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -8421,7 +8606,7 @@ country_event = { #Fate of Tropolje
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -8535,7 +8720,7 @@ country_event = { #Fate of West Herzegovina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -8644,7 +8829,7 @@ country_event = { #Fate of Croatia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -8724,7 +8909,7 @@ country_event = { #Fate of Ragusa
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -8812,7 +8997,7 @@ country_event = { #Fate of Serbia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -8919,7 +9104,7 @@ country_event = { #Fate of Bosnia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9010,7 +9195,7 @@ country_event = { #Fate of Banja Luka
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9101,7 +9286,7 @@ country_event = { #Fate of East Herzegovina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9223,7 +9408,7 @@ country_event = { #Fate of Montenegro
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9314,7 +9499,7 @@ country_event = { #Fate of Kotor
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9408,7 +9593,7 @@ country_event = { #Fate of Posavina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9522,7 +9707,7 @@ country_event = { #Fate of Hungary
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9610,7 +9795,7 @@ country_event = { #Fate of Vojvodina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9738,7 +9923,7 @@ country_event = { #Fate of Banat
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9829,7 +10014,7 @@ country_event = { #Fate of West Banat
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -9939,7 +10124,7 @@ country_event = { #Fate of Transylvania
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10042,7 +10227,7 @@ country_event = { #Fate of Slovakia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10125,7 +10310,7 @@ country_event = { #Fate of Wallachia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10208,7 +10393,7 @@ country_event = { #Fate of Moldova
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10296,7 +10481,7 @@ country_event = { #Fate of Bulgaria
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10387,7 +10572,7 @@ country_event = { #Fate of Morava
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10494,7 +10679,7 @@ country_event = { #Fate of Vardar
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10584,7 +10769,7 @@ country_event = { #Fate of Albania
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10675,7 +10860,7 @@ country_event = { #Fate of Debar
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10766,7 +10951,7 @@ country_event = { #Fate of Kosovo
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10857,7 +11042,7 @@ country_event = { #Fate of Northern Epirus
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10950,7 +11135,7 @@ country_event = { #Fate of Greece
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11041,7 +11226,7 @@ country_event = { #Fate of Thessaloniniki
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11132,7 +11317,7 @@ country_event = { #Fate of West Thrace
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11223,7 +11408,7 @@ country_event = { #Fate of East Thrace
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11336,7 +11521,7 @@ country_event = { #Fate of Sardinia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11522,7 +11707,7 @@ country_event = { #Fate of Galicia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11616,7 +11801,7 @@ country_event = { #Fate of Lwów
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11710,7 +11895,7 @@ country_event = { #Fate of Tarnopol
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11804,7 +11989,7 @@ country_event = { #Fate of Stanislawow
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -11924,7 +12109,7 @@ country_event = { #Fate of Bucovina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -12023,7 +12208,7 @@ country_event = { #Fate of South Bucovina
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_starting_french_state = yes
+				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
