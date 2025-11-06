@@ -915,7 +915,7 @@ country_event = { #Fate of Aquitaine
 			modifier = {
 				factor = 0
 				NOT = { is_ally_with = event_target:france }
-				is_ally_with = event_target:brittany
+				is_ally_with = event_target:occitania
 			}
 			modifier = {
 				factor = 0.1
@@ -1059,7 +1059,7 @@ country_event = { #Fate of Poitou
 			modifier = {
 				factor = 0
 				NOT = { is_ally_with = event_target:france }
-				is_ally_with = event_target:brittany
+				is_ally_with = event_target:occitania
 			}
 			modifier = {
 				factor = 0.1
@@ -1676,14 +1676,8 @@ country_event = { #Fate of Britain
 			}
 		}
 
-		if = {
-			limit = { country_exists = ENG }
-			custom_effect_tooltip = ENG_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = ENG }
-			release_targeted_tag = yes
-		}
+		set_temp_variable = { tag_to_release = ENG }
+		release_targeted_tag = yes
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
@@ -2251,7 +2245,7 @@ country_event = { #Fate of Galicia
 	id = annex.1017
 	title = annexation_171
 	desc = annexation_171_desc
-	picture = GFX_report_event_generic_conference2
+	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
@@ -2923,18 +2917,46 @@ country_event = { #Fate of the Ibiza & Mallorca
 
 country_event = { #Fate of Switzerland
 	id = annex.1022
-	title = annexation_switzerland
-	desc = annexation_switzerland_desc
+	title = annexation_151
+	desc = annexation_151_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-		1404 = { retain_state = yes }
-		1403 = { retain_state = yes } 
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_switzerland = yes }
+					add_core_of = SWI
+				}
+				else = {
+					remove_core_of = SWI
+				}
+				remove_claim_by = SWI
+			}
+		}
+		940 = { retain_state = yes } #Geneva & Vaud
+		971 = { retain_state = yes } #Grisons
+		972 = { retain_state = yes } #Neuchatel
+		1403 = { retain_state = yes } #Ticino
+		1404 = { retain_state = yes } #Valais
+		if = {
+			limit = { 1025 = { is_claim_or_core_of_ROOT = yes } } #Baden
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1025 = { #Baden
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:1025.owner = { save_event_target_as = germany }
+		}
 	}
 
-	option = { #Release Switzerland Whole
+	option = { #Puppet Switzerland
 		log = "[GetLogInfo]: event annex.1022 option annex.1022.a"
 		name = annex.1022.a
 		trigger = {
@@ -2947,21 +2969,39 @@ country_event = { #Fate of Switzerland
 			}
 		}
 
-		if = {
-			limit = { country_exists = SWI }
-			custom_effect_tooltip = FRA_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = SWI }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = SWI }
+		release_targeted_tag = yes
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SWI = {
 				set_cosmetic_tag = SWI_Occupied_Monarchy
 			}
+		}
+	}
+
+	option = { #Give to Germany
+		log = "[GetLogInfo]: event annex.1022 option annex.europe.give_to_germany"
+		name = annex.europe.give_to_germany
+		trigger = {
+			has_event_target = germany
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 60
+				is_ally_with = event_target:germany
+				event_target:germany = { is_subject = no }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = { is_switzerland = yes }
+			transfer_if_owned = yes
 		}
 	}
 
@@ -2973,13 +3013,9 @@ country_event = { #Fate of Switzerland
 		}
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
+			limit = { is_switzerland = yes }
 			transfer_state_and_notify = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Integrate
@@ -2989,16 +3025,18 @@ country_event = { #Fate of Switzerland
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
-			#limit = { is_mainland_france_state = yes }
+			limit = { is_switzerland = yes }
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1022 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -3245,17 +3283,47 @@ country_event = { #Fate of Valais
 
 country_event = { #Fate of Wallonia
 	id = annex.1025
-	title = annexation_wallonia
-	desc = annexation_wallonia_desc
+	title = annexation_34
+	desc = annexation_34_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-		855 = { retain_state = yes }
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						785 = { is_claim_or_core_of_ROOT = yes } #Picardy
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					var:6.owner = { #Flanders
+						NOT = { is_subject_of = HOL }
+						ROOT_can_grant_land = yes
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders }
+			}
+			if = {
+				limit = {
+					785 = { #Picardy
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:785.owner = { save_event_target_as = france }
+			}
+			788 = { retain_state = yes } #Walloon Luxemburg
+			855 = { retain_state = yes } #Dunkerque
+		}
+		
 	}
 
-	option = { #Release Wallonia
+	option = { #Puppet Wallonia
 		log = "[GetLogInfo]: event annex.1025 option annex.1025.a"
 		name = annex.1025.a
 		trigger = {
@@ -3268,15 +3336,8 @@ country_event = { #Fate of Wallonia
 			}
 		}
 
-		if = {
-			limit = { country_exists = WLA }
-			custom_effect_tooltip = FRA_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = WLA }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = WLA }
+		release_targeted_tag = yes
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
@@ -3286,6 +3347,53 @@ country_event = { #Fate of Wallonia
 		}
 	}
 
+	option = { #Give to Flanders
+		log = "[GetLogInfo]: event annex.1025 option annex.1025.b"
+		name = annex.1025.b
+		trigger = {
+			has_event_target = flanders
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:flanders }
+				is_ally_with = event_target:france
+			}
+			modifier = {
+				factor = 0.1
+				event_target:flanders = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:flanders }
+		34 = { transfer_if_owned = yes } #Hainaut
+	}
+
+	option = { #Give to France
+		log = "[GetLogInfo]: event annexation_events.1025 option annex.europe.give_to_france"
+		name = annex.europe.give_to_france
+		trigger = {
+			has_event_target = france
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		34 = { transfer_if_owned = yes } #Hainaut
+	}
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.1025 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -3293,14 +3401,7 @@ country_event = { #Fate of Wallonia
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		34 = { transfer_if_owned = yes } #Hainaut
 	}
 
 	option = { #Integrate
@@ -3309,17 +3410,16 @@ country_event = { #Fate of Wallonia
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			#limit = { is_mainland_france_state = yes }
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		34 = { add_claim_of_ROOT = yes } #Hainaut
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1025 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -3420,7 +3520,7 @@ country_event = { #Fate of Calais Corridor
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:calais }
-		855 = { transfer_state_and_notify = yes } #Calais
+		855 = { transfer_state_and_notify = yes } #Dunkerque
 	}
 
 	option = { #Give to overlord
@@ -3455,23 +3555,31 @@ country_event = { #Fate of Calais Corridor
 
 country_event = { #Fate of Netherlands
 	id = annex.1027
-	title = annexation_netherlands
-	desc = annexation_netherlands_desc
+	title = annexation_7
+	desc = annexation_7_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-		1163 = { retain_state = yes }
-		1446 = { retain_state = yes }
-		1073 = { retain_state = yes }
-		707 = { retain_state = yes }
-		422 = { retain_state = yes }
-		6 = { retain_state = yes }
-		1405 = { retain_state = yes }
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_netherlands = yes }
+					add_core_of = HOL
+				}
+				else = {
+					remove_core_of = HOL
+				}
+				remove_claim_by = HOL
+			}
+			6 = { retain_state = yes } #Flanders
+			1405 = { retain_state = yes } #Limburg
+		}
+		
 	}
 
-	option = { #Release Netherlands
+	option = { #Puppet Netherlands
 		log = "[GetLogInfo]: event annex.1027 option annex.1027.a"
 		name = annex.1027.a
 		trigger = {
@@ -3484,15 +3592,8 @@ country_event = { #Fate of Netherlands
 			}
 		}
 
-		if = {
-			limit = { country_exists = HOL }
-			custom_effect_tooltip = FRA_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = HOL }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = HOL }
+		release_targeted_tag = yes
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
@@ -3509,14 +3610,8 @@ country_event = { #Fate of Netherlands
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		HOL = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Integrate
@@ -3525,51 +3620,86 @@ country_event = { #Fate of Netherlands
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			#limit = { is_mainland_france_state = yes }
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1027 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Flanders
 	id = annex.1028
-	title = annexation_flanders
-	desc = annexation_flanders_desc
+	title = annexation_6
+	desc = annexation_6_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
-	option = { #Release Flanders
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { 35 = { is_claim_or_core_of_ROOT = yes } } #Brabant
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					var:34.owner = { #Hainaut
+						ROOT_can_grant_land = yes
+					}
+				}
+				var:34.owner = { save_event_target_as = wallonia }
+			}
+			if = {
+				limit = {
+					35 = { #North Brabant
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:35.owner = { save_event_target_as = netherlands }
+			}
+		}
+	}
+
+	option = { #Puppet Flanders
 		log = "[GetLogInfo]: event annex.1028 option annex.1028.a"
 		name = annex.1028.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 30
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = wallonia
+				OR = {
+					is_major = no
+					is_ally_with = event_target:wallonia
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = netherlands
+				OR = {
+					is_major = no
+					is_ally_with = event_target:netherlands
+				}
 			}
 		}
 
-		if = {
-			limit = { country_exists = FLA }
-			custom_effect_tooltip = FRA_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = FLA }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = FLA }
+		release_targeted_tag = yes
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
@@ -3579,29 +3709,60 @@ country_event = { #Fate of Flanders
 		}
 	}
 
-	option = { #Return it to Netherlands
-		log = "[GetLogInfo]: event annex.1028 option annex.1028.a"
-		name = annex.1028.a
+	option = { #Give to Wallonia
+		log = "[GetLogInfo]: event annex.1028 option annex.1028.b"
+		name = annex.1028.b
 		trigger = {
-			is_subject = no
-			HOL = {
-				exists = yes
-			}
+			has_event_target = wallonia
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:wallonia }
+				is_ally_with = event_target:netherlands
+			}
+			modifier = {
+				factor = 0.1
+				event_target:wallonia = { is_subject = yes }
 			}
 		}
-
-		HOL = {
-			transfer_state = 6
-			transfer_state = 1405
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:wallonia }
+		6 = { transfer_if_owned = yes } #Flanders
+		1405 = { transfer_if_owned = yes } #Limburg
 	}
+
+	option = { #Give to the Netherlands
+		log = "[GetLogInfo]: event annex.1028 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				is_ally_with = event_target:wallonia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		6 = { transfer_if_owned = yes } #Flanders
+		1405 = { transfer_if_owned = yes } #Limburg
+	}
+
 
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.1028 option annex.give_to_overlord"
@@ -3610,14 +3771,8 @@ country_event = { #Fate of Flanders
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		6 = { transfer_if_owned = yes } #Flanders
+		1405 = { transfer_if_owned = yes } #Limburg
 	}
 
 	option = { #Integrate
@@ -3626,17 +3781,17 @@ country_event = { #Fate of Flanders
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			#limit = { is_mainland_france_state = yes }
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		6 = { add_claim_of_ROOT = yes } #Flanders
+		1405 = { add_claim_of_ROOT = yes } #Limburg
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1028 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
