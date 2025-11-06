@@ -1969,3 +1969,280 @@ country_event = { #Fate of Santa Catarina
 		recheck_annexations = yes
 	}
 }
+
+country_event = { # Fate of Western Hispaniola
+	id = annex.3026
+	title = annexation_3026
+	desc = annexation_3026_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	option = { #Release Ayiti
+		log = "[GetLogInfo]: event annex.3026 option annexation.3026.a"
+		name = annex.3026.a
+		trigger = {
+			is_subject = no
+			ROOT = {
+				NOT = {
+					tag = CAY
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				ROOT = {
+					tag = FRA
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				ROOT = {
+					tag = CHU
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				ROOT = {
+					tag = NWG
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = HAI }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Re-establish a colonial authority
+		log = "[GetLogInfo]: event annex.3026 option annexation.3026.b"
+		name = annex.3026.b
+		trigger = {
+			is_subject = no
+			ROOT = {
+				OR = {
+					tag = FRA
+					tag = ENG
+					tag = CHR
+					tag = NWG
+				}
+				NOT = {
+					has_government = jc
+					has_government = ss
+					has_government = lb
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = HAI }
+		release_targeted_tag = yes
+		
+		if = {
+			limit = {
+				ROOT = {
+					tag = FRA
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_FRA_Colonial
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					tag = ENG
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_ENG_Colonial
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						tag = NWG
+						tag = CHU
+					}
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_Hispanic_Colonial
+			}
+		}
+	}
+	
+	option = { #Establish a corporate authority
+		log = "[GetLogInfo]: event annex.3026 option annexation.3026.c"
+		name = annex.3026.c
+		trigger = {
+			is_subject = no
+			ROOT = {
+				OR = {
+					tag = AME
+					tag = CAY
+				}
+				NOT = {
+					has_government = jc
+					has_government = ss
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = HAI }
+		release_targeted_tag = yes
+		
+		ROOT = {
+			set_autonomy = {
+				target = HAI
+				autonomous_state = autonomy_banana_republic
+			}
+		}
+		
+		HAI = {
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = HAI_American_Dependency
+			set_popularities = {
+				ni = 0
+				ds = 5
+				rc = 10
+				cn = 5
+				lb = 10
+				an = 45
+				ss = 15
+				jc = 10
+			}
+			set_politics = {
+				ruling_party = an
+				last_election = "1936.1.1"
+				election_frequency = 48
+				elections_allowed = no
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3026 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		HAI = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.3026 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 80
+				ROOT = {
+					OR = {
+						tag = NWG
+						tag = CHU
+					}
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+			modifier = {
+				factor = 10
+				ROOT = {
+					tag = FRA
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.3026 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
