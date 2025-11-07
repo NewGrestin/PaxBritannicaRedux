@@ -1516,44 +1516,79 @@ country_event = { #Fate of Savoy
 
 country_event = { #Fate of Neuchatel
 	id = annex.1012
-	title = annexation_neuchatel
-	desc = annexation_nechatel_desc
+	title = annexation_972
+	desc = annexation_972_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-		if = {
-			limit = {
-				BRG = {
-					ROOT_can_grant_land = yes
+		hidden_effect = {
+			if = {
+				limit = {
+					 OR = {
+						940 = { is_claim_or_core_of_ROOT = yes } #Geneva & Vaud
+						AND = {
+							17 = { is_claim_or_core_of_ROOT = yes } #Meurthe
+							809 = { is_claim_or_core_of_ROOT = yes } #Franche Comte
+						}
+					}
 				}
+				save_event_target_as = can_annex
 			}
-			BRG = { save_event_target_as = Burgundy }
-		}
-		if = {
-			limit = {
-				FRA = {
-					ROOT_can_grant_land = yes
+			if = {
+				limit = {
+					var:940.owner = { #Geneva & Vaud
+						ROOT_can_grant_land = yes
+					}
 				}
+				var:940.owner = { save_event_target_as = vaud } #Geneva & Vaud
 			}
-			FRA = { save_event_target_as = France }
-		}
-		if = {
-			limit = {
-				SWI = {
-					ROOT_can_grant_land = yes
+			if = {
+				limit = {
+					var:972.owner = { #Franche Comte
+						ROOT_can_grant_land = yes
+					}
 				}
+				var:972.owner = { save_event_target_as = france } #Franche Comte
 			}
-			SWI = { save_event_target_as = Switzerland }
+			if = {
+				limit = {
+					var:28.owner = { #Alsace
+						ROOT_can_grant_land = yes
+					}
+				}
+				var:940.owner = { save_event_target_as = alsace } #Alsace
+			}
 		}
 	}
 
-	option = { #give to Burgundy
-		log = "[GetLogInfo]: event annex.1012 option annex.give_to_france"
-		name = annex.give_to_wallonia
+	option = { #give to Vaud owner
+		log = "[GetLogInfo]: event annex.1012 option annex.1012.a"
+		name = annex.1012.a
 		trigger = {
-			has_event_target = Burgundy
+			has_event_target = vaud
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:vaud = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:vaud }
+		972 = { transfer_if_owned = yes } #Neuchâtel
+	}
+
+	option = { #give to Franche Comte owner
+		log = "[GetLogInfo: event annex.1012 option annex.1012.b"
+		name = annex.1012.b
+		trigger = {
+			has_event_target = france
 		}
 		ai_chance = {
 			base = 100
@@ -1567,18 +1602,18 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:Burgundy = { is_subject = yes }
+				event_target:france = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = event_target:Burgundy }
+		set_temp_variable = { tag_to_release = event_target:france }
 		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
-	option = { #give to France
-		log = "[GetLogInfo]: event annex.1012 option annex.give_to_burgundy"
-		name = annex.give_to_france
+	option = { #give to Alsace owner
+		log = "[GetLogInfo]: event annex.1012 option annex.1012.c"
+		name = annex.1012.c
 		trigger = {
-			has_event_target = France
+			has_event_target = alsace
 		}
 		ai_chance = {
 			base = 100
@@ -1592,36 +1627,30 @@ country_event = { #Fate of Neuchatel
 			}
 			modifier = {
 				factor = 0.1
-				event_target:France = { is_subject = yes }
+				event_target:alsace = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = event_target:France }
+		set_temp_variable = { tag_to_release = event_target:alsace }
 		972 = { transfer_if_owned = yes } #Neuchâtel
 	}
 
-	option = { #give to Switzerland
-		log = "[GetLogInfo]: event annex.1012 option annex.give_to_switzerland"
-		name = annex.give_to_switzerland
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1012 option annex.give_to_overlord"
+		name = annex.give_to_overlord
 		trigger = {
-			has_event_target = Switzerland
+			annexations_should_give_lands_to_overlord = yes
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				#is_germany_or_splinter_tag = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:Switzerland = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:Switzerland }
+		set_temp_variable = { tag_to_release = overlord }
 		972 = { transfer_if_owned = yes } #Neuchâtel
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.1012 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		972 = { add_claim_of_ROOT = yes } #Neuchâtel
 	}
 
 	option = { #Cancel
@@ -3796,10 +3825,10 @@ country_event = { #Fate of Flanders
 	}
 }
 
-country_event = { #Fate of Italy
+country_event = { #Fate of Rome
 	id = annex.1029
-	title = annexation_italy
-	desc = annexation_italy_desc
+	title = annexation_2
+	desc = annexation_2_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -7130,8 +7159,8 @@ country_event = { #Fate of Rijeka
 
 country_event = { #Fate of Basque Country
 	id = annex.1058
-	title = annexation_basque
-	desc = annexation_basque_desc
+	title = annexation_172
+	desc = annexation_172_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
