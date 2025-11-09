@@ -366,3 +366,71 @@ puppet_released_tag_nocosmetic = {
 
 ### IN KR CODE THERE ARE COUNTRY SPECIFIC EFFECTS, LOOK UP THEIR CODE IF NEEDED
 # LEXUS
+annexations_reset_italy = {
+	every_state = {
+		limit = { is_italy = yes }
+		if = {
+			limit = { NOT = { country_exists = ITA } }
+			add_core_of = ITA
+		}
+		else_if = {
+			limit = { NOT = { country_exists = IST } }
+			add_core_of = IST
+		}
+	}
+}
+annexations_release_italy = {
+	every_state = {
+		limit = { is_italy = yes }
+		if = {
+			limit = { is_owned_by = ROOT }
+			remove_claim_and_add_core_of_target = yes
+		}
+		else = { add_claim_of_target = yes }
+	}
+	release_targeted_tag = yes
+	italy_annex_puppets_into_full_italy = yes
+	var:tag_to_release = {
+		italy_set_capital_rome = yes
+	}
+}
+annexations_create_italian_targets = {
+	if = {
+		limit = {
+			ITA = { ROOT_can_grant_land = yes }
+		}
+		ITA = { save_event_target_as = italy }
+	}
+	if = {
+		limit = {
+			IST = { ROOT_can_grant_land = yes }
+		}
+		IST = { save_event_target_as = italy_soc }
+	}
+}
+annexations_give_italy_to_target = {
+	if = {
+		limit = { has_event_target = italy }
+		set_temp_variable = { tag_to_release = event_target:italy }
+		every_owned_state = {
+			limit = {
+				is_italy = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+	if = {
+		limit = { has_event_target = italy_soc }
+		set_temp_variable = { tag_to_release = event_target:italy_soc }
+		every_owned_state = {
+			limit = {
+				is_italy = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+}
