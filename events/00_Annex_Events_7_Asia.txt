@@ -6300,14 +6300,8 @@ country_event = { #Fate of Philippines
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		PHI = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Integrate
@@ -6317,7 +6311,7 @@ country_event = { #Fate of Philippines
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
-			#limit = { is_mainland_france_state = yes }
+			limit = { is_core_of = PHI }
 			add_claim_of_ROOT = yes
 		}
 		recheck_annexations = yes
@@ -7879,27 +7873,24 @@ country_event = { #Fate of Meranti Islands
 		if = {
             limit = {
                 OR = {
-                    original_tag = DEL
-					original_tag = HAR
-					original_tag = ACE
+                    1342 = { is_claim_or_core_of_ROOT = yes } #Riau
+					1143 = { is_claim_or_core_of_ROOT = yes } #Selangor-Negeri
                 }
             }
             save_event_target_as = can_annex
         }
 		if = {
             limit = {
-                672 = { # Palembang
+                1342 = { # Riau
                     owner = { ROOT_can_grant_land = yes }
                 }
             }
-            var:672.owner = { save_event_target_as = sumatra }
+            var:1342.owner = { save_event_target_as = sumatra }
         }
         if = {
             limit = {
                 1143 = { # Selangor-Negeri
-                    annexations_state_owner_is_valid_grant_target = yes
                     owner = {
-						NOT = { tag = event_target:sumatra }
                         ROOT_can_grant_land = yes
                     }
                 }
@@ -8050,8 +8041,11 @@ country_event = { #Fate of Riau Islands
                 factor = 0
                 NOT = { is_ally_with = event_target:sarawak }
                 is_ally_with = event_target:malaysia
-                #annexations_AI_will_consider_returning_colonies = yes
             }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = malaysia}
+			}
 			modifier = {
 				factor = 0.1
 				event_target:sarawak = { is_subject = yes }
@@ -8080,11 +8074,25 @@ country_event = { #Fate of Riau Islands
                 #annexations_AI_will_consider_returning_colonies = yes
             }
 			modifier = {
+				factor = 2
+				NOT = { has_event_target = sarawak}
+			}
+			modifier = {
 				factor = 0.1
 				event_target:malaysia = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:malaysia }
+		1343 = { transfer_state_and_notify = yes } # Riau
+	}	
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7050 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
 		1343 = { transfer_state_and_notify = yes } # Riau
 	}
 
@@ -8094,10 +8102,7 @@ country_event = { #Fate of Riau Islands
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		1343 = { transfer_state_and_notify = yes } # Riau
 	}
 
 	option = { #Cancel
@@ -9593,11 +9598,6 @@ country_event = { # Fate of Java
 	option = { # Release Java Whole
 		log = "[GetLogInfo]: event annex.7059 option annexation.7059.a"
 		name = annex.7059.a
-		trigger = {
-			NOT = {
-				has_event_target = dutch_east_indies
-			}
-		}
 		ai_chance = {
 			base = 10
 			modifier = {
@@ -9605,12 +9605,8 @@ country_event = { # Fate of Java
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 0
-				has_subject = event_target:dutch_east_indies
-			}
-			modifier = {
-				factor = 0
-				is_ally_with = event_target:dutch_east_indies
+				factor = 0.1
+				event_target:dutch_east_indies = { is_subject = yes }
 			}
 		}
 		
@@ -12103,10 +12099,17 @@ country_event = { # Fate of Timor
 			}
 			modifier = {
                 factor = 0
-                NOT = { is_ally_with = event_target:java }
-                is_ally_with = event_target:dutch_east_indies
-                #annexations_AI_will_consider_returning_colonies = yes
+                NOT = { is_ally_with = event_target:dutch_east_indies }
+                is_ally_with = event_target:java
             }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = java }
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:dutch_east_indies
+			}
 		}
 		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
 		1148 = { transfer_if_owned = yes } # Timor
@@ -12124,6 +12127,15 @@ country_event = { # Fate of Timor
 			modifier = {
 				add = 60
 				has_subject = event_target:java
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:java }
+                is_ally_with = event_target:dutch_east_indies
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = dutch_east_indies }
 			}
 			modifier = {
 				add = 60
@@ -12208,13 +12220,26 @@ country_event = { # Fate of the Moluccas
 				has_subject = event_target:papua
 			}
 			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:papua }
+                is_ally_with = event_target:sulawesi
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = sulawesi }
+			}
+			modifier = {
 				add = 60
 				is_ally_with = event_target:papua
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:papua }
-		668 = { transfer_if_owned = yes } # Moluccas
+		668 = { 
+			transfer_if_owned = yes 
+			remove_claim_and_add_core_of_target = yes
+		} # Moluccas
 		transfer_targeted_territory = yes
+		
 	}
 
 	option = { # Give Moluccas to Sulawesi
@@ -12230,12 +12255,24 @@ country_event = { # Fate of the Moluccas
 				has_subject = event_target:sulawesi
 			}
 			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:sulawesi }
+                is_ally_with = event_target:papua
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = papua }
+			}
+			modifier = {
 				add = 60
 				is_ally_with = event_target:sulawesi
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:sulawesi }
-		668 = { transfer_if_owned = yes } # Moluccas
+		668 = { 
+			transfer_if_owned = yes 
+			remove_claim_and_add_core_of_target = yes
+		} # Moluccas
 		transfer_targeted_territory = yes
 	}
 
@@ -12303,8 +12340,21 @@ country_event = { # Fate of The Lesser Sunda Islands
 		ai_chance = {
 			base = 50
 			modifier = {
-				factor = 0
-				annexations_can_annex = yes
+				add = 60
+				has_subject = event_target:dutch_east_indies
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:dutch_east_indies }
+                is_ally_with = event_target:java
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = java }
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:dutch_east_indies
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
@@ -12319,14 +12369,19 @@ country_event = { # Fate of The Lesser Sunda Islands
 			has_event_target = java
 		}
 		ai_chance = {
-			base = 40
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
+			base = 50
 			modifier = {
 				add = 60
 				has_subject = event_target:java
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:java }
+                is_ally_with = event_target:dutch_east_indies
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = dutch_east_indies }
 			}
 			modifier = {
 				add = 60
@@ -12402,8 +12457,21 @@ country_event = { # Fate of The Lesser Sunda Islands
 		ai_chance = {
 			base = 50
 			modifier = {
-				factor = 0
-				annexations_can_annex = yes
+				add = 60
+				has_subject = event_target:dutch_east_indies
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:dutch_east_indies }
+                is_ally_with = event_target:java
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = java }
+			}
+			modifier = {
+				add = 60
+				is_ally_with = event_target:dutch_east_indies
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:dutch_east_indies }
@@ -12418,14 +12486,19 @@ country_event = { # Fate of The Lesser Sunda Islands
 			has_event_target = java
 		}
 		ai_chance = {
-			base = 40
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
+			base = 50
 			modifier = {
 				add = 60
 				has_subject = event_target:java
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:java }
+                is_ally_with = event_target:dutch_east_indies
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = dutch_east_indies }
 			}
 			modifier = {
 				add = 60
@@ -15847,6 +15920,411 @@ country_event = { #Fate of South Tohoku
 		log = "[GetLogInfo]: event annex.7095 option annexation.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Lampung
+	id = annex.7096
+	title = annexation_decision_1340
+	desc = annexation_decision_1340_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+            limit = {
+                OR = {
+                    original_tag = DEL
+					original_tag = HAR
+					original_tag = ACE
+					original_tag = INS
+					original_tag = KRA
+                }
+            }
+            save_event_target_as = can_annex
+        }
+		if = {
+            limit = {
+                672 = { # Palembang
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:672.owner = { save_event_target_as = palembang }
+        }
+        if = {
+            limit = {
+                1355 = { # Krakatoa Archipelago
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1355.owner = { save_event_target_as = krakatoa }
+        }
+	}
+
+	option = { #Grant Lampung to Palembang
+		log = "[GetLogInfo]: event annex.7096 option annexation.7096.a"
+		name = annex.7096.a
+		trigger = {
+			has_event_target = palembang
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:palembang }
+                is_ally_with = event_target:krakatoa
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = krakatoa}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:palembang = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:palembang }
+		1340 = { transfer_state_and_notify = yes } # Lampung
+	}
+	
+	option = { #Grant Lampung to Hawk a toa
+		log = "[GetLogInfo]: event annex.7096 option annexation.7096.b"
+		name = annex.7096.b
+		trigger = {
+			has_event_target = krakatoa
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:krakatoa }
+                is_ally_with = event_target:palembang
+            }
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = palembang}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:krakatoa = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:krakatoa }
+		1340 = { transfer_state_and_notify = yes } # Lampung
+	}	
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7096 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1340 = { transfer_state_and_notify = yes } # Lampung
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7096 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1340 = { transfer_state_and_notify = yes } # Lampung
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.7096 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Krakatoa
+	id = annex.7097
+	title = annexation_decision_1355
+	desc = annexation_decision_1355_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					1338 = { is_claim_or_core_of_ROOT = yes } # Banten
+					1340 = { is_claim_or_core_of_ROOT = yes } # Lampung
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1340 = { # Lampung
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1340.owner = { save_event_target_as = lampung }
+		}
+		if = {
+			limit = {
+				1338 = { # Banten
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1338.owner = { save_event_target_as = banten }
+		}
+	}
+
+	option = { # Grant the state to Lampung
+		log = "[GetLogInfo]: event annex.7097 option annexation.7097.a"
+		name = annex.7097.a
+		trigger = {
+			has_event_target = lampung
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:lampung }
+				is_ally_with = event_target:banten
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = banten }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:lampung = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:lampung }
+		1355 = { transfer_state_and_notify = yes } # Krakatoa Archipelago
+	}
+
+	option = { # Grant the state to Banten
+		log = "[GetLogInfo]: event annex.7097 option annexation.7097.b"
+		name = annex.7097.b
+		trigger = {
+			has_event_target = banten
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:banten }
+				is_ally_with = event_target:lampung
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = lampung }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:banten = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:banten }
+		1355 = { transfer_state_and_notify = yes } # Krakatoa Archipelago
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.7097 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1355 = { transfer_state_and_notify = yes } # Krakatoa Archipelago
+	}
+
+	option = { # Integrate
+		log = "[GetLogInfo]: event annex.7097 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1355 = { transfer_state_and_notify = yes } # Krakatoa Archipelago
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7097 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Banten
+	id = annex.7098
+	title = annexation_decision_1338
+	desc = annexation_decision_1338_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = DEL
+					original_tag = HAR
+					original_tag = ACE
+					original_tag = INS
+					original_tag = KRA
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1355 = { # Krakatoa Archipelago
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1355.owner = { save_event_target_as = krakatoa }
+		}
+		if = {
+			limit = {
+				335 = { # West Java
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:335.owner = { save_event_target_as = westjava }
+		}
+	}
+
+	option = { # Grant Banten to Krakatoa
+		log = "[GetLogInfo]: event annex.7098 option annexation.7098.a"
+		name = annex.7098.a
+		trigger = {
+			has_event_target = krakatoa
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:krakatoa }
+				is_ally_with = event_target:westjava
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = westjava }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:krakatoa = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:krakatoa }
+		1338 = { transfer_state_and_notify = yes } # Banten
+	}
+
+	option = { # Grant Banten to West Java
+		log = "[GetLogInfo]: event annex.7098 option annexation.7098.b"
+		name = annex.7098.b
+		trigger = {
+			has_event_target = westjava
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:westjava }
+				is_ally_with = event_target:krakatoa
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = krakatoa }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:westjava = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:westjava }
+		1338 = { transfer_state_and_notify = yes } # Banten
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.7098 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1338 = { transfer_state_and_notify = yes } # Banten
+	}
+
+	option = { # Integrate
+		log = "[GetLogInfo]: event annex.7098 option annexation.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1338 = { transfer_state_and_notify = yes } # Banten
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7098 option annexation.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
