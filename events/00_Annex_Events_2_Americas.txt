@@ -1319,16 +1319,43 @@ country_event = { #Fate of Yucatan
 
 country_event = { #Fate of Guatemala
 	id = annex.2009
-	title = annexation_guatemala
-	desc = annexation_guatemala_desc
+	title = annexation_313
+	desc = annexation_313_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-	MEX  = { save_event_target_as = mexico }
-	LOS  = { save_event_target_as = los_altos }
-		
+		if = {
+			limit = {
+				OR = {
+					778 = { is_claim_or_core_of_ROOT = yes } # Los Altos
+					475 = { is_claim_or_core_of_ROOT = yes } # Chiapas
+					is_central_american_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				778 = { # Los Altos
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:778.owner = { save_event_target_as = los_altos }
+		}
+		if = {
+			limit = {
+				475 = { # Chiapas
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:los_altos }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:475.owner = { save_event_target_as = chiapas }
+		}
     }
 	option = { #Liberate Guatemala
 		log = "[GetLogInfo]: event annexation.2009 option annexation.2009.a"
@@ -1336,47 +1363,67 @@ country_event = { #Fate of Guatemala
 		trigger = {
 			is_subject = no
 		}
+
 		ai_chance = {
-			base = 50
+			base = 100
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 		}
+
+		set_temp_variable = { tag_to_release = GUA }
+		every_state = {
+			limit = { is_core_of = GUA }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = GUA }
-			custom_effect_tooltip = GUA_puppet_tooltip
-			
+			limit = { ROOT = { has_monarchist_government = yes } }
+			GUA = {
+				set_cosmetic_tag = GUA_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = GUA }
-			release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			GUA = {
+				set_cosmetic_tag = GUA_Occupied_Republic
+			}
 		}
-		
 	}
 
 
-	option = { #Give it to Mexico
+	option = { #Give it to Owner of Chiapas
 		log = "[GetLogInfo]: event annexation.2009 option annexation.2009.b"
 		name = annex.2009.b
 		trigger = {
-			has_event_target = mexico
-			MEX = {
-            exists = yes
-		    }   
+			has_event_target = chiapas
 	    }
 		ai_chance = {
-			base = 50
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:chiapas }
+				is_ally_with = event_target:los_altos
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = los_altos }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:chiapas = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = event_target:mexico }
-		313 = { transfer_state_to = MEX }
-		1212 = { transfer_state_to = MEX }
-		transfer_targeted_territory = yes
-		
+		set_temp_variable = { tag_to_release = event_target:chiapas }
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
 	}
 
 	option = { #Give it to Los Altos
@@ -1384,29 +1431,57 @@ country_event = { #Fate of Guatemala
 		name = annex.2009.c
 		trigger = {
 			has_event_target = los_altos
-			LOS = {
-            exists = yes
-		    }   
 	    }
 		ai_chance = {
-			base = 50
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:los_altos }
+				is_ally_with = event_target:chiapas
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = chiapas }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:los_altos = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:los_altos }
-		313 = { transfer_state_to = LOS }
-		1212 = { transfer_state_to = LOS }
-		transfer_targeted_territory = yes
-		
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2009 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.2009 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.2009 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.2009 option name annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		
 	}
 
 	after = {
