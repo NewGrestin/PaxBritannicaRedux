@@ -2612,16 +2612,16 @@ country_event = { #Fate of BAJA
 			}
 		}
 		set_temp_variable = { tag_to_release = MEX }
-		484 = { transfer_state_and_notify = yes } #California
+		484 = { transfer_state_and_notify = yes } #Mexico
 	}
 
 	option = { #Annex
-		log = "[GetLogInfo]: event annex.1026 option name annex.integration"
+		log = "[GetLogInfo]: event annex.2023 option name annex.integration"
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
 		}
-		484 = { transfer_state_and_notify = yes } #Baja California
+		484 = { add_claim_of_ROOT = yes } #Baja California
 	}
 
 	option = { #Cancel
@@ -2841,25 +2841,31 @@ country_event = { #Fate of Comanche
 
 country_event = { #Fate of Quebec
 	id = annex.2027
-	title = annexation_quebec
-	desc = annexation_quebec_desc
+	title = annexation_1462
+	desc = annexation_1462_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		465 = { retain_state = yes }
-		464 = { retain_state = yes } 
-		332 = { retain_state = yes }
-		331 = { retain_state = yes } 
-		950 = { retain_state = yes }
-		393 = { retain_state = yes } 
-		276 = { retain_state = yes }
-		394 = { retain_state = yes } 
-		817 = { retain_state = yes } 
+		hidden_effect = {
+			465 = { retain_state = yes }
+			464 = { retain_state = yes } 
+			332 = { retain_state = yes }
+			331 = { retain_state = yes } 
+			every_state = {
+				IF = {
+					limit = {
+						is_great_lakes = yes
+					}
+					retain_state = yes
+				}
+			}
+		}
+		
 	}
 
-	option = { #Liberate Quebec
+	option = { #Puppet Quebec
 		log = "[GetLogInfo]: event annexation.2027 option annexation.2027.a"
 		name = annex.2027.a
 		trigger = {
@@ -2872,16 +2878,19 @@ country_event = { #Fate of Quebec
 				annexations_can_annex = yes
 			}
 		}
-		if = {
-			limit = { country_exists = QUE }
-			custom_effect_tooltip = QUE_puppet_tooltip
-			
+		set_temp_variable = { tag_to_release = QUE }
+		release_targeted_tag = yes				
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2027 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
 		}
-		else = {		
-			set_temp_variable = { tag_to_release = QUE }
-			release_targeted_tag = yes				
-		}	
-		
+		set_temp_variable = { tag_to_release = overlord }
+		QUE = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Cancel
@@ -2897,25 +2906,58 @@ country_event = { #Fate of Quebec
 
 country_event = { #Fate of Huron
 	id = annex.2028
-	title = annexation_huron
-	desc = annexation_huron_desc
+	title = annexation_276
+	desc = annexation_276_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						320 = { is_claim_or_core_of_ROOT = yes } #Upper Canada
+						original_tag = QUE
+					}
+					393 = { is_claim_or_core_of_ROOT = yes } #Michigan
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					320 = { #Upper Canada
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:320.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					393 = { #Michigan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:393.owner = { save_event_target_as = michigan }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annexation.2028 option annexation.2028.a"
 		name = annex.2028.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-				owns_state = 393
-				owns_state = 358
-			}
+			has_event_target = michigan
 		}
 		ai_chance = {
 			base = 100
@@ -2925,10 +2967,8 @@ country_event = { #Fate of Huron
 			}
 		}
 
-		AME = {
-			transfer_state = 276
-			add_state_core = 276
-		}
+		set_temp_variable = { tag_to_release = event_target:michigan }
+		276 = { transfer_state_and_notify = yes } #Huron
 		
 	}
 
@@ -2936,10 +2976,7 @@ country_event = { #Fate of Huron
 		log = "[GetLogInfo]: event annexation.2028 option annexation.2028.b"
 		name = annex.2028.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 320
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -2947,12 +2984,28 @@ country_event = { #Fate of Huron
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:michigan
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 276
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		276 = { transfer_state_and_notify = yes } #Huron
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2028 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		276 = { add_claim_of_ROOT = yes } #Huron
 	}
 
 	option = { #Cancel
