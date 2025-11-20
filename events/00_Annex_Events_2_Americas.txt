@@ -100,7 +100,7 @@ country_event = { #Fate of Acadia
 	}
 
 
-	option = { #Give it to the Commonwealth
+	option = { #Give it to the CMCmonwealth
 		log = "[GetLogInfo]: event annexation.2000 option annexation.2000.a"
 		name = annex.2000.b
 		trigger = {
@@ -266,7 +266,7 @@ country_event = { #Fate of Apacheria
 	}
 
 
-	option = { #Give it to the Commonwealth
+	option = { #Give it to the CMCmonwealth
 		log = "[GetLogInfo]: event annexation.2001 option annexation.2001.b"
 		name = annex.2001.b
 		trigger = {
@@ -1319,16 +1319,43 @@ country_event = { #Fate of Yucatan
 
 country_event = { #Fate of Guatemala
 	id = annex.2009
-	title = annexation_guatemala
-	desc = annexation_guatemala_desc
+	title = annexation_313
+	desc = annexation_313_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-	MEX  = { save_event_target_as = mexico }
-	LOS  = { save_event_target_as = los_altos }
-		
+		if = {
+			limit = {
+				OR = {
+					778 = { is_claim_or_core_of_ROOT = yes } # Los Altos
+					475 = { is_claim_or_core_of_ROOT = yes } # Chiapas
+					is_central_american_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				778 = { # Los Altos
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:778.owner = { save_event_target_as = los_altos }
+		}
+		if = {
+			limit = {
+				475 = { # Chiapas
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:los_altos }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:475.owner = { save_event_target_as = chiapas }
+		}
     }
 	option = { #Liberate Guatemala
 		log = "[GetLogInfo]: event annexation.2009 option annexation.2009.a"
@@ -1336,47 +1363,67 @@ country_event = { #Fate of Guatemala
 		trigger = {
 			is_subject = no
 		}
+
 		ai_chance = {
-			base = 50
+			base = 100
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 		}
+
+		set_temp_variable = { tag_to_release = GUA }
+		every_state = {
+			limit = { is_core_of = GUA }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = GUA }
-			custom_effect_tooltip = GUA_puppet_tooltip
-			
+			limit = { ROOT = { has_monarchist_government = yes } }
+			GUA = {
+				set_cosmetic_tag = GUA_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = GUA }
-			release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			GUA = {
+				set_cosmetic_tag = GUA_Occupied_Republic
+			}
 		}
-		
 	}
 
 
-	option = { #Give it to Mexico
+	option = { #Give it to Owner of Chiapas
 		log = "[GetLogInfo]: event annexation.2009 option annexation.2009.b"
 		name = annex.2009.b
 		trigger = {
-			has_event_target = mexico
-			MEX = {
-            exists = yes
-		    }   
+			has_event_target = chiapas
 	    }
 		ai_chance = {
-			base = 50
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:chiapas }
+				is_ally_with = event_target:los_altos
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = los_altos }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:chiapas = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = event_target:mexico }
-		313 = { transfer_state_to = MEX }
-		1212 = { transfer_state_to = MEX }
-		transfer_targeted_territory = yes
-		
+		set_temp_variable = { tag_to_release = event_target:chiapas }
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
 	}
 
 	option = { #Give it to Los Altos
@@ -1384,29 +1431,57 @@ country_event = { #Fate of Guatemala
 		name = annex.2009.c
 		trigger = {
 			has_event_target = los_altos
-			LOS = {
-            exists = yes
-		    }   
 	    }
 		ai_chance = {
-			base = 50
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:los_altos }
+				is_ally_with = event_target:chiapas
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = chiapas }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:los_altos = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:los_altos }
-		313 = { transfer_state_to = LOS }
-		1212 = { transfer_state_to = LOS }
-		transfer_targeted_territory = yes
-		
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2009 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.2009 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		313 = { transfer_state_and_notify = yes } # Guatemala
+		1212  = { transfer_state_and_notify = yes } # Peten
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.2009 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.2009 option name annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		
 	}
 
 	after = {
@@ -2483,6 +2558,8 @@ country_event = { #Fate of CAL
 	desc = annexation_california_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
+	is_triggered_only = yes
+
 	immediate = {
 		hidden_effect = {
 			if = {
@@ -2509,25 +2586,50 @@ country_event = { #Fate of CAL
 				annexations_can_annex = yes
 			}
 		}
+		set_temp_variable = { tag_to_release = CAL }
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = CAL }
-			custom_effect_tooltip = CAL_puppet_tooltip
-			
+			limit = { ROOT = { has_monarchist_government = yes } }
+			CAL = {
+				set_cosmetic_tag = CAL_Occupied_Monarchy
+			}
 		}
-		else = {		
-			set_temp_variable = { tag_to_release = CAL }
-			release_targeted_tag = yes				
-		}	
-		
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			CAL = {
+				set_cosmetic_tag = CAL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2022 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
 	}
 
 	option = { #Annex
-		log = "[GetLogInfo]: event annex.1007 option name annex.integration"
+		log = "[GetLogInfo]: event annex.2022 option name annex.integration"
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
 		}
-		29 = { transfer_state_and_notify = yes } #Dunkerque
+		every_owned_state = {
+			limit = { is_core_of = CAL }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
@@ -2550,30 +2652,34 @@ country_event = { #Fate of BAJA
 	is_triggered_only = yes
 
 	immediate = {
-		hidden_effect = {
-			if = {
-				limit = {
-					OR = {
-						original_tag = CAL
-						original_tag = MEX
+		if = {
+			limit = {
+				OR = {
+					483 = { is_claim_or_core_of_ROOT = yes } #Sonora
+					378 = { is_claim_or_core_of_ROOT = yes } #Los Angeles
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				483 = { #Sonora
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:483.owner = { save_event_target_as = mexico }
+		}
+		if = {
+			limit = {
+				378 = { #Los Angeles
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:mexico }
+						ROOT_can_grant_land = yes
 					}
 				}
-				save_event_target_as = can_annex
 			}
-			if = {
-				limit = { CAL = { ROOT_can_grant_land = yes } }
-				CAL = {
-					save_event_target_as = california
-					add_to_array = { ROOT.potential_grant_targets = THIS }
-				}
-			}
-			if = {
-				limit = { MEX = { ROOT_can_grant_land = yes } }
-				MEX = {
-					save_event_target_as = mexico
-					add_to_array = { ROOT.potential_grant_targets = THIS }
-				}
-			}
+			var:378.owner = { save_event_target_as = california }
 		}
 	}
 
@@ -2584,14 +2690,27 @@ country_event = { #Fate of BAJA
 			has_event_target = california
 		}
 		ai_chance = {
-			base = 80
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:california }
+				is_ally_with = event_target:mexico
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = mexico }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:california = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = CAL }
-		484 = { transfer_state_and_notify = yes } #California
+		484 = { transfer_state_and_notify = yes } #Baja California
 	}
 
 	option = { #Give to Mexico
@@ -2601,18 +2720,37 @@ country_event = { #Fate of BAJA
 			has_event_target = mexico
 		}
 		ai_chance = {
-			base = 20
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
 			}
 			modifier = {
 				factor = 0
-				is_ally_with = CAL
+				NOT = { is_ally_with = event_target:mexico }
+				is_ally_with = event_target:california
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = california }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:mexico = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = MEX }
-		484 = { transfer_state_and_notify = yes } #Mexico
+		484 = { transfer_state_and_notify = yes } #Baja California
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2023 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		484 = { transfer_state_and_notify = yes } #Baja California
 	}
 
 	option = { #Annex
@@ -2655,18 +2793,24 @@ country_event = { #Fate of Apacheria
 				save_event_target_as = can_annex
 			}
 			if = {
-				limit = { SFE = { ROOT_can_grant_land = yes } }
-				SFE = {
-					save_event_target_as = santafe
-					add_to_array = { ROOT.potential_grant_targets = THIS }
+				limit = {
+					902 = { #Imperio del Interior
+						owner = { ROOT_can_grant_land = yes }
+					}
 				}
+				var:902.owner = { save_event_target_as = nevada }
 			}
 			if = {
-				limit = { NEV = { ROOT_can_grant_land = yes } }
-				NEV = {
-					save_event_target_as = nevada
-					add_to_array = { ROOT.potential_grant_targets = THIS }
+				limit = {
+					903 = { #Dzil Gozhoo
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:nevada }
+							ROOT_can_grant_land = yes
+						}
+					}
 				}
+				var:903.owner = { save_event_target_as = santa_fe }
 			}
 		}
 	}
@@ -2684,61 +2828,109 @@ country_event = { #Fate of Apacheria
 				annexations_can_annex = yes
 			}
 		}
+
+		set_temp_variable = { tag_to_release = APA }
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = APA }
-			custom_effect_tooltip = APA_puppet_tooltip
-			
+			limit = { ROOT = { has_monarchist_government = yes } }
+			APA = {
+				set_cosmetic_tag = APA_Occupied_Monarchy
+			}
 		}
-		else = {		
-			set_temp_variable = { tag_to_release = APA }
-			release_targeted_tag = yes				
-		}	
-		
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			APA = {
+				set_cosmetic_tag = APA_Occupied_Republic
+			}
+		}
 	}
 
-	option = { #Give to Nevada
+	option = { #Give to Imperio Del Interior owner
 		log = "[GetLogInfo]: event annex.2024 option annex.america.give_to_nevada"
 		name = annex.america.give_to_nevada
 		trigger = {
 			has_event_target = nevada
 		}
 		ai_chance = {
-			base = 20
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
 			}
 			modifier = {
 				factor = 0
-				is_ally_with = NEV
+				NOT = { is_ally_with = event_target:nevada }
+				is_ally_with = event_target:santa_fe
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = santa_fe }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:nevada = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = NEV }
-		377 = { transfer_state_and_notify = yes } #Nevada
-		905 = { transfer_state_and_notify = yes } #Nevada
+		set_temp_variable = { tag_to_release = event_target:nevada }
+		377 = { transfer_state_and_notify = yes } #Ndee
+		905 = { transfer_state_and_notify = yes } #Ongtupqa
 	}
 
 	option = { #Give to SFE
 		log = "[GetLogInfo]: event annex.2024 option annex.america.give_to_santafe"
 		name = annex.america.give_to_santafe
 		trigger = {
-			has_event_target = santafe
+			has_event_target = santa_fe
 		}
 		ai_chance = {
-			base = 20
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
 			}
 			modifier = {
 				factor = 0
-				is_ally_with = SFE
+				NOT = { is_ally_with = event_target:santa_fe }
+				is_ally_with = event_target:nevada
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = nevada }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:santa_fe = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = SFE }
-		377 = { transfer_state_and_notify = yes } #santafe
-		905 = { transfer_state_and_notify = yes } #santafe
+		set_temp_variable = { tag_to_release = event_target:santa_fe }
+		377 = { transfer_state_and_notify = yes } #Ndee
+		905 = { transfer_state_and_notify = yes } #Ongtupqa
 	}	
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2024 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		APA = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.2024 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = APA }
+			add_claim_of_ROOT = yes
+		}
+	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annexation.2024 option annexation.cancel"
@@ -2759,6 +2951,18 @@ country_event = { #Fate of Santa Fe
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					482 = { is_claim_or_core_of_ROOT = yes } #Chihuahua
+					483 = { is_claim_or_core_of_ROOT = yes } #Sonora
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+
 	option = { #Liberate Santa Fe
 		log = "[GetLogInfo]: event annexation.2025 option annexation.2025.a"
 		name = annex.2025.a
@@ -2772,16 +2976,46 @@ country_event = { #Fate of Santa Fe
 				annexations_can_annex = yes
 			}
 		}
+
+		set_temp_variable = { tag_to_release = SFE }
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = SFE }
-			custom_effect_tooltip = SFE_puppet_tooltip
-			
+			limit = { ROOT = { has_monarchist_government = yes } }
+			SFE = {
+				set_cosmetic_tag = SFE_Occupied_Monarchy
+			}
 		}
-		else = {		
-			set_temp_variable = { tag_to_release = SFE }
-			release_targeted_tag = yes				
-		}	
-		
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			SFE = {
+				set_cosmetic_tag = SFE_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2025 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		SFE = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.2025 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = SFE }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
@@ -2797,8 +3031,8 @@ country_event = { #Fate of Santa Fe
 
 country_event = { #Fate of Comanche
 	id = annex.2026
-	title = annexation_comanche
-	desc = annexation_comanche_desc
+	title = annexation_Comanche
+	desc = annexation_Comanche_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
@@ -2816,15 +3050,41 @@ country_event = { #Fate of Comanche
 				annexations_can_annex = yes
 			}
 		}
+		set_temp_variable = { tag_to_release = CMC }
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = CMC }
-			custom_effect_tooltip = CMC_puppet_tooltip
-			
+			limit = { ROOT = { has_monarchist_government = yes } }
+			CMC = {
+				set_cosmetic_tag = CMC_Occupied_Monarchy
+			}
 		}
-		else = {		
-			set_temp_variable = { tag_to_release = CMC }
-			release_targeted_tag = yes				
-		}	
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			CMC = {
+				set_cosmetic_tag = CMC_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2026 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		CMC = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2026 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
 		
 	}
 
