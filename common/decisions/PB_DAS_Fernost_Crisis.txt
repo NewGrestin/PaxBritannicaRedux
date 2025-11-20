@@ -1,4 +1,55 @@
 PB_DAS_Far_Eastern_Crisis = {
+	DAS_Raise_Division = {
+
+		icon = GFX_decision_generic_militia
+
+		allowed = {
+			original_tag = DAS
+		}
+		target_root_trigger = {
+			original_tag = DAS
+			NOT = { has_country_flag = DAS_Fernost_Countdown_On }
+		}
+
+		target_trigger = {
+			FROM = {
+				NOT = { has_state_flag = DAS_Fernost_Owner_DAS }
+			}
+		}
+		
+		target_array = DAS.fernost_states
+
+		visible = {
+			has_country_flag = DAS_Far_East_Crisis
+		}
+
+		priority = 2
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_remove = 25
+
+		complete_effect = {
+			set_country_flag = {
+				flag = DAS_Fernost_Countdown_On
+				days = 25
+			}
+		}
+		remove_effect = {
+			FROM = {
+				create_unit = {
+					division = "name = \"Volunteer Corps\" division_template = \"Infanterie-Division\" start_experience_factor = 0.5 start_equipment_factor = 1"
+					owner = DAS
+				}
+				set_state_flag = {
+					flag = DAS_Fernost_Owner_DAS
+					value = 1
+				}
+			}
+		}
+	}
 	
 	DAS_Fernost_Countdown = { #Pacific POV
 
@@ -17,7 +68,7 @@ PB_DAS_Far_Eastern_Crisis = {
 		}
 
 		visible = {
-			has_country_flag = Far_East_Crisis
+			has_country_flag = DAS_Fernost_Owner_DAS
 		}
 		priority = 2
 		is_good = no
@@ -32,14 +83,68 @@ PB_DAS_Far_Eastern_Crisis = {
 
 		timeout_effect = {
 			DAS = {
-				country_event = {
-					id = DAS.17
-				}
+				country_event = DAS.17
 			}
 		}
 	}
 }
 PB_GER_Far_Eastern_Crisis = {
+	GER_Fernost_Raise_Division = {
+
+		icon = GFX_decision_generic_militia
+		state_target = yes
+
+		available = {
+			AND = {
+				has_active_mission = GER_Fernost_Countdown
+				NOT = { has_country_flag = GER_Fernost_Cooldown }
+			}
+		}
+		
+		target_root_trigger = {
+			original_tag = GER
+			NOT = { has_country_flag = GER_Fernost_Cooldown }
+		}
+
+		target_trigger = {
+			any_state = {
+				is_core_of = DAS
+				NOT = {
+					has_state_flag = DAS_Fernost_Owner_SSL
+				}
+			}
+		}
+
+		allowed = {
+			original_tag = GER
+		}
+
+		visible = {
+			has_active_mission = GER_Fernost_Countdown
+		}
+		priority = 2
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_remove = 25
+
+		complete_effect = {
+			set_country_flag = {
+				flag = GER_Fernost_Cooldown
+				days = 25
+			}
+		}
+		remove_effect = {
+			FROM = {
+				set_state_flag = {
+					flag = DAS_Fernost_Owner_SSL
+					value = 1
+				}
+			}
+		}
+	}
 	
 	GER_Fernost_Countdown = { #German POV
 
@@ -58,7 +163,7 @@ PB_GER_Far_Eastern_Crisis = {
 		}
 
 		visible = {
-			has_country_flag = Far_East_Crisis
+			has_country_flag = GER_Far_East_Crisis
 		}
 		priority = 2
 		is_good = no
@@ -72,13 +177,29 @@ PB_GER_Far_Eastern_Crisis = {
 		days_mission_timeout = 365
 
 		timeout_effect = {
-			effect_tooltip = {
-				DAS = {
-					country_event = {
-						id = DAS.17
-					}
-				}
+		}
+	}
+	
+	GER_Fernost_View = { #WIP VIEW
+
+		icon = GFX_decision_generic_militia
+
+		available = {
+			always = no
+		}
+
+		allowed = {
+			original_tag = GER
+		}
+
+		visible = {
+			has_country_flag = GER_Far_East_Crisis
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				has_state_flag = DAS_Fernost_Owner_SSL
 			}
 		}
+		priority = 1
 	}
 }
