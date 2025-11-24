@@ -31,15 +31,36 @@ country_event = { #Fate of Morocco
 			}
 		}
 
+		set_temp_variable = { tag_to_release = MOR }
+		every_state = {
+			limit = { is_core_of = MOR }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = MOR }
-			custom_effect_tooltip = MOR_puppet_tooltip
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			MOR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MOR_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = MOR }
-			release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			MOR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MOR_Occupied_Republic
+			}
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
@@ -58,58 +79,126 @@ country_event = { #Fate of Reguibat
 
     is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					461 = { is_claim_or_core_of_ROOT = yes } #Casablanca
+					920 = { is_claim_or_core_of_ROOT = yes } #El eglab
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				461 = { #Casablanca
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:461.owner = { save_event_target_as = morocco }
+		}
+		if = {
+			limit = {
+				920 = { #El eglab
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:morocco }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:920.owner = { save_event_target_as = carnegia }
+		}
+	}
+
     option = { #Give it to Morocco
         log = "[GetLogInfo]: event annexation.4001 option annexation.4001.a"
         name = annex.4001.a
         trigger = {
-            MOR = {
-            exists = yes
-            }
-        }
-        ai_chance = {
-            base = 50
-            modifier = {
-                factor = 0
-                annexations_can_annex = yes
-            }
-        }
-
-        MOR = {
-            transfer_state = 807
-        }
-
-        recheck_annexations = yes
+			has_event_target = morocco
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:morocco }
+				is_ally_with = event_target:carnegia
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = carnegia }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:morocco = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:morocco }
+		807 = { transfer_state_and_notify = yes } #Reguibat
     }
 
     option = { #Give it to Carnegia
         log = "[GetLogInfo]: event annexation.4001 option annexation.4001.b"
         name = annex.4001.b
         trigger = {
-            WAF = {
-            exists = yes
-            }
-        }
-        ai_chance = {
-            base = 50
-            modifier = {
-                factor = 0
-                annexations_can_annex = yes
-            }
-        }
-
-        WAF = {
-            transfer_state = 807
-        }
-
-        recheck_annexations = yes
+			has_event_target = carnegia
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:carnegia }
+				is_ally_with = event_target:morocco
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = morocco }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:carnegia = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:carnegia }
+		807 = { transfer_state_and_notify = yes } #Reguibat
     }
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4001 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		807 = { transfer_state_and_notify = yes } #Reguibat
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.4001 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		807 = { transfer_state_and_notify = yes } #Reguibat
+	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annexation.4001 option annexation.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Carnegia
