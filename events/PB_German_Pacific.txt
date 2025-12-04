@@ -493,9 +493,6 @@ country_event = { # German Supply Arives
 	is_triggered_only = yes
 	fire_only_once = no
 	option = { # Fine
-		ai_chance = {
-			factor = 100
-		}
 		DAS = {
 			add_equipment_to_stockpile = {
 			type = infantry_equipment
@@ -521,9 +518,6 @@ country_event = { # Philippine Emergency
 	is_triggered_only = yes
 	fire_only_once = no
 	option = { # Fine
-		ai_chance = {
-			factor = 100
-		}
 		DAS = {
 		country_event = DAS_Orders.5
 		}
@@ -555,7 +549,7 @@ country_event = { # Plea for Extention #1
 
 	is_triggered_only = yes
 	fire_only_once = no
-	option = { # No???
+	option = { # Yeah Sure why not
 		ai_chance = {
 			factor = 100
 		}
@@ -575,8 +569,9 @@ country_event = { # Plea for Extension #2
 	is_triggered_only = yes
 	fire_only_once = no
 	option = { # Diederichs
-		ai_chance = {
-			factor = 50
+		trigger = {
+			is_ai = yes
+			has_game_rule = { rule = PB_GERMAN_PACIFIC_PATH option = DAS_TOURISM_PATH }
 		}
 		name = DAS_Orders.7.a
 		complete_national_focus = PB_DAS_Diederichs_Plan
@@ -587,8 +582,9 @@ country_event = { # Plea for Extension #2
 		promote_character = DAS_ferdinand_bredow
 	}
 	option = { # Nail Biter
-		ai_chance = {
-			factor = 50
+		trigger = {
+			is_ai = yes
+			has_game_rule = { rule = PB_GERMAN_PACIFIC_PATH option = DAS_FERNOST_PATH }
 		}
 		name = DAS_Orders.7.b
 		complete_national_focus = PB_DAS_Nail_Biter_Doctrine
@@ -610,54 +606,14 @@ country_event = { # The Ceasefire
 	fire_only_once = yes
 
 	immediate = {
-		if = {
-			limit = {
-				PHI = {
-					controls_state = 624
+		DAS = {
+			every_owned_state = {
+				IF = {
+					limit = {
+						is_controlled_by = PHI
+					}
+					transfer_state_to = PHI
 				}
-			}
-			PHI = {
-				transfer_state = 624
-			}
-		}
-		if = {
-			limit = {
-				PHI = {
-					controls_state = 628
-				}
-			}
-			PHI = {
-				transfer_state = 628
-			}
-		}
-		if = {
-			limit = {
-				PHI = {
-					controls_state = 625
-				}
-			}
-			DAS = {
-				transfer_state = 625
-			}
-		}
-		if = {
-			limit = {
-				PHI = {
-					controls_state = 626
-				}
-			}
-			DAS = {
-				transfer_state = 626
-			}
-		}
-		if = {
-			limit = {
-				PHI = {
-					controls_state = 627
-				}
-			}
-			DAS = {
-				transfer_state = 627
 			}
 		}
 	}
@@ -1549,10 +1505,6 @@ country_event = { # The Dernburg Dossier - a dossier of German Warcrimes and Eco
 	fire_only_once = no
 	option = { # Seems like bredow was on to something, we need to get to that dossier!
 	    name = DAS_FarEastCrisis.3.a
-		country_event = {
-			id = DAS_Diplomacy.4
-			days = 5
-		}
 	}
 }
 
@@ -1652,12 +1604,74 @@ country_event = { # The White Rajahs
 
 	option = { # Support Bertram's idea
 		name = DAS_Diplomacy.4.a
-		
+		BOR = {
+			add_opinion_modifier = { target = DAS modifier = large_increase }
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = 2000
+				producer = DAS
+			}
+		}
+		country_event = {
+			id = DAS_Diplomacy.12
+		}
 	}
 
 	option = { # Back down from the crisis
 		name = DAS_Diplomacy.4.b
-		
+	}
+}
+
+country_event = { # The White Rajah War
+	id = DAS_Diplomacy.12
+	title = DAS_Diplomacy.12.t
+	desc = DAS_Diplomacy.12.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Jungle works
+		name = DAS_Diplomacy.12.a
+		SWK = {
+			add_ideas = PB_BOR_Bertrams_War
+			end_puppet = BOR
+		}
+		BOR = {
+			set_country_flag = BOR_backed_by_DAS
+			leave_faction = yes
+			add_ideas = PB_BOR_Bertrams_War
+			declare_war_on = {
+				type = topple_government
+				target = SWK
+			}	
+			division_template = {
+				name = "Commando Division"
+				is_locked = yes
+				template_counter = 45
+				regiments = {
+					elite_infantry = { x = 0 y = 0 }
+					elite_infantry = { x = 0 y = 1 }
+					elite_infantry = { x = 1 y = 1 }
+					elite_infantry = { x = 1 y = 2 }
+					elite_infantry = { x = 2 y = 1 }
+					elite_infantry = { x = 2 y = 2 }
+				}
+				support = {
+					artillery = { x = 0 y = 0 }
+					recon = { x = 1 y = 0 }
+				}
+			}
+			333 = {
+				create_unit = {
+					division = "name = \"Commando Division\" division_template = \"Commando Division\" start_experience_factor = 0.1"
+					allow_spawning_on_enemy_provs = yes
+					prioritize_location = 10269
+					owner = BOR
+				}
+			}
+		}
+		give_military_access = BOR
 	}
 }
 
@@ -1718,7 +1732,7 @@ country_event = { # Dutch Government Response
 	}
 }
 
-country_event = { # Dutch Refusal
+country_event = { # Dutch Refusal to participate in corsair strike
 	id = DAS_Diplomacy.6
 	title = DAS_Diplomacy.6.t
 	desc = DAS_Diplomacy.6.d
@@ -1730,7 +1744,7 @@ country_event = { # Dutch Refusal
 	option = { # then we will go without them
 		name = DAS_Diplomacy.6.a
 		add_stability = 0.1
-		activate_decision = DAS_Strike_Corsairs
+		unlock_decision_tooltip = DAS_Strike_Corsairs
 	}
 
 	option = { # Back down from intervening
@@ -1751,11 +1765,11 @@ country_event = { # Dutch Agree to Cooperate
 	option = { # Good!
 		name = DAS_Diplomacy.7.a
 		add_stability = 0.1
-		activate_decision = DAS_Strike_Corsairs
+		unlock_decision_tooltip = DAS_Strike_Corsairs
 	}
 }
 
-country_event = { # Second Batavian Expedition
+country_event = { # Second Batavian Expedition #INS persepective
 	id = DAS_Diplomacy.8
 	title = DAS_Diplomacy.8.t
 	desc = DAS_Diplomacy.8.d
@@ -1766,13 +1780,111 @@ country_event = { # Second Batavian Expedition
 
 	option = { # Cooperation with the Dutch must Continue!
 		name = DAS_Diplomacy.8.a
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 2
+				DAS = {
+					OR ={
+						has_completed_focus = PB_DAS_Nail_Biter_Doctrine
+						ruling_party = rc
+						ruling_party = ds
+						ruling_party = ni
+					}
+				}
+			}
+		}
 		INS = {
+			add_opinion_modifier = { target = DAS modifier = large_increase }
 			give_military_access = DAS
 			give_guarantee = DAS
 		}
 		DAS = {
 			give_military_access = INS
 			give_guarantee = INS
+			country_event = {
+				id = DAS_Diplomacy.9
+			}
+		}	
+	}
+
+	option = { # Dont Help em bitch
+		name = DAS_Diplomacy.8.b
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				DAS = {
+					NOT = {
+						OR ={
+							has_completed_focus = PB_DAS_Nail_Biter_Doctrine
+							ruling_party = rc
+							ruling_party = ds
+							ruling_party = ni
+						}
+					}
+				}
+			}
+		}
+		INS = {
+			add_opinion_modifier = { target = DAS modifier = outraged }
+			send_embargo = DAS
+		}
+		DAS = {
+			add_opinion_modifier = { target = INS modifier = outraged }
+			country_event = {
+				id = DAS_Diplomacy.11
+			}
+		}
+	}
+}
+
+country_event = { # Dutch Agree to Cooperate in batavia expedition
+	id = DAS_Diplomacy.9
+	title = DAS_Diplomacy.9.t
+	desc = DAS_Diplomacy.9.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Good!
+		name = DAS_Diplomacy.9.a
+		effect_tooltip = {
+			INS = {
+				add_opinion_modifier = { target = DAS modifier = large_increase }
+				give_military_access = DAS
+				give_guarantee = DAS
+			}
+			DAS = {
+				give_military_access = INS
+				give_guarantee = INS
+			}	
+		}
+	}
+}
+
+country_event = { # Dutch decline to Cooperate in batavia expedition
+	id = DAS_Diplomacy.11
+	title = DAS_Diplomacy.11.t
+	desc = DAS_Diplomacy.11.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # they'll regret that!
+		name = DAS_Diplomacy.11.a
+		effect_tooltip = {
+			INS = {
+				add_opinion_modifier = { target = DAS modifier = outraged }
+				send_embargo = DAS
+			}
+			add_opinion_modifier = { target = INS modifier = outraged }
+			add_war_support = 0.05
+			custom_effect_tooltip = DAS_topple_volksraad_tt
+			unlock_decision_category_tooltip = DAS_overthrow_INS
+			set_country_flag = INS_invasion
 		}
 	}
 }
