@@ -1,6 +1,8 @@
 ﻿name="PaxBritannicaRedux Dev Build"
 replace_path="common/ai_equipment"
+replace_path="common/ai_faction_theaters"
 replace_path="common/ai_focuses"
+replace_path="common/ai_navy"
 replace_path="common/ai_strategy"
 replace_path="common/ai_strategy_plans"
 replace_path="common/ai_templates"
