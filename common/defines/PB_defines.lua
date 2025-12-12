@@ -10,6 +10,7 @@ NDefines.NMilitary.MAX_AIR_EXPERIENCE = 750
 NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2
 
 NDefines.NMilitary.SLOWEST_SPEED = 2 -- yes i had to change this
+NDefines.NBuildings.MAX_SHARED_SLOTS = 30
 
 -- Career Profile
 NDefines.NCareerProfile.MOD_STATISTICS_GROUP = "pax_britannica_career_profile"
