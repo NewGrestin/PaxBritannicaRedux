@@ -580,6 +580,15 @@ country_event = {
 	option = {
 		name = SCA14opta
 
+		transfer_state = 1408
+		add_state_core = 1408
+
+		transfer_state = 1005
+		add_state_core = 1005
+
+		transfer_state = 1006
+		add_state_core = 1006
+
 		transfer_state = 463
 		add_state_core = 463
 
@@ -589,7 +598,10 @@ country_event = {
 		transfer_state = 793
 		add_state_core = 793
 
-		ASK = {
+		var:463.owner = {
+			remove_state_core = 1408
+			remove_state_core = 1005
+			remove_state_core = 1006
 			remove_state_core = 463
 			remove_state_core = 739
 			remove_state_core = 793
@@ -2105,6 +2117,7 @@ country_event = {
 		}
 
 		transfer_state = 101
+		transfer_state = 1437
 
 		add_political_power = 25
 
@@ -2644,4 +2657,495 @@ country_event = {
 	}
 }
 
+## SCA Collosus of the West Events ##
 
+country_event = { # SCA Invitation to the faction
+	id = SCA.61
+	title = SCA61title
+	desc = SCA61desc
+	picture = GFX_report_event_PB_Ford_Workers
+ 
+	is_triggered_only = yes
+
+	option = { #Accepted
+		name = SCA61opta
+		ai_chance = {
+			factor = 60
+		}
+		SCA = {
+			country_event = {
+				id = SCA.62
+				days = 0
+			}
+		}
+	}
+	option = { #decline
+		name = SCA61optb
+		ai_chance = {
+			factor = 20
+		}
+		SCA = {
+			country_event = {
+				id = SCA.63
+				days = 0
+			}
+		}
+	}
+}
+
+country_event = { # they accept the invitation
+	id = SCA.62
+	title = SCA62title
+	desc = SCA62desc
+	picture = GFX_report_event_PB_Ford_Workers
+ 
+	is_triggered_only = yes
+
+
+	option = {
+		name = SCA62opta
+		add_to_faction = FROM
+		clr_country_flag = SCA_recent_faction_invite
+	}
+}
+
+country_event = { # they decline the invitation
+	id = SCA.63
+	title = SCA63title
+	desc = SCA63desc
+	picture = GFX_report_event_PB_Ford_Workers
+ 
+	is_triggered_only = yes
+
+	option = {
+		name = SCA63opta
+		clr_country_flag = SCA_recent_faction_invite
+	}
+}
+
+country_event = { # SCA is going to puppet us
+	id = SCA.64
+	title = SCA64title
+	desc = SCA64desc
+	picture = GFX_report_event_PB_Ford_Workers
+ 
+	is_triggered_only = yes
+
+	option = { #Accepted
+		name = SCA64opta
+		ai_chance = {
+			factor = 60
+		}
+		if = {
+			limit = { is_in_faction_with = FROM }
+			leave_faction = yes
+		}
+		SCA = {
+			country_event = {
+				id = SCA.65
+				days = 0
+			}
+		}
+	}
+	option = { #decline
+		name = SCA64optb
+		ai_chance = {
+			factor = 20
+		}
+		SCA = {
+			country_event = {
+				id = SCA.66
+				days = 0
+			}
+		}
+	}
+}
+
+country_event = { # they accept
+	id = SCA.65
+	title = SCA65title
+	desc = SCA65desc
+	picture = GFX_report_event_PB_Ford_Workers
+ 
+	is_triggered_only = yes
+
+
+	option = {
+		name = SCA65opta
+		add_to_faction = FROM
+		set_autonomy = {
+			target = FROM
+			autonomous_state = autonomy_PB_American_Sister_Republic
+			freedom_level = 0.50
+		}
+		clr_country_flag = SCA_recent_integration_demand
+	}
+}
+
+country_event = { # they decline
+	id = SCA.66
+	title = SCA66title
+	desc = SCA66desc
+	picture = GFX_report_event_PB_Ford_Workers
+ 
+	is_triggered_only = yes
+
+	option = {
+		name = SCA66opta
+		clr_country_flag = SCA_recent_integration_demand
+		create_wargoal = {
+			type = annex_everything
+			target = FROM
+		}
+		remove_from_faction = FROM
+	}
+}
+
+country_event = { # SCA VICTORY
+	id = SCA.67
+	title = SCA67title
+	desc = SCA67desc
+	picture = GFX_report_event_PB_Ford_Workers
+	is_triggered_only = yes
+
+	trigger = {
+		tag = SCA
+		has_war_with = AME
+		AME = {
+			has_capitulated = yes
+		}
+		BCL = {
+			has_capitulated = yes
+		}
+		QUE = {
+			has_capitulated = yes
+		}
+		is_valid_peace_target = yes
+	}
+
+	option = {
+		name = SCA67opta
+		AME = {
+			if = { # If CoIs exists
+				limit = { is_faction_leader = yes }
+				dismantle_faction = yes
+			}
+			transfer_units_fraction= {
+				target = CUB
+				size = 0.2
+				stockpile_ratio = 0.8
+				army_ratio = 0.2
+				navy_ratio = 0.4
+				air_ratio = 0.3
+			}
+			transfer_navy = {
+				target = SCA
+			}
+			every_navy_leader = { 
+				limit = {
+					NOT = {
+						has_trait = trait_AME_British_Loyalties
+					}
+				}
+				set_nationality = SCA
+			}
+			every_owned_state = { 
+				limit = {
+					NOT = {
+						OR = {
+							region = 211
+							region = 117
+							region = 214
+							region = 198
+							region = 197
+							region = 213
+							region = 220
+						}
+					}
+				}
+				if = {
+					limit = {
+						ENG = {
+							exists = yes
+							is_subject = no
+							is_in_faction_with = AME
+						}
+					}
+					transfer_state_to = ENG
+				}
+				else_if = {
+					limit = {
+						CUB = {
+							exists = yes
+							is_subject = no
+						}
+					}
+					transfer_state_to = CUB
+				}
+				else = {
+					transfer_state_to = SCA
+				}
+			}
+			every_country = {
+				limit = {
+					is_subject_of = PREV
+				}
+				end_puppet = PREV
+				leave_faction = yes
+			}
+		}
+		CUB = {
+			set_cosmetic_tag = CUB_AME_Exile
+			load_oob = "CUB_AME_Exiles"
+			set_party_name = {
+				ideology = ds
+				long_name = "American Government in Exile"
+				name = "American Exiles"
+			}
+			hidden_effect = {
+				set_popularities = {
+					ni = 5
+					ds = 60
+					rc = 15
+					cn = 0
+					lb = 0
+					an = 20
+					ss = 0
+					jc = 0
+				}
+			}
+			remove_ideas = PB_CUB_dixie_come_home
+			remove_ideas = PB_CUB_theodores_prison
+			remove_ideas = PB_CUB_war_in_making
+			inherit_technology = AME
+			leave_faction = yes
+		}
+		QUE = {
+			transfer_navy = {
+				target = SCA
+			}
+			remove_ideas = CoF_Prince_Arthur
+			remove_ideas = QUE_Black_Sheep
+		}
+		BCL = {
+			transfer_navy = {
+				target = SCA
+			}
+		}
+		annex_country = {
+			target = ACD
+			transfer_troops = no
+		}
+		annex_country = {
+			target = QUE
+			transfer_troops = no
+		}
+		annex_country = {
+			target = AME
+			transfer_troops = no
+		}
+		annex_country = {
+			target = BCL
+			transfer_troops = no
+		}
+		if = {
+			limit = {
+				ENG = {
+					owns_state = 332
+					owns_state = 331
+					owns_state = 730
+				}
+			}
+			332 = { transfer_state_to = SCA }
+			331 = { transfer_state_to = SCA }
+			730 = { transfer_state_to = SCA }
+		}
+		every_owned_state = {
+			limit = {
+				is_core_of = AME
+			}
+			add_dynamic_modifier = { modifier = SCA_Industrial_Damage }	
+		}
+		news_event = { 
+			id =  PBNews.81
+			days = 1
+		} 
+		367 = {
+			set_temp_variable = { temp_culture = culture_id }
+			ROOT = {
+				PB_Cultures_add_accepted_culture = yes 
+			}
+		}
+		366 = {
+			set_temp_variable = { temp_culture = culture_id }
+			ROOT = { 
+				PB_Cultures_add_accepted_culture = yes 
+			}
+		}
+		396 = {
+			set_temp_variable = { temp_culture = culture_id }
+			ROOT = { 
+				PB_Cultures_add_accepted_culture = yes
+			}
+		}
+		369 = {
+			set_temp_variable = { temp_culture = culture_id }
+			ROOT = { 
+				PB_Cultures_add_accepted_culture = yes 
+			}
+		}
+		360 = {
+			set_temp_variable = { temp_culture = culture_id }
+			ROOT = { 
+				PB_Cultures_add_accepted_culture = yes 
+			}
+		}
+		371 = {
+			set_temp_variable = { temp_culture = culture_id }
+			ROOT = { 
+				PB_Cultures_add_accepted_culture = yes 
+			}
+		}
+		464 = {
+			set_demilitarized_zone = yes
+		}
+		465 = {
+			set_demilitarized_zone = yes
+		}
+		357 = {
+			set_demilitarized_zone = yes
+		}
+		815 = {
+			set_demilitarized_zone = yes
+		}
+
+		367 = {
+			set_demilitarized_zone = yes
+		}
+		365 = {
+			set_demilitarized_zone = yes
+		}
+		362 = {
+			set_demilitarized_zone = yes
+		}
+		1409 = {
+			set_demilitarized_zone = yes
+		}
+		368 = {
+			set_demilitarized_zone = yes
+		}
+		364 = {
+			set_demilitarized_zone = yes
+		}
+		363 = {
+			set_demilitarized_zone = yes
+		}
+		SCA = {
+			set_capital = {state = 361}
+			complete_national_focus = SCA_War_Is_A_Racket
+			remove_ideas = PB_SCA_Fear_And_Chaos
+			remove_ideas = PB_SCA_Mobolize_The_Workers
+			remove_ideas = PB_SCA_The_Great_Leap_Forward_Idea
+			remove_ideas = PB_SCA_The_Dead_March_West
+			remove_ideas = PB_SCA_The_Dead_March_West_2
+			remove_ideas = PB_SCA_Second_American_Revolution
+			country_event = { 
+				id = SCA.24
+				days = 1
+			}
+		}
+		white_peace = ENG
+		set_global_flag = skip_default_capitulation
+	}
+}
+
+country_event = { # SCA debug
+	id = SCA.68
+	title = SCA68title
+	desc = SCA68desc
+	picture = GFX_report_event_PB_Ford_Workers
+	is_triggered_only = yes
+	option = {
+		
+	}
+}
+country_event = {
+	id = SCA.69
+	title = SCA69title
+	desc = SCA69desc
+	picture = GFX_report_UC_Butler_1
+ 
+	is_triggered_only = yes
+
+	option = { #accept
+		name = SCA69opta
+		trigger = {
+			OR = {
+				has_government = ss
+				has_government = jc
+			}
+		}
+		ROOT = { 
+			leave_faction = yes
+		}
+		SCA = { 
+			country_event = { id = SCA.70 }
+		}
+	}
+
+	option = { #decline
+		name = SCA69optb
+		trigger = {
+			NOT = { 
+				OR = {
+					has_government = ss
+					has_government = jc
+				}
+			}
+		}
+		SCA = {
+			country_event = { id = SCA.71 }
+		}
+	}
+}
+
+country_event = {
+	id = SCA.70
+	title = SCA70title
+	desc = SCA70desc
+	picture = GFX_report_UC_Butler_1
+ 
+	is_triggered_only = yes
+
+	option = { #mhm yeah mhm mhmh
+		name = SCA70opta
+		custom_effect_tooltip = { 
+			FROM = { 
+				leave_faction = yes
+			}
+		}
+		ROOT = { 
+			add_to_faction = FROM
+		}
+	}
+}
+
+country_event = {
+	id = SCA.71
+	title = SCA71title
+	desc = SCA71desc
+	picture = GFX_report_UC_Butler_1
+ 
+	is_triggered_only = yes
+
+	option = { #they dare
+		name = SCA71optb
+
+		ROOT = {
+			create_wargoal = {
+			type = annex_everything
+			target = FROM
+			}
+		}
+	}
+}
