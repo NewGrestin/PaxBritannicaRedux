@@ -13,16 +13,41 @@ country_event = { #Balkan War Trigger
 	picture = GFX_report_AC_Edison_Mining
 
 	is_triggered_only = yes
+
+	fire_only_once = yes
 	immediate = { 
 		GRE = { 
 			create_faction = anti_hungarian_pact_faction
 			add_to_faction = SER
-			country_event = { id = balkanwar.2 days = 5}
+			country_event = { id = balkwar.2 days = 25}
+			country_event = { id = balkwar.6 days = 65}
 		}
-		HNG = {
-			create_faction = budapest_entente_faction
-			add_to_faction = BUL
-			add_to_faction = HRV
+		if = { 
+			limit = { 
+				HWA = { 
+					exists = no 
+				}
+			}
+			HUN = {
+				create_faction = budapest_entente_faction
+				add_to_faction = BUL
+				add_to_faction = HRV
+			}
+		}
+		if = { 
+			limit = { 
+				HUN = { 
+					exists = no 
+				}
+			}
+			HWA = {
+				create_faction = budapest_entente_faction
+				add_to_faction = BUL
+				add_to_faction = SLA
+			}
+		}
+		MOL = { 
+			country_event = { id = balkwar.5 days = 39}
 		}
 	}
 	option = { #BALKWAR
@@ -38,10 +63,22 @@ country_event = { #Balkan War Trigger
 
 	is_triggered_only = yes
 
+	fire_only_once = yes
+
 	immediate = { 
 		GRE = { 
 			declare_war_on = {
 				target = BUL
+				type = annex_everything
+			}
+		}
+		SER = { 
+			declare_war_on = {
+				target = BUL
+				type = annex_everything
+			}
+			declare_war_on = {
+				target = var:43.owner
 				type = annex_everything
 			}
 		}
@@ -60,69 +97,232 @@ country_event = { #Balkan War Trigger
 	}
 }
 
-country_event = { #Balkan War - Bulgarian Defeat
+country_event = { #Post GBW Bulgaria - Elections
 	id = balkwar.3
 	title = balkwar.3.t
 	desc = balkwar.3.d
 	picture = GFX_report_AC_Edison_Mining
 	
-	trigger = {
-		tag = BUL
-		has_war_with = GRE
-		OR = {
-			has_capitulated = yes
-		}
-	}
+	is_triggered_only = yes
 
 	fire_only_once = yes
 
-	immediate = {
-	}
-	option = { #blah
+	option = { #The Pro-Serbian Kingdom!
 		name = balkwar.3.a
+		SER = { 
+			set_autonomy = {
+				target = BUL
+				autonomous_state = autonomy_PB_Dependent_Kingdom
+				freedom_level = 0.50
+			}
+		}
+		set_cosmetic_tag = BUL_SER_Empire
+		set_politics = {
+			ruling_party = ds
+			elections_allowed = no
+		}
+		promote_character = {
+			character = SER_peter_i
+			ideology = DS_VARIANT_02
+		}
+	}
+
+	option = { #Nihilist Coup!
+		name = balkwar.3.b
+		set_politics = {
+			ruling_party = jc
+			elections_allowed = no
+		}
+		set_cosmetic_tag = BUL_Nihilists
+	}
+
+	option = { #Neo Imperialist Coup!
+		name = balkwar.3.c
+		set_politics = {
+			ruling_party = ni
+			elections_allowed = no
+		}
+		set_cosmetic_tag = BUL_NeoImperialists
+	}
+
+	option = { #Survival of the Tsardom by chance!
+		name = balkwar.3.d
 	}
 }
 
-country_event = { #Balkan War - Red Hungarian Defeat
+country_event = { #Post GBW Hungary - Regency
 	id = balkwar.4
 	title = balkwar.4.t
 	desc = balkwar.4.d
 	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
 	fire_only_once = yes
-	trigger = {
-		tag = HUN
-		has_war_with = GRE
-		OR = {
-			has_capitulated = yes
+	option = { #Metternicht's Coup!
+		name = balkwar.4.a
+		trigger = { 
+			tag = HUN
 		}
+		promote_character = {
+			character = HUN_pal_taleki
+			ideology = RC_VARIANT_01
+		}
+		set_politics = {
+			ruling_party = rc
+			elections_allowed = no
+		}
+		set_cosmetic_tag = HUN_Metternicht
 	}
 
-	immediate = {
-	}
-	option = { #blah
+	option = { #Jacobin Coup!
 		name = balkwar.4.a
+		trigger = { 
+			tag = HWA
+		}
 	}
 }
 
-country_event = { #Balkan War - 
+country_event = { #Balkan War - Moldovan Invasion
 	id = balkwar.5
 	title = balkwar.5.t
 	desc = balkwar.5.d
 	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
 	fire_only_once = yes
-	trigger = {
-		tag = HUN
-		has_war_with = GRE
-		OR = {
-			has_capitulated = yes
-		}
-		is_valid_peace_target = yes
-	}
-
 	immediate = {
-		
+		if = { 
+			limit = { 
+				NOT = { 
+					has_global_flag = PB_GBW_Bulgaria_Defeated
+				}
+			}
+			MOL = { 
+				division_template = {
+					name = "Miliția Insuranceară"
+					is_locked = yes
+					regiments = {
+						infantry = { x = 0 y = 0 }
+						infantry = { x = 0 y = 1 }
+						infantry = { x = 0 y = 2 }
+						infantry = { x = 0 y = 3 }
+					}
+					support = { 
+						military_police = { x = 0 y = 0 }
+					} 
+				}
+				declare_war_on = {
+					target = BUL
+					type = annex_everything
+				}
+				declare_war_on = {
+					target = ROM
+					type = annex_everything
+				}
+			}
+
+			46 = { 
+				create_unit = { #WIP NAME
+                    division = "name = \"Revoluționarii valahi\" division_template = \"Miliția Insuranceară\" start_experience_factor = 0.5 start_equipment_factor = 1.0"
+                    owner = MOL
+					count = 2
+					prioritize_location = 9617
+                }
+			}
+		}
+		if = { 
+			limit = { 
+				NOT = { 
+					has_global_flag = PB_GBW_Hungary_Defeated
+				}
+			}
+			MOL = { 
+				declare_war_on = {
+					target = var:43.owner
+					type = annex_everything
+				}
+			}
+		}
+		GRE = { 
+			add_to_faction = MOL
+		}
 	}
 	option = { #blah
-		name = balkwar.4.a
+		name = balkwar.5.a
+	}
+}
+
+country_event = { #Balkan War - Albanian Invasion
+	id = balkwar.6
+	title = balkwar.6.t
+	desc = balkwar.6.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+	fire_only_once = yes
+	immediate = {
+		SER = { 
+			declare_war_on = {
+				target = ALB
+				type = annex_everything
+			}
+		}
+		GRE = { 
+			declare_war_on = {
+				target = ALB
+				type = annex_everything
+			}
+		}
+		var:43.owner = { 
+			add_to_faction = ALB
+		}
+	}
+	option = { #blah
+		name = balkwar.6.a
+	}
+}
+
+country_event = { #Establishment of the Military Frontier
+	id = balkwar.7
+	title = balkwar.7.t
+	desc = balkwar.7.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = { #Establish the Military frontier
+		name = balkwar.7.a
+		BOS = { 
+			transfer_state = 1235
+			transfer_state = 1234
+			transfer_state = 1233
+			transfer_state = 1232
+			set_cosmetic_tag = BOS_Military_Frontier
+		}
+		HWA = { 
+			set_autonomy = {
+				target = BOS
+				autonomous_state = autonomy_PB_Dependent_Kingdom
+				freedom_level = 0.50
+			}
+		}
+		add_political_power = 20
+	}
+	option = { #Dont establish the military frontier
+		name = balkwar.7.b
+		add_political_power = 50
+	}
+}
+
+country_event = { # Danubian Entente Victory
+	id = balkwar.8
+	title = balkwar.8.t
+	desc = balkwar.8.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = { #Establish the Military frontier
+		name = balkwar.8.a
+		
+	}
+	option = { #Dont establish the military frontier
+		name = balkwar.8.b
+		add_political_power = 50
 	}
 }

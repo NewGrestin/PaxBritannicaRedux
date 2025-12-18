@@ -1,10 +1,10 @@
 on_actions = {
 	on_startup = {
 		effect = {
-			HAI = {
+			SER = {
 				country_event = {
-					id = haiti.1
-					days = 110
+					id = balkwar.1
+					days = 690
 				}
 			}
 		}
@@ -29,9 +29,13 @@ on_actions = {
 					}
 				}
 				HWA = {
+					add_timed_idea = { 
+						idea = PB_HUN_Civil_War_Recovery
+						days = 120
+					}
 					set_autonomy = {
 						target = SLA
-						autonomous_state = autonomy_client_state
+						autonomous_state = autonomy_PB_Dependent_Kingdom
 						freedom_level = 0.50
 					}
 					declare_war_on = {
@@ -47,11 +51,8 @@ on_actions = {
 
 				set_global_flag = skip_default_capitulation
 			}
-		}
-	}
-	on_capitulation_immediate = { 
-		effect = {
-			if = { 
+
+			if = {
 				limit = {
 					FROM = { 
 						OR = {
@@ -60,11 +61,91 @@ on_actions = {
 						}
 					}
 					ROOT = {
-						original_tag = AHP
+						original_tag = HWA
+					}
+				}
+				HWA = { 
+					every_core_state = { 
+						add_core_of = HUN
+					}
+				}
+				HUN = {
+					add_timed_idea = { 
+						idea = PB_HUN_Civil_War_Recovery
+						days = 120
+					}
+					set_autonomy = {
+						target = CRO
+						autonomous_state = autonomy_PB_Sister_Republic
+						freedom_level = 0.50
+					}
+					declare_war_on = {
+						target = SLA
+						type = annex_everything
+					}
+					drop_cosmetic_tag = yes
+					annex_country = {
+						target = HWA
+						transfer_troops = no
+					}
+				}
+
+				SLA = { 
+					every_core_state = { 
+						limit = { 
+							state = 1232
+							state = 1233
+						}
+						add_claim_by = CRO
+					}
+				}
+
+				set_global_flag = skip_default_capitulation
+			}
+
+			if = { #croatian military frontier
+				limit = {
+					FROM = { 
+						OR = {
+							original_tag = HWA
+							is_in_faction_with = HWA
+						}
+					}
+					ROOT = {
+						original_tag = CRO
+					}
+				}
+				HWA = { 
+					country_event = { id = balkwar.7 days = 5 }
+				}
+			}
+		}
+	}
+	on_capitulation_immediate = {
+		effect = {
+			if = { #Anti Hungarian pact defeat
+				limit = {
+					FROM = { 
+						OR = {
+							original_tag = HUN
+							is_in_faction_with = HUN
+						}
+					}
+					ROOT = {
+						original_tag = GRE
+						is_in_faction_with = GRE
 					}
 					has_global_flag = Great_Balkan_War_Fired
 				}
+				set_global_flag = skip_default_capitulation
 				GRE = {
+					white_peace = ROM
+					white_peace = HUN
+					white_peace = MOL
+					white_peace = CRO
+					white_peace = SLA
+					white_peace = HwA
+					white_peace = ALB
 					every_owned_state = { 
 						limit = { 
 							OR = { 
@@ -82,6 +163,13 @@ on_actions = {
 					}
 				}
 				SER = { 
+					white_peace = ROM
+					white_peace = HUN
+					white_peace = MOL
+					white_peace = CRO
+					white_peace = SLA
+					white_peace = HwA
+					white_peace = ALB
 					every_owned_state = { 
 						limit = { 
 							OR = { 
@@ -96,10 +184,18 @@ on_actions = {
 								region = 24
 							}
 						}
-						transfer_state_to = HRV
+						transfer_state_to = var:109.owner
+						add_core_of = var:109.owner
 					}
 				}
 				MOL = {
+					white_peace = ROM
+					white_peace = HUN
+					white_peace = MOL
+					white_peace = CRO
+					white_peace = SLA
+					white_peace = HwA
+					white_peace = ALB
 					every_owned_state = { 
 						set_demilitarized_zone = yes
 					}
@@ -107,11 +203,12 @@ on_actions = {
 			}
 
 			if = {  #Bulgarian Defeat
+			
 				limit = {
 					FROM = { 
 						OR = {
-							original_tag = AHP
-							is_in_faction_with = AHP
+							original_tag = SER
+							is_in_faction_with = SER
 						}
 					}
 					ROOT = {
@@ -119,8 +216,10 @@ on_actions = {
 					}
 					has_global_flag = Great_Balkan_War_Fired
 				}
+				set_global_flag = skip_default_capitulation
+					set_global_flag = PB_GBW_Bulgaria_Defeated
 					BUL = {
-					set_country_flag = PB_GBW_Bulgaria_Defeated
+					country_event = { id = balkwar.3 days = 90 }
 					leave_faction = yes
 					white_peace = ROM
 					white_peace = MOL
@@ -152,8 +251,8 @@ on_actions = {
 							}
 						}
 						if = {
-							limit = { NOT = { is_core_of = MOL } }
-							add_claim_by = MOL
+							limit = { is_core_of = ROM }
+							add_core_of = MOL
 						}
 						transfer_state_to = MOL
 					}
@@ -161,11 +260,6 @@ on_actions = {
 				if = { # If Romania exists
 					limit = { 
 						ROM = { is_subject_of = BUL }
-					}
-					ROM = {
-						every_core_state  = { 
-							add_core_of = MOL
-						}
 					}
 					MOL = { 
 						annex_country = { 
@@ -178,19 +272,20 @@ on_actions = {
 
 			if = {  #Hungarian Defeat
 				limit = {
-					FROM = { 
+					FROM = {
 						OR = {
-							original_tag = AHP
-							is_in_faction_with = AHP
+							original_tag = SER
+							is_in_faction_with = SER
 						}
 					}
 					ROOT = {
-						original_tag = HNG
+						original_tag = HUN
 					}
 					has_global_flag = Great_Balkan_War_Fired
 				}
+				set_global_flag = skip_default_capitulation
 				if = {
-					limit = { NOT = { BUL = { has_country_flag = PB_GBW_Bulgaria_Defeated } } }
+					limit = { NOT = { has_global_flag = PB_GBW_Bulgaria_Defeated } }
 					BUL = {
 						set_faction_leader = yes
 					}
@@ -215,7 +310,31 @@ on_actions = {
 						}
 					}
 				}
-				HUN = { 
+				if = { # If Dinarics exists
+					limit = { 
+						SLA = { is_subject_of = HWA }
+					}
+					SLA = {
+						leave_faction = yes
+						every_owned_state = {
+							limit = { 
+								OR = { 
+									region = 24 
+								}
+							}
+							if = { 
+								limit = { NOT = { is_core_of = SER } }
+								add_claim_by = SER
+							}
+							transfer_state_to = SER
+						}
+					}
+				}
+				var:43.owner = { 
+					set_cosmetic_tag = HUN_State
+					set_global_flag = PB_GBW_Hungary_Defeated
+					country_event = { id = balkwar.4 days = 30 }
+					release = SLO
 					leave_faction = yes
 					white_peace = ROM
 					white_peace = MOL
@@ -239,7 +358,11 @@ on_actions = {
 					every_owned_state = {
 						limit = {
 							OR = {
-								region = 320
+								state = 1034
+								state = 84
+								state = 82
+								state = 1035
+								state = 1033
 							}
 						}
 						if = {
@@ -248,6 +371,31 @@ on_actions = {
 						}
 						transfer_state_to = MOL
 					}
+					every_owned_state = { # Burgenland
+						limit = {
+							OR = {
+								state = 1190
+							}
+						}
+						transfer_state_to = var:4.owner
+						add_core_of = var:4.owner
+					}
+					every_owned_state = { # The other tiny thing
+						limit = {
+							OR = {
+								state = 1241
+								
+							}
+						}
+						transfer_state_to = var:102.owner
+						add_core_of = var:102.owner
+					}
+				}
+				MOL = { 
+					set_cosmetic_tag = MOL_United
+				}
+				SER = { 
+					set_cosmetic_tag = SER_Empire
 				}
 			}
 		}
