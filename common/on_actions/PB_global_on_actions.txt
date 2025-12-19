@@ -206,4 +206,183 @@ on_actions = {
 			}
 		}
 	}
+
+	on_startup = {
+		effect = {
+			every_possible_country = {
+				limit = { NOT = { tag = XXD} }
+
+				#Opinion Modifiers Setup
+				every_possible_country = {
+					limit = { NOT = { tag = PREV } }
+					if = {
+						limit = { has_government = PREV }
+						add_opinion_modifier = {
+							target = PREV
+							modifier = PB_same_ideology
+						}
+					}
+					else_if = {
+						limit = {
+							OR = {
+								AND = {
+									has_authoritarian_ideology_group = yes
+									PREV = { has_authoritarian_ideology_group = yes }
+								}
+								AND = {
+									has_reformist_ideology_group = yes
+									PREV = { has_reformist_ideology_group = yes }
+								}
+								AND = {
+									has_revolutionary_ideology_group = yes
+									PREV = { has_revolutionary_ideology_group = yes }
+								}
+							}
+						}
+						add_opinion_modifier = {
+							target = PREV
+							modifier = PB_similar_ideology
+						}
+					}
+					else_if = {
+						limit = {
+							OR = {
+								AND = {
+									has_authoritarian_ideology_group = yes
+									PREV = { has_revolutionary_ideology_group = yes }
+								}
+								AND = {
+									has_revolutionary_ideology_group = yes
+									PREV = { has_authoritarian_ideology_group = yes }
+								}
+							}
+						}
+						add_opinion_modifier = {
+							target = PREV
+							modifier = PB_enemy_ideology
+						}
+					}
+					else = {
+						add_opinion_modifier = {
+							target = PREV
+							modifier = PB_different_ideology
+						}
+					}
+				}
+			}
+		}
+	}
+
+	on_ruling_party_change = {
+		effect = {
+			every_possible_country = {
+				limit = { NOT = { tag = ROOT } }
+				remove_opinion_modifier = {
+					target = ROOT
+					modifier = PB_same_ideology
+				}
+				remove_opinion_modifier = {
+					target = ROOT
+					modifier = PB_similar_ideology
+				}
+				remove_opinion_modifier = {
+					target = ROOT
+					modifier = PB_different_ideology
+				}
+				remove_opinion_modifier = {
+					target = ROOT
+					modifier = PB_enemy_ideology
+				}
+				ROOT = {
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = PB_same_ideology
+					}
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = PB_similar_ideology
+					}
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = PB_different_ideology
+					}
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = PB_enemy_ideology
+					}
+				}
+				if = {
+					limit = { has_government = ROOT }
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_same_ideology
+					}
+					reverse_add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_same_ideology
+					}
+				}
+				else_if = {
+					limit = {
+						OR = {
+							OR = {
+								AND = {
+									has_authoritarian_ideology_group = yes
+									PREV = { has_authoritarian_ideology_group = yes }
+								}
+								AND = {
+									has_reformist_ideology_group = yes
+									PREV = { has_reformist_ideology_group = yes }
+								}
+								AND = {
+									has_revolutionary_ideology_group = yes
+									PREV = { has_revolutionary_ideology_group = yes }
+								}
+							}
+						}
+					}
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_similar_ideology
+					}
+					reverse_add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_similar_ideology
+					}
+				}
+				else_if = {
+					limit = {
+						OR = {
+							AND = {
+								has_authoritarian_ideology_group = yes
+								PREV = { has_revolutionary_ideology_group = yes }
+							}
+							AND = {
+								has_revolutionary_ideology_group = yes
+								PREV = { has_authoritarian_ideology_group = yes }
+							}
+						}
+					}
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_enemy_ideology
+					}
+					reverse_add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_enemy_ideology
+					}
+				}
+				else = {
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_different_ideology
+					}
+					reverse_add_opinion_modifier = {
+						target = ROOT
+						modifier = PB_different_ideology
+					}
+				}
+			}
+		}
+	}
 }
