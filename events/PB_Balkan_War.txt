@@ -200,13 +200,17 @@ country_event = { #Balkan War - Moldovan Invasion
 					name = "Miliția Insuranceară"
 					is_locked = yes
 					regiments = {
-						infantry = { x = 0 y = 0 }
-						infantry = { x = 0 y = 1 }
-						infantry = { x = 0 y = 2 }
-						infantry = { x = 0 y = 3 }
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
+						militia = { x = 0 y = 3 }
+						militia = { x = 1 y = 0 }
+						militia = { x = 1 y = 1 }
+						militia = { x = 1 y = 2 }
+						militia = { x = 1 y = 3 }
 					}
 					support = { 
-						military_police = { x = 0 y = 0 }
+						artillery = { x = 0 y = 0 }
 					} 
 				}
 				declare_war_on = {
@@ -225,6 +229,7 @@ country_event = { #Balkan War - Moldovan Invasion
                     owner = MOL
 					count = 2
 					prioritize_location = 9617
+					allow_spawning_on_enemy_provs = yes
                 }
 			}
 		}
@@ -310,19 +315,198 @@ country_event = { #Establishment of the Military Frontier
 	}
 }
 
-country_event = { # Danubian Entente Victory
+country_event = { # Anti Hungarian pact Victory
 	id = balkwar.8
 	title = balkwar.8.t
 	desc = balkwar.8.d
 	picture = GFX_report_AC_Edison_Mining
-	is_triggered_only = yes
 	fire_only_once = yes
-	option = { #Establish the Military frontier
-		name = balkwar.8.a
-		
+
+	trigger = { 
+		OR = { 
+			original_tag = SER
+			original_tag = MOL
+			original_tag = GRE
+		}
+		AND = { 
+			has_global_flag = PB_GBW_Hungary_Defeated
+			has_global_flag = PB_GBW_Bulgaria_Defeated
+		}
 	}
-	option = { #Dont establish the military frontier
-		name = balkwar.8.b
-		add_political_power = 50
+
+	immediate = { 
+		set_global_flag = PB_GBW_Bulgarian_Hungarian_Defeat
+	}
+
+	option = { #Congratulations you win now suffer
+		name = balkwar.8.a
+		ROOT = { 
+			add_timed_idea = { 
+				idea = PB_BLK_War_Recovery
+				days = 120
+			} 
+		}
+		news_event = PBNews.24
+	}
+}
+
+country_event = { # Danubian Entente Victory
+	id = balkwar.9
+	title = balkwar.9.t
+	desc = balkwar.9.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+
+	immediate = { 
+		set_global_flag = PB_GBW_Anti_Hungarian_Pact_Defeat
+	}
+	
+	option = { #Congratulations you win now suffer
+		name = balkwar.9.a
+		ROOT = { 
+			add_timed_idea = { 
+				idea = PB_BLK_War_Recovery
+				days = 120
+			}
+		}
+		news_event = PBNews.24
+	}
+}
+
+country_event = { # Greece leaves the Balkan Pact
+	id = balkwar.10
+	title = balkwar.10.t
+	desc = balkwar.10.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+
+	immediate = { 
+		set_global_flag = GBW_Greece_Peaced_Out
+		SER = { 
+			set_faction_leader = yes
+		}
+	}
+	
+	option = { # buncha cowards
+		name = balkwar.10.a	
+		GRE = { 
+			
+			white_peace = ROM
+			white_peace = HUN
+			white_peace = MOL
+			white_peace = CRO
+			white_peace = SLA
+			white_peace = HwA
+			white_peace = ALB
+			leave_faction = yes
+			country_event = { 
+				id = balkwar.11
+				days = 5
+			}
+		}
+		#insert event where it tells their allies they left
+	}
+}
+
+country_event = { # Greece wins their balkan war
+	id = balkwar.11
+	title = balkwar.11.t
+	desc = balkwar.11.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+
+	immediate = { 
+		set_global_flag = GBW_Greece_Peaced_Out
+	}
+	
+	option = { #Congratulations you win now suffer
+		name = balkwar.11.a
+		ROOT = { 
+			add_timed_idea = { 
+				idea = PB_BLK_War_Recovery
+				days = 120
+			}
+		}
+	}
+}
+
+country_event = { # Greece wants to leave
+	id = balkwar.12
+	title = balkwar.12.t
+	desc = balkwar.12.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+
+	option = { #cool no more greece in the war
+		name = balkwar.12.a
+		GRE = { 
+			country_event = { 
+				id = balkwar.10
+				days = 5
+			}
+		}
+	}
+
+	option = { #No dude lol
+		name = balkwar.12.a
+		trigger = { 
+			is_ai = no
+		}
+		GRE = { 
+			country_event = { 
+				id = balkwar.13
+				days = 5
+			}
+		}
+	}
+}
+
+country_event = { # Hungary Rejected Peace
+	id = balkwar.13
+	title = balkwar.13.t
+	desc = balkwar.13.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+	
+	option = { #cool no more greece in the war
+		name = balkwar.13.a
+		add_political_power = -30
+	}
+}
+
+country_event = { # Serbia and Romania Defeated so peace out greece cause bulgaria already died
+	id = balkwar.14
+	title = balkwar.14.t
+	desc = balkwar.14.d
+	picture = GFX_report_AC_Edison_Mining
+	fire_only_once = yes
+	trigger = { 
+		OR = { 
+			owns_state = 43
+			tag = GRE
+		}
+		
+		GRE = { 
+			has_war_with = var:43.owner
+		}
+		SER = { 
+			has_capitulated = yes
+		}
+		MOL = { 
+			has_capitulated = yes
+		}
+		has_global_flag = PB_GBW_Bulgaria_Defeated
+	}
+	immediate = { 
+		GBW_Danubian_Entente_Victory = yes
+	}
+	option = { #hey man fuck you
+		name = balkwar.14.
+		GRE = { 
+			country_event = { 
+				id = balkwar.11
+				days = 5
+			}
+		}
 	}
 }
