@@ -1,0 +1,132 @@
+# Scripted AI desire for peace actions.
+# See documentation.info file for more detailed scripting information.
+
+peace_ai_desires = {
+	base_puppet_liberate_force_government_desire = {
+		peace_action_type = { puppet liberate force_government }
+		enable = {
+			always = yes
+		}
+		ai_desire = -400
+	}
+
+	ignore_puppet_liberate_or_force_government_if_claimed = {
+		peace_action_type = { puppet liberate force_government }
+		enable = {
+			ROOT.FROM.FROM.FROM = {
+				OR = {
+					is_claimed_by = ROOT
+					is_core_of = ROOT
+					has_variable = priority_zone_@ROOT
+				}
+			}
+		}
+		ai_desire = -1000
+	}
+
+	ignore_puppet_liberate_or_force_government_if_claimed_by_ally = {
+		peace_action_type = { puppet liberate force_government }
+		enable = {
+			if = {
+				limit = { is_in_faction = yes }
+				any_allied_country = {
+					pc_is_winner = yes
+					if = {
+						limit = { is_subject = yes }
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_claimed_by = PREV
+								is_core_of = PREV
+							}
+						}
+					}
+					else = {
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_claimed_by = PREV
+								is_core_of = PREV
+								has_variable = priority_zone_@PREV
+							}
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = { is_subject = yes }
+				any_of_scopes = {
+					array = global.pc_winners_array
+					pc_is_winner = yes
+					is_ally_with = ROOT.overlord
+					if = {
+						limit = { is_subject = yes }
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_claimed_by = PREV
+								is_core_of = PREV
+							}
+						}
+					}
+					else = {
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_claimed_by = PREV
+								is_core_of = PREV
+								has_variable = priority_zone_@PREV
+							}
+						}
+					}
+				}
+			}
+			else = {
+				num_subjects > 0
+				any_subject_country = {
+					pc_is_winner = yes
+					ROOT.FROM.FROM.FROM = {
+						OR = {
+							is_claimed_by = PREV
+							is_core_of = PREV
+						}
+					}
+				}
+			}
+		}
+		ai_desire = -1000
+	}
+
+	#dont_revive_colonial_states = {
+	#	peace_action_type = { puppet liberate force_government }
+	#	enable = {
+	#		ROOT.FROM = {
+	#			OR = {
+	#				original_tag = MAF
+	#				original_tag = GEA
+	#				original_tag = DEI
+	#			}
+	#		}
+	#	}
+	#	ai_desire = -1000
+	#}
+#
+	#liberate_countries_in_africa = {
+	#	peace_action_type = { liberate }
+	#	enable = {
+	#		NOT = { tag = ROOT.FROM }
+	#		is_in_africa = no
+	#		ROOT.FROM.FROM.FROM = { is_on_continent = africa }
+	#		ROOT.FROM = {
+	#			is_in_africa = yes
+	#			OR = {
+	#				exists = no
+	#				both_socialist_or_both_not_socialist = yes
+	#			}
+	#			is_in_north_africa = no
+	#			NOT = { original_tag = SAF }
+	#			NOT = { original_tag = SUD }
+	#			NOT = { original_tag = ERI }
+	#			NOT = { original_tag = ETH }
+	#			NOT = { original_tag = SOM }
+	#		}
+	#	}
+	#	ai_desire = 450 #offsets do_not_puppet_liberate_or_force_government
+	#}
+}

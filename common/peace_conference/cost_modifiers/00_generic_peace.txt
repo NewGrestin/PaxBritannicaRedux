@@ -3,9 +3,10 @@
 
 peace_action_modifiers = {
 
-    player_primacy_in_conference = {
+	### Global
+	player_led_peace_conference = {
 		category = events_or_focuses
-		peace_action_type = { take_states liberate puppet force_government }
+		peace_action_type = { take_states liberate puppet force_government take_navy }
 		enable = {
 			has_game_rule = { rule = peace_conference_options option = PLAYER_PRIMACY }
 			pc_is_on_winning_side = yes
@@ -14,227 +15,212 @@ peace_action_modifiers = {
 		cost_multiplier = 0
 	}
 
-    ### Take States
+	no_liberation = {
+		category = events_or_focuses
+		peace_action_type = { liberate }
+		enable = {
+			always = yes
+		}
+		cost_multiplier = 800
+	}
 
-    # Is Core of Taker, and taker is not Puppet of someone
-    generic_is_core = {
-        category = is_core
-        peace_action_type = take_states
+	no_puppet_or_force_government = {
+		category = events_or_focuses
+		peace_action_type = { puppet force_government }
+		enable = {
+			always = yes
+		}
+		cost_multiplier = 800
+	}
 
-        enable = {
-            FROM.FROM.FROM = { is_core_of = ROOT.FROM }
-            OR = {
-                FROM = { pc_is_puppeted = no } # Taker is free
-                FROM = { tag = ROOT } # Taker might be subject but negotiating for itself
-            }
-        }
+	non_occupied_core_claim_third_party_state = {
+		category = belonged_to_someone_else
+		peace_action_type = { take_states liberate puppet force_government }
+		enable = {
+			ROOT = { is_ai = no } #player only restriction, since the AI will never take them
+			NOT = { has_war_with = ROOT.FROM.FROM }
+			ROOT.FROM.FROM = {
+				OR = {
+					has_capitulated = no
+					any_owned_state = {
+						NOT = { has_state_flag = is_insignificant_state_for_peace_conference }
+						OR = {
+							is_core_of = ROOT.FROM.FROM
+							is_claimed_by = ROOT.FROM.FROM
+							has_variable = priority_zone_@ROOT.FROM.FROM
+						}
+						NOT = {
+							controller = {
+								has_war_with = ROOT.FROM.FROM #all state of the loser are occupied by enemies
+								is_ally_with = ROOT
+							}
+						}
+					}
+				}
+			}
+		}
+		cost_multiplier = 800
+	}
 
-        cost_multiplier = 0.25 # Reduced by ~75%
-    }
+	### Take States
 
+	# Is Core of Taker, and taker is not Puppet of someone
+	generic_is_core = {
+		category = is_core
+		peace_action_type = take_states
 
-    generic_is_core_of_puppet = {
-        category = is_core
-        peace_action_type = take_states
+		enable = {
+			FROM.FROM.FROM = { is_core_of = ROOT.FROM }
+			OR = {
+				FROM = { pc_is_puppeted = no } # Taker is free
+				FROM = { tag = ROOT } # Taker might be subject but negotiating for itself
+			}
+		}
 
-        enable = {
-            FROM.FROM.FROM = { is_core_of = ROOT.FROM }
-            ROOT.FROM = { pc_is_puppeted = yes } # Taker is puppet or will be
-        }
+		cost_multiplier = 0.25 # Reduced by ~75%
+	}
 
-        cost_multiplier = 0.5
-    }
+	generic_is_core_of_puppet = {
+		category = is_core
+		peace_action_type = take_states
 
-    # State isn't Core of losing country - cheaper to take colonies
-    generic_is_not_losers_core = {
-        category = is_core
-        peace_action_type = take_states
+		enable = {
+			FROM.FROM.FROM = { is_core_of = ROOT.FROM }
+			ROOT.FROM = { pc_is_puppeted = yes } # Taker is puppet or will be
+		}
 
-        enable = {
-            FROM.FROM.FROM = { is_core_of = ROOT.FROM }
-            NOT = { FROM.FROM.FROM = { is_core_of = ROOT.FROM.FROM } }
-        }
+		cost_multiplier = 0.5
+	}
 
-        cost_multiplier = 0.95 # Reduced by 5%
-    }
+	# State isn't Core of losing country - cheaper to take colonies
+	generic_is_not_losers_core = {
+		category = is_core
+		peace_action_type = take_states
 
+		enable = {
+			FROM.FROM.FROM = { is_core_of = ROOT.FROM }
+			NOT = { FROM.FROM.FROM = { is_core_of = ROOT.FROM.FROM } }
+		}
 
-    # Is Claimed by Taker
-    generic_has_claim = {
-        category = has_claim
-        peace_action_type = take_states
+		cost_multiplier = 0.95 # Reduced by 5%
+	}
 
-        enable = {
-            FROM.FROM.FROM = { is_claimed_by = ROOT.FROM }
-            ROOT.FROM = {
-                is_subject = no
-                pc_is_puppeted = no
-            }
-        }
+	# Is Claimed by Taker
+	generic_has_claim = {
+		category = has_claim
+		peace_action_type = take_states
 
-        cost_multiplier = 0.9
-    }
+		enable = {
+			FROM.FROM.FROM = { is_claimed_by = ROOT.FROM }
+			ROOT.FROM = {
+				is_subject = no
+				pc_is_puppeted = no
+			}
+		}
 
+		cost_multiplier = 0.9
+	}
 
-    # Control
-    generic_occupies_state = {
-        category = occupation
-        peace_action_type = { take_states puppet liberate force_government }
+	# Control
+	generic_occupies_state = {
+		category = occupation
+		peace_action_type = { take_states puppet liberate force_government }
 
-        enable = {
-            FROM.FROM.FROM = { 
-				is_controlled_by = ROOT 
+		enable = {
+			FROM.FROM.FROM = {
+				is_controlled_by = ROOT
 				compliance > 0 #To prevent capitulation-occupation kicking in
 			}
-        }
-        cost_multiplier = 0.80
-    }
+		}
+		cost_multiplier = 0.8
+	}
 
+	### Ideology
+	#none at the moment
 
-    ### Ally has Core Modifiers
+	### Ally has Core Modifiers
 
-    generic_major_participant_has_core = {
-        category = core_of_ally
-        peace_action_type = { take_states puppet force_government }
-        enable = {
-            any_country = {
-                NOT = { tag = ROOT.FROM }
-                pc_is_on_same_side_as = ROOT
-                pc_is_liberated = no
-                pc_is_puppeted = no
-                is_major = yes
-                ROOT.FROM.FROM.FROM = {
-                    is_core_of = PREV
-                }
-            }
-        }
-        cost_multiplier = 3.0
-    }
+	generic_major_participant_has_core = {
+		category = core_of_ally
+		peace_action_type = { take_states puppet force_government }
+		enable = {
+			any_country = {
+				NOT = { tag = ROOT.FROM }
+				pc_is_on_same_side_as = ROOT
+				pc_is_liberated = no
+				pc_is_puppeted = no
+				is_major = yes
+				ROOT.FROM.FROM.FROM = {
+					is_core_of = PREV
+				}
+			}
+		}
+		cost_multiplier = 3.0
+	}
 
+	### Other
 
-    # Test to see if we can apply Defensive War modifiers where appropriate without adding a separate wargoal 
-    defensive_war_liberate = {
-        category = defensive_war # Should possibly be a "wargoal" category. Esp if we move other wrgoals to here
-        peace_action_type = { liberate force_government }
-        enable = {
-            OR = {
-                ROOT = { has_defensive_war_with = ROOT.FROM.FROM } # Attacked by country directly
-                AND = { # Loser probably got pulled in by another attacker
-                    has_offensive_war = no
-                    has_defensive_war = yes
-                }
-            }
-        }
-        cost_multiplier = 0.95
-    }
+	war_of_independence = {
+		category = other
+		peace_action_type = { take_states puppet force_government liberate }
+		enable = {
+			FROM.FROM.FROM = { NOT = { is_core_of = ROOT } }
+			ROOT = {
+				has_war_with_wargoal_against = {
+					target = FROM
+					type = independence_wargoal  # (optional: if not specified any wargoal will do)
+				}
+			}
+		}
+		cost_multiplier = 1.25
+	}
 
+	# Retake territory spawned into new country
+	war_of_independence_crushed = {
+		category = other
+		peace_action_type = { take_states }
+		enable = {
+			FROM.FROM = {
+				has_war_with_wargoal_against = {
+					target = ROOT
+					type = independence_wargoal
+				}
+			}
+		}
+		cost_multiplier = 0.5
+	}
 
-    defensive_war_take_state = {
-        category = defensive_war
-        peace_action_type = take_states
-        enable = {
-            OR = {
-                ROOT = { has_defensive_war_with = ROOT.FROM.FROM } # Attacked by country directly
-                AND = { # Loser probably got pulled in by another attacker
-                    has_offensive_war = no
-                    has_defensive_war = yes
-                }
-            }
-        }
-        cost_multiplier = 1.1
-    }
+	eat_the_rich = {
+		category = ideology
+		peace_action_type = { take_states puppet force_government liberate }
 
+		enable = {
+			ROOT = { is_major = yes }
+			ROOT.FROM = { tag = ROOT }
+			ROOT.FROM.FROM = {
+				is_major = yes
+			}
+		}
+		cost_multiplier = 0.80
+	}
 
-    ### Other
+	continuous_force_gov = {
+		category = continuous_political_action
+		peace_action_type = { force_government }
 
-    belonged_to_someone_else = {
-        category = belonged_to_someone_else
-        peace_action_type = { take_states puppet force_government }
+		enable = {
+			FROM.FROM = { pc_is_forced_government_by = ROOT }
+		}
+		cost_multiplier = 0.85
+	}
 
-        enable = {
-            any_country = {
-                NOT = { tag = ROOT.FROM }
-                ROOT.FROM.FROM.FROM = {
-                    is_core_of = PREV
-                    NOT = {
-                        is_owned_by = PREV
-                    }
-                }
-            }
-        }
+	continuous_puppet = {
+		category = continuous_political_action
+		peace_action_type = { puppet }
 
-        cost_multiplier = 1.05
-    }
-
-
-    war_of_independence = {
-        category = other
-        peace_action_type = { take_states puppet force_government liberate }
-        enable = {
-            FROM.FROM.FROM = { NOT = { is_core_of = ROOT }}
-            ROOT = {
-                has_war_with_wargoal_against = {
-                    target = FROM
-                    type = independence_wargoal  # (optional: if not specified any wargoal will do)
-                  }
-            }
-        }
-        cost_multiplier = 1.25
-    }
-
-
-    # Retake territory spawned into new country
-    war_of_independence_crushed = {
-        category = other
-        peace_action_type = { take_states }
-        enable = {
-            FROM.FROM = {
-                has_war_with_wargoal_against = {
-                  target = ROOT
-                  type = independence_wargoal
-                }
-
-            }
-        }
-        cost_multiplier = 0.5
-    }
-
-
-    eat_the_rich = {
-        category = ideology
-        peace_action_type = { take_states puppet force_government liberate }
-
-        enable = {
-            ROOT = { is_major = yes }
-            ROOT.FROM = { tag = ROOT }
-            ROOT.FROM.FROM = {
-                is_major = yes
-            }
-        }
-        cost_multiplier = 0.80
-    }
-
-
-
-    continuous_force_gov = {
-        category = continuous_political_action
-        peace_action_type = { force_government }
-
-        enable = {
-            FROM.FROM = { pc_is_forced_government_by = ROOT }
-        }
-        cost_multiplier = 0.85
-    }
-
-
-    continuous_puppet = {
-        category = continuous_political_action
-        peace_action_type = { puppet }
-
-        enable = {
-            FROM.FROM = { pc_is_puppeted_by = ROOT }
-        }
-        cost_multiplier = 0.85
-    }
-
+		enable = {
+			FROM.FROM = { pc_is_puppeted_by = ROOT }
+		}
+		cost_multiplier = 0.85
+	}
 }
