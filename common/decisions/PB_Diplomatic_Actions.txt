@@ -1,0 +1,341 @@
+PB_Diplomacy_Decisions = {
+	###################
+	# GERMAN EAST ASIA #
+	###################
+	
+	DAS_demand_papua_new_guinea_decision = {
+		icon = GFX_decision_generic_colonial_hat_german
+
+		allowed = {
+			original_tag = DAS
+		}
+
+		available = {
+			is_neighbor_of = FROM
+			NOT = { has_non_aggression_pact_with = FROM }
+			FROM = {
+				owns_state = 1354
+				owns_state = 1353
+			}
+			can_declare_war_on = FROM
+		}
+
+		visible = {
+			has_completed_focus = PB_DAS_The_Second_Batavia_Expedition
+			ROOT = {
+				has_government = ds
+			}
+		}
+
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				NOT = { FROM = { owns_state = 1354 } }
+				NOT = { FROM = { owns_state = 1353 } }
+				NOT = { is_neighbor_of = FROM }
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+
+		targets = { 1354.OWNER 1353.OWNER }
+		target_root_trigger = {
+			has_completed_focus = PB_DAS_Gunboat_Diplomacy
+		}
+		target_trigger = {
+			can_declare_war_on = FROM
+			FROM = {
+				owns_state = 1354
+				owns_state = 1353
+			}
+		}
+
+		cost = 0
+		days_remove = 30
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		remove_effect = {
+			FROM = {
+				country_event = DAS_Diplomacy.1
+			}
+		}
+	}
+	
+	DAS_invite_condor_club_decision = {
+		target_root_trigger = {
+			has_completed_focus = PB_DAS_Condor
+		}
+		targets = { INS SUL BOR SWK DEL BFE RAJ HNK }
+		targets_dynamic = yes
+		target_trigger = {
+			NOT = { is_in_faction_with = DAS }
+		}
+		icon = GFX_decision_generic_operation
+		cost = 20
+		war_with_target_on_complete = yes
+		fire_only_once = yes
+		days_remove = 10
+		remove_effect = {
+			FROM = {
+				country_event = {
+					id = DAS_CondorClub.1
+					days = 2
+				}
+			}
+		}
+	}
+
+	DAS_Strike_Corsairs = {
+		icon = GFX_decision_ger_military_buildup
+		allowed = {
+			original_tag = DAS
+		}
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = CCO }
+				has_non_aggression_pact_with = CCO
+				has_guaranteed = CCO
+			}
+		}
+		visible ={
+			can_declare_war_on = CCO
+			has_completed_focus = PB_DAS_Scuttle_The_Frankenstein_Of_The_Sea
+		}
+		targets = {
+			CCO
+		}
+		
+		days_remove = 10
+
+		cancel_effect = {
+			
+		}
+		
+		remove_effect = {
+			if = {
+				limit = {
+					INS = { has_country_flag = DAS_Corsair_Invite }
+				}
+				INS = {
+					declare_war_on = {
+					target = CCO
+					}
+				}
+			}
+			DAS = {
+				declare_war_on = {
+					target = CCO
+				}
+			}
+			damage_units = {
+				state = 334
+				region = 93
+				damage = 0.5
+				org_damage = 0.5
+				str_damage = 0.5
+				ratio = yes
+				army = yes
+				navy = yes
+			}
+		}
+	}
+
+	DAS_overthrow_INS = {
+		icon = GFX_decision_ger_military_buildup
+
+		allowed = { original_tag = DAS }
+		visible = {
+			country_exists = INS
+			has_completed_focus = PB_DAS_The_Second_Batavia_Expedition
+			NOT = { has_war_with = INS }
+			can_declare_war_on = FROM
+		}
+		cancel_trigger = {
+			has_war_with = INS
+		}
+
+		targets = { INS }
+
+		days_remove = 45
+		war_with_target_on_remove = yes
+		fire_only_once = yes
+
+		ai_will_do = { factor = 1000 }
+		complete_effect = {
+			set_country_flag = INS_invasion
+		}
+		remove_effect = {
+			clr_country_flag = INS_invasion
+			activate_mission = DAS_INS_Countdown
+		}
+	}
+	
+	DAS_INS_Countdown = {
+
+		icon = GFX_decision_generic_militia
+
+		available = {
+			always = no
+		}
+
+		activation = {
+			has_country_flag = INS_invasion
+		}
+
+		allowed = {
+			original_tag = DAS
+		}
+
+		visible = {
+			has_country_flag = INS_invasion
+		}
+		priority = 2
+		is_good = no
+		fire_only_once = yes
+		selectable_mission = no
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		targets = { INS }
+
+		days_mission_timeout = 365
+
+		timeout_effect = {
+			DAS = {
+				declare_war_on = {
+					target = INS
+					type = annex_everything
+				}
+			}
+		}
+	}
+
+	DAS_convince_SUL = {
+		icon = GFX_decision_ger_military_buildup
+		allowed = { original_tag = DAS }
+		visible = {
+			has_country_flag = INS_invasion
+		}
+
+		available = {
+			NOT = {
+				has_war_with = INS
+			}
+		}
+
+		targets = { SUL }
+		cost = 50
+		days_remove = 40
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+		cancel_if_not_visible = yes
+
+		ai_will_do = { base = 0 }
+
+		remove_effect = {
+			
+		}
+	}
+
+	DAS_convince_DEL = {
+		icon = GFX_decision_ger_military_buildup
+		allowed = { original_tag = DAS }
+		visible = {
+			has_country_flag = INS_invasion
+		}
+
+		available = {
+			NOT = {
+				has_war_with = INS
+			}
+		}
+
+		targets = { DEL }
+		cost = 50
+		days_remove = 40
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+		cancel_if_not_visible = yes
+
+		ai_will_do = { base = 0 }
+
+		remove_effect = {
+			
+		}
+	}
+
+	DAS_convince_PNG = {
+		icon = GFX_decision_ger_military_buildup
+		allowed = { original_tag = DAS }
+		visible = {
+			has_country_flag = INS_invasion
+		}
+
+		available = {
+			NOT = {
+				has_war_with = INS
+			}
+		}
+
+		targets = { PNG }
+		cost = 50
+		days_remove = 40
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+		cancel_if_not_visible = yes
+
+		ai_will_do = { base = 0 }
+
+		remove_effect = {
+			
+		}
+	}
+	###############
+	# ENGLAND #
+	###############
+	ENG_Escalate_BFE = {
+		allowed = {
+			original_tag = ENG
+		}
+		available = {
+			BFE = {
+				surrender_progress > 0.8
+			}
+		}
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+		targets = {
+			VIN
+		}
+		
+		days_remove = 10
+		
+		remove_effect = {
+			ENG = {
+				declare_war_on = {
+					target = VIN
+				}
+				set_autonomy = {
+					target = BFE
+					autonomous_state = autonomy_constituent_dominion
+					freedom_level = 0.75
+					end_wars = no
+				}
+			}
+		}
+	}
+}

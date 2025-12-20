@@ -14,36 +14,79 @@ country_event = { #Fate of Venezuela
 	is_triggered_only = yes
 	
 	option = { #Release Venezuela Whole
-		log = "[GetLogInfo]: event annex.3000 option annexation.3000.a"
+		log = "[GetLogInfo]: event annex.3000 option annex.3000.a"
 		name = annex.3000.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 		}
 
-		if = {
-			limit = { country_exists = VEN }
-			custom_effect_tooltip = VEN_puppet_tooltip
+		set_temp_variable = { tag_to_release = VEN }
+		every_state = {
+			limit = { is_core_of = VEN }
+			remove_claim_and_add_core_of_target = yes
 		}
-		else = {
-			set_temp_variable = { tag_to_release = VEN }
-			release_targeted_tag = yes
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			VEN = {
+				set_cosmetic_tag = VEN_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			VEN = {
+				set_cosmetic_tag = VEN_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3000 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3000 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = VEN }
+			add_claim_of_ROOT = yes
+		}
+	}
+
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3000 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3000 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Cayenne
@@ -55,61 +98,116 @@ country_event = { #Fate of Cayenne
 	is_triggered_only = yes
 	
 	immediate = {
-	VEN  = { save_event_target_as = venezuela }
-		
+	if = {
+		limit = {
+			1217 = { # Essequibo
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+				}
+			}
+		}
+		var:1217.owner = { save_event_target_as = venezuela }
+	}
     }
+
 	option = { #Release Cayenne Whole
-		log = "[GetLogInfo]: event annex.3001 option annexation.3001.a"
+		log = "[GetLogInfo]: event annex.3001 option annex.3001.a"
 		name = annex.3001.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = CAY }
+		every_state = {
+			limit = { is_core_of = CAY }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			CAY = {
+				set_cosmetic_tag = CAY_Occupied_Monarchy
 			}
 		}
 
 		if = {
-			limit = { country_exists = CAY }
-			custom_effect_tooltip = CAY_puppet_tooltip
+			limit = { ROOT = { has_republican_government = yes } }
+			CAY = {
+				set_cosmetic_tag = CAY_Occupied_Republic
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = CAY }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
 	}
 	
 	option = { #Give it to Venezuela
-		log = "[GetLogInfo]: event annex.3001 option annexation.3001.b"
+		log = "[GetLogInfo]: event annex.3001 option annex.3001.b"
 		name = annex.3001.b
 		trigger = {
-			is_subject = no
-		}
+			has_event_target = venezuela
+	    }
 		ai_chance = {
-			base = 100
+			base = 20
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				is_major = yes
+				NOT = { is_ally_with = event_target:venezuela }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:venezuela = { is_subject = yes }
 			}
 		}
-		
 		set_temp_variable = { tag_to_release = event_target:venezuela }
-		309 = { transfer_state_to = VEN }
-		1406 = { transfer_state_to = VEN }
+		CAY = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
+	}
+
+		option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3001 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3001 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = CAY }
+			add_claim_of_ROOT = yes
+		}
+	}
+
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3001 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3001 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Uruguay
@@ -119,9 +217,44 @@ country_event = { #Fate of Uruguay
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						1000 = { is_claim_or_core_of_ROOT = yes } # Campo Del Norte
+						original_tag = BRA
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					500 = { # Rio De Janeiro
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:500.owner = { save_event_target_as = brazil }
+			}
+			if = {
+				limit = {
+					1000 = { # T
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:brazil }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1000.owner = { save_event_target_as = argentina }
+			}
+			988 = { retain_state = yes }
+		}
+	}
 	
 	option = { #Release Uruguay Whole
-		log = "[GetLogInfo]: event annex.3002 option annexation.3002.a"
+		log = "[GetLogInfo]: event annex.3002 option annex.3002.a"
 		name = annex.3002.a
 		trigger = {
 			is_subject = no
@@ -142,15 +275,93 @@ country_event = { #Fate of Uruguay
 			set_temp_variable = { tag_to_release = URG }
 			release_targeted_tag = yes
 		}
+		
+	}
+
+	option = { #Give it to Brazil
+		log = "[GetLogInfo]: event annex.3002 option annex.3004.b"
+		name = annex.3002.b
+		trigger = {
+			has_event_target = brazil
+	    }
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:brazil }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:brazil = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:brazil }
+		URG = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Give it to Rio de la Plata
+		log = "[GetLogInfo]: event annex.3002 option annex.3004.b"
+		name = annex.3002.b
+		trigger = {
+			has_event_target = argentina
+	    }
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:argentina }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:argentina = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:argentina }
+		URG = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3002 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3002 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = URG }
+			add_claim_of_ROOT = yes
+		}
+	}
+
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3002 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3002 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Rio de la Plata
@@ -162,70 +373,123 @@ country_event = { #Fate of Rio de la Plata
 	is_triggered_only = yes
 	
 	immediate = {
-	1002 = { retain_state = yes }
-	ARG  = { save_event_target_as = arroyo }
-
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						1000 = { is_claim_or_core_of_ROOT = yes } # Campos Del Norte
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			BOL = {
+				drop_cosmetic_tag = yes
+			}
+			1002 = { retain_state = yes }
+			1367 = { retain_state = yes }
+			if = {
+				limit = { var:1000.owner = { ROOT_can_grant_land = yes } }
+				var:1000.owner = { save_event_target_as = arroyo }
+			}
+		}
     }
 	option = { #Release Rio de la Plata Whole
-		log = "[GetLogInfo]: event annex.3003 option annexation.3003.a"
+		log = "[GetLogInfo]: event annex.3003 option annex.3003.a"
 		name = annex.3003.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = RLP }
+		every_state = {
+			limit = { is_core_of = RLP }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			RLP = {
+				set_cosmetic_tag = RLP_Occupied_Monarchy
 			}
 		}
 
 		if = {
-			limit = { country_exists = RLP }
-			custom_effect_tooltip = RLP_puppet_tooltip
+			limit = { ROOT = { has_republican_government = yes } }
+			RLP = {
+				set_cosmetic_tag = RLP_Occupied_Republic
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = RLP }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
 	}
 
 	option = { #Give it to Arroyo
-		log = "[GetLogInfo]: event annexation.3003 option annexation.3003.b"
+		log = "[GetLogInfo]: event annex.3003 option annex.3003.b"
 		name = annex.3003.b
 		trigger = {
 			has_event_target = arroyo
-			ARG = {
-            exists = yes
-		    }   
-	    }
+		}
 		ai_chance = {
-			base = 50
+			base = 20
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				is_major = yes
+				NOT = { is_ally_with = event_target:arroyo }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:arroyo = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:arroyo }
-		278 = { transfer_if_owned = yes } 
-		1225 = { transfer_if_owned = yes } 
-		508 = { transfer_if_owned = yes } 
-		1246 = { transfer_if_owned = yes } 
-		1249 = { transfer_if_owned = yes } 
-		1004 = { transfer_if_owned = yes } 
-		1003 = { transfer_if_owned = yes } 
-		1367 = { transfer_if_owned = yes }
+		RLP = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3003 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3003 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = RLP }
+			add_claim_of_ROOT = yes
+		}
+	}
+
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3003 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3003 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Arroyo
@@ -237,223 +501,349 @@ country_event = { #Fate of Arroyo
 	is_triggered_only = yes
 	
 	immediate = {
-	RLP  = { save_event_target_as = rio_de_la_plata }
-
+		hidden_effect = { 
+			if = {
+				limit = { 
+					original_tag = RLP
+					original_tag = ARG
+					original_tag = URG
+					original_tag = PAR
+				}
+				save_event_target_as = can_annex
+			}
+			ARG = {
+				drop_cosmetic_tag = yes
+			}
+			1001 = { retain_state = yes }
+			985 = { retain_state = yes }
+			1367 = { retain_state = yes }
+			if = {
+				limit = {
+					RLP = {
+						ROOT_can_grant_land = yes
+					}
+				}
+				RLP = { save_event_target_as = rio_de_la_plata }
+			}
+		}
     }
 	option = { #Release Arroyo Whole
-		log = "[GetLogInfo]: event annex.3004 option annexation.3004.a"
+		log = "[GetLogInfo]: event annex.3004 option annex.3004.a"
 		name = annex.3004.a
 		trigger = {
 			is_subject = no
+			NOT = {
+				ROOT = {
+					TAG = SPR
+				}
+			}
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
+		set_temp_variable = { tag_to_release = ARG }
+		every_state = {
+			limit = { is_core_of = ARG }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ARG = {
+				set_cosmetic_tag = ARG_Occupied_Monarchy
 			}
 		}
 
 		if = {
-			limit = { country_exists = ARG }
-			custom_effect_tooltip = ARG_puppet_tooltip
+			limit = { ROOT = { has_republican_government = yes } }
+			ARG = {
+				set_cosmetic_tag = ARG_Occupied_Republic
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = ARG }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
 	}
 
 	option = { #Give it to Rio de la Plata
-		log = "[GetLogInfo]: event annexation.3004 option annexation.3004.b"
+		log = "[GetLogInfo]: event annex.3004 option annex.3004.b"
 		name = annex.3004.b
 		trigger = {
 			has_event_target = rio_de_la_plata
-			RLP = {
-            exists = yes
-		    }   
 	    }
 		ai_chance = {
-			base = 50
+			base = 20
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				is_major = yes
+				NOT = { is_ally_with = event_target:rio_de_la_plata }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:rio_de_la_plata = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:rio_de_la_plata }
-		1367 = { transfer_if_owned = yes }
-		510 = { transfer_if_owned = yes }
-		1000 = { transfer_if_owned = yes }
-		1250 = { transfer_if_owned = yes }
-		509 = { transfer_if_owned = yes }
-		999 = { transfer_if_owned = yes }
+		ARG = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3004 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3004 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = ARG }
+			add_claim_of_ROOT = yes
+		}
+	}
+
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3004 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3004 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 country_event = { #Fate of Atacama
 	id = annex.3005
-	title = annexation_atacama
-	desc = annexation_atacama_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	option = { #Give it to Arroyo
-		log = "[GetLogInfo]: event annexation.3005 option annexation.3005.a"
-		name = annex.3005.a
-		trigger = {
-			ARG = {
-            exists = yes
-			owns_state = 1003
-		    }   
-	    }
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		ARG = {
-			transfer_state = 1002
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give it to Rio de la Plata
-		log = "[GetLogInfo]: event annexation.3005 option annexation.3005.b"
-		name = annex.3005.a
-		trigger = {
-			RLP = {
-            exists = yes
-			owns_state = 1003
-		    }   
-	    }
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		RLP = {
-			transfer_state = 1002
-		}
-
-		recheck_annexations = yes
-	}
-	option = { #Give it to Peru
-		log = "[GetLogInfo]: event annexation.3005 option annexation.3005.c"
-		name = annex.3005.c
-		trigger = {
-			CHR = {
-            exists = yes
-			owns_state = 992
-		    }   
-	    }
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		CHR = {
-			transfer_state = 1002
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give it to Charcas
-		log = "[GetLogInfo]: event annexation.3005 option annexation.3005.d"
-		name = annex.3005.d
-		trigger = {
-			BOL = {
-            exists = yes
-			owns_state = 992
-		    }   
-	    }
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		BOL = {
-			transfer_state = 1002
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3005 option annexation.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
-    }
-}
-
-country_event = { #Fate of Paraguay
-	id = annex.3006
-	title = annexation_paraguay
-	desc = annexation_paraguay_desc
+	title = annexation_1002
+	desc = annexation_1002_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-	688 = { retain_state = yes }
-	1223 = { retain_state = yes }
-	985 = { retain_state = yes }
-	1001 = { retain_state = yes }
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						992 = { is_claim_or_core_of_ROOT = yes } # Potosi
+						1003 = { is_claim_or_core_of_ROOT = yes } # Tucaman
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					992 = { # Potosi
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:992.owner = { save_event_target_as = potosi }
+			}
+			if = {
+				limit = {
+					1003 = { # Tucaman
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:potosi }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1003.owner = { save_event_target_as = tucuman }
+			}
+		}
+	}
+
+	option = { #Give it to Arroyo
+		log = "[GetLogInfo]: event annex.3005 option annex.3005.a"
+		name = annex.3005.a
+		trigger = {
+			has_event_target = potosi
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:potosi }
+				is_ally_with = event_target:tucuman
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = tucuman }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:potosi = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:potosi }
+		1002 = { # Atacama
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give it to Rio de la Plata
+		log = "[GetLogInfo]: event annex.3005 option annex.3005.b"
+		name = annex.3005.a
+		trigger = {
+			has_event_target = tucuman
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tucuman }
+				is_ally_with = event_target:potosi
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = potosi }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tucuman = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:tucuman }
+		1002 = { # Atacama
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3014 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1002 = { add_claim_of_ROOT = yes } # Atacama
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3014 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1002 = { add_claim_of_ROOT = yes } #Atacama
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3005 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Paraguay
+	id = annex.3006
+	title = annexation_301
+	desc = annexation_301_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				original_tag = ARG
+				original_tag = URG
+				original_tag = RLP
+			}
+			save_event_target_as = can_annex
+		}
 	}
 
 	option = { #Release Paraguay Whole
-		log = "[GetLogInfo]: event annex.3006 option annexation.3006.a"
+		log = "[GetLogInfo]: event annex.3006 option annex.3006.a"
 		name = annex.3006.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 50
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 		}
+		set_temp_variable = { tag_to_release = PAR }
+		release_targeted_tag = yes
 
 		if = {
-			limit = { country_exists = PAR }
-			custom_effect_tooltip = PAR_puppet_tooltip
+			limit = { ROOT = { has_monarchist_government = yes } }
+			PAR = {
+				set_cosmetic_tag = PAR_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = PAR }
-			release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			PAR = {
+				set_cosmetic_tag = PAR_Occupied_Republic
+			}
 		}
-		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3006 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		PAR = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #integration
+		log = "[GetLogInfo]: event annex.3006 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		301 = { #Paraguay
+			add_claim_of_ROOT = yes
+			add_resistance = 35
+		}
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3006 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3006 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 country_event = { #Fate of Argentine Paraguay
 	id = annex.3007
@@ -464,11 +854,13 @@ country_event = { #Fate of Argentine Paraguay
 	is_triggered_only = yes
 
 	option = { #Return to Paraguay
-		log = "[GetLogInfo]: event annex.3007 option annexation.3007.a"
+		log = "[GetLogInfo]: event annex.3007 option annex.3007.a"
 		name = annex.3007.a
 		trigger = {
 			is_subject = no
-
+			PAR = {
+				exists = yes
+			}
 		}
 		ai_chance = {
 			base = 100
@@ -484,11 +876,11 @@ country_event = { #Fate of Argentine Paraguay
 		}
 
 
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Transfer to Argentina
-		log = "[GetLogInfo]: event annex.3007 option annexation.3007.b"
+		log = "[GetLogInfo]: event annex.3007 option annex.3007.b"
 		name = annex.3007.b
 		trigger = {
 			is_subject = no
@@ -511,15 +903,19 @@ country_event = { #Fate of Argentine Paraguay
 		}
 
 
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3007 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3007 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Aracuaria
@@ -531,10 +927,13 @@ country_event = { #Fate of Aracuaria
 	is_triggered_only = yes
 
 	option = { #Return to Paraguay
-		log = "[GetLogInfo]: event annex.3008 option annexation.3008.a"
+		log = "[GetLogInfo]: event annex.3008 option annex.3008.a"
 		name = annex.3008.a
 		trigger = {
 			is_subject = no
+			PAR = {
+				exists = yes
+			}
 		}
 		ai_chance = {
 			base = 100
@@ -549,11 +948,11 @@ country_event = { #Fate of Aracuaria
 		}
 
 
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Transfer to Brazil
-		log = "[GetLogInfo]: event annex.3008 option annexation.3008.b"
+		log = "[GetLogInfo]: event annex.3008 option annex.3008.b"
 		name = annex.3008.b
 		trigger = {
 			is_subject = no
@@ -571,15 +970,19 @@ country_event = { #Fate of Aracuaria
 		}
 
 
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3008 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3008 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Alto Paraguay
@@ -590,112 +993,151 @@ country_event = { #Fate of Alto Paraguay
 
 	is_triggered_only = yes
 
-	option = { #Return to Paraguay
-		log = "[GetLogInfo]: event annex.3009 option annexation.3009.a"
-		name = annex.3009.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					301 = { is_claim_or_core_of_ROOT = yes } #Paraguay
+					AND = {
+						487 = { is_claim_or_core_of_ROOT = yes } #Amazinas
+						owns_state = 1027 # Chaco Boreal
+					}
+				}
 			}
+			save_event_target_as = can_annex
 		}
-
-		PAR = {
-			transfer_state = 688
+		if = {
+			limit = {
+				301 = { #Paraguay
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:301.owner = { save_event_target_as = paraguay }
 		}
-
-
-		recheck_annexations = yes
+		if = {
+			limit = {
+				487 = { #Amazinas
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:paraguay }
+						1224 = { annexations_required_state_is_owned_by_either_side = yes } #Chaco Boreal
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:487.owner = { save_event_target_as = bolivia }
+		}
 	}
 
-	option = { #Transfer to Peru
-		log = "[GetLogInfo]: event annex.3009 option annexation.3009.b"
-		name = annex.3009.b
+	option = { #Give to Paraguay
+		log = "[GetLogInfo]: event annex.3009 option annex.americas.give_to_paraguay"
+		name = annex.americas.give_to_paraguay
 		trigger = {
-			CHR = {
-            exists = yes
-			owns_state = 1224
-		    }   
+			has_event_target = paraguay
 		}
 		ai_chance = {
-			base = 100
+			base = 70
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:paraguay }
+				is_ally_with = event_target:bolivia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:paraguay = { is_subject = yes }
+			}
 		}
-
-		CHR = {
-			transfer_state = 688
-		}
-
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:paraguay }
+		688 = { transfer_state_and_notify = yes } #Northern Chaco
 	}
 
-	option = { #Transfer to Charcas
-		log = "[GetLogInfo]: event annex.3009 option annexation.3009.c"
-		name = annex.3009.b
+	option = { #Give to Bolivia
+		log = "[GetLogInfo]: event annex.3009 option annex.americas.give_to_bolivia"
+		name = annex.americas.give_to_bolivia
 		trigger = {
-			is_subject = no
-			BOL = {
-            exists = yes
-			owns_state = 1224
-		    }   
+			has_event_target = bolivia
 		}
 		ai_chance = {
-			base = 100
+			base = 30
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bolivia }
+				is_ally_with = event_target:paraguay
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bolivia = { is_subject = yes }
+			}
 		}
+		set_temp_variable = { tag_to_release = event_target:bolivia }
+		688 = { transfer_state_and_notify = yes } #Northern Chaco
+	}
 
-		BOL = {
-			transfer_state = 688
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3009 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
 		}
+		set_temp_variable = { tag_to_release = overlord }
+		688 = { transfer_state_and_notify = yes } #Northern Chaco
+	}
 
-
-		recheck_annexations = yes
+	option = { #annex
+		log = "[GetLogInfo]: event annex.3009 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		688 = { add_claim_of_ROOT = yes } #Northern Chaco
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3009 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3009 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 country_event = { #Fate of Peru
 	id = annex.3010
-	title = annexation_peru
-	desc = annexation_peru_desc
+	title = annexation_303
+	desc = annexation_303_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-	828 = { retain_state = yes }
-	827 = { retain_state = yes }
-	991 = { retain_state = yes }
-	487 = { retain_state = yes }
-	302 = { retain_state = yes }
-	992 = { retain_state = yes }
-	1224 = { retain_state = yes }
-	993 = { retain_state = yes }
-	996 = { retain_state = yes }
-	506 = { retain_state = yes }
-	1228 = { retain_state = yes }
-	279 = { retain_state = yes }
-	1368 = { retain_state = yes }
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_peru = no }
+					remove_core_of = PRU
+				}
+				else = {
+					add_core_of = PRU
+				}
+				remove_claim_by = PRU
+			}
+			994 = { retain_state = yes } # Tacna
+		}
 	}
 
 	option = { #Release Peru
-		log = "[GetLogInfo]: event annex.3010 option annexation.3010.a"
+		log = "[GetLogInfo]: event annex.3010 option annex.3010.b"
 		name = annex.3010.a
 		trigger = {
 			is_subject = no
@@ -708,320 +1150,636 @@ country_event = { #Fate of Peru
 			}
 		}
 
-		if = {
-			limit = { country_exists = CHR }
-			custom_effect_tooltip = CHR_puppet_tooltip
+		set_temp_variable = { tag_to_release = PRU }
+		every_state = {
+			limit = { is_core_of = PRU }
+			remove_claim_and_add_core_of_target = yes
 		}
-		else = {
-			set_temp_variable = { tag_to_release = CHR }
-			release_targeted_tag = yes
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			PRU = {
+				set_cosmetic_tag = PRU_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			PRU = {
+				set_cosmetic_tag = PRU_Occupied_Republic
+			}
+		}
+
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3010 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3010 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = PRU }
+			add_claim_of_ROOT = yes
+		}
+	}
+
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3010 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3010 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 country_event = { #Fate of Charcas
 	id = annex.3011
-	title = annexation_charcas
-	desc = annexation_charcas_desc
+	title = annexation_302
+	desc = annexation_302_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-	CHR  = { save_event_target_as = peru }
-	996 = { retain_state = yes }
+		hidden_effect = { 
+			if = {
+				limit = { 
+					original_tag = PRU 
+					original_tag = CHR
+					original_tag = RLP
+					original_tag = ARG
+					original_tag = URG
+					original_tag = PAR
+				}
+				save_event_target_as = can_annex
+			}
+			BOL = {
+				drop_cosmetic_tag = yes
+			}
+			996 = { retain_state = yes }
+			995 = { retain_state = yes }
+			if = {
+				limit = { var:303.owner = { ROOT_can_grant_land = yes } }
+				var:303.owner = { save_event_target_as = peru }
+			}
+		}
 	}
 
 	option = { #Release Charcas
-		log = "[GetLogInfo]: event annex.3011 option annexation.3011.a"
+		log = "[GetLogInfo]: event annex.3011 option annex.3011.a"
 		name = annex.3011.a
-		trigger = {
-			is_subject = no
-		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 		}
 
-		if = {
-			limit = { country_exists = BOL }
-			custom_effect_tooltip = BOL_puppet_tooltip
+		set_temp_variable = { tag_to_release = BOL }
+		every_state = {
+			limit = { is_core_of = BOL }
+			remove_claim_and_add_core_of_target = yes
 		}
-		else = {
-			set_temp_variable = { tag_to_release = BOL }
-			release_targeted_tag = yes
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			BOL = {
+				set_cosmetic_tag = BOL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BOL = {
+				set_cosmetic_tag = BOL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give it to Peru
+		log = "[GetLogInfo]: event annex.3011 option annex.3011.b"
+		name = annex.3011.b
+		trigger = {
+			has_event_target = peru
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:peru }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:peru = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:peru }
+		BOL = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3011 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 		recheck_annexations = yes
 	}
 
-	option = { #Give it to Peru
-		log = "[GetLogInfo]: event annexation.3011 option annexation.3011.b"
-		name = annex.3011.b
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3011 option name annex.integration"
+		name = annex.integration
 		trigger = {
-			has_event_target = peru
-			CHR = {
-            exists = yes
-		    }   
-	    }
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = BOL }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3011 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+country_event = { #Fate of Acre
+	id = annex.3012
+	title = annexation_827
+	desc = annexation_827_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					939 = { is_claim_or_core_of_ROOT = yes } # Cuzco
+					855 = { is_claim_or_core_of_ROOT = yes } # El_Beni
+					1221 = { is_claim_or_core_of_ROOT = yes } # Amazonas
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				939 = { #Cuzco
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:939.owner = { save_event_target_as = cuzco }
+		}
+		if = {
+			limit = {
+				991 = { #El Beni
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:cuzco }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:991.owner = { save_event_target_as = el_beni }
+		}
+		if = {
+			limit = {
+				1221 = { # Amazonas
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:el_beni }
+						NOT = { tag = event_target:cuzco }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1221.owner = { save_event_target_as = amazonas }
+		}
+	}
+
+	option = { #Give to Cuzco
+		log = "[GetLogInfo]: event annex.3012 option annex.3012.a"
+		name = annex.3012.a
+		trigger = {
+			has_event_target = cuzco
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:cuzco }
+				is_ally_with = event_target:el_beni
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = el_beni }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:cuzco = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:cuzco }
+		827 = { # Lower Acre
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
+		828 = { # Upper Acre
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Transfer to Charcas
+		log = "[GetLogInfo]: event annex.3012 option annex.3012.b"
+		name = annex.3012.b
+		trigger = {
+			has_event_target = el_beni
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:el_beni }
+				is_ally_with = event_target:cuzco
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = cuzco }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:el_beni = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:el_beni }
+		827 = { # Lower Acre
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
+		828 = { # Higher Acre
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to Brazil
+		log = "[GetLogInfo]: event annex.3014 option annex.americas.give_to_brazil"
+		name = annex.americas.give_to_brazil
+		trigger = {
+			has_event_target = amazonas
+		}
 		ai_chance = {
 			base = 50
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
-		}
-		set_temp_variable = { tag_to_release = event_target:peru }
-		992 = { transfer_if_owned = yes }
-		487 = { transfer_if_owned = yes }
-		302 = { transfer_if_owned = yes }
-		991 = { transfer_if_owned = yes }
-	    1224 = { transfer_if_owned = yes }
-	    993 = { transfer_if_owned = yes }
-		transfer_targeted_territory = yes
-		recheck_annexations = yes
-	}
-
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3011 option annexation.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
-    }
-}
-country_event = { #Fate of Acre
-	id = annex.3012
-	title = annexation_acre
-	desc = annexation_acre_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	option = { #Return to Peru
-		log = "[GetLogInfo]: event annex.3012 option annexation.3012.a"
-		name = annex.3012.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				NOT = { is_ally_with = event_target:amazonas }
+				OR = {
+					is_ally_with = event_target:cuzco
+					is_ally_with = event_target:el_beni
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:amazonas = { is_subject = yes }
 			}
 		}
-
-		CHR = {
-			transfer_state = 827
-			transfer_state = 828
-		}
-
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:amazonas }
+		855 = { transfer_state_and_notify = yes } #Acre
+		1040 = { transfer_state_and_notify = yes } #Acre Jungle
 	}
 
-	option = { #Transfer to Charcas
-		log = "[GetLogInfo]: event annex.3012 option annexation.3012.b"
-		name = annex.3012.b
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3014 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
 		trigger = {
-			is_subject = no
-			BOL = {
-            exists = yes
-		    }   
+			annexations_should_give_lands_to_overlord = yes
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
+		set_temp_variable = { tag_to_release = overlord }
+		827 = { add_claim_of_ROOT = yes } # Lower Acre
+		828 = { add_claim_of_ROOT = yes } # Higher Acre
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3014 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
 		}
-
-		BOL = {
-			transfer_state = 827
-			transfer_state = 828
-		}
-
-
-		recheck_annexations = yes
+		827 = { add_claim_of_ROOT = yes } #Lower Acre
+		828 = { add_claim_of_ROOT = yes } # Higher Acre
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3012 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3014 option name annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
-    }
+	}
 }
 
 country_event = { #Fate of Chile
 	id = annex.3013
-	title = annexation_charcas
-	desc = annexation_charcas_desc
+	title = annexation_279
+	desc = annexation_279_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-	CHR  = { save_event_target_as = peru }
+	if = {
+		limit = {
+			303 = { # Ciudad de los Reyes
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+				}
+			}
+		}
+		var:303.owner = { save_event_target_as = peru }
+	}
+	995 = { retain_state = yes }
+	996 = { retain_state = yes }
 	}
 
 	option = { #Release Chile
-		log = "[GetLogInfo]: event annex.3013 option annexation.3013.a"
+		log = "[GetLogInfo]: event annex.3013 option annex.3013.a"
 		name = annex.3013.a
 		trigger = {
 			is_subject = no
 		}
-		ai_chance = { base = 0 }
-		set_temp_variable = { tag_to_release = CHL }
-		506 = { remove_claim_and_add_core_of_target = yes } #Copiapo
-		1228 = { remove_claim_and_add_core_of_target = yes } #Coquimbo
-		279 = { remove_claim_and_add_core_of_target = yes } #Santiago de Chile
-		1368 = { remove_claim_and_add_core_of_target = yes } #Chiloe
-		release_targeted_tag = yes
-		recheck_annexations = yes
-
-		if = {
-			limit = { country_exists = CHL }
-			custom_effect_tooltip = CHL_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = CHL }
-			release_targeted_tag = yes
-		}
-		recheck_annexations = yes
-	}
-
-	option = { #Give it to Peru
-		log = "[GetLogInfo]: event annexation.3013 option annexation.3013.b"
-		name = annex.3013.b
-		trigger = {
-			has_event_target = peru
-			CHR = {
-            exists = yes
-		    }   
-	    }
 		ai_chance = {
-			base = 50
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 		}
+
+		set_temp_variable = { tag_to_release = CHL }
+		every_state = {
+			limit = { is_core_of = CHL }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			CHL = {
+				set_cosmetic_tag = CHL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			CHL = {
+				set_cosmetic_tag = CHL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give it to Peru
+		log = "[GetLogInfo]: event annex.3013 option annex.3013.b"
+		name = annex.3013.b
+		trigger = {
+			has_event_target = peru
+	    }
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:peru }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:peru = { is_subject = yes }
+			}
+		}
 		set_temp_variable = { tag_to_release = event_target:peru }
-		506 = { transfer_if_owned = yes }
-		1228 = { transfer_if_owned = yes }
-		279 = { transfer_if_owned = yes }
-		1368 = { transfer_if_owned = yes }
+		CHL = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3013 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3013 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = CHL }
+			add_claim_of_ROOT = yes
+		}
+	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3013 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3013 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Antofagasta
 	id = annex.3014
-	title = annexation_antofagasta
-	desc = annexation_antofagasta_desc
+	title = annexation_996
+	desc = annexation_996_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
-	option = { #Return to Peru
-		log = "[GetLogInfo]: event annex.3014 option annexation.3014.a"
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					992 = { is_claim_or_core_of_ROOT = yes } #Potosi
+					506 = { is_claim_or_core_of_ROOT = yes } #Copiao
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				992 = { #Potosi
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:992.owner = { save_event_target_as = potosi }
+		}
+		if = {
+			limit = {
+				506 = { #Copiao
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:potosi }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:506.owner = { save_event_target_as = copiao }
+		}
+	}
+	option = { #Return to Potosi
+		log = "[GetLogInfo]: event annex.3014 option annex.3014.a"
 		name = annex.3012.a
 		trigger = {
-			is_subject = no
+			has_event_target = potosi
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:potosi }
+				is_ally_with = event_target:copiao
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = copiao }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:potosi = { is_subject = yes }
 			}
 		}
-
-		CHR = {
-			transfer_state = 996
-		}
-
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:potosi }
+		996 = { transfer_state_and_notify = yes } # Antofagasta
 	}
 
 	option = { #Transfer to Charcas
-		log = "[GetLogInfo]: event annex.3014 option annexation.3014.b"
+		log = "[GetLogInfo]: event annex.3014 option annex.3014.b"
 		name = annex.3014.b
 		trigger = {
-			is_subject = no
-			BOL = {
-            exists = yes
-		    }   
+			has_event_target = copiao
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:copiao }
+				is_ally_with = event_target:potosi
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = potosi }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:copiao = { is_subject = yes }
 			}
 		}
-
-		BOL = {
-			transfer_state = 996
-		}
-
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:copiao }
+		996 = { transfer_state_and_notify = yes } # Antofagasta
 	}
 
-	option = { #Transfer to Chile
-		log = "[GetLogInfo]: event annex.3014 option annexation.3014.c"
-		name = annex.3014.c
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3014 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
 		trigger = {
-			is_subject = no
-			CHL = {
-            exists = yes
-		    }   
+			annexations_should_give_lands_to_overlord = yes
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
+		set_temp_variable = { tag_to_release = overlord }
+		996 = { transfer_state_and_notify = yes } # Antofagasta
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3014 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
 		}
-
-		CHL = {
-			transfer_state = 996
-		}
-
-
-		recheck_annexations = yes
+		996 = { transfer_state_and_notify = yes } # Antofagasta
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3014 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3014 option name annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
-    }
+	}
 }
 
 country_event = { #Fate of New Granada
@@ -1041,7 +1799,7 @@ country_event = { #Fate of New Granada
 	}
 
 	option = { #Release New Granada
-		log = "[GetLogInfo]: event annex.3015 option annexation.3015.a"
+		log = "[GetLogInfo]: event annex.3015 option annex.3015.a"
 		name = annex.3015.a
 		trigger = {
 			is_subject = no
@@ -1054,23 +1812,87 @@ country_event = { #Fate of New Granada
 			}
 		}
 
+		set_temp_variable = { tag_to_release = COL }
+		every_state = {
+			limit = { is_core_of = COL }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = NWG }
-			custom_effect_tooltip = NWG_puppet_tooltip
+			limit = { ROOT = { has_monarchist_government = yes } }
+			COL = {
+				set_cosmetic_tag = COL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			COL = {
+				set_cosmetic_tag = COL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Release Columbia
+		log = "[GetLogInfo]: event annex.3015 option annex.3015.b"
+		name = annex.3015.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					TAG = SPR
+				}
+			}
+			
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		if = {
+			limit = { country_exists = COL }
+			custom_effect_tooltip = COL_puppet_tooltip
 		}
 		else = {
-			set_temp_variable = { tag_to_release = NWG }
+			set_temp_variable = { tag_to_release = COL }
 			release_targeted_tag = yes
 		}
-		recheck_annexations = yes
+		
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3015 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = COL }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3015 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3015 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3015 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Quito
@@ -1082,93 +1904,194 @@ country_event = { #Fate of Quito
 	is_triggered_only = yes
 
 	immediate = {
-	CHR  = { save_event_target_as = peru }
-	NWG  = { save_event_target_as = new_granada }
+		if = {
+			limit = { var:306.owner = { ROOT_can_grant_land = yes } }
+			var:306.owner = { save_event_target_as = colombia }
+		}
+		if = {
+			limit = { var:303.owner = { ROOT_can_grant_land = yes } }
+			var:303.owner = { save_event_target_as = peru }
+		}
 	}
 
 	option = { #Release Quito
-		log = "[GetLogInfo]: event annex.3016 option annexation.3016.a"
+		log = "[GetLogInfo]: event annex.3016 option annex.3016.a"
 		name = annex.3016.a
 		trigger = {
 			is_subject = no
 		}
-		ai_chance = { base = 0 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
 		set_temp_variable = { tag_to_release = ECU }
-		305 = { remove_claim_and_add_core_of_target = yes } #Copiapo
-		490 = { remove_claim_and_add_core_of_target = yes } #Coquimbo
-		491 = { remove_claim_and_add_core_of_target = yes } #Santiago de Chile
-		975 = { remove_claim_and_add_core_of_target = yes } #Chiloe
-		1222 = { remove_claim_and_add_core_of_target = yes } #Chiloe
+		every_state = {
+			limit = { is_core_of = ECU }
+			remove_claim_and_add_core_of_target = yes
+		}
 		release_targeted_tag = yes
-		recheck_annexations = yes
 
 		if = {
-			limit = { country_exists = ECU }
-			custom_effect_tooltip = ECU_puppet_tooltip
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ECU = {
+				set_cosmetic_tag = ECU_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = ECU }
-			release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ECU = {
+				set_cosmetic_tag = ECU_Occupied_Republic
+			}
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Give it to Peru
-		log = "[GetLogInfo]: event annexation.3016 option annexation.3016.b"
+		log = "[GetLogInfo]: event annex.3016 option annex.3016.b"
 		name = annex.3016.b
 		trigger = {
-			CHR = {
-            exists = yes
-		    }   
-	    }
+			has_event_target = peru
+		}
 		ai_chance = {
-			base = 50
+			base = 20
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				is_major = yes
+				NOT = { is_ally_with = event_target:peru }
+				is_ally_with = event_target:colombia
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = colombia }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:peru = { is_subject = yes }
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:peru }
-		305 = { transfer_if_owned = yes }
-		490 = { transfer_if_owned = yes }
-		491 = { transfer_if_owned = yes }
-		975 = { transfer_if_owned = yes }
-		1222 = { transfer_if_owned = yes }
+		ECU = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
-		recheck_annexations = yes
 	}
 
 	option = { #Return it to New Granada
-		log = "[GetLogInfo]: event annexation.3016 option annexation.3016.c"
+		log = "[GetLogInfo]: event annex.3016 option annex.3016.c"
 		name = annex.3016.c
 		trigger = {
-			NWG = {
-            exists = yes
-		    }   
-	    }
+			has_event_target = colombia
+		}
 		ai_chance = {
-			base = 50
+			base = 20
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				is_major = yes
+				NOT = { is_ally_with = event_target:colombia }
+			is_ally_with = event_target:peru
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = peru }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:colombia = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = event_target:new_granada }
-		305 = { transfer_if_owned = yes }
-		490 = { transfer_if_owned = yes }
-		491 = { transfer_if_owned = yes }
-		975 = { transfer_if_owned = yes }
-		1222 = { transfer_if_owned = yes }
+		set_temp_variable = { tag_to_release = event_target:colombia }
+		ECU = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3016 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 		recheck_annexations = yes
 	}
 
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.3016 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = ECU }
+			add_claim_of_ROOT = yes
+		}
+	}
+
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3016 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3016 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of New Calhoun
+	id = annex.3017
+	title = annexation_new_calhoun
+	desc = annexation_new_calhoun_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+	CHR  = { save_event_target_as = peru }
+	}
+
+	option = { #Release New Calhoun
+		log = "[GetLogInfo]: event annex.3013 option annex.3017.a"
+		name = annex.3017.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = NCA }
+		1227 = { remove_claim_and_add_core_of_target = yes } #New Calhoun
+		release_targeted_tag = yes
+		
+
+		if = {
+			limit = { country_exists = NCA }
+			custom_effect_tooltip = NCA_puppet_tooltip
+		}
+		else = {
+			set_temp_variable = { tag_to_release = NCA }
+			release_targeted_tag = yes
+		}
+		
+	}
+
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3017 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Brazil (BALKANIZATION LATER WHEN GRESTIN APPROVES...)
@@ -1178,9 +2101,14 @@ country_event = { #Fate of Brazil (BALKANIZATION LATER WHEN GRESTIN APPROVES...)
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+
+	immediate = {
+	1223 = { retain_state = yes }
+	988 = { retain_state = yes }
+	}
 	
 	option = { #Release Brazil
-		log = "[GetLogInfo]: event annex.3018 option annexation.3018.a"
+		log = "[GetLogInfo]: event annex.3018 option annex.3018.a"
 		name = annex.3018.a
 		trigger = {
 			is_subject = no
@@ -1201,15 +2129,19 @@ country_event = { #Fate of Brazil (BALKANIZATION LATER WHEN GRESTIN APPROVES...)
 			set_temp_variable = { tag_to_release = BRA }
 			release_targeted_tag = yes
 		}
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3018 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3018 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Wallmapu
@@ -1219,9 +2151,13 @@ country_event = { #Fate of Wallmapu
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+
+	immediate = {
+		CHR  = { save_event_target_as = hispania }
+	}
 	
 	option = { #Release Wallmapu
-		log = "[GetLogInfo]: event annex.3019 option annexation.3019.a"
+		log = "[GetLogInfo]: event annex.3019 option annex.3019.a"
 		name = annex.3019.a
 		trigger = {
 			is_subject = no
@@ -1242,15 +2178,46 @@ country_event = { #Fate of Wallmapu
 			set_temp_variable = { tag_to_release = MPC }
 			release_targeted_tag = yes
 		}
-		recheck_annexations = yes
+		
+	}
+
+	option = { #Transfer it to Hispania
+		log = "[GetLogInfo]: event annex.3019 option annex.3019.b"
+		name = annex.3019.b
+		trigger = {
+			CHR = {
+            exists = yes
+			owns_state = 279
+		    }   
+			ROOT  = {
+				TAG = SPR
+			}
+	    }
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:hispania }
+		997 = { transfer_if_owned = yes }
+		1226 = { transfer_if_owned = yes }
+		1248 = { transfer_if_owned = yes }
+		transfer_targeted_territory = yes
+		
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3019 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3019 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of New Wales
@@ -1262,7 +2229,7 @@ country_event = { #Fate of New Wales
 	is_triggered_only = yes
 	
 	option = { #Release New Wales
-		log = "[GetLogInfo]: event annex.3020 option annexation.3020.a"
+		log = "[GetLogInfo]: event annex.3020 option annex.3020.a"
 		name = annex.3020.a
 		trigger = {
 			is_subject = no
@@ -1283,15 +2250,18 @@ country_event = { #Fate of New Wales
 			set_temp_variable = { tag_to_release = NWL }
 			release_targeted_tag = yes
 		}
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3020 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3020 option annex.cancel"
 		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		ai_chance = { base = 0 }		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of New Goonhoun
@@ -1303,7 +2273,7 @@ country_event = { #Fate of New Goonhoun
 	is_triggered_only = yes
 	
 	option = { #Release New Goonhoun
-		log = "[GetLogInfo]: event annex.3021 option annexation.3021.a"
+		log = "[GetLogInfo]: event annex.3021 option annex.3021.a"
 		name = annex.3021.a
 		trigger = {
 			is_subject = no
@@ -1324,15 +2294,19 @@ country_event = { #Fate of New Goonhoun
 			set_temp_variable = { tag_to_release = NCA }
 			release_targeted_tag = yes
 		}
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3021 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3021 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Terror Victoria
@@ -1344,7 +2318,7 @@ country_event = { #Fate of Terror Victoria
 	is_triggered_only = yes
 	
 	option = { #Release Terror Victoria
-		log = "[GetLogInfo]: event annex.3022 option annexation.3022.a"
+		log = "[GetLogInfo]: event annex.3022 option annex.3022.a"
 		name = annex.3022.a
 		trigger = {
 			is_subject = no
@@ -1365,13 +2339,569 @@ country_event = { #Fate of Terror Victoria
 			set_temp_variable = { tag_to_release = TVI }
 			release_targeted_tag = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.3022 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.3022 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+    }
+
+	after = {
 		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Greater Buenos Aires
+	id = annex.3023
+	title = annexation_buenos_aires
+	desc = annexation_buenos_aires_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	option = { #Return to Arroyo
+		log = "[GetLogInfo]: event annex.3023 option annex.3023.a"
+		name = annex.3023.a
+		trigger = {
+			is_subject = no
+			ARG = {
+            exists = yes
+			owns_state = 510
+		    } 
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		ARG = {
+			transfer_state = 1367
+		}
+		
+	}
+
+	option = { #Return to Rio De La Plata
+		log = "[GetLogInfo]: event annex.3023 option annex.3023.b"
+		name = annex.3023.b
+		trigger = {
+			is_subject = no
+			RLP = {
+            exists = yes
+			owns_state = 278
+		    } 
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		RLP = {
+			transfer_state = 1367
+		}
+		
+	}
+
+	
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3023 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Santa
+	id = annex.3024
+	title = annexation_arica
+	desc = annexation_arica_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	option = { #Return to Hispania
+		log = "[GetLogInfo]: event annex.3024 option annex.3024.a"
+		name = annex.3024.a
+		trigger = {
+			is_subject = no
+			CHR = {
+            exists = yes
+		    } 
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CHR = {
+			transfer_state = 995
+		}
+		
+	}
+
+	option = { #Return to Peru
+		log = "[GetLogInfo]: event annex.3024 option annex.3024.b"
+		name = annex.3024.b
+		trigger = {
+			is_subject = no
+			PRU = {
+            exists = yes
+		    } 
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		PRU = {
+			transfer_state = 995
+		}
+		
+	}
+
+	option = { #Return to Peru
+		log = "[GetLogInfo]: event annex.3024 option annex.3024.c"
+		name = annex.3024.c
+		trigger = {
+			is_subject = no
+			CHL = {
+            exists = yes
+			owns_state = 996
+		    } 
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CHL = {
+			transfer_state = 995
+		}
+		
+	}
+
+	option = { #Return to Bolivia
+		log = "[GetLogInfo]: event annex.3024 option annex.3024.d"
+		name = annex.3024.d
+		trigger = {
+			is_subject = no
+			BOL = {
+            exists = yes
+		    } 
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		BOL = {
+			transfer_state = 995
+		}
+		
+	}
+
+	
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3024 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Santa Catarina
+	id = annex.3025
+	title = annexation_santa_catarina
+	desc = annexation_santa_catarina_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+	URG  = { save_event_target_as = uruguay }
+	BRA  = { save_event_target_as = brazil }
+	}
+	
+	option = { #Release Santa Catarina
+		log = "[GetLogInfo]: event annex.3025 option annex.3025.a"
+		name = annex.3022.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		if = {
+			limit = { country_exists = SCT }
+			custom_effect_tooltip = SCT_puppet_tooltip
+		}
+		else = {
+			set_temp_variable = { tag_to_release = SCT }
+			release_targeted_tag = yes
+		}
+	}
+
+	option = { #Give it to Brazil
+		log = "[GetLogInfo]: event annex.3025 option annex.3025.b"
+		name = annex.3025.b
+		trigger = {
+			BRA = {
+            exists = yes
+			owns_state = 503
+		    }   
+	    }
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:brazil }
+		988 = { transfer_if_owned = yes }
+		transfer_targeted_territory = yes
+		
+	}
+
+	option = { #Give it to Uruguay
+		log = "[GetLogInfo]: event annex.3025 option annex.3025.c"
+		name = annex.3025.c
+		trigger = {
+			URG = {
+            exists = yes
+			owns_state = 502
+		    }   
+	    }
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:uruguay }
+		988 = { transfer_if_owned = yes }
+		transfer_targeted_territory = yes
+		
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3025 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Western Hispaniola
+	id = annex.3026
+	title = annexation_3026
+	desc = annexation_3026_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	option = { #Release Ayiti
+		log = "[GetLogInfo]: event annex.3026 option annex.3026.a"
+		name = annex.3026.a
+		trigger = {
+			is_subject = no
+			ROOT = {
+				NOT = {
+					tag = CAY
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				ROOT = {
+					tag = FRA
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				ROOT = {
+					tag = CHU
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				ROOT = {
+					tag = COL
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = HAI }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Re-establish a colonial authority
+		log = "[GetLogInfo]: event annex.3026 option annex.3026.b"
+		name = annex.3026.b
+		trigger = {
+			is_subject = no
+			ROOT = {
+				OR = {
+					tag = FRA
+					tag = ENG
+					tag = CHR
+					tag = COL
+				}
+				NOT = {
+					has_government = jc
+					has_government = ss
+					has_government = lb
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = HAI }
+		release_targeted_tag = yes
+		
+		if = {
+			limit = {
+				ROOT = {
+					tag = FRA
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_FRA_Colonial
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					tag = ENG
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_ENG_Colonial
+			}
+		}
+		if = {
+			limit = {
+				ROOT = {
+					OR = {
+						tag = COL
+						tag = CHU
+					}
+				}
+			}
+			HAI = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = HAI_Hispanic_Colonial
+			}
+		}
+	}
+	
+	option = { #Establish a corporate authority
+		log = "[GetLogInfo]: event annex.3026 option annex.3026.c"
+		name = annex.3026.c
+		trigger = {
+			is_subject = no
+			ROOT = {
+				OR = {
+					tag = AME
+					tag = CAY
+				}
+				NOT = {
+					has_government = jc
+					has_government = ss
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = HAI }
+		release_targeted_tag = yes
+		
+		ROOT = {
+			set_autonomy = {
+				target = HAI
+				autonomous_state = autonomy_banana_republic
+			}
+		}
+		
+		HAI = {
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = HAI_American_Dependency
+			set_popularities = {
+				ni = 0
+				ds = 5
+				rc = 10
+				cn = 5
+				lb = 10
+				an = 45
+				ss = 15
+				jc = 10
+			}
+			set_politics = {
+				ruling_party = an
+				last_election = "1936.1.1"
+				election_frequency = 48
+				elections_allowed = no
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3026 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		HAI = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.3026 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 80
+				ROOT = {
+					OR = {
+						tag = COL
+						tag = CHU
+					}
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+			modifier = {
+				factor = 10
+				ROOT = {
+					tag = FRA
+					NOT = {
+						has_government = jc
+						has_government = ss
+						has_government = lb
+					}
+				}
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.3026 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
     }
 }

@@ -1,45 +1,8 @@
 PB_DAS_Influence_category = {
 	#########DEBUG###########vvvvvvvvvvvvvvv
-        increase_zitronella_influence = {
-		    icon = GFX_decision_zitronella
-            cost = 25
-			allowed = {
-				original_tag = DAS
-			}
-            available = {
-                has_political_power > 49
-                check_variable = { zitronella_shares < 100 }
-            }
-            complete_effect = {
-                add_to_variable = { var = zitronella_shares value = 10 }
-                add_political_power = -50
-				hidden_effect = {
-					update_DAS_zitronella_influence = yes
-				}
-            }
-        }
-
-        decrease_zitronella_influence = {
-		    icon = GFX_decision_zitronella
-            cost = 25
-			allowed = {
-				original_tag = DAS
-			}
-            available = {
-                has_political_power > 49
-                check_variable = { zitronella_shares > 0 }
-            }
-            complete_effect = {
-                add_to_variable = { var = zitronella_shares value = -10 }
-                add_political_power = -50
-				hidden_effect = {
-					update_DAS_zitronella_influence = yes
-				}
-            }
-        }
 
         increase_bundestag_patience = {
-            cost = 25
+            cost = 26
 			allowed = {
 				original_tag = DAS
 			}
@@ -47,6 +10,9 @@ PB_DAS_Influence_category = {
                 has_political_power > 50
                 check_variable = { Bundestag_Patience < 6 }
             }
+			visible = {
+				is_debug = yes
+			}
             complete_effect = {
 			    custom_effect_tooltip = GEA_Bund_Rise_tt
 		    	hidden_effect = {
@@ -69,6 +35,9 @@ PB_DAS_Influence_category = {
                 has_political_power > 50
                 check_variable = { Bundestag_Patience > 1 }
             }
+			visible = {
+				is_debug = yes
+			}
             complete_effect = {
 			    custom_effect_tooltip = GEA_Bund_Lower_tt
 		    	hidden_effect = {
@@ -90,7 +59,7 @@ PB_DAS_Influence_category = {
 				original_tag = DAS
 			}
             available = {
-                check_variable = { zitronella_shares < 81 }
+                check_variable = { zitronella_shares > 81 }
 
             }
 			visible = {
@@ -107,6 +76,7 @@ PB_DAS_Influence_category = {
             days_remove = 20
 			
 			remove_effect = {
+				custom_effect_tooltip = GEA_Zitronella_Rise_tt
                 add_to_variable = {
                     var = zitronella_shares
                     value = 10
@@ -133,6 +103,82 @@ PB_DAS_Influence_category = {
 			}
 		}
 		
+		DAS_Zitronella_Amalgamates = {
+
+			icon = GFX_decision_zitronella
+
+			allowed = {
+				original_tag = DAS
+			}
+            available = {
+                controls_state = 625
+            }
+			visible = {
+				has_completed_focus = PB_DAS_Backroom_Deals
+			}
+			fire_only_once = yes
+
+			cost = 20
+
+			ai_will_do = {
+				factor = 4000
+			}
+
+            days_remove = 20
+
+			cancel_trigger = {
+				625 = {
+					NOT = {
+						is_owned_and_controlled_by = DAS
+					}
+				}
+			}
+			
+			remove_effect = {
+				custom_effect_tooltip = GEA_Zitronella_Rise_tt
+                add_to_variable = {
+                    var = zitronella_shares
+                    value = 10
+                }
+				add_popularity = {
+					ideology = an
+					popularity = 0.1
+				}
+				division_template = {
+					name = "Experimental Amalgamate Combatant"
+					is_locked = yes
+					template_counter = 45
+					regiments = {
+						infantry = { x = 0 y = 0 }
+						infantry = { x = 0 y = 1 }
+						combat_amalgamate = { x = 1 y = 1 }
+						combat_amalgamate = { x = 1 y = 2 }
+						combat_amalgamate = { x = 2 y = 1 }
+						combat_amalgamate = { x = 2 y = 2 }
+					}
+					support = {
+						shockjockeys = { x = 0 y = 0 }
+						recon = { x = 1 y = 0 }
+					}
+				}
+				add_equipment_to_stockpile = {
+					type = combatagate_equipment_0
+					amount = 3000
+					producer = DAS
+				}
+				625 = {
+					create_unit = {
+						division = "division_template = \"Experimental Amalgamate Combatant\" start_experience_factor = 0.4 start_equipment_factor = 1.0"
+						owner = DAS
+						count = 3
+					}
+				}
+				hidden_effect = {
+					update_DAS_zitronella_influence = yes
+				}
+			}
+		}
+
 		DAS_Ask_German_Aid = {
 
 			icon = GFX_decision_generic_colonial_hat_german
@@ -148,7 +194,7 @@ PB_DAS_Influence_category = {
 			}
 			fire_only_once = yes
 
-			cost = 20
+			cost = 10
 
 			ai_will_do = {
 				factor = 4000
@@ -159,7 +205,7 @@ PB_DAS_Influence_category = {
 			remove_effect = {
                 custom_effect_tooltip = GEA_Bund_Rise_tt
 				GER = {
-				country_event = GEA_Orders.2
+				country_event = DAS_Orders.2
 				}
                 hidden_effect = {
 			    DAS_Raise_Bund = yes
@@ -169,6 +215,7 @@ PB_DAS_Influence_category = {
 		DAS_Plunder_state = {
 			icon = GFX_decision_generic_guns_and_bullets
 			state_target = yes
+
 			allowed = {
 				original_tag = DAS
 			}
@@ -180,11 +227,15 @@ PB_DAS_Influence_category = {
 			target_trigger = {
 				FROM = {
 					infrastructure > 0
-					is_controlled_by = PHI
+					is_controlled_by = DAS
 				}
 			}
+			visible = {
+				has_completed_focus = PB_DAS_Snakes_and_Ladders
+			}
+			
 			target_array = DAS.phillipine_states
-			on_map_mode = map_and_decisions_view
+			on_map_mode = map_only
 			fire_only_once = yes
 			cost = 50
 			days_remove = 15
@@ -327,31 +378,33 @@ PB_DAS_Influence_category = {
 				}
 			}
 		}
-		
 		PHI_War_Countdown = {
 
 			icon = GFX_decision_generic_militia
 
 			activation = {
+				has_country_flag = third_filipino_independence_war
 				NOT = {
-					has_country_flag = third_filipino_independence_war
-					NOT = {
-						has_active_mission = PHI_Cease_Fire_Countdown
-					}
+					has_country_flag = DAS_Ceasefire
 				}
 			}
+
+			available = {
+				always = no
+			}
+
 			fire_only_once = yes
 			
 			visible = {
 				has_country_flag = third_filipino_independence_war
 				NOT = {
-					has_active_mission = PHI_Cease_Fire_Countdown
+					has_country_flag = DAS_Ceasefire
 				}
 			}
 
-			is_good = yes
+			is_good = no
 
-			cost = num_battalions?0
+			selectable_mission = no
 
 			ai_will_do = {
 				factor = 4000
@@ -364,11 +417,13 @@ PB_DAS_Influence_category = {
 					}
 				}
 			}
-			days_mission_timeout = 170
+			days_mission_timeout = 190
 
 			timeout_effect = {
 				DAS = {
-					country_event = waroutcome.6
+					DAS_Raise_Bund = yes
+					custom_effect_tooltip = GEA_Bund_Rise_tt
+					activate_mission = PHI_War_Countdown
 				}
 			}
 		}
@@ -376,12 +431,22 @@ PB_DAS_Influence_category = {
 		PHI_Cease_Fire_Countdown = {
 
 			icon = GFX_decision_generic_handshake
+			activation = {
+				has_country_flag = DAS_Ceasefire
+			}
 
-			allowed = {
+			#allowed = {
+			#	
+			#}
+
+			available = {
+				has_country_flag = DAS_Ceasefire
 				always = no
 			}
+
 			fire_only_once = yes
 			
+			selectable_mission = no
 
 			is_good = yes
 
@@ -389,246 +454,15 @@ PB_DAS_Influence_category = {
 				factor = 4000
 			}
 
-			days_mission_timeout = 365
+			days_mission_timeout = 70
 
 			timeout_effect = {
 				DAS = {
-					country_event = GEA_Ceasefire.1
+					country_event = DAS_Ceasefire.1
 				}
 			}
         }
-
-	PHI_Cease_Fire_Manila = {
-
-        icon = GFX_decision_generic_handshake
-
-        allowed = {
-            always = yes
-        }
-        fire_only_once = yes
-
-        visible = {
-            always = yes
-        }
-
-        is_good = yes
-
-        ai_will_do = {
-            factor = 4000
-        }
-
-        days_mission_timeout = 100
-
-		cancel_trigger = {
-			has_completed_focus = PB_DAS_Open_City
-		}
-
-        timeout_effect = {
-            DAS = {
-                add_stability = -0.1
-                add_war_support = -0.1
-                country_event = GEA.18
-            }
-        }
-    }
-
-}
-	# NOTE, eventually make these Events to annex
-PB_DAS_Zitronella_Dissolving = {
-
-    DAS_Zitronella_Begin = {
-		icon = GFX_decision_hand_bag
-		cost = 20
-		allowed = {
-			original_tag = DAS
-		}
-		available = {
-			NOT = {
-			   has_active_mission = DAS_Zitronella_Timer
-			   has_country_flag = DAS_Warning_Finalization
-			}
-		}
-		priority = 4
-		visible = {
-			NOT = {
-				has_active_mission = DAS_Zitronella_Timer
-			}
-		}
-		complete_effect = { 
-		    country_event = GEA_Zitronella_Deal.3
-			set_country_flag = DAS_Warning_Finalization
-			set_country_flag = Zitronella_Turn_Locked
-			custom_effect_tooltip = PB_spacing_tt
-			custom_effect_tooltip = DAS_Can_Not_Be_Reversed_tt
-			custom_effect_tooltip = PB_spacing_tt
-			custom_effect_tooltip = DAS_Initiate_Blocker_tt
-		}
 	}
-    DAS_Zitronella_Finalize_Deal = {
-		icon = GFX_decision_hand_bag
-		cost = 4
-		allowed = {
-			original_tag = DAS
-		}
-		available = {
-			has_active_mission = DAS_Zitronella_Timer
-			NOT = {
-				has_country_flag = DAS_Warning_Finalization
-			}
-		}
-		visible = {
-			has_active_mission = DAS_Zitronella_Timer
-		}
-		priority = 3
-		complete_effect = {
-			country_event = GEA_Zitronella_Deal.1
-			set_country_flag = DAS_Warning_Finalization
-			custom_effect_tooltip = DAS_Can_Not_Be_Reversed_tt
-		}
-	}
-	DAS_Zitronella_Timer = {
-		icon = GFX_decision_prosp
-		available = {  
-			always = no
-		}
-		allowed = {
-			always = no
-		}
-		fire_only_once = yes
-		priority = 2
-		visible = {
-			always = no
-		}
-		is_good = yes
-		ai_will_do = {
-			factor = 4000
-		}
-		days_mission_timeout = 30
-		timeout_effect = {
-			DAS = {
-				country_event = GEA_Zitronella_Deal.4
-			}
-		}
-    }
-	DAS_Zitronella_Coup_Timer = {
-		icon = GFX_decision_prosp
-		allowed = {
-			original_tag = DAS
-		}
-		available = {  
-			check_variable = {
-				zitronella_shares < 1
-			}
-		}
-		
-		fire_only_once = yes
-		priority = 2
-		is_good = no
-		ai_will_do = {
-			factor = 40
-		}
-		days_mission_timeout = 150
-        complete_effect = {
-			DAS = {
-				country_event = GEA_Zitronella_Deal.6
-			}
-		}
-		timeout_effect = {
-			DAS = {
-				country_event = GEA_Zitronella_Deal.5
-			}
-		}
-    }
-	DAS_Zitronella_DEBUG_Add_1 = {
-		icon = GFX_decision_bag_money
-		cost = 11
-		allowed = {
-			original_tag = DAS
-		}
-		available = {
-			has_active_mission = DAS_Zitronella_Timer
-		}
-		complete_effect = {
-		    DAS_ZIT_Add_1 = yes
-		}
-	}
-	DAS_Zitronella_Request_Loan = {
-		icon = GFX_decision_prosp
-		cost = 11
-		allowed = {
-			original_tag = DAS
-		}
-		available = {
-			has_active_mission = DAS_Zitronella_Timer
-		}
-		complete_effect = {
-			country_event = GEA_Zitronella_Deal.2
-		}
-	}
-	DAS_OSTHANSA_Blackmail = {
-		icon = GFX_decision_generic_propaganda
-		cost = 11
-		allowed = {
-			original_tag = DAS
-		}
-		visible = {
-			has_active_mission = DAS_Zitronella_Timer
-			has_country_flag = clicked_on_OSTHANSA
-		}
-		complete_effect = {
-		}
-	}
-	DAS_OSTHANSA_Sell_Assets = {
-		icon = GFX_decision_assets
-		cost = 11
-		allowed = {
-			original_tag = DAS
-		}
-		visible = {
-			has_active_mission = DAS_Zitronella_Timer
-			has_country_flag = clicked_on_OSTHANSA
-		}
-		complete_effect = {
-		    add_to_variable = {
-                OstHansa_Cut = 1
-            }
-		}
-	}
-	DAS_OSTHANSA_Offer_Liscences = {
-		icon = GFX_decision_bag
-		cost = 11
-		allowed = {
-			original_tag = DAS
-		}
-		visible = {
-			has_active_mission = DAS_Zitronella_Timer
-			has_country_flag = clicked_on_OSTHANSA
-		}
-		complete_effect = {
-		    add_to_variable = {
-				OstHansa_Cut = 1
-            }
-		}
-	}
-    DAS_Clear_Fix = {
-		icon = GFX_decision_factory_backwards
-		cost = 21
-		allowed = {
-			original_tag = DAS
-		}
-		complete_effect = {
-		clr_country_flag = Finalized_on_OSTHANSA
-		clr_country_flag = clicked_on_OVBD
-		clr_country_flag = clicked_on_YANCO
-		clr_country_flag = clicked_on_OSTHANSA
-		clr_country_flag = clicked_on_LOWENSTEIN
-		clr_country_flag = clicked_on_BUND
-		clr_country_flag = clicked_on_MACLAY
-		clr_country_flag = clicked_on_ZOBEL
-		clr_country_flag = clicked_on_HUGENBURG
-		}
-	}
-}
 
 PB_DAS_Evacuations = {
 	DAS_evacuate_state = {
@@ -661,6 +495,9 @@ PB_DAS_Evacuations = {
 				}
 			}
 		}
+		visible = {
+			has_completed_focus = PB_DAS_Evacuate_Civilians
+		}
 		target_array = DAS.phillipine_states
 		on_map_mode = map_and_decisions_view
 		fire_only_once = yes
@@ -673,9 +510,10 @@ PB_DAS_Evacuations = {
 		days_remove = 20
 		complete_effect = {
 			add_equipment_to_stockpile = {
-            type = convoy
-            amount = -50
-            }
+				type = convoy
+				amount = -50
+				producer = DAS
+			}
 			set_country_flag = {
 				flag = DAS_evacuating_state
 				days = 20
@@ -707,100 +545,832 @@ PB_DAS_Evacuations = {
 	}
 }
 
-PB_DAS_Influence_category = {
-	DAS_Construct_Tent_Cities = {
-        icon = GFX_decision_generic_colonial_hat_german
-		allowed = {
-			original_tag = DAS
-		}
-		custom_cost_trigger = {
-			AND = {
-				has_equipment = {
-					convoy > 50
+PB_DAS_economic_development = {
+
+	DAS_Ramu_Dam = {
+		icon = generic_construction
+		
+		available = {
+			669 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
 				}
 			}
-		}
-		custom_cost_text = PB_DAS_decision_cost_evacuation
-
-		available = {
-			has_equipment = {
-				support_equipment > 15000
+			custom_trigger_tooltip = {
+				tooltip = DAS_Maclay_tt
+				has_country_flag = DAS_Maclay_Status_Dismantled
 			}
-			has_completed_focus = PB_DAS_Slum_Breaking
-			controls_state = 1414
+			num_of_civilian_factories_available_for_projects > 2
 		}
 
 		visible = {
-			has_completed_focus = PB_DAS_Rapid_Reorganization
+			669 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
 		}
 
-		days_remove = 100
+		cost = 40
+		days_remove = 90
 		fire_only_once = yes
-		complete_effect = {
-			add_equipment_to_stockpile = {
-				type = convoy
-				amount = -50
+
+		modifier = {
+			civilian_factory_use = 3
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			industrialization_growth_progress_small = yes
+			669 = {
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = infrastructure
+					level = 3
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = dam
+					level = 1
+					province = 12154
+					instant_build = yes
+				}
+				add_resource = {
+					type = coal
+					amount = 10
+				}
+			}
+			if = {
+				limit = {	
+					669 = {
+						NOT = {
+							is_owned_and_controlled_by = ROOT
+						}
+					}
+				}
+				var:669.owner = {
+					give_resource_rights = { receiver = DAS state = 669 resources = { coal } }
+				}
 			}
 		}
 
-		cancel_trigger = {
-			NOT = {
-				controls_state = 1414
-			}
-		}	
-		cancel_effect = {
-			add_war_support = -0.1
-		}	
-		remove_effect = {
-			decrease_poverty_rate_level = yes
-			624 = {
-				add_manpower = 30000
-			}
-			custom_effect_tooltip = PB_spacing_tt
-			add_equipment_to_stockpile = {
-				type = convoy
-				amount = 50
-			}
-		}
 		highlight_states = {
 			highlight_state_targets = {
-				state = 624
+				state = 669
 			}
 			highlight_color_while_active = 3
 			highlight_color_before_active = 2
 		}
 	}
-}
 
-PB_DAS_FernostCrisis_category = {
-	DAS_Fernost_Countdown = {
+	DAS_Cagayan_Hydro_Works = {
+		icon = generic_construction
 
-		icon = GFX_decision_generic_militia
-
-		allowed = {
-			original_tag = DAS
+		available = {
+			623 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 2
 		}
 
-		fire_only_once = yes
-		
 		visible = {
-			has_country_flag = DAS_Fernost_Crisis
+			623 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
 		}
 
-		is_good = no
+		cost = 30
+		days_remove = 120
+		fire_only_once = yes
 
-		cost = num_battalions?0
+		modifier = {
+			civilian_factory_use = 3
+		}
 
 		ai_will_do = {
-			factor = 4000
+			factor = 50
 		}
 
-		days_mission_timeout = 365
-
-		timeout_effect = {
-			DAS = {
-				country_event = GEA.17
+		remove_effect = {
+			industrialization_growth_progress_small = yes
+			623 = {
+				add_extra_state_shared_building_slots = 4
+				add_building_construction = {
+					type = bunker
+					level = 2
+					instant_build = yes
+					province = 7325
+				}
+				add_building_construction = {
+					type = infrastructure
+					level = 3
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = dam
+					level = 1
+					province = 7325
+					instant_build = yes
+				}
+				add_resource = {
+					type = coal
+					amount = 5
+				}
 			}
+			if = {
+				limit = {	
+					623 = {
+						NOT = {
+							is_owned_and_controlled_by = ROOT
+						}
+					}
+				}
+				var:623.owner = {
+					give_resource_rights = { receiver = DAS state = 623 resources = { coal } }
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 623
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Banaue_Agroponics = {
+		icon = GFX_decision_generic_agriculture
+
+		available = {
+			623 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 1
+		}
+
+		visible = {
+			623 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 120
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 2
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			industrialization_growth_progress_small = yes
+			623 = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = {
+					type = farm
+					level = 2
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = tesla_tower
+					level = 1
+					instant_build = yes
+				}
+				add_resource = {
+					type = grain
+					amount = 15
+				}
+			}
+			if = {
+				limit = {	
+					623 = {
+						NOT = {
+							is_owned_and_controlled_by = ROOT
+						}
+					}
+				}
+				var:623.owner = {
+					give_resource_rights = { receiver = DAS state = 623 resources = { grain } }
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 623
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Rabaul_Armory = {
+		icon = GFX_decision_generic_army_support
+
+		available = {
+			737 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 2
+		}
+
+		visible = {
+			737 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 70
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 3
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			military_modernization_growth_progress_moderate = yes
+			737 = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = {
+					type = bunker
+					level = 2
+					instant_build = yes
+					province = 10166
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = arms_factory
+					level = 2
+					instant_build = yes
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 737
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Fort_Guam = {
+		icon = GFX_decision_generic_army_support
+
+		available = {
+			638 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 2
+		}
+
+		visible = {
+			638 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 120
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 3
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			military_modernization_growth_progress_moderate = yes
+			638 = {
+				add_extra_state_shared_building_slots = 4
+				add_building_construction = {
+					type = bunker
+					level = 5
+					instant_build = yes
+					province = 12140
+				}
+				add_building_construction = {
+					type = dockyard
+					level = 2
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = arms_factory
+					level = 2
+					instant_build = yes
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 638
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Zamboanga_Coaling_Station = {
+		icon = generic_construction
+
+		available = {
+			1352 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 1
+		}
+
+		visible = {
+			1352 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 70
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 2
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+		
+		remove_effect = {
+			industrialization_growth_progress_small = yes
+			1352 = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = dockyard
+					level = 2
+					instant_build = yes
+				}
+				add_resource = {
+					type = coal
+					amount = 15
+				}
+			}
+			var:1352.owner = {
+				give_resource_rights = { receiver = DAS state = 1352 resources = { coal } }
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 1352
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Manila_Renovation_Plan = {
+		icon = GFX_decision_generic_consumer_goods
+
+		available = {
+			has_completed_focus = PB_DAS_Manilas_Pearly_Gate
+			327 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 3
+		}
+
+		visible = {
+			327 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 90
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 4
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			industrialization_growth_progress_small = yes
+			327 = {
+				add_extra_state_shared_building_slots = 5
+				add_building_construction = {
+					type = industrial_complex
+					level = 2
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = infrastructure
+					level = 2
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = tesla_tower
+					level = 1
+					instant_build = yes
+				}
+			}
+			if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_1 }
+				swap_ideas = {
+					remove_idea = PB_Idea_DAS_New_Tourism_1
+					add_idea = PB_Idea_DAS_New_Tourism_2
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_2 }
+				swap_ideas = {
+					remove_idea = PB_Idea_DAS_New_Tourism_2
+					add_idea = PB_Idea_DAS_New_Tourism_3
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_3 }
+				modify_timed_idea = {
+					idea = PB_Idea_DAS_New_Tourism_3
+					days = 90
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 327
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Refurbish_Intramuros = {
+		icon = GFX_decision_generic_consumer_goods
+
+		available = {
+			has_completed_focus = PB_DAS_ReOpen_Tourism
+			327 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 3
+		}
+
+		visible = {
+			327 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 90
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 4
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			civilization_status_growth_progress_small = yes
+			327 = {
+				add_manpower = 10000
+				add_building_construction = {
+					type = bunker
+					level = 3
+					instant_build = yes
+					province = 10265
+				}
+			}
+			add_victory_points = {
+				province = 10265
+				value = 5
+			}
+			if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_1 }
+				swap_ideas = {
+					remove_idea = PB_Idea_DAS_New_Tourism_1
+					add_idea = PB_Idea_DAS_New_Tourism_2
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_2 }
+				swap_ideas = {
+					remove_idea = PB_Idea_DAS_New_Tourism_2
+					add_idea = PB_Idea_DAS_New_Tourism_3
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_3 }
+				modify_timed_idea = {
+					idea = PB_Idea_DAS_New_Tourism_3
+					days = 90
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 327
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Buracay_Tourism_Establishment = {
+		icon = GFX_decision_generic_consumer_goods
+
+		available = {
+			has_completed_focus = PB_DAS_ReOpen_Tourism
+			1577 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 3
+		}
+
+		visible = {
+			1577 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+		
+		cost = 30
+		days_remove = 90
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 4
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			civilization_status_growth_progress_small = yes
+			1577 = {
+				add_manpower = 10000
+			}
+			add_victory_points = {
+				province = 7423
+				value = 2
+			}
+
+			if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_1 }
+				swap_ideas = {
+					remove_idea = PB_Idea_DAS_New_Tourism_1
+					add_idea = PB_Idea_DAS_New_Tourism_2
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_2 }
+				swap_ideas = {
+					remove_idea = PB_Idea_DAS_New_Tourism_2
+					add_idea = PB_Idea_DAS_New_Tourism_3
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_Idea_DAS_New_Tourism_3 }
+				modify_timed_idea = {
+					idea = PB_Idea_DAS_New_Tourism_3
+					days = 90
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 1577
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Demolish_Manila_Shanty_Towns = {
+		icon = GFX_decision_generic_consumer_goods
+
+		available = {
+			has_completed_focus = PB_DAS_Slum_Breaking
+			327 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 3
+		}
+
+		visible = {
+			327 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 90
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 4
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+		complete_effect = {
+			327 = {
+				damage_building = { type = arms_factory damage = 2.3 }
+				damage_building = { type = industrial_complex damage = 1.2 }
+				damage_building = { type = infrastructure damage = 3 }
+			}
+		}
+		remove_effect = {
+			civilization_status_growth_progress_small = yes
+			327 = {
+				add_manpower = -100000
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 327
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	DAS_Overbeck_Commercial_Centers = {
+		icon = GFX_decision_generic_consumer_goods
+
+		available = {
+			1148 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 1
+		}
+
+		visible = {
+			1148 = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		cost = 30
+		days_remove = 70
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 2
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			industrialization_growth_progress_small = yes
+			1148 = {
+				add_extra_state_shared_building_slots = 5
+				add_building_construction = {
+					type = industrial_complex
+					level = 3
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = infrastructure
+					level = 2
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = tesla_tower
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 1148
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
 		}
 	}
 }

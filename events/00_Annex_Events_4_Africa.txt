@@ -18,7 +18,7 @@ country_event = { #Fate of Morocco
 	}
 	
 	option = { #Release Morocco Whole
-		log = "[GetLogInfo]: event annex.4000 option annexation.4000.a"
+		log = "[GetLogInfo]: event annex.4000 option annex.4000.a"
 		name = annex.4000.a
 		trigger = {
 			is_subject = no
@@ -31,19 +31,40 @@ country_event = { #Fate of Morocco
 			}
 		}
 
+		set_temp_variable = { tag_to_release = MOR }
+		every_state = {
+			limit = { is_core_of = MOR }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
 		if = {
-			limit = { country_exists = MOR }
-			custom_effect_tooltip = MOR_puppet_tooltip
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			MOR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MOR_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = MOR }
-			release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			MOR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MOR_Occupied_Republic
+			}
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4000 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4000 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -58,58 +79,126 @@ country_event = { #Fate of Reguibat
 
     is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					461 = { is_claim_or_core_of_ROOT = yes } #Casablanca
+					920 = { is_claim_or_core_of_ROOT = yes } #El eglab
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				461 = { #Casablanca
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:461.owner = { save_event_target_as = morocco }
+		}
+		if = {
+			limit = {
+				920 = { #El eglab
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:morocco }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:920.owner = { save_event_target_as = carnegia }
+		}
+	}
+
     option = { #Give it to Morocco
-        log = "[GetLogInfo]: event annexation.4001 option annexation.4001.a"
+        log = "[GetLogInfo]: event annex.4001 option annex.4001.a"
         name = annex.4001.a
         trigger = {
-            MOR = {
-            exists = yes
-            }
-        }
-        ai_chance = {
-            base = 50
-            modifier = {
-                factor = 0
-                annexations_can_annex = yes
-            }
-        }
-
-        MOR = {
-            transfer_state = 807
-        }
-
-        recheck_annexations = yes
+			has_event_target = morocco
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:morocco }
+				is_ally_with = event_target:carnegia
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = carnegia }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:morocco = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:morocco }
+		807 = { transfer_state_and_notify = yes } #Reguibat
     }
 
     option = { #Give it to Carnegia
-        log = "[GetLogInfo]: event annexation.4001 option annexation.4001.b"
+        log = "[GetLogInfo]: event annex.4001 option annex.4001.b"
         name = annex.4001.b
         trigger = {
-            WAF = {
-            exists = yes
-            }
-        }
-        ai_chance = {
-            base = 50
-            modifier = {
-                factor = 0
-                annexations_can_annex = yes
-            }
-        }
-
-        WAF = {
-            transfer_state = 807
-        }
-
-        recheck_annexations = yes
+			has_event_target = carnegia
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:carnegia }
+				is_ally_with = event_target:morocco
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = morocco }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:carnegia = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:carnegia }
+		807 = { transfer_state_and_notify = yes } #Reguibat
     }
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4001 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		807 = { transfer_state_and_notify = yes } #Reguibat
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.4001 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		807 = { transfer_state_and_notify = yes } #Reguibat
+	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4001 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4001 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
     }
+
+	after = {
+		recheck_annexations = yes
+	}
 }
 
 country_event = { #Fate of Carnegia
@@ -125,7 +214,7 @@ country_event = { #Fate of Carnegia
 	}
 	
 	option = { #Release Carnegia Whole
-		log = "[GetLogInfo]: event annex.4002 option annexation.4002.a"
+		log = "[GetLogInfo]: event annex.4002 option annex.4002.a"
 		name = annex.4002.a
 		trigger = {
 			is_subject = no
@@ -150,7 +239,7 @@ country_event = { #Fate of Carnegia
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4002 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4002 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -166,7 +255,7 @@ country_event = { #Fate of Algerian Concessions
 	is_triggered_only = yes
 	
 	option = { #Give to Algeirs
-		log = "[GetLogInfo]: event annex.4003 option annexation.4003.a"
+		log = "[GetLogInfo]: event annex.4003 option annex.4003.a"
 		name = annex.4003.a
 		trigger = {
             ALG = {
@@ -196,7 +285,7 @@ country_event = { #Fate of Algerian Concessions
 	}
 
 	option = { #Give to British Africa
-		log = "[GetLogInfo]: event annex.4003 option annexation.4003.b"
+		log = "[GetLogInfo]: event annex.4003 option annex.4003.b"
 		name = annex.4003.b
 		trigger = {
             BAF = {
@@ -227,7 +316,7 @@ country_event = { #Fate of Algerian Concessions
 	}
 
 	option = { #Give to France
-		log = "[GetLogInfo]: event annex.4003 option annexation.4003.b"
+		log = "[GetLogInfo]: event annex.4003 option annex.4003.b"
 		name = annex.4003.c
 		trigger = {
             FRA = {
@@ -256,7 +345,7 @@ country_event = { #Fate of Algerian Concessions
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4003 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4003 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -272,7 +361,7 @@ country_event = { #Fate of Rif
 	is_triggered_only = yes
 	
 	option = { #Give to Morocco
-		log = "[GetLogInfo]: event annex.4004 option annexation.4004.a"
+		log = "[GetLogInfo]: event annex.4004 option annex.4004.a"
 		name = annex.4004.a
 		trigger = {
             MOR = {
@@ -295,7 +384,7 @@ country_event = { #Fate of Rif
 	}
 
 	option = { #Give to Spain
-		log = "[GetLogInfo]: event annex.4004 option annexation.4004.b"
+		log = "[GetLogInfo]: event annex.4004 option annex.4004.b"
 		name = annex.4004.b
 		trigger = {
             SPR = {
@@ -318,7 +407,7 @@ country_event = { #Fate of Rif
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4004 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4004 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -340,7 +429,7 @@ country_event = { #Fate of Algeria
 	}
 	
 	option = { #Release Algeria Whole
-		log = "[GetLogInfo]: event annex.4005 option annexation.4005.a"
+		log = "[GetLogInfo]: event annex.4005 option annex.4005.a"
 		name = annex.4005.a
 		trigger = {
 			is_subject = no
@@ -365,8 +454,8 @@ country_event = { #Fate of Algeria
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4005 option annexation.4005.b"
-		name = annexation.4005.b
+		log = "[GetLogInfo]: event annex.4005 option annex.4005.b"
+		name = annex.4005.b
 		trigger = {
 			BAF = {
             exists = yes
@@ -407,7 +496,7 @@ country_event = { #Fate of Algeria
 
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4005 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4005 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -423,7 +512,7 @@ country_event = { #Fate of Tunisia
 	is_triggered_only = yes
 	
 	option = { #Release Tunisia Whole
-		log = "[GetLogInfo]: event annex.4006 option annexation.4006.a"
+		log = "[GetLogInfo]: event annex.4006 option annex.4006.a"
 		name = annex.4006.a
 		trigger = {
 			is_subject = no
@@ -448,8 +537,8 @@ country_event = { #Fate of Tunisia
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4006 option annexation.4006.b"
-		name = annexation.4006.b
+		log = "[GetLogInfo]: event annex.4006 option annex.4006.b"
+		name = annex.4006.b
 		trigger = {
 			BAF = {
             exists = yes
@@ -477,7 +566,7 @@ country_event = { #Fate of Tunisia
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4006 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4006 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -498,7 +587,7 @@ country_event = { #Fate of Cyrenica
 	}
 	
 	option = { #Release Cyrenica Whole
-		log = "[GetLogInfo]: event annex.4007 option annexation.4007.a"
+		log = "[GetLogInfo]: event annex.4007 option annex.4007.a"
 		name = annex.4007.a
 		trigger = {
 			is_subject = no
@@ -523,7 +612,7 @@ country_event = { #Fate of Cyrenica
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4007 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4007 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -551,7 +640,7 @@ country_event = { #Fate of Egypt
 	}
 	
 	option = { #Release Egypt Whole
-		log = "[GetLogInfo]: event annex.4008 option annexation.4008.a"
+		log = "[GetLogInfo]: event annex.4008 option annex.4008.a"
 		name = annex.4008.a
 		trigger = {
 			is_subject = no
@@ -576,7 +665,7 @@ country_event = { #Fate of Egypt
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4008 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4008 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -592,7 +681,7 @@ country_event = { #Fate of Sudan
 	is_triggered_only = yes
 	
 	option = { #Release Sudan Whole
-		log = "[GetLogInfo]: event annex.4009 option annexation.4009.a"
+		log = "[GetLogInfo]: event annex.4009 option annex.4009.a"
 		name = annex.4009.a
 		trigger = {
 			is_subject = no
@@ -617,7 +706,7 @@ country_event = { #Fate of Sudan
 	}
 
 	option = { #Give to Egypt
-		log = "[GetLogInfo]: event annex.4009 option annexation.4009.b"
+		log = "[GetLogInfo]: event annex.4009 option annex.4009.b"
 		name = annex.4009.b
 		trigger = {
             EGY = {
@@ -651,7 +740,7 @@ country_event = { #Fate of Sudan
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4009 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4009 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -667,7 +756,7 @@ country_event = { #Fate of South Sudan
 	is_triggered_only = yes
 	
 	option = { #Give to Sudan
-		log = "[GetLogInfo]: event annex.4010 option annexation.4010.a"
+		log = "[GetLogInfo]: event annex.4010 option annex.4010.a"
 		name = annex.4010.a
 		trigger = {
             SUD = {
@@ -703,7 +792,7 @@ country_event = { #Fate of South Sudan
 	}
 
 	option = { #Give to Egypt
-		log = "[GetLogInfo]: event annex.4010 option annexation.4010.b"
+		log = "[GetLogInfo]: event annex.4010 option annex.4010.b"
 		name = annex.4010.b
 		trigger = {
             EGY = {
@@ -739,7 +828,7 @@ country_event = { #Fate of South Sudan
 	}
 
 	option = { #Give to British East Africa
-		log = "[GetLogInfo]: event annex.4010 option annexation.4010.c"
+		log = "[GetLogInfo]: event annex.4010 option annex.4010.c"
 		name = annex.4010.c
 		trigger = {
 			ROOT = {
@@ -777,7 +866,7 @@ country_event = { #Fate of South Sudan
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4010 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4010 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -793,7 +882,7 @@ country_event = { #Fate of Buganda
 	is_triggered_only = yes
 	
 	option = { #Release Buganda Whole
-		log = "[GetLogInfo]: event annex.4011 option annexation.4011.a"
+		log = "[GetLogInfo]: event annex.4011 option annex.4011.a"
 		name = annex.4011.a
 		trigger = {
 			is_subject = no
@@ -818,7 +907,7 @@ country_event = { #Fate of Buganda
 	}
 
 	option = { #Give to British East Africa
-		log = "[GetLogInfo]: event annex.4011 option annexation.4011.b"
+		log = "[GetLogInfo]: event annex.4011 option annex.4011.b"
 		name = annex.4011.b
 		trigger = {
 			ROOT = {
@@ -847,7 +936,7 @@ country_event = { #Fate of Buganda
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4011 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4011 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -867,7 +956,7 @@ country_event = { #Fate of Kenya
 	}
 	
 	option = { #Release Kenya Whole
-		log = "[GetLogInfo]: event annex.4012 option annexation.4012.a"
+		log = "[GetLogInfo]: event annex.4012 option annex.4012.a"
 		name = annex.4012.a
 		trigger = {
 			is_subject = no
@@ -892,7 +981,7 @@ country_event = { #Fate of Kenya
 	}
 
 	option = { #Give to British East Africa
-		log = "[GetLogInfo]: event annex.4012 option annexation.4012.b"
+		log = "[GetLogInfo]: event annex.4012 option annex.4012.b"
 		name = annex.4012.b
 		trigger = {
 			ROOT = {
@@ -924,7 +1013,7 @@ country_event = { #Fate of Kenya
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4012 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4012 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -940,7 +1029,7 @@ country_event = { #Fate of East Kenya
 	is_triggered_only = yes
 	
 	option = { #Give to Kenya
-		log = "[GetLogInfo]: event annex.4013 option annexation.4013.a"
+		log = "[GetLogInfo]: event annex.4013 option annex.4013.a"
 		name = annex.4013.a
 		trigger = {
             KEN = {
@@ -963,7 +1052,7 @@ country_event = { #Fate of East Kenya
 	}
 
 	option = { #Give to Dervish States
-		log = "[GetLogInfo]: event annex.4013 option annexation.4013.b"
+		log = "[GetLogInfo]: event annex.4013 option annex.4013.b"
 		name = annex.4013.b
 		trigger = {
             SOM = {
@@ -987,7 +1076,7 @@ country_event = { #Fate of East Kenya
 	}
 
 	option = { #Give to British East Africa
-		log = "[GetLogInfo]: event annex.4013 option annexation.4013.c"
+		log = "[GetLogInfo]: event annex.4013 option annex.4013.c"
 		name = annex.4013.c
 		trigger = {
 			ROOT = {
@@ -1013,7 +1102,7 @@ country_event = { #Fate of East Kenya
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4013 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4013 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1029,7 +1118,7 @@ country_event = { #Fate of Jubaland
 	is_triggered_only = yes
 	
 	option = { #Give to Dervish States
-		log = "[GetLogInfo]: event annex.4014 option annexation.4014.a"
+		log = "[GetLogInfo]: event annex.4014 option annex.4014.a"
 		name = annex.4014.a
 		trigger = {
             SOM = {
@@ -1052,7 +1141,7 @@ country_event = { #Fate of Jubaland
 	}
 
 	option = { #Give to British East Africa
-		log = "[GetLogInfo]: event annex.4014 option annexation.4014.b"
+		log = "[GetLogInfo]: event annex.4014 option annex.4014.b"
 		name = annex.4014.b
 		trigger = {
 			ROOT = {
@@ -1078,7 +1167,7 @@ country_event = { #Fate of Jubaland
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4014 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4014 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1094,7 +1183,7 @@ country_event = { #Fate of East Africa
 	is_triggered_only = yes
 	
 	option = { #Release East Africa Whole
-		log = "[GetLogInfo]: event annex.4015 option annexation.4015.a"
+		log = "[GetLogInfo]: event annex.4015 option annex.4015.a"
 		name = annex.4015.a
 		trigger = {
 			is_subject = no
@@ -1129,7 +1218,7 @@ country_event = { #Fate of East Africa
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4015 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4015 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1151,7 +1240,7 @@ country_event = { #Fate of Dervish States
 	}
 	
 	option = { #Release Dervish States whole
-		log = "[GetLogInfo]: event annex.4016 option annexation.4016.a"
+		log = "[GetLogInfo]: event annex.4016 option annex.4016.a"
 		name = annex.4016.a
 		trigger = {
 			is_subject = no
@@ -1177,7 +1266,7 @@ country_event = { #Fate of Dervish States
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4016 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4016 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1193,7 +1282,7 @@ country_event = { #Fate of Ogaden
 	is_triggered_only = yes
 	
 	option = { #Give to Dervish States
-		log = "[GetLogInfo]: event annex.4017 option annexation.4017.a"
+		log = "[GetLogInfo]: event annex.4017 option annex.4017.a"
 		name = annex.4017.a
 		trigger = {
             SOM = {
@@ -1216,7 +1305,7 @@ country_event = { #Fate of Ogaden
 	}
 
 	option = { #Give to Ethiopia
-		log = "[GetLogInfo]: event annex.4017 option annexation.4017.b"
+		log = "[GetLogInfo]: event annex.4017 option annex.4017.b"
 		name = annex.4017.b
 		trigger = {
 			ETH = {
@@ -1241,7 +1330,7 @@ country_event = { #Fate of Ogaden
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4016 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4016 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1263,7 +1352,7 @@ country_event = { #Fate of Ethiopia
 	}
 	
 	option = { #Release Ethiopia Whole
-		log = "[GetLogInfo]: event annex.4018 option annexation.4018.a"
+		log = "[GetLogInfo]: event annex.4018 option annex.4018.a"
 		name = annex.4018.a
 		trigger = {
 			is_subject = no
@@ -1289,7 +1378,7 @@ country_event = { #Fate of Ethiopia
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4018 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4018 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1305,7 +1394,7 @@ country_event = { #Fate of Aussa
 	is_triggered_only = yes
 	
 	option = { #Release Aussa Whole
-		log = "[GetLogInfo]: event annex.4019 option annexation.4019.a"
+		log = "[GetLogInfo]: event annex.4019 option annex.4019.a"
 		name = annex.4019.a
 		trigger = {
 			is_subject = no
@@ -1331,7 +1420,7 @@ country_event = { #Fate of Aussa
 	}
 
 	option = { #Give to Ethiopia
-		log = "[GetLogInfo]: event annex.4019 option annexation.4019.b"
+		log = "[GetLogInfo]: event annex.4019 option annex.4019.b"
 		name = annex.4019.b
 		trigger = {
 			ETH = {
@@ -1356,7 +1445,7 @@ country_event = { #Fate of Aussa
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4019 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4019 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1372,7 +1461,7 @@ country_event = { #Fate of Sagallo
 	is_triggered_only = yes
 	
 	option = { #Release Djibuti
-		log = "[GetLogInfo]: event annex.4020 option annexation.4020.a"
+		log = "[GetLogInfo]: event annex.4020 option annex.4020.a"
 		name = annex.4020.a
 		trigger = {
 			is_subject = no
@@ -1403,7 +1492,7 @@ country_event = { #Fate of Sagallo
 	}
 
 	option = { #Give to Ethiopia
-		log = "[GetLogInfo]: event annex.4020 option annexation.4020.b"
+		log = "[GetLogInfo]: event annex.4020 option annex.4020.b"
 		name = annex.4020.b
 		trigger = {
 			ETH = {
@@ -1427,7 +1516,7 @@ country_event = { #Fate of Sagallo
 	}
 
 	option = { #Give to Dervish States
-		log = "[GetLogInfo]: event annex.4020 option annexation.4020.c"
+		log = "[GetLogInfo]: event annex.4020 option annex.4020.c"
 		name = annex.4020.c
 		trigger = {
 			SOM = {
@@ -1451,7 +1540,7 @@ country_event = { #Fate of Sagallo
 	}
 
 	option = { #Release Cossack Hosts
-		log = "[GetLogInfo]: event annex.4020 option annexation.4020.d"
+		log = "[GetLogInfo]: event annex.4020 option annex.4020.d"
 		name = annex.4020.d
 		trigger = {
 			is_subject = no
@@ -1480,7 +1569,7 @@ country_event = { #Fate of Sagallo
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4020 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4020 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1497,7 +1586,7 @@ country_event = { #Fate of Berbera
 
 
 	option = { #Give to Dervish States
-		log = "[GetLogInfo]: event annex.4021 option annexation.4021.a"
+		log = "[GetLogInfo]: event annex.4021 option annex.4021.a"
 		name = annex.4021.a
 		trigger = {
 			SOM = {
@@ -1521,7 +1610,7 @@ country_event = { #Fate of Berbera
 	}
 
 	option = { #Give to Aden
-		log = "[GetLogInfo]: event annex.4021 option annexation.4021.b"
+		log = "[GetLogInfo]: event annex.4021 option annex.4021.b"
 		name = annex.4021.b
 		trigger = {
 			ADE = {
@@ -1544,7 +1633,7 @@ country_event = { #Fate of Berbera
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4021 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4021 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1560,7 +1649,7 @@ country_event = { #Fate of Rwanda Burundi
 	is_triggered_only = yes
 	
 	option = { #Release Rwanda Burundi whole
-		log = "[GetLogInfo]: event annex.4022 option annexation.4022.a"
+		log = "[GetLogInfo]: event annex.4022 option annex.4022.a"
 		name = annex.4022.a
 		trigger = {
 			is_subject = no
@@ -1586,7 +1675,7 @@ country_event = { #Fate of Rwanda Burundi
 	}
 
 	option = { #Give to German East Africa
-		log = "[GetLogInfo]: event annex.4022 option annexation.4022.b"
+		log = "[GetLogInfo]: event annex.4022 option annex.4022.b"
 		name = annex.4022.b
 		trigger = {
 			DEA = {
@@ -1616,7 +1705,7 @@ country_event = { #Fate of Rwanda Burundi
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4022 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4022 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1637,7 +1726,7 @@ country_event = { #Fate of Tanganyika
 	}
 	
 	option = { #Release Tanganyika whole
-		log = "[GetLogInfo]: event annex.4023 option annexation.4023.a"
+		log = "[GetLogInfo]: event annex.4023 option annex.4023.a"
 		name = annex.4023.a
 		trigger = {
 			is_subject = no
@@ -1663,7 +1752,7 @@ country_event = { #Fate of Tanganyika
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4023 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4023 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1685,7 +1774,7 @@ country_event = { #Fate of German East Africa
 	}
 	
 	option = { #Release German East Africa Whole
-		log = "[GetLogInfo]: event annex.4024 option annexation.4024.a"
+		log = "[GetLogInfo]: event annex.4024 option annex.4024.a"
 		name = annex.4024.a
 		trigger = {
 			is_subject = no
@@ -1710,7 +1799,7 @@ country_event = { #Fate of German East Africa
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4024 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4024 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1727,7 +1816,7 @@ country_event = { #Fate of Delgadokap
 
 
 	option = { #Give to German East Africa
-		log = "[GetLogInfo]: event annex.4025 option annexation.4025.a"
+		log = "[GetLogInfo]: event annex.4025 option annex.4025.a"
 		name = annex.4025.a
 		trigger = {
 			DEA = {
@@ -1754,7 +1843,7 @@ country_event = { #Fate of Delgadokap
 	}
 
 	option = { #Give to Mozambique Stabilization Territory
-		log = "[GetLogInfo]: event annex.4025 option annexation.4025.b"
+		log = "[GetLogInfo]: event annex.4025 option annex.4025.b"
 		name = annex.4025.b
 		trigger = {
 			MZB = {
@@ -1781,7 +1870,7 @@ country_event = { #Fate of Delgadokap
 	}
 
 	option = { #Give to Tanganyika
-		log = "[GetLogInfo]: event annex.4025 option annexation.4025.c"
+		log = "[GetLogInfo]: event annex.4025 option annex.4025.c"
 		name = annex.4025.c
 		trigger = {
 			TGY = {
@@ -1805,7 +1894,7 @@ country_event = { #Fate of Delgadokap
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4025 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4025 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1821,7 +1910,7 @@ country_event = { #Fate of Zanzibar
 	is_triggered_only = yes
 	
 	option = { #Release Zanzibar whole
-		log = "[GetLogInfo]: event annex.4026 option annexation.4026.a"
+		log = "[GetLogInfo]: event annex.4026 option annex.4026.a"
 		name = annex.4026.a
 		trigger = {
 			is_subject = no
@@ -1847,7 +1936,7 @@ country_event = { #Fate of Zanzibar
 	}
 
 	option = { #Give to German East Africa
-		log = "[GetLogInfo]: event annex.4026 option annexation.4026.b"
+		log = "[GetLogInfo]: event annex.4026 option annex.4026.b"
 		name = annex.4026.b
 		trigger = {
 			MZB = {
@@ -1874,7 +1963,7 @@ country_event = { #Fate of Zanzibar
 	}
 
 	option = { #Give to Tanganyika
-		log = "[GetLogInfo]: event annex.4026 option annexation.4026.c"
+		log = "[GetLogInfo]: event annex.4026 option annex.4026.c"
 		name = annex.4026.c
 		trigger = {
 			TGY = {
@@ -1898,7 +1987,7 @@ country_event = { #Fate of Zanzibar
 	}
 
 	option = { #Give to Oman
-		log = "[GetLogInfo]: event annex.4026 option annexation.4026.d"
+		log = "[GetLogInfo]: event annex.4026 option annex.4026.d"
 		name = annex.4026.d
 		trigger = {
 			OMA = {
@@ -1921,7 +2010,7 @@ country_event = { #Fate of Zanzibar
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4026 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4026 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -1938,7 +2027,7 @@ country_event = { #Fate of Kilwa
 
 
 	option = { #Give to German East Africa
-		log = "[GetLogInfo]: event annex.4027 option annexation.4027.a"
+		log = "[GetLogInfo]: event annex.4027 option annex.4027.a"
 		name = annex.4027.a
 		trigger = {
 			DEA = {
@@ -1965,7 +2054,7 @@ country_event = { #Fate of Kilwa
 	}
 
 	option = { #Give to Tanganyika
-		log = "[GetLogInfo]: event annex.4027 option annexation.4027.b"
+		log = "[GetLogInfo]: event annex.4027 option annex.4027.b"
 		name = annex.4027.b
 		trigger = {
 			TGY = {
@@ -1989,7 +2078,7 @@ country_event = { #Fate of Kilwa
 	}
 
 	option = { #Give to Zanzibar
-		log = "[GetLogInfo]: event annex.4027 option annexation.4027.c"
+		log = "[GetLogInfo]: event annex.4027 option annex.4027.c"
 		name = annex.4027.c
 		trigger = {
 			ZAN = {
@@ -2013,7 +2102,7 @@ country_event = { #Fate of Kilwa
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4027 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4027 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2034,7 +2123,7 @@ country_event = { #Fate of Trarza
 	}
 	
 	option = { #Release Trazra whole
-		log = "[GetLogInfo]: event annex.4028 option annexation.4028.a"
+		log = "[GetLogInfo]: event annex.4028 option annex.4028.a"
 		name = annex.4028.a
 		trigger = {
 			is_subject = no
@@ -2060,7 +2149,7 @@ country_event = { #Fate of Trarza
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4028 option annexation.4028.b"
+		log = "[GetLogInfo]: event annex.4028 option annex.4028.b"
 		name = annex.4028.b
 		trigger = {
 			BAF = {
@@ -2098,7 +2187,7 @@ country_event = { #Fate of Trarza
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4028 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4028 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2115,7 +2204,7 @@ country_event = { #Fate of Dakhla
 
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4029 option annexation.4029.a"
+		log = "[GetLogInfo]: event annex.4029 option annex.4029.a"
 		name = annex.4029.a
 		trigger = {
 			BAF = {
@@ -2141,7 +2230,7 @@ country_event = { #Fate of Dakhla
 	}
 
 	option = { #Give to Morocco
-		log = "[GetLogInfo]: event annex.4029 option annexation.4029.b"
+		log = "[GetLogInfo]: event annex.4029 option annex.4029.b"
 		name = annex.4029.b
 		trigger = {
 			MOR = {
@@ -2165,7 +2254,7 @@ country_event = { #Fate of Dakhla
 	}
 
 	option = { #Give to Trarza
-		log = "[GetLogInfo]: event annex.4029 option annexation.4029.c"
+		log = "[GetLogInfo]: event annex.4029 option annex.4029.c"
 		name = annex.4029.c
 		trigger = {
 			MRT = {
@@ -2189,7 +2278,7 @@ country_event = { #Fate of Dakhla
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4029 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4029 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2209,7 +2298,7 @@ country_event = { #Fate of Wassoulou
 	}
 	
 	option = { #Release Wassoulou whole
-		log = "[GetLogInfo]: event annex.4030 option annexation.4030.a"
+		log = "[GetLogInfo]: event annex.4030 option annex.4030.a"
 		name = annex.4030.a
 		trigger = {
 			is_subject = no
@@ -2235,7 +2324,7 @@ country_event = { #Fate of Wassoulou
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4030 option annexation.4030.b"
+		log = "[GetLogInfo]: event annex.4030 option annex.4030.b"
 		name = annex.4030.b
 		trigger = {
 			BAF = {
@@ -2273,7 +2362,7 @@ country_event = { #Fate of Wassoulou
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4030 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4030 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2290,7 +2379,7 @@ country_event = { #Fate of Portuguese Guinea
 
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4031 option annexation.4031.a"
+		log = "[GetLogInfo]: event annex.4031 option annex.4031.a"
 		name = annex.4031.a
 		trigger = {
 			BAF = {
@@ -2316,7 +2405,7 @@ country_event = { #Fate of Portuguese Guinea
 	}
 
 	option = { #Give to Wassoulou
-		log = "[GetLogInfo]: event annex.4031 option annexation.4031.b"
+		log = "[GetLogInfo]: event annex.4031 option annex.4031.b"
 		name = annex.4031.b
 		trigger = {
 			FUL = {
@@ -2340,7 +2429,7 @@ country_event = { #Fate of Portuguese Guinea
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4031 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4031 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2360,7 +2449,7 @@ country_event = { #Fate of Beni Abbas
 	}
 	
 	option = { #Release Beni Abbas whole
-		log = "[GetLogInfo]: event annex.4032 option annexation.4032.a"
+		log = "[GetLogInfo]: event annex.4032 option annex.4032.a"
 		name = annex.4032.a
 		trigger = {
 			is_subject = no
@@ -2386,7 +2475,7 @@ country_event = { #Fate of Beni Abbas
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4032 option annexation.4032.b"
+		log = "[GetLogInfo]: event annex.4032 option annex.4032.b"
 		name = annex.4032.b
 		trigger = {
 			BAF = {
@@ -2421,7 +2510,7 @@ country_event = { #Fate of Beni Abbas
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4032 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4032 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2438,7 +2527,7 @@ country_event = { #Fate of Oualata
 
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4033 option annexation.4033.a"
+		log = "[GetLogInfo]: event annex.4033 option annex.4033.a"
 		name = annex.4033.a
 		trigger = {
 			BAF = {
@@ -2464,7 +2553,7 @@ country_event = { #Fate of Oualata
 	}
 
 	option = { #Give to Trarza
-		log = "[GetLogInfo]: event annex.4033 option annexation.4033.b"
+		log = "[GetLogInfo]: event annex.4033 option annex.4033.b"
 		name = annex.4033.b
 		trigger = {
 			MRT = {
@@ -2488,7 +2577,7 @@ country_event = { #Fate of Oualata
 	}
 
 	option = { #Give to Beni Abbas
-		log = "[GetLogInfo]: event annex.4033 option annexation.4033.c"
+		log = "[GetLogInfo]: event annex.4033 option annex.4033.c"
 		name = annex.4033.c
 		trigger = {
 			MLI = {
@@ -2512,7 +2601,7 @@ country_event = { #Fate of Oualata
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4033 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4033 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2529,7 +2618,7 @@ country_event = { #Fate of Mesurado
 
 	
 	option = { #Release Mesurado whole
-		log = "[GetLogInfo]: event annex.4034 option annexation.4034.a"
+		log = "[GetLogInfo]: event annex.4034 option annex.4034.a"
 		name = annex.4034.a
 		trigger = {
 			is_subject = no
@@ -2555,7 +2644,7 @@ country_event = { #Fate of Mesurado
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4034 option annexation.4034.b"
+		log = "[GetLogInfo]: event annex.4034 option annex.4034.b"
 		name = annex.4034.b
 		trigger = {
 			BAF = {
@@ -2581,7 +2670,7 @@ country_event = { #Fate of Mesurado
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4034 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4034 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2598,7 +2687,7 @@ country_event = { #Fate of Sierra
 
 	
 #	option = { #Release Sierra whole
-#		log = "[GetLogInfo]: event annex.4035 option annexation.4035.a"
+#		log = "[GetLogInfo]: event annex.4035 option annex.4035.a"
 #		name = annex.4035.a
 #		trigger = {
 #			is_subject = no
@@ -2624,7 +2713,7 @@ country_event = { #Fate of Sierra
 #	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4035 option annexation.4035.b"
+		log = "[GetLogInfo]: event annex.4035 option annex.4035.b"
 		name = annex.4035.b
 		trigger = {
 			BAF = {
@@ -2650,7 +2739,7 @@ country_event = { #Fate of Sierra
 	}
 
 	option = { #Give to Wassoulou
-		log = "[GetLogInfo]: event annex.4035 option annexation.4035.c"
+		log = "[GetLogInfo]: event annex.4035 option annex.4035.c"
 		name = annex.4035.c
 		trigger = {
 			FUL = {
@@ -2674,7 +2763,7 @@ country_event = { #Fate of Sierra
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4035 option annexation.4035.d"
+		log = "[GetLogInfo]: event annex.4035 option annex.4035.d"
 		name = annex.4035.d
 		trigger = {
 			MES = {
@@ -2698,7 +2787,7 @@ country_event = { #Fate of Sierra
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4035 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4035 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2715,7 +2804,7 @@ country_event = { #Fate of Kayes
 
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4036 option annexation.4036.a"
+		log = "[GetLogInfo]: event annex.4036 option annex.4036.a"
 		name = annex.4036.a
 		trigger = {
 			BAF = {
@@ -2741,7 +2830,7 @@ country_event = { #Fate of Kayes
 	}
 
 	option = { #Give to Wassoulou
-		log = "[GetLogInfo]: event annex.4036 option annexation.4036.b"
+		log = "[GetLogInfo]: event annex.4036 option annex.4036.b"
 		name = annex.4036.b
 		trigger = {
 			FUL = {
@@ -2765,7 +2854,7 @@ country_event = { #Fate of Kayes
 	}
 
 	option = { #Give to Beni Abbas
-		log = "[GetLogInfo]: event annex.4036 option annexation.4036.c"
+		log = "[GetLogInfo]: event annex.4036 option annex.4036.c"
 		name = annex.4036.c
 		trigger = {
 			MLI = {
@@ -2789,7 +2878,7 @@ country_event = { #Fate of Kayes
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4036 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4036 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2809,7 +2898,7 @@ country_event = { #Fate of Wattaria
 	}
 	
 	option = { #Release Wattaria whole
-		log = "[GetLogInfo]: event annex.4037 option annexation.4037.a"
+		log = "[GetLogInfo]: event annex.4037 option annex.4037.a"
 		name = annex.4037.a
 		trigger = {
 			is_subject = no
@@ -2835,7 +2924,7 @@ country_event = { #Fate of Wattaria
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4037 option annexation.4037.b"
+		log = "[GetLogInfo]: event annex.4037 option annex.4037.b"
 		name = annex.4037.b
 		trigger = {
 			BAF = {
@@ -2864,7 +2953,7 @@ country_event = { #Fate of Wattaria
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4037 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4037 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2880,7 +2969,7 @@ country_event = { #Fate of Bamako
 	is_triggered_only = yes
 	
 	option = { #Give to Beni Abbas
-		log = "[GetLogInfo]: event annex.4038 option annexation.4038.a"
+		log = "[GetLogInfo]: event annex.4038 option annex.4038.a"
 		name = annex.4038.a
 		trigger = {
 			MLI = {
@@ -2904,7 +2993,7 @@ country_event = { #Fate of Bamako
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4038 option annexation.4038.b"
+		log = "[GetLogInfo]: event annex.4038 option annex.4038.b"
 		name = annex.4038.b
 		trigger = {
 			BAF = {
@@ -2930,7 +3019,7 @@ country_event = { #Fate of Bamako
 	}
 
 	option = { #Give to Wattaria
-		log = "[GetLogInfo]: event annex.4038 option annexation.4038.c"
+		log = "[GetLogInfo]: event annex.4038 option annex.4038.c"
 		name = annex.4038.c
 		trigger = {
 			WAT = {
@@ -2954,7 +3043,7 @@ country_event = { #Fate of Bamako
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4038 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4038 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -2970,7 +3059,7 @@ country_event = { #Fate of Bauleland
 	is_triggered_only = yes
 	
 	option = { #Release Bauleland whole
-		log = "[GetLogInfo]: event annex.4039 option annexation.4039.a"
+		log = "[GetLogInfo]: event annex.4039 option annex.4039.a"
 		name = annex.4039.a
 		trigger = {
 			is_subject = no
@@ -2996,7 +3085,7 @@ country_event = { #Fate of Bauleland
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4039 option annexation.4039.b"
+		log = "[GetLogInfo]: event annex.4039 option annex.4039.b"
 		name = annex.4039.b
 		trigger = {
 			BAF = {
@@ -3022,7 +3111,7 @@ country_event = { #Fate of Bauleland
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4039 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4039 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3038,7 +3127,7 @@ country_event = { #Fate of Ashanti
 	is_triggered_only = yes
 	
 	option = { #Release Ashanti whole
-		log = "[GetLogInfo]: event annex.4040 option annexation.4040.a"
+		log = "[GetLogInfo]: event annex.4040 option annex.4040.a"
 		name = annex.4040.a
 		trigger = {
 			is_subject = no
@@ -3064,7 +3153,7 @@ country_event = { #Fate of Ashanti
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4040 option annexation.4040.b"
+		log = "[GetLogInfo]: event annex.4040 option annex.4040.b"
 		name = annex.4040.b
 		trigger = {
 			BAF = {
@@ -3090,7 +3179,7 @@ country_event = { #Fate of Ashanti
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4040 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4040 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3106,7 +3195,7 @@ country_event = { #Fate of Togoland
 	is_triggered_only = yes
 	
 	option = { #Release Togoland whole
-		log = "[GetLogInfo]: event annex.4041 option annexation.4041.a"
+		log = "[GetLogInfo]: event annex.4041 option annex.4041.a"
 		name = annex.4041.a
 		trigger = {
 			is_subject = no
@@ -3132,7 +3221,7 @@ country_event = { #Fate of Togoland
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4041 option annexation.4041.b"
+		log = "[GetLogInfo]: event annex.4041 option annex.4041.b"
 		name = annex.4041.b
 		trigger = {
 			BAF = {
@@ -3158,7 +3247,7 @@ country_event = { #Fate of Togoland
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4041 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4041 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3174,7 +3263,7 @@ country_event = { #Fate of Dahomey
 	is_triggered_only = yes
 	
 	option = { #Release Dahomey whole
-		log = "[GetLogInfo]: event annex.4042 option annexation.4042.a"
+		log = "[GetLogInfo]: event annex.4042 option annex.4042.a"
 		name = annex.4042.a
 		trigger = {
 			is_subject = no
@@ -3200,7 +3289,7 @@ country_event = { #Fate of Dahomey
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4042 option annexation.4042.b"
+		log = "[GetLogInfo]: event annex.4042 option annex.4042.b"
 		name = annex.4042.b
 		trigger = {
 			BAF = {
@@ -3226,7 +3315,7 @@ country_event = { #Fate of Dahomey
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4042 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4042 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3242,7 +3331,7 @@ country_event = { #Fate of Nigeria
 	is_triggered_only = yes
 	
 	option = { #Release Nigeria whole
-		log = "[GetLogInfo]: event annex.4043 option annexation.4043.a"
+		log = "[GetLogInfo]: event annex.4043 option annex.4043.a"
 		name = annex.4043.a
 		trigger = {
 			is_subject = no
@@ -3268,7 +3357,7 @@ country_event = { #Fate of Nigeria
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4043 option annexation.4043.b"
+		log = "[GetLogInfo]: event annex.4043 option annex.4043.b"
 		name = annex.4043.b
 		trigger = {
 			BAF = {
@@ -3294,7 +3383,7 @@ country_event = { #Fate of Nigeria
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4043 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4043 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3310,7 +3399,7 @@ country_event = { #Fate of Oyo
 	is_triggered_only = yes
 	
 	option = { #Release Oyo whole
-		log = "[GetLogInfo]: event annex.4044 option annexation.4044.a"
+		log = "[GetLogInfo]: event annex.4044 option annex.4044.a"
 		name = annex.4044.a
 		trigger = {
 			is_subject = no
@@ -3336,7 +3425,7 @@ country_event = { #Fate of Oyo
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4044 option annexation.4044.b"
+		log = "[GetLogInfo]: event annex.4044 option annex.4044.b"
 		name = annex.4044.b
 		trigger = {
 			BAF = {
@@ -3362,7 +3451,7 @@ country_event = { #Fate of Oyo
 	}
 
 	option = { #Give to Nigeria
-		log = "[GetLogInfo]: event annex.4044 option annexation.4044.c"
+		log = "[GetLogInfo]: event annex.4044 option annex.4044.c"
 		name = annex.4044.c
 		trigger = {
 			NIG = {
@@ -3386,7 +3475,7 @@ country_event = { #Fate of Oyo
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4044 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4044 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3402,7 +3491,7 @@ country_event = { #Fate of Biafra
 	is_triggered_only = yes
 	
 	option = { #Release Biafra whole
-		log = "[GetLogInfo]: event annex.4045 option annexation.4045.a"
+		log = "[GetLogInfo]: event annex.4045 option annex.4045.a"
 		name = annex.4045.a
 		trigger = {
 			is_subject = no
@@ -3428,7 +3517,7 @@ country_event = { #Fate of Biafra
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4045 option annexation.4045.b"
+		log = "[GetLogInfo]: event annex.4045 option annex.4045.b"
 		name = annex.4045.b
 		trigger = {
 			BAF = {
@@ -3454,7 +3543,7 @@ country_event = { #Fate of Biafra
 	}
 
 	option = { #Give to Nigeria
-		log = "[GetLogInfo]: event annex.4045 option annexation.4045.c"
+		log = "[GetLogInfo]: event annex.4045 option annex.4045.c"
 		name = annex.4045.c
 		trigger = {
 			NIG = {
@@ -3478,7 +3567,7 @@ country_event = { #Fate of Biafra
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4045 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4045 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3494,7 +3583,7 @@ country_event = { #Fate of Sokoto
 	is_triggered_only = yes
 	
 	option = { #Release Sokoto whole
-		log = "[GetLogInfo]: event annex.4046 option annexation.4046.a"
+		log = "[GetLogInfo]: event annex.4046 option annex.4046.a"
 		name = annex.4046.a
 		trigger = {
 			is_subject = no
@@ -3520,7 +3609,7 @@ country_event = { #Fate of Sokoto
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4046 option annexation.4046.b"
+		log = "[GetLogInfo]: event annex.4046 option annex.4046.b"
 		name = annex.4046.b
 		trigger = {
 			BAF = {
@@ -3546,7 +3635,7 @@ country_event = { #Fate of Sokoto
 	}
 
 	option = { #Give to Nigeria
-		log = "[GetLogInfo]: event annex.4046 option annexation.4046.c"
+		log = "[GetLogInfo]: event annex.4046 option annex.4046.c"
 		name = annex.4046.c
 		trigger = {
 			NIG = {
@@ -3570,7 +3659,7 @@ country_event = { #Fate of Sokoto
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4046 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4046 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3590,7 +3679,7 @@ country_event = { #Fate of Mossiland
 	}
 	
 	option = { #Release Mossiland whole
-		log = "[GetLogInfo]: event annex.4047 option annexation.4047.a"
+		log = "[GetLogInfo]: event annex.4047 option annex.4047.a"
 		name = annex.4047.a
 		trigger = {
 			is_subject = no
@@ -3616,7 +3705,7 @@ country_event = { #Fate of Mossiland
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4047 option annexation.4047.b"
+		log = "[GetLogInfo]: event annex.4047 option annex.4047.b"
 		name = annex.4047.b
 		trigger = {
 			BAF = {
@@ -3642,7 +3731,7 @@ country_event = { #Fate of Mossiland
 	}
 
 	option = { #Give to Kaouar
-		log = "[GetLogInfo]: event annex.4047 option annexation.4047.c"
+		log = "[GetLogInfo]: event annex.4047 option annex.4047.c"
 		name = annex.4047.c
 		trigger = {
 			NGR = {
@@ -3666,7 +3755,7 @@ country_event = { #Fate of Mossiland
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4047 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4047 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3683,7 +3772,7 @@ country_event = { #Fate of Tera
 
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4048 option annexation.4048.a"
+		log = "[GetLogInfo]: event annex.4048 option annex.4048.a"
 		name = annex.4048.a
 		trigger = {
 			BAF = {
@@ -3709,7 +3798,7 @@ country_event = { #Fate of Tera
 	}
 
 	option = { #Give to Mossiland
-		log = "[GetLogInfo]: event annex.4048 option annexation.4048.b"
+		log = "[GetLogInfo]: event annex.4048 option annex.4048.b"
 		name = annex.4048.b
 		trigger = {
 			VOL = {
@@ -3733,7 +3822,7 @@ country_event = { #Fate of Tera
 	}
 
 	option = { #Give to Wattaria
-		log = "[GetLogInfo]: event annex.4048 option annexation.4048.c"
+		log = "[GetLogInfo]: event annex.4048 option annex.4048.c"
 		name = annex.4048.c
 		trigger = {
 			WAT = {
@@ -3757,7 +3846,7 @@ country_event = { #Fate of Tera
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4048 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4048 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3777,7 +3866,7 @@ country_event = { #Fate of Kaouar
 	}
 	
 	option = { #Release Kaouar whole
-		log = "[GetLogInfo]: event annex.4049 option annexation.4049.a"
+		log = "[GetLogInfo]: event annex.4049 option annex.4049.a"
 		name = annex.4049.a
 		trigger = {
 			is_subject = no
@@ -3803,7 +3892,7 @@ country_event = { #Fate of Kaouar
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4049 option annexation.4049.b"
+		log = "[GetLogInfo]: event annex.4049 option annex.4049.b"
 		name = annex.4049.b
 		trigger = {
 			BAF = {
@@ -3835,7 +3924,7 @@ country_event = { #Fate of Kaouar
 	}
 
 	option = { #Give to Sokoto
-		log = "[GetLogInfo]: event annex.4049 option annexation.4049.c"
+		log = "[GetLogInfo]: event annex.4049 option annex.4049.c"
 		name = annex.4049.c
 		trigger = {
 			SOK = {
@@ -3865,7 +3954,7 @@ country_event = { #Fate of Kaouar
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4049 option annexation.cancel"
+		log = "[GetLogInfo]: event annex.4049 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
@@ -3881,8 +3970,8 @@ country_event = { #Fate of Diffa
 	is_triggered_only = yes
 	
 	option = { #Release British African Authority whole
-		log = "[GetLogInfo]: event annex.4050 option annexation.4050.a"
-		name = annexation.4050.a
+		log = "[GetLogInfo]: event annex.4050 option annex.4050.a"
+		name = annex.4050.a
 		trigger = {
 			NOT = { country_exists = BAF }
 			ROOT = {
@@ -3910,8 +3999,8 @@ country_event = { #Fate of Diffa
 	}
 
 	option = { #Give to British African Authority
-		log = "[GetLogInfo]: event annex.4050 option annexation.4050.b"
-		name = annexation.4050.b
+		log = "[GetLogInfo]: event annex.4050 option annex.4050.b"
+		name = annex.4050.b
 		trigger = {
 			BAF = {
             exists = yes
@@ -3936,8 +4025,8 @@ country_event = { #Fate of Diffa
 	}
 
 	option = { #Give to Kaouar
-		log = "[GetLogInfo]: event annex.4050 option annexation.4050.c"
-		name = annexation.4050.c
+		log = "[GetLogInfo]: event annex.4050 option annex.4050.c"
+		name = annex.4050.c
 		trigger = {
 			NGR = {
             exists = yes
@@ -3960,8 +4049,8 @@ country_event = { #Fate of Diffa
 	}
 
 	option = { #Give to Kanem Bornu
-		log = "[GetLogInfo]: event annex.4050 option annexation.4050.d"
-		name = annexation.4050.d
+		log = "[GetLogInfo]: event annex.4050 option annex.4050.d"
+		name = annex.4050.d
 		trigger = {
 			CHA = {
             exists = yes
@@ -3984,8 +4073,8 @@ country_event = { #Fate of Diffa
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4050 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4050 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4000,8 +4089,8 @@ country_event = { #Fate of German Central Africa
 	is_triggered_only = yes
 	
 	option = { #Release German Central Africa whole
-		log = "[GetLogInfo]: event annex.4051 option annexation.4051.a"
-		name = annexation.4051.a
+		log = "[GetLogInfo]: event annex.4051 option annex.4051.a"
+		name = annex.4051.a
 		trigger = {
 			is_subject = no
 		}
@@ -4026,8 +4115,8 @@ country_event = { #Fate of German Central Africa
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4051 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4051 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4048,8 +4137,8 @@ country_event = { #Fate of Kanem Bornu
 	}
 	
 	option = { #Release Kanem Bornu whole
-		log = "[GetLogInfo]: event annex.4052 option annexation.4052.a"
-		name = annexation.4052.a
+		log = "[GetLogInfo]: event annex.4052 option annex.4052.a"
+		name = annex.4052.a
 		trigger = {
 			is_subject = no
 		}
@@ -4074,8 +4163,8 @@ country_event = { #Fate of Kanem Bornu
 	}
 
 	option = { #Give to German Central Africa
-		log = "[GetLogInfo]: event annex.4052 option annexation.4052.b"
-		name = annexation.4052.b
+		log = "[GetLogInfo]: event annex.4052 option annex.4052.b"
+		name = annex.4052.b
 		trigger = {
 			DAF = {
             exists = yes
@@ -4103,8 +4192,8 @@ country_event = { #Fate of Kanem Bornu
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4052 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4052 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4119,8 +4208,8 @@ country_event = { #Fate of Kamerun
 	is_triggered_only = yes
 	
 	option = { #Release Kamerun whole
-		log = "[GetLogInfo]: event annex.4053 option annexation.4053.a"
-		name = annexation.4053.a
+		log = "[GetLogInfo]: event annex.4053 option annex.4053.a"
+		name = annex.4053.a
 		trigger = {
 			is_subject = no
 		}
@@ -4145,8 +4234,8 @@ country_event = { #Fate of Kamerun
 	}
 
 	option = { #Give to German Central Africa
-		log = "[GetLogInfo]: event annex.4053 option annexation.4053.b"
-		name = annexation.4053.b
+		log = "[GetLogInfo]: event annex.4053 option annex.4053.b"
+		name = annex.4053.b
 		trigger = {
 			DAF = {
             exists = yes
@@ -4171,8 +4260,8 @@ country_event = { #Fate of Kamerun
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4053 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4053 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4187,8 +4276,8 @@ country_event = { #Fate of Gabon
 	is_triggered_only = yes
 	
 	option = { #Release Gabon whole
-		log = "[GetLogInfo]: event annex.4054 option annexation.4054.a"
-		name = annexation.4054.a
+		log = "[GetLogInfo]: event annex.4054 option annex.4054.a"
+		name = annex.4054.a
 		trigger = {
 			is_subject = no
 		}
@@ -4213,8 +4302,8 @@ country_event = { #Fate of Gabon
 	}
 
 	option = { #Give to German Central Africa
-		log = "[GetLogInfo]: event annex.4054 option annexation.4054.b"
-		name = annexation.4054.b
+		log = "[GetLogInfo]: event annex.4054 option annex.4054.b"
+		name = annex.4054.b
 		trigger = {
 			DAF = {
             exists = yes
@@ -4242,8 +4331,8 @@ country_event = { #Fate of Gabon
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4054 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4054 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4258,8 +4347,8 @@ country_event = { #Fate of Beafrika
 	is_triggered_only = yes
 	
 	option = { #Release Beafrika whole
-		log = "[GetLogInfo]: event annex.4055 option annexation.4055.a"
-		name = annexation.4055.a
+		log = "[GetLogInfo]: event annex.4055 option annex.4055.a"
+		name = annex.4055.a
 		trigger = {
 			is_subject = no
 		}
@@ -4284,8 +4373,8 @@ country_event = { #Fate of Beafrika
 	}
 
 	option = { #Give to German Central Africa
-		log = "[GetLogInfo]: event annex.4055 option annexation.4055.b"
-		name = annexation.4055.b
+		log = "[GetLogInfo]: event annex.4055 option annex.4055.b"
+		name = annex.4055.b
 		trigger = {
 			DAF = {
             exists = yes
@@ -4313,8 +4402,8 @@ country_event = { #Fate of Beafrika
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4055 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4055 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4329,8 +4418,8 @@ country_event = { #Fate of Congo
 	is_triggered_only = yes
 	
 	option = { #Release Congo whole
-		log = "[GetLogInfo]: event annex.4056 option annexation.4056.a"
-		name = annexation.4056.a
+		log = "[GetLogInfo]: event annex.4056 option annex.4056.a"
+		name = annex.4056.a
 		trigger = {
 			is_subject = no
 		}
@@ -4355,8 +4444,8 @@ country_event = { #Fate of Congo
 	}
 
 	option = { #Give to German Central Africa
-		log = "[GetLogInfo]: event annex.4056 option annexation.4056.b"
-		name = annexation.4056.b
+		log = "[GetLogInfo]: event annex.4056 option annex.4056.b"
+		name = annex.4056.b
 		trigger = {
 			DAF = {
             exists = yes
@@ -4393,8 +4482,8 @@ country_event = { #Fate of Congo
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4056 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4056 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4410,8 +4499,8 @@ country_event = { #Fate of Wadi Fira
 
 
 	option = { #Give to Egypt
-		log = "[GetLogInfo]: event annex.4057 option annexation.4057.a"
-		name = annexation.4057.a
+		log = "[GetLogInfo]: event annex.4057 option annex.4057.a"
+		name = annex.4057.a
 		trigger = {
 			EGY = {
             exists = yes
@@ -4434,8 +4523,8 @@ country_event = { #Fate of Wadi Fira
 	}
 
 	option = { #Give to Mossiland
-		log = "[GetLogInfo]: event annex.4057 option annexation.4057.b"
-		name = annexation.4057.b
+		log = "[GetLogInfo]: event annex.4057 option annex.4057.b"
+		name = annex.4057.b
 		trigger = {
 			SUD = {
             exists = yes
@@ -4458,8 +4547,8 @@ country_event = { #Fate of Wadi Fira
 	}
 
 	option = { #Give to Kanem Bornu
-		log = "[GetLogInfo]: event annex.4057 option annexation.4057.c"
-		name = annexation.4057.c
+		log = "[GetLogInfo]: event annex.4057 option annex.4057.c"
+		name = annex.4057.c
 		trigger = {
 			CHA = {
             exists = yes
@@ -4482,8 +4571,8 @@ country_event = { #Fate of Wadi Fira
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4057 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4057 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4499,8 +4588,8 @@ country_event = { #Fate of Ennedi
 
 
 	option = { #Give to Cyrenica
-		log = "[GetLogInfo]: event annex.4058 option annexation.4058.a"
-		name = annexation.4058.a
+		log = "[GetLogInfo]: event annex.4058 option annex.4058.a"
+		name = annex.4058.a
 		trigger = {
 			CYR = {
             exists = yes
@@ -4523,8 +4612,8 @@ country_event = { #Fate of Ennedi
 	}
 
 	option = { #Give to Kanem Bornu
-		log = "[GetLogInfo]: event annex.4058 option annexation.4058.b"
-		name = annexation.4058.b
+		log = "[GetLogInfo]: event annex.4058 option annex.4058.b"
+		name = annex.4058.b
 		trigger = {
 			CHA = {
             exists = yes
@@ -4547,8 +4636,8 @@ country_event = { #Fate of Ennedi
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4058 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4058 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
@@ -4564,8 +4653,8 @@ country_event = { #Fate of Borkou
 
 
 	option = { #Give to Cyrenica
-		log = "[GetLogInfo]: event annex.4059 option annexation.4059.a"
-		name = annexation.4059.a
+		log = "[GetLogInfo]: event annex.4059 option annex.4059.a"
+		name = annex.4059.a
 		trigger = {
 			CYR = {
             exists = yes
@@ -4588,8 +4677,8 @@ country_event = { #Fate of Borkou
 	}
 
 	option = { #Give to Kanem Bornu
-		log = "[GetLogInfo]: event annex.4059 option annexation.4059.b"
-		name = annexation.4059.b
+		log = "[GetLogInfo]: event annex.4059 option annex.4059.b"
+		name = annex.4059.b
 		trigger = {
 			CHA = {
             exists = yes
@@ -4612,8 +4701,8 @@ country_event = { #Fate of Borkou
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation.4059 option annexation.cancel"
-		name = annexation.cancel
+		log = "[GetLogInfo]: event annex.4059 option annex.cancel"
+		name = annex.cancel
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
