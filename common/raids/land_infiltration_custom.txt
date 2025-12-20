@@ -1,0 +1,319 @@
+types = {
+	CHI_great_wall_raid_land = {
+
+		days_to_prepare = 15 
+
+		speed_multiplier = 2
+
+		category = land_infiltration_raids
+
+		custom_map_icon = GFX_raid_target_icon_guerilla_raid
+
+		target_icon = GFX_the_great_wall_icon
+
+		target_loc_key = raid_target_name_great_wall
+
+		launch_sound = raid_land_launchable_sound
+
+		arrow = {
+		    type = land
+		}
+
+     	unit_model = {
+         entity = motorized_vehicle_entity
+     	}
+
+		ai_will_do = {
+			base = 2
+
+			modifier = {
+				factor = 1.5
+				command_power > 50
+			}
+			modifier = {
+				factor = 1.5
+				command_power > 75
+			}
+			modifier = {
+				factor = 2
+				command_power > 90
+			}
+			modifier = {
+				factor = 0.5
+				has_equipment = {
+					infantry_equipment > 5000
+				}
+			}
+			modifier = {
+				factor = 0.5
+				command_power < 50
+			}
+			modifier = {
+				# Don't target anyone who is not a potential enemy
+				factor = 0
+				NOT = {
+					is_in_array = {
+						array = potential_and_current_enemies
+						value = FROM  # Target country
+					}
+				}
+			}
+		}
+
+		command_power = 15
+
+		allowed = {
+			is_chinese_tag = yes
+			has_dlc = "No Compromise, No Surrender"
+		}
+
+		fire_only_once = no
+
+		visible = {
+			any_state_in = {
+				array = global.great_wall_state
+				has_state_flag = CHI_great_wall_raidable
+			}
+		}
+
+		show_target = {
+			NOT = { 
+				is_ally_with = FROM
+			} 
+			var:target_state = {
+				has_state_flag = CHI_great_wall_raidable
+			}
+		}
+
+		available = {
+			var:target_state = {
+				any_neighbor_state = {
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+		}
+
+		launchable = {
+			has_war_with = FROM
+		}
+		
+		starting_point = {
+		    building_types = { supply_node }
+		    allow_faction_buildings = yes
+		}
+
+		unit_requirements = {
+			battalion_types = {
+				infantry = { min = 4 }
+			}
+		}
+		unit_requirements = {
+			battalion_types = {
+				elite_infantry = { min = 4 }
+			}
+		}
+		unit_requirements = {
+			battalion_types = {
+				militia = { min = 4 }
+			}
+		}
+		unit_requirements = {
+			battalion_types = {
+				mountaineers = { min = 4 }
+			}
+		}
+
+		additional_equipment = {
+		}
+
+		target_type = {
+			building = {
+				type = landmark_great_wall_section
+			}
+		}
+
+		success_factors = {
+			success = {
+				base = 0.6
+
+				# Raiding unit modifiers
+				experience = {
+					weight = 0.25
+					start_weight = -0.2
+					reference = 1.0
+				}
+
+				organisation = {
+					weight = 0.1
+					start_weight = -0.1
+					reference = 100
+				}
+				strength = {
+					weight = 0.1
+					start_weight = -0.1
+					reference = 1
+				}
+				recon = {
+					weight = 0.05
+					reference = 10
+				}
+
+				### Target Modifiers
+
+				resistance = {
+					reference = 100
+					start_reference = 15 # Resistance below 15 doesn't help
+					weight = 0.4
+				}
+				air_superiority = {
+					reference = 1
+					start_reference = 0.5
+					weight = 0.2
+				}
+
+				enemy_units = {
+					reference = 4 # More than 4 DIVs in the target Province shouldn't make any difference
+					weight = -0.4
+				}
+				intel = {
+					weight = 0.2
+					#start_reference = 50
+					reference = 100
+				}
+			}
+		}
+
+		success_levels = {
+			failure = {
+			    victim_effects = {
+					
+			    }
+				actor_effects = {
+
+					# Damage to unit
+					raid_damage_units = {
+						org_damage = 0.95
+						str_damage = 0.95
+						ratio = yes
+					}
+
+					# Unit Experience
+					raid_add_unit_experience = 0.05
+					add_raid_history_entry = yes
+				}
+				# Other unit effects
+				division_effects = {
+					add_divisional_commander_xp = 50
+				}
+				visual_effect = {
+					entity = "raid_failed_entity"
+					animation = "attack"
+				}
+			}
+			limited_success = {
+			    victim_effects = {
+
+				}
+				actor_effects = {
+
+					# Damage to unit
+					raid_damage_units = {
+						org_damage = 0.65
+						str_damage = 0.3
+						ratio = yes
+					}
+
+					# Unit Experience
+					raid_add_unit_experience = 0.15
+					add_raid_history_entry = yes
+				}
+				# Other unit effects
+				division_effects = {
+					add_divisional_commander_xp = 50
+				}
+				visual_effect = {
+					entity = "land_raids_limited_success_entity"
+					animation = "attack"
+				}
+			}
+			success = {
+			    victim_effects = {
+					var:target_state = {
+						remove_province_modifier = {
+							static_modifiers = { the_great_wall }
+							province = var:ROOT.target_province
+						}
+						damage_building = {
+							type = landmark_great_wall_section
+							damage = 0.85 # levels of damage
+							province = var:ROOT.target_province
+						}
+						clr_state_flag = CHI_great_wall_raidable
+					}
+				}
+				actor_effects = {
+
+					# Damage to unit
+					raid_damage_units = {
+						org_damage = 0.45
+						str_damage = 0.2
+						ratio = yes
+					}
+
+					# Unit Experience
+					raid_add_unit_experience = 0.2
+					add_raid_history_entry = yes
+				}
+				# Other unit effects
+				division_effects = {
+					add_divisional_commander_xp = 50
+				}
+				visual_effect = {
+					entity = "land_raids_success_entity"
+					animation = "attack"
+					}
+			}
+			critical_success = {
+			    victim_effects = {
+					var:target_state = {
+						remove_province_modifier = {
+							static_modifiers = { the_great_wall }
+							province = var:ROOT.target_province
+						}
+						damage_building = {
+							type = landmark_great_wall_section
+							damage = 0.85 # levels of damage
+							province = var:ROOT.target_province
+						}
+						clr_state_flag = CHI_great_wall_raidable
+					}
+				}
+				actor_effects = {
+					
+					var:actor_country = {
+						
+					}
+
+					# Damage to unit
+					raid_damage_units = {
+						org_damage = 0.25
+						str_damage = 0.15
+						ratio = yes
+					}
+
+					# Unit Experience
+					raid_add_unit_experience = 0.35
+					add_raid_history_entry = yes
+				}
+				# Other unit effects
+				division_effects = {
+					add_divisional_commander_xp = 50
+				}
+				visual_effect = {
+					entity = "land_raids_critical_success_entity"
+					animation = "attack"
+				}
+			}
+		}
+	}
+}
