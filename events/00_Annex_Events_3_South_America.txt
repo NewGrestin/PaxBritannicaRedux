@@ -7,8 +7,8 @@ add_namespace = annex
 
 country_event = { #Fate of Venezuela
 	id = annex.3000
-	title = annexation_venezuela
-	desc = annexation_venezuela_desc
+	title = annexation_307
+	desc = annexation_307_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -379,8 +379,8 @@ country_event = { #Fate of Uruguay
 
 country_event = { #Fate of Rio de la Plata
 	id = annex.3003
-	title = annexation_rio_de_la_plata
-	desc = annexation_rio_de_la_plata_desc
+	title = annexation_1246
+	desc = annexation_1246_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -395,9 +395,11 @@ country_event = { #Fate of Rio de la Plata
 				}
 				save_event_target_as = can_annex
 			}
-			BOL = {
+			RLP = {
 				drop_cosmetic_tag = yes
 			}
+			995 = { retain_state = yes }
+			1001 = { retain_state = yes }
 			1002 = { retain_state = yes }
 			1367 = { retain_state = yes }
 			if = {
@@ -860,8 +862,8 @@ country_event = { #Fate of Paraguay
 }
 country_event = { #Fate of Argentine Paraguay
 	id = annex.3007
-	title = annexation_argentine_paraguay
-	desc = annexation_argentine_paraguay_desc
+	title = annexation_985
+	desc = annexation_985_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -933,8 +935,8 @@ country_event = { #Fate of Argentine Paraguay
 
 country_event = { #Fate of Mato Groso De Sul
 	id = annex.3008
-	title = annexation_aracuaria
-	desc = annexation_aracuaria_desc
+	title = annexation_1223
+	desc = annexation_1223_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -1059,8 +1061,8 @@ country_event = { #Fate of Mato Groso De Sul
 
 country_event = { #Fate of Alto Paraguay
 	id = annex.3009
-	title = annexation_alto_paraguay
-	desc = annexation_alto_paraguay_desc
+	title = annexation_688
+	desc = annexation_688_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -1308,6 +1310,8 @@ country_event = { #Fate of Charcas
 			BOL = {
 				drop_cosmetic_tag = yes
 			}
+			993 = { retain_state = yes }
+			1224 = { retain_state = yes }
 			996 = { retain_state = yes }
 			995 = { retain_state = yes }
 			if = {
@@ -1566,8 +1570,14 @@ country_event = { #Fate of Acre
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:amazonas }
-		855 = { transfer_state_and_notify = yes } #Acre
-		1040 = { transfer_state_and_notify = yes } #Acre Jungle
+		827 = { # Lower Acre
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
+		828 = { # Higher Acre
+			remove_claim_and_add_core_of_target = yes 
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Give to overlord
@@ -1642,7 +1652,7 @@ country_event = { #Fate of Chile
 
 		set_temp_variable = { tag_to_release = CHL }
 		every_state = {
-			limit = { is_core_of = CHL }
+			limit = { is_chile = yes }
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
@@ -1681,8 +1691,10 @@ country_event = { #Fate of Chile
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:peru }
-		CHL = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_state = {
+			limit = { is_chile = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { #Give to overlord
@@ -1692,11 +1704,9 @@ country_event = { #Fate of Chile
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
+		every_state = {
+			limit = { is_chile = yes }
+			transfer_if_owned = yes
 		}
 		recheck_annexations = yes
 	}
@@ -1708,7 +1718,7 @@ country_event = { #Fate of Chile
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
-			limit = { is_core_of = CHL }
+			limit = { is_chile = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -1905,6 +1915,22 @@ country_event = { #Fate of New Granada
 			}
 		}
 	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3015 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_state = {
+			limit = { is_core_of = COL }
+			transfer_if_owned = yes
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
 	option = { #Annex
 		log = "[GetLogInfo]: event annex.3015 option name annex.integration"
 		name = annex.integration
@@ -1938,6 +1964,15 @@ country_event = { #Fate of Quito
 
 	immediate = {
 		if = {
+			limit = {
+				OR = {
+					306 = { is_claim_or_core_of_ROOT = yes } #Colombia
+					303 = { is_claim_or_core_of_ROOT = yes } #peru
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
 			limit = { var:306.owner = { ROOT_can_grant_land = yes } }
 			var:306.owner = { save_event_target_as = colombia }
 		}
@@ -1963,7 +1998,7 @@ country_event = { #Fate of Quito
 
 		set_temp_variable = { tag_to_release = ECU }
 		every_state = {
-			limit = { is_core_of = ECU }
+			limit = { is_ecuador = yes }
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
@@ -2007,8 +2042,10 @@ country_event = { #Fate of Quito
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:peru }
-		ECU = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_state = {
+			limit = { is_equador = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { #Return it to New Granada
@@ -2035,8 +2072,10 @@ country_event = { #Fate of Quito
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:colombia }
-		ECU = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_state = {
+			limit = { is_equador = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { #Give to overlord
@@ -2046,10 +2085,9 @@ country_event = { #Fate of Quito
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				is_allowed_annexation_state = yes
-			}
+		every_state = {
+			limit = { is_equador = yes }
+			transfer_if_owned = yes
 			transfer_state_and_notify = yes
 		}
 		recheck_annexations = yes
@@ -2062,7 +2100,7 @@ country_event = { #Fate of Quito
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
-			limit = { is_core_of = ECU }
+			limit = { is_equador = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -2558,115 +2596,125 @@ country_event = { #Fate of Greater Buenos Aires
 	}
 }
 
-country_event = { #Fate of Santa
+country_event = { # Fate of Arica
 	id = annex.3024
-	title = annexation_arica
-	desc = annexation_arica_desc
+	title = annexation_995
+	desc = annexation_995_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
-	option = { #Return to Hispania
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					996 = { is_claim_or_core_of_ROOT = yes } # Antofagasta
+					994 = { is_claim_or_core_of_ROOT = yes } # Tacna
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				996 = { # Antofagasta
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:996.owner = { save_event_target_as = antofagasta }
+		}
+
+		if = {
+			limit = {
+				994 = { # Tacna
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:antofagasta }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:994.owner = { save_event_target_as = tacna }
+		}
+	}
+
+	option = { # Return to Antofagasta
 		log = "[GetLogInfo]: event annex.3024 option annex.3024.a"
 		name = annex.3024.a
 		trigger = {
-			is_subject = no
-			CHR = {
-            exists = yes
-		    } 
+			has_event_target = antofagasta
 		}
 		ai_chance = {
-			base = 100
+			base = 70
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:antofagasta }
+				is_ally_with = event_target:tacna
+			}
+			modifier = {
+				factor = 0.1
+				event_target:antofagasta = { is_subject = yes }
+			}
 		}
-
-		CHR = {
-			transfer_state = 995
-		}
-		
+		set_temp_variable = { tag_to_release = event_target:antofagasta }
+		995 = { transfer_state_and_notify = yes } # Arica
 	}
 
-	option = { #Return to Peru
+	option = { # Transfer to Tacna
 		log = "[GetLogInfo]: event annex.3024 option annex.3024.b"
 		name = annex.3024.b
 		trigger = {
-			is_subject = no
-			PRU = {
-            exists = yes
-		    } 
+			has_event_target = tacna
 		}
 		ai_chance = {
-			base = 100
+			base = 30
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tacna }
+				is_ally_with = event_target:antofagasta
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tacna = { is_subject = yes }
+			}
 		}
-
-		PRU = {
-			transfer_state = 995
-		}
-		
+		set_temp_variable = { tag_to_release = event_target:tacna }
+		995 = { transfer_state_and_notify = yes } # Arica
 	}
 
-	option = { #Return to Peru
-		log = "[GetLogInfo]: event annex.3024 option annex.3024.c"
-		name = annex.3024.c
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.3024 option annex.give_to_overlord"
+		name = annex.give_to_overlord
 		trigger = {
-			is_subject = no
-			CHL = {
-            exists = yes
-			owns_state = 996
-		    } 
+			annexations_should_give_lands_to_overlord = yes
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		CHL = {
-			transfer_state = 995
-		}
-		
+		set_temp_variable = { tag_to_release = overlord }
+		995 = { transfer_state_and_notify = yes } # Arica
 	}
 
-	option = { #Return to Bolivia
-		log = "[GetLogInfo]: event annex.3024 option annex.3024.d"
-		name = annex.3024.d
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.3024 option annex.integration"
+		name = annex.integration
 		trigger = {
-			is_subject = no
-			BOL = {
-            exists = yes
-		    } 
+			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		BOL = {
-			transfer_state = 995
-		}
-		
+		995 = { add_claim_of_ROOT = yes } # Arica
 	}
 
-	
-
-	option = { #Cancel
+	option = { # Cancel
 		log = "[GetLogInfo]: event annex.3024 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		
-    }
+	}
 
 	after = {
 		recheck_annexations = yes
@@ -3083,4 +3131,379 @@ country_event = { # Fate of Western Hispaniola
 	after = {
         recheck_annexations = yes
     }
+}
+
+country_event = { # Fate of Chaco Boreal
+	id = annex.3027
+	title = annexation_1224
+	desc = annexation_1224_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					688 = { is_claim_or_core_of_ROOT = yes } # Alto Paraguay
+					487 = { is_claim_or_core_of_ROOT = yes } # Amazonas
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				688 = { # Alto Paraguay
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:688.owner = { save_event_target_as = alto_paraguay }
+		}
+
+		if = {
+			limit = {
+				487 = { # Amazonas
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:alto_paraguay }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:487.owner = { save_event_target_as = amazonas }
+		}
+	}
+
+	option = { # Return to Alto Paraguay
+		log = "[GetLogInfo]: event annex.3027 option annex.3027.a"
+		name = annex.3027.a
+		trigger = {
+			has_event_target = alto_paraguay
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alto_paraguay }
+				is_ally_with = event_target:amazonas
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alto_paraguay = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:alto_paraguay }
+		1224 = { transfer_state_and_notify = yes } # Chaco Boreal
+	}
+
+	option = { # Transfer to Amazonas
+		log = "[GetLogInfo]: event annex.3027 option annex.3027.b"
+		name = annex.3027.b
+		trigger = {
+			has_event_target = amazonas
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:amazonas }
+				is_ally_with = event_target:alto_paraguay
+			}
+			modifier = {
+				factor = 0.1
+				event_target:amazonas = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:amazonas }
+		1224 = { transfer_state_and_notify = yes } # Chaco Boreal
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.3027 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1224 = { transfer_state_and_notify = yes } # Chaco Boreal
+	}
+
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.3027 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1224 = { add_claim_of_ROOT = yes } # Chaco Boreal
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.3027 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Tarija
+	id = annex.3028
+	title = annexation_993
+	desc = annexation_993_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					992 = { is_claim_or_core_of_ROOT = yes } # Potosi
+					1003 = { is_claim_or_core_of_ROOT = yes } # Tucuman
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				992 = { # Potosi
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:992.owner = { save_event_target_as = potosi }
+		}
+
+		if = {
+			limit = {
+				1003 = { # Tucuman
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:potosi }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1003.owner = { save_event_target_as = tucuman }
+		}
+	}
+
+	option = { # Return to Potosi
+		log = "[GetLogInfo]: event annex.3028 option annex.3028.a"
+		name = annex.3028.a
+		trigger = {
+			has_event_target = potosi
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:potosi }
+				is_ally_with = event_target:tucuman
+			}
+			modifier = {
+				factor = 0.1
+				event_target:potosi = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:potosi }
+		993 = { transfer_state_and_notify = yes } # Tarija
+	}
+
+	option = { # Transfer to Tucuman
+		log = "[GetLogInfo]: event annex.3028 option annex.3028.b"
+		name = annex.3028.b
+		trigger = {
+			has_event_target = tucuman
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tucuman }
+				is_ally_with = event_target:potosi
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tucuman = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:tucuman }
+		993 = { transfer_state_and_notify = yes } # Tarija
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.3028 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		993 = { transfer_state_and_notify = yes } # Tarija
+	}
+
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.3028 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		993 = { add_claim_of_ROOT = yes } # Tarija
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.3028 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Tacna
+	id = annex.3029
+	title = annexation_994
+	desc = annexation_994_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					992 = { is_claim_or_core_of_ROOT = yes } # Potosi
+					303 = { is_claim_or_core_of_ROOT = yes } # Ciudad de los Reyes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				992 = { # Potosi
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:992.owner = { save_event_target_as = potosi }
+		}
+
+		if = {
+			limit = {
+				303 = { # Ciudad de los Reyes
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:potosi }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:303.owner = { save_event_target_as = ciudad_de_los_reyes }
+		}
+	}
+
+	option = { # Return to Potosi
+		log = "[GetLogInfo]: event annex.3029 option annex.3029.a"
+		name = annex.3029.a
+		trigger = {
+			has_event_target = potosi
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:potosi }
+				is_ally_with = event_target:ciudad_de_los_reyes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:potosi = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:potosi }
+		994 = { transfer_state_and_notify = yes } # Tacna
+	}
+
+	option = { # Transfer to Ciudad de los Reyes
+		log = "[GetLogInfo]: event annex.3029 option annex.3029.b"
+		name = annex.3029.b
+		trigger = {
+			has_event_target = ciudad_de_los_reyes
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ciudad_de_los_reyes }
+				is_ally_with = event_target:potosi
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ciudad_de_los_reyes = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:ciudad_de_los_reyes }
+		994 = { transfer_state_and_notify = yes } # Tacna
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.3029 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		994 = { transfer_state_and_notify = yes } # Tacna
+	}
+
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.3029 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		994 = { add_claim_of_ROOT = yes } # Tacna
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.3029 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
 }
