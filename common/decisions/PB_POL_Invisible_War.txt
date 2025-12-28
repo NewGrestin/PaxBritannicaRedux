@@ -83,7 +83,7 @@ PB_POL_Invisible_War = {
 	PB_POL_Arrest_Local_Leaders = {
 		icon = generic_decision
 
-		cost = 20
+		cost = 35
 		ai_will_do = {
 			factor = 10
 			
@@ -100,7 +100,27 @@ PB_POL_Invisible_War = {
 		remove_effect = {
 			PB_RUS_Decrease_Polish_Resistance_Medium = yes
 			add_stability = -0.02
-			
+			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Small_tt
+			hidden_effect = {
+				for_each_scope_loop = {
+					array = POL.owned_states
+					if = {
+						limit = {
+							is_core_of = POL
+							has_state_flag = POL_Resistance_State_Flag
+						}
+						add_to_variable = {
+							var = id.Resistance_Number
+							value = -5
+						}
+						clamp_variable = {
+							var = id.Resistance_Number
+							min = 0
+							max = 100
+						}
+					}
+				}
+			}
 		}
 	}
 	PB_POL_Attack_Training_Camps_Abroad = {
@@ -255,21 +275,10 @@ PB_POL_Invisible_War = {
 
 		remove_effect = {
 			add_stability = -0.01
-			custom_effect_tooltip = POL_Decrease_Local_Resistance_Medium_tt
 			FROM = {
-				hidden_effect = {
-					add_to_variable = {
-						var = id.Resistance_Number
-						value = -10
-					}
-					clamp_variable = {
-						var = id.Resistance_Number
-						min = 0
-						max = 100
-					}
-				}
+				PB_POL_Decrease_Local_Resistance_Medium = yes
 			}
-			
+			add_manpower = -10
 		}
 
 		ai_will_do = {
@@ -291,10 +300,7 @@ PB_POL_Invisible_War = {
 		}
 
 		available = {
-			OR = {
-				has_country_flag = POL_Full_Power
-				has_government = rc
-			}
+			has_global_flag = PB_Second_National_Awakening_Started
 		}
 
 		selectable_mission = no
@@ -305,12 +311,23 @@ PB_POL_Invisible_War = {
 		days_mission_timeout = 3
 
 		timeout_effect = {
+			custom_effect_tooltip = POL_Increase_Every_Local_Resistance_Small_tt
 			activate_mission  = POL_Trouble
 			for_each_scope_loop = {
 				array = POL.owned_states
 				if = {
 					limit = {
 						is_core_of = POL
+						has_state_flag = POL_Resistance_State_Flag
+					}
+					add_to_variable = {
+						var = id.Resistance_Number
+						value = 5
+					}
+					clamp_variable = {
+						var = id.Resistance_Number
+						min = 0
+						max = 100
 					}
 					set_temp_variable = { factor = 0.5 }
 					set_temp_variable = { resistance_number = id.Resistance_Number }
