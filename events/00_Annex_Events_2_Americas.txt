@@ -5538,3 +5538,118 @@ country_event = { # Fate of Vandalia
 		recheck_annexations = yes
 	}
 }
+
+country_event = { # Fate of Epstein Island
+	id = annex.2053
+	title = annexation_824
+	desc = annexation_824_desc
+	picture = GFX_report_PB_Peace_Deals_Caribbean
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					1369 = { is_claim_or_core_of_ROOT = yes } # Puerto Rico
+					686 = { is_claim_or_core_of_ROOT = yes } # Dutch Antilles
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				1369 = {
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:1369.owner = { save_event_target_as = puerto_rico }
+		}
+
+		if = {
+			limit = {
+				686 = {
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:puerto_rico }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:686.owner = { save_event_target_as = dutch_antilles }
+		}
+	}
+
+	option = { # Return to Puerto Rico
+		log = "[GetLogInfo]: event annex.2053 option annex.2053.a"
+		name = annex.2053.a
+		trigger = { has_event_target = puerto_rico }
+
+		ai_chance = {
+			base = 45
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:puerto_rico = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:puerto_rico }
+		824 = { transfer_state_and_notify = yes }
+	}
+
+	option = { # Return to Dutch Antilles
+		log = "[GetLogInfo]: event annex.2053 option annex.2053.b"
+		name = annex.2053.b
+		trigger = { has_event_target = dutch_antilles }
+
+		ai_chance = {
+			base = 35
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:dutch_antilles = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:dutch_antilles }
+		824 = { transfer_state_and_notify = yes }
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.2053 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		824 = { transfer_state_and_notify = yes }
+	}
+
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.2053 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		824 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.2053 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
