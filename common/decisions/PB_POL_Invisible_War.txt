@@ -49,9 +49,58 @@ PB_POL_Invisible_War = {
 			PB_RUS_Decrease_Polish_Resistance = yes
 			add_popularity = {
 				ideology = jc
-				popularity = -0.02
+				popularity = -0.05
 			}
+			add_political_power = 20
+		}
+	}
+	PB_POL_Coordinated_Strike = {
+		icon = generic_decision
 
+		cost = 25
+		ai_will_do = {
+			factor = 10
+			
+		}
+
+		available = {
+			has_completed_focus = PB_POL_White_Red_Ops
+			has_global_flag = POL_Rebels_Infiltrated
+		}
+
+		days_re_enable = 70
+
+		days_remove = 25
+
+		remove_effect = {
+			add_manpower = -50
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -100
+				producer = POL
+			}
+			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Small_tt
+			hidden_effect = {
+				for_each_scope_loop = {
+					array = POL.owned_states
+					if = {
+						limit = {
+							is_core_of = POL
+							has_state_flag = POL_Resistance_State_Flag
+						}
+						add_to_variable = {
+							var = id.Resistance_Number
+							value = -5
+						}
+						clamp_variable = {
+							var = id.Resistance_Number
+							min = 0
+							max = 100
+						}
+					}
+				}
+			}
+			add_political_power = 30
 		}
 	}
 	PB_POL_Confiscate_Flyers = {
@@ -76,7 +125,7 @@ PB_POL_Invisible_War = {
 		remove_effect = {
 			add_popularity = {
 				ideology = jc
-				popularity = -0.02
+				popularity = -0.03
 			}
 		}
 	}
@@ -144,8 +193,8 @@ PB_POL_Invisible_War = {
 		}
 
 		available = {
-			
 			has_completed_focus = PB_POL_Invite_Okhrana_Specialists
+			has_completed_focus = PB_POL_White_Red_Ops
 		}
 
 		days_re_enable = 50
@@ -175,11 +224,12 @@ PB_POL_Invisible_War = {
 		days_remove = 30
 
 		remove_effect = {
+			PB_RUS_Decrease_Polish_Resistance_Medium = yes
 			add_popularity = {
 				ideology = jc
-				popularity = -0.05
+				popularity = -0.15
 			}
-			add_political_power = 50
+			add_political_power = 60
 		}
 	}
 
@@ -221,16 +271,20 @@ PB_POL_Invisible_War = {
 		remove_effect = {
 
 			add_popularity = {
-				ideology = jc
+				ideology = ss
 				popularity = -0.01
 			}
-			add_stability = -0.01
-			custom_effect_tooltip = POL_Decrease_Local_Resistance_Small_tt
+			add_popularity = {
+				ideology = jc
+				popularity = -0.02
+			}
+			add_stability = -0.005
+			custom_effect_tooltip = POL_Decrease_Local_Resistance_Large_tt
 			FROM = {
 				hidden_effect = {
 					add_to_variable = {
 						var = id.Resistance_Number
-						value = -5
+						value = -15
 					}
 					clamp_variable = {
 						var = id.Resistance_Number
@@ -246,6 +300,54 @@ PB_POL_Invisible_War = {
 		}
 	}
 
+	PB_POL_Restore_Government_Control = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 15
+
+		cost = 15
+
+		available = {
+			
+		}
+
+		visible = {
+			
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				NOT = {
+					is_core_of = POL
+				}
+				has_state_flag = POL_Resistance_State_Flag
+			}
+		}
+
+		complete_effect = {
+			
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+		}
+
+		remove_effect = {
+			FROM = {
+				add_core_of = POL
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
 	PB_POL_Send_Army = {
 
 		icon = GFX_decision_move_city
@@ -253,7 +355,11 @@ PB_POL_Invisible_War = {
 		days_remove = 10
 
 		cost = 5
-
+		custom_cost_trigger = {
+			command_power > 10
+			has_political_power>4
+		}
+		custom_cost_text = PB_POL_decision_cost_CP_10_PP_5
 		available = {
 			divisions_in_state = {
 				state = FROM
@@ -285,10 +391,10 @@ PB_POL_Invisible_War = {
 		}
 
 		remove_effect = {
-			add_stability = -0.01
 			FROM = {
 				PB_POL_Decrease_Local_Resistance_Medium = yes
 			}
+			add_command_power = -10
 			add_manpower = -10
 		}
 
@@ -318,7 +424,7 @@ PB_POL_Invisible_War = {
 		is_good = no
 		fire_only_once = no
 				
-		days_mission_timeout = 30
+		days_mission_timeout = 70
 
 		timeout_effect = {
 			custom_effect_tooltip = POL_Increase_Every_Local_Resistance_Small_tt
@@ -348,15 +454,26 @@ PB_POL_Invisible_War = {
 					set_temp_variable = { resistance_number = id.Resistance_Number }
 					set_temp_variable = { strength_number = RUS.RUS_Polish_Resistance_Power }
 					set_temp_variable = { popularity_number = ROOT.party_popularity@jc }
-					multiply_temp_variable = { resistance_number = 0.4}
-					multiply_temp_variable = { strength_number = 0.3}
-					multiply_temp_variable = { popularity_number = 30}
+					multiply_temp_variable = { resistance_number = 0.6}
+					multiply_temp_variable = { strength_number = 0.2}
+					multiply_temp_variable = { popularity_number = 20}
 					add_to_temp_variable = { resistance_number = strength_number }
 					add_to_temp_variable = { resistance_number = popularity_number }
 					multiply_temp_variable = { resistance_number = factor}
 					round_temp_variable = resistance_number
 					set_temp_variable = { difference_number = 100 }
 					subtract_from_temp_variable = { difference_number = resistance_number }
+					if = {
+						limit = {
+							check_variable = { id.Resistance_Number>80 }
+						}
+						resistance_number = {
+							remove_core_of = POL
+						}
+						difference_number = {
+
+						}
+					}
 					random_list = {
 						resistance_number = {
 							add_manpower = -150
