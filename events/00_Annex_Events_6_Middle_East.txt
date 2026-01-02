@@ -53,7 +53,7 @@ country_event = { #Fate of Persia
 			PER = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = PER_Occupied_Monarchy
-				remove_ideas = PB_PER_Ummah_Vanguard
+				remove_ideas = PB_PER_Ummah_ottomansguard
 				remove_ideas = PB_PER_Uneasy_Sisterhood
 			}
 		}
@@ -134,7 +134,7 @@ country_event = { #Fate of Persia
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = PER_ENG_Colonial
 				add_stability = -0.1
-				remove_ideas = PB_PER_Ummah_Vanguard
+				remove_ideas = PB_PER_Ummah_ottomansguard
 				remove_ideas = PB_PER_Uneasy_Sisterhood
 			}
 		}
@@ -149,7 +149,7 @@ country_event = { #Fate of Persia
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = PER_RUS_Colonial
 				add_stability = -0.1
-				remove_ideas = PB_PER_Ummah_Vanguard
+				remove_ideas = PB_PER_Ummah_ottomansguard
 				remove_ideas = PB_PER_Uneasy_Sisterhood
 			}
 		}
@@ -164,7 +164,7 @@ country_event = { #Fate of Persia
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = PER_TUR_Colonial
 				add_stability = -0.1
-				remove_ideas = PB_PER_Ummah_Vanguard
+				remove_ideas = PB_PER_Ummah_ottomansguard
 				remove_ideas = PB_PER_Uneasy_Sisterhood
 			}
 		}
@@ -1771,4 +1771,2154 @@ country_event = { #Fate of Hasab
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
 	}
+}
+
+country_event = { # Fate of Syria
+	id = annex.6014
+	title = annexation_decision_554
+	desc = annexation_decision_554_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		1309 = { retain_state = yes } #Latakia
+		553 = { retain_state = yes } #Lebanon
+		1420 = { retain_state = yes } #Akka
+		545 = { retain_state = yes } #Al Quds
+		1310 = { retain_state = yes } #Naqab
+		675 = { retain_state = yes } #Raqqa
+	}
+
+	option = { # Release an independent Syria
+		log = "[GetLogInfo]: event annex.6014 option annex.6014.a"
+		name = annex.6014.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = SYR }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			SYR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SYR_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			SYR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SYR_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7044 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7044 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = SYR }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7044 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Alawites
+	id = annex.6015
+	title = annexation_decision_1309
+	desc = annexation_decision_1309_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						554 = { is_claim_or_core_of_ROOT = yes } # Damascus
+						original_tag = SYR
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					554 = { # Damascus
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:554.owner = { save_event_target_as = syria }
+			}
+		}
+	}
+
+	option = { # Release an independent Alawite State
+		log = "[GetLogInfo]: event annex.6015 option annex.6015.a"
+		name = annex.6015.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = ALW }
+		1309 = { remove_claim_and_add_core_of_target = yes } # Latakia
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			ALW = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ALW_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			ALW = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ALW_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Syria
+		log = "[GetLogInfo]: event annex.6015 option annex.6015.a"
+		name = annex.6015.b
+		trigger = {
+			has_event_target = syria
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:syria = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:syria }
+		1309 = { transfer_state_and_notify = yes } # Latakia
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7044 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7044 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = ALW }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7044 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Lebanon
+	id = annex.6016
+	title = annexation_decision_553
+	desc = annexation_decision_553_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						554 = { is_claim_or_core_of_ROOT = yes } # Damascus
+						original_tag = SYR
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					554 = { # Damascus
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:554.owner = { save_event_target_as = syria }
+			}
+		}
+	}
+
+	option = { # Release an independent Lebanon
+		log = "[GetLogInfo]: event annex.6016 option annex.6016.a"
+		name = annex.6016.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = LEB }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = { has_monarchist_government = yes }
+			}
+			LEB = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = LEB_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = { has_republican_government = yes }
+			}
+			LEB = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = LEB_Occupied_Republic
+			}
+		}
+	}
+
+	option = { # Give to Syria
+		log = "[GetLogInfo]: event annex.6016 option annex.6016.b"
+		name = annex.6016.b
+		trigger = {
+			has_event_target = syria
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:syria = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:syria }
+		553 = { transfer_state_and_notify = yes } # Lebanon
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.6016 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { # Integrate
+		log = "[GetLogInfo]: event annex.6016 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = LEB }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.6016 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Filastin
+	id = annex.6017
+	title = annexation_decision_553
+	desc = annexation_decision_553_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						554 = { is_claim_or_core_of_ROOT = yes } # Damascus
+						original_tag = SYR
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					554 = { # Damascus
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:554.owner = { save_event_target_as = syria }
+			}
+		}
+	}
+
+	option = { # Release an independent Palestine
+		log = "[GetLogInfo]: event annex.6017 option annex.6017.a"
+		name = annex.6017.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = PAL }
+		1420 = { remove_claim_and_add_core_of_target = yes } #Akka
+		454 = { remove_claim_and_add_core_of_target = yes } #Quds
+		1310 = { remove_claim_and_add_core_of_target = yes } #Naqab
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = { has_monarchist_government = yes }
+			}
+			PAL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PAL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = { has_republican_government = yes }
+			}
+			PAL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PAL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { # Give to Syria
+		log = "[GetLogInfo]: event annex.6017 option annex.6017.b"
+		name = annex.6017.b
+		trigger = {
+			has_event_target = syria
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:syria = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:syria }
+		1420 = { transfer_state_and_notify = yes } # Akka
+		454 = { transfer_state_and_notify = yes } # Quds
+		1310 = { transfer_state_and_notify = yes } # Naqab
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.6017 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { # Integrate
+		log = "[GetLogInfo]: event annex.6017 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { 
+				state = 1420
+				state = 454
+				state = 1310
+			}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.6016 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Raqqa
+	id = annex.6018
+	title = annexation_decision_6018
+	desc = annexation_decision_6018_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					1312 = { is_claim_or_core_of_ROOT = yes } # Deir ez-Zor
+					350  = { is_claim_or_core_of_ROOT = yes } # Malatya
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				1312 = { # Deir ez-Zor
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:1312.owner = { save_event_target_as = deir_ezzor }
+		}
+
+		if = {
+			limit = {
+				350 = { # Malatya
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:deir_ezzor }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:350.owner = { save_event_target_as = malatya }
+		}
+	}
+
+	option = { # Give to owner of Deir ez-Zor
+		log = "[GetLogInfo]: event annex.6018 option annex.6018.a"
+		name = annex.6018.a
+		trigger = {
+			has_event_target = deir_ezzor
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:deir_ezzor }
+				is_ally_with = event_target:malatya
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = malatya }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:deir_ezzor = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:deir_ezzor }
+		675 = { transfer_state_and_notify = yes } # Raqqa
+	}
+
+	option = { # Give to owner of Malatya
+		log = "[GetLogInfo]: event annex.6018 option annex.6018.b"
+		name = annex.6018.b
+		trigger = {
+			has_event_target = malatya
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:malatya }
+				is_ally_with = event_target:deir_ezzor
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = deir_ezzor }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:malatya = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:malatya }
+		675 = { transfer_state_and_notify = yes } # Raqqa
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.6018 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		675 = { transfer_state_and_notify = yes } # Raqqa
+	}
+
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.6018 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		675 = { transfer_state_and_notify = yes } # Raqqa
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.6018 option name annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Erbil
+	id = annex.6019
+	title = annexation_decision_6019
+	desc = annexation_decision_6019_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					818 = { is_claim_or_core_of_ROOT = yes } # Mosul
+					352 = { is_claim_or_core_of_ROOT = yes } # erbil
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				818 = { # Mosul
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:818.owner = { save_event_target_as = mosul }
+		}
+
+		if = {
+			limit = {
+				352 = { # van
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:mosul }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:352.owner = { save_event_target_as = van }
+		}
+	}
+
+	option = { # Give to owner of Mosul
+		log = "[GetLogInfo]: event annex.6019 option annex.6019.a"
+		name = annex.6019.a
+		trigger = {
+			has_event_target = mosul
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:mosul }
+				is_ally_with = event_target:van
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = van }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:mosul = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:mosul }
+		676 = { transfer_state_and_notify = yes } # Erbil
+	}
+
+	option = { # Give to owner of van
+		log = "[GetLogInfo]: event annex.6019 option annex.6019.b"
+		name = annex.6019.b
+		trigger = {
+			has_event_target = van
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:van }
+				is_ally_with = event_target:mosul
+			}
+			modifier = {
+				factor = 2
+				NOT = { has_event_target = mosul }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:van = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:van }
+		676 = { transfer_state_and_notify = yes } # Erbil
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.6019 option name annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		676 = { transfer_state_and_notify = yes } # Erbil
+	}
+
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.6019 option name annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		676 = { transfer_state_and_notify = yes } # Erbil
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.6019 option name annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Iraq
+	id = annex.6020
+	title = annexation_decision_820
+	desc = annexation_decision_820_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+
+	immediate = {
+		676 = { retain_state = yes } # Erbil
+	}
+
+	option = { # Release an independent Iraq
+		log = "[GetLogInfo]: event annex.6020 option annex.6020.a"
+		name = annex.6020.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = IRQ }
+		every_state = {
+			limit = { is_iraq = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			IRQ = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRQ_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			IRQ = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRQ_Occupied_Republic
+			}
+		}
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.6020 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { # Integrate
+		log = "[GetLogInfo]: event annex.6020 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_iraq = yes }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.6020 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Kurdistan
+	id = annex.6021
+	title = annexation_decision_350
+	desc = annexation_decision_350_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+
+	immediate = {
+		676 = { retain_state = yes } # Erbil
+		675 = { retain_state = yes } # Raqqa
+		if = {
+			limit = {
+				OR = {
+					49 = { is_claim_or_core_of_ROOT = yes } # Osman #BEAR WITH ME KURDS.
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				49 = { # Osman
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:49.owner = { save_event_target_as = ottomans }
+		}
+	}
+
+	option = { # Release an independent Kurdistan
+		log = "[GetLogInfo]: event annex.6021 option annex.6021.a"
+		name = annex.6021.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 5
+		}
+
+		set_temp_variable = { tag_to_release = KRD }
+		every_state = {
+			limit = { is_kurdistan = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			KRD = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = KRD_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			KRD = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = KRD_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to ottomans
+		log = "[GetLogInfo]: event annex.6021 option annex.6021.a"
+		name = annex.6021.b
+		trigger = {
+			has_event_target = ottomans
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ottomans = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:ottomans }
+		every_state = {
+			limit = { is_kurdistan = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.6021 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_state = {
+			limit = { is_kurdistan = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { # Integrate
+		log = "[GetLogInfo]: event annex.6021 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_kurdistan = yes }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.6021 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { # Fate of Antakya
+    id = annex.6022
+    title = annexation_decision_819
+    desc = annexation_decision_819_desc
+    picture = GFX_report_PB_Peace_Deals_Middle_East
+
+    is_triggered_only = yes
+
+    immediate = {
+        if = {
+            limit = {
+                OR = {
+                    677 = { is_claim_or_core_of_ROOT = yes } # Halab
+                    344 = { is_claim_or_core_of_ROOT = yes } # Adaneh
+                    1309 = { is_claim_or_core_of_ROOT = yes } # Latakia
+                }
+            }
+            save_event_target_as = can_annex
+        }
+
+        if = {
+            limit = { 677 = { owner = { ROOT_can_grant_land = yes } } }
+            var:677.owner = { save_event_target_as = halab }
+        }
+
+        if = {
+            limit = { 344 = { annexations_state_owner_is_valid_grant_target = yes
+                 owner = { NOT = { tag = event_target:halab } ROOT_can_grant_land = yes } } }
+            var:344.owner = { save_event_target_as = adaneh }
+        }
+
+        if = {
+            limit = { 1309 = { annexations_state_owner_is_valid_grant_target = yes
+                owner = { 
+					NOT = { tag = event_target:halab } 
+					NOT = { tag = event_target:adaneh } 
+					ROOT_can_grant_land = yes } 
+				} 
+			}
+            var:1309.owner = { save_event_target_as = latakia }
+        }
+    }
+
+    option = { # Give to Halab
+        log = "[GetLogInfo]: event annex.6022 option annex.6022.a"
+        name = annex.6022.a
+        trigger = { has_event_target = halab }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:halab }
+                is_ally_with = event_target:adaneh
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = adaneh }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:halab = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:halab }
+        819 = { transfer_state_and_notify = yes } # Antakya
+    }
+
+    option = { # Give to Adaneh
+        log = "[GetLogInfo]: event annex.6022 option annex.6022.b"
+        name = annex.6022.b
+        trigger = { has_event_target = adaneh }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:adaneh }
+                is_ally_with = event_target:halab
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = halab }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:adaneh = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:adaneh }
+        819 = { transfer_state_and_notify = yes } # Antakya
+    }
+
+    option = { # Give to Latakia
+        log = "[GetLogInfo]: event annex.6022 option annex.6022.c"
+        name = annex.6022.c
+        trigger = { has_event_target = latakia }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:latakia }
+                OR = { is_ally_with = event_target:halab is_ally_with = event_target:adaneh }
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = halab }
+                NOT = { has_event_target = adaneh }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:latakia = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:latakia }
+        819 = { transfer_state_and_notify = yes } # Antakya
+    }
+
+    option = { # Give to overlord
+        log = "[GetLogInfo]: event annex.6022 option annex.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = { annexations_should_give_lands_to_overlord = yes }
+        set_temp_variable = { tag_to_release = overlord }
+        819 = { transfer_state_and_notify = yes } # Antakya
+    }
+
+    option = { # Annex directly
+        log = "[GetLogInfo]: event annex.6022 option annex.integration"
+        name = annex.integration
+        trigger = { annexations_can_annex = yes }
+        819 = { transfer_state_and_notify = yes } # Antakya
+    }
+
+    option = { # Cancel
+        log = "[GetLogInfo]: event annex.6022 option annex.cancel"
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = { recheck_annexations = yes }
+}
+
+country_event = { # Fate of Arabistan
+    id = annex.6023
+    title = annexation_1301
+    desc = annexation_1301_desc
+    picture = GFX_report_PB_Peace_Deals_Middle_East
+
+    is_triggered_only = yes
+
+    immediate = {
+         if = {
+			limit = {
+				OR = {
+					1300 = { is_claim_or_core_of_ROOT = yes } # Basrah
+					291  = { is_claim_or_core_of_ROOT = yes } # Diyar al-Arab
+					413  = { is_claim_or_core_of_ROOT = yes } # Khuzestan
+					original_tag = UAE
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		annexations_create_tripartite_extraction_event_target = yes
+		# Basrah owner
+		if = {
+			limit = {
+				1300 = { 
+					owner = { 
+						ROOT_can_grant_land = yes 
+						NOT = { tag = event_target:tripartite_extraction }
+					} 
+				}
+			}
+			var:1300.owner = { save_event_target_as = basrah }	
+		}
+
+		# Diyar al-Arab owner (must not be same as Basrah owner)
+		if = {
+			limit = {
+				291 = {
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:basrah }
+						NOT = { tag = event_target:tripartite_extraction }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:291.owner = { save_event_target_as = diyar_al_arab }
+		}
+
+		# Khuzestan owner (must not be same as Basrah or Diyar al-Arab owner)
+		if = {
+			limit = {
+				413 = {
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:basrah }
+						NOT = { tag = event_target:diyar_al_arab }
+						NOT = { tag = event_target:tripartite_extraction }
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:413.owner = { save_event_target_as = khuzestan }
+		}
+    }
+
+	option = { #give to UAE
+		log = "[GetLogInfo]: event annexation_events.6023 option annexation_events.asia.tripartite_extraction"
+		name = annexation_events.asia.tripartite_extraction
+		trigger = {
+			has_event_target = tripartite_extraction
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 100
+				has_subject = event_target:tripartite_extraction
+				annexations_can_annex = no
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:tripartite_extraction }
+		1301 = { transfer_state_and_notify = yes } # Arabistan
+	}
+
+    option = { # Give to basrah
+        log = "[GetLogInfo]: event annex.6023 option annex.6023.a"
+        name = annex.6023.a
+        trigger = { has_event_target = basrah }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:basrah }
+                is_ally_with = event_target:adandiyar_al_arabeh
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = diyar_al_arab }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:basrah = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:basrah }
+        1301 = { transfer_state_and_notify = yes } # Arabistan
+    }
+
+    option = { # Give to diyar_al_arab
+        log = "[GetLogInfo]: event annex.6023 option annex.6023.b"
+        name = annex.6023.b
+        trigger = { has_event_target = diyar_al_arab }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:diyar_al_arab }
+                is_ally_with = event_target:halab
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = halab }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:diyar_al_arab = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:diyar_al_arab }
+        1301 = { transfer_state_and_notify = yes } # Arabistan
+    }
+
+    option = { # Give to khuzestan
+        log = "[GetLogInfo]: event annex.6023 option annex.6023.c"
+        name = annex.6023.c
+        trigger = { has_event_target = khuzestan }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0
+                NOT = { is_ally_with = event_target:khuzestan }
+                OR = { 
+					is_ally_with = event_target:halab 
+					is_ally_with = event_target:adaneh 
+				}
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = diyar_al_arab }
+                NOT = { has_event_target = basrah }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:khuzestan = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:khuzestan }
+        1301 = { transfer_state_and_notify = yes } # Arabistan
+    }
+
+    option = { # Give to overlord
+        log = "[GetLogInfo]: event annex.6023 option annex.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = { annexations_should_give_lands_to_overlord = yes }
+        set_temp_variable = { tag_to_release = overlord }
+        1301 = { transfer_state_and_notify = yes } # Arabistan
+    }
+
+    option = { # Annex directly
+        log = "[GetLogInfo]: event annex.6023 option annex.integration"
+        name = annex.integration
+        trigger = { annexations_can_annex = yes }
+        1301 = { transfer_state_and_notify = yes } # Arabistan
+    }
+
+    option = { # Cancel
+        log = "[GetLogInfo]: event annex.6023 option annex.cancel"
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = { recheck_annexations = yes }
+}
+
+country_event = { # Fate of Basrah
+    id = annex.6024
+    title = annexation_1300
+    desc = annexation_1300_desc
+    picture = GFX_report_PB_Peace_Deals_Middle_East
+
+    is_triggered_only = yes
+
+    immediate = {
+        if = {
+            limit = {
+                OR = {
+                    291  = { is_claim_or_core_of_ROOT = yes } # Diyar al-Arab
+                    656  = { is_claim_or_core_of_ROOT = yes } # Kuwait
+                    1301 = { is_claim_or_core_of_ROOT = yes } # Arabistan
+                    original_tag = UAE
+                }
+            }
+            save_event_target_as = can_annex
+        }
+
+        annexations_create_tripartite_extraction_event_target = yes
+
+        # Diyar al-Arab owner
+        if = {
+            limit = {
+                291 = {
+                    owner = {
+                        ROOT_can_grant_land = yes
+                        NOT = { tag = event_target:tripartite_extraction }
+                    }
+                }
+            }
+            var:291.owner = { save_event_target_as = diyar_al_arab }
+        }
+
+        # Kuwait owner
+        if = {
+            limit = {
+                656 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:diyar_al_arab }
+                        NOT = { tag = event_target:tripartite_extraction }
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:656.owner = { save_event_target_as = kuwait }
+        }
+
+        # Arabistan owner
+        if = {
+            limit = {
+                1301 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:diyar_al_arab }
+                        NOT = { tag = event_target:kuwait }
+                        NOT = { tag = event_target:tripartite_extraction }
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1301.owner = { save_event_target_as = arabistan }
+        }
+    }
+
+    option = { # Give to tripartite extraction
+        log = "[GetLogInfo]: event annex.6024 option tripartite_extraction"
+        name = annexation_events.asia.tripartite_extraction
+        trigger = { has_event_target = tripartite_extraction }
+        ai_chance = {
+            base = 0
+            modifier = {
+                add = 100
+                has_subject = event_target:tripartite_extraction
+                annexations_can_annex = no
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:tripartite_extraction }
+        1300 = { transfer_state_and_notify = yes } # Basrah
+    }
+
+    option = { # Give to Diyar al-Arab
+        log = "[GetLogInfo]: event annex.6024 option annex.6024.a"
+        name = annex.6024.a
+        trigger = { has_event_target = diyar_al_arab }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = kuwait }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:diyar_al_arab = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:diyar_al_arab }
+        1300 = { transfer_state_and_notify = yes } # Basrah
+    }
+
+    option = { # Give to Kuwait
+        log = "[GetLogInfo]: event annex.6024 option annex.6024.b"
+        name = annex.6024.b
+        trigger = { has_event_target = kuwait }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = arabistan }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:kuwait = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:kuwait }
+        1300 = { transfer_state_and_notify = yes } # Basrah
+    }
+
+    option = { # Give to Arabistan
+        log = "[GetLogInfo]: event annex.6024 option annex.6024.c"
+        name = annex.6024.c
+        trigger = { has_event_target = arabistan }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = kuwait }
+                NOT = { has_event_target = diyar_al_arab }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:arabistan = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:arabistan }
+        1300 = { transfer_state_and_notify = yes } # Basrah
+    }
+
+    option = { # Give to overlord
+        log = "[GetLogInfo]: event annex.6024 option annex.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = { annexations_should_give_lands_to_overlord = yes }
+        set_temp_variable = { tag_to_release = overlord }
+        1300 = { transfer_state_and_notify = yes } # Basrah
+    }
+
+    option = { # Annex directly
+        log = "[GetLogInfo]: event annex.6024 option annex.integration"
+        name = annex.integration
+        trigger = { annexations_can_annex = yes }
+        1300 = { transfer_state_and_notify = yes } # Basrah
+    }
+
+    option = { # Cancel
+        log = "[GetLogInfo]: event annex.6024 option annex.cancel"
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = { recheck_annexations = yes }
+}
+
+country_event = { # Fate of Kuwait
+    id = annex.6025
+    title = annexation_656
+    desc = annexation_656_desc
+    picture = GFX_report_PB_Peace_Deals_Middle_East
+
+    is_triggered_only = yes
+
+    immediate = {
+
+        if = {
+            limit = {
+                OR = {
+                    1300 = { is_claim_or_core_of_ROOT = yes } # Basrah
+                    1297 = { is_claim_or_core_of_ROOT = yes } # Qatif
+                    original_tag = UAE
+                }
+            }
+            save_event_target_as = can_annex
+        }
+
+        annexations_create_tripartite_extraction_event_target = yes
+
+        # Basrah owner
+        if = {
+            limit = {
+                1300 = {
+                    owner = {
+                        ROOT_can_grant_land = yes
+                        NOT = { tag = event_target:tripartite_extraction }
+                    }
+                }
+            }
+            var:1300.owner = { save_event_target_as = basrah }
+        }
+
+        # Qatif owner
+        if = {
+            limit = {
+                1297 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:basrah }
+                        NOT = { tag = event_target:tripartite_extraction }
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1297.owner = { save_event_target_as = qatif }
+        }
+    }
+
+    option = { # Give to tripartite extraction
+        log = "[GetLogInfo]: event annex.6025 option annexation_events.asia.tripartite_extraction"
+        name = annexation_events.asia.tripartite_extraction
+        trigger = {
+            has_event_target = tripartite_extraction
+        }
+        ai_chance = {
+            base = 0
+            modifier = {
+                add = 100
+                has_subject = event_target:tripartite_extraction
+                annexations_can_annex = no
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:tripartite_extraction }
+        656 = { transfer_state_and_notify = yes } # Kuwait
+    }
+
+    option = { # Release independent Kuwait
+        log = "[GetLogInfo]: event annex.6025 option annex.6025.a"
+        name = annex.6025.a
+        trigger = {
+            is_subject = no
+        }
+        ai_chance = {
+            base = 5
+        }
+
+        set_temp_variable = { tag_to_release = KUW }
+		656 = { remove_claim_and_add_core_of_target = yes } #Kuwait
+        release_targeted_tag = yes
+
+        if = {
+            limit = {
+                ROOT = { has_monarchist_government = yes }
+            }
+            KUW = {
+                drop_cosmetic_tag = yes
+                set_cosmetic_tag = KUW_Occupied_Monarchy
+            }
+        }
+
+        if = {
+            limit = {
+                ROOT = { has_republican_government = yes }
+            }
+            KUW = {
+                drop_cosmetic_tag = yes
+                set_cosmetic_tag = KUW_Occupied_Republic
+            }
+        }
+    }
+
+    option = { # Give to Basrah
+        log = "[GetLogInfo]: event annex.6025 option annex.6025.b"
+        name = annex.6025.b
+        trigger = { has_event_target = basrah }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0.1
+                event_target:basrah = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:basrah }
+        656 = { transfer_state_and_notify = yes } # Kuwait
+    }
+
+    option = { # Give to Qatif
+        log = "[GetLogInfo]: event annex.6025 option annex.6025.c"
+        name = annex.6025.c
+        trigger = { has_event_target = qatif }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 0.1
+                event_target:qatif = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:qatif }
+        656 = { transfer_state_and_notify = yes } # Kuwait
+    }
+
+    option = { # Give to overlord
+        log = "[GetLogInfo]: event annex.6025 option annex.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = { annexations_should_give_lands_to_overlord = yes }
+        set_temp_variable = { tag_to_release = overlord }
+        656 = { transfer_state_and_notify = yes } # Kuwait
+    }
+
+    option = { # Annex directly
+        log = "[GetLogInfo]: event annex.6025 option annex.integration"
+        name = annex.integration
+        trigger = { annexations_can_annex = yes }
+        656 = { transfer_state_and_notify = yes } # Kuwait
+    }
+
+    option = { # Cancel
+        log = "[GetLogInfo]: event annex.6025 option annex.cancel"
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = { recheck_annexations = yes }
+}
+
+country_event = { # Fate of Qatif
+    id = annex.6026
+    title = annexation_1297
+    desc = annexation_1297_desc
+    picture = GFX_report_PB_Peace_Deals_Middle_East
+
+    is_triggered_only = yes
+
+    immediate = {
+
+        if = {
+            limit = {
+                OR = {
+                    1298 = { is_claim_or_core_of_ROOT = yes } # Sahil al-Ahsa
+                    1299 = { is_claim_or_core_of_ROOT = yes } # Summan
+                    original_tag = UAE
+                }
+            }
+            save_event_target_as = can_annex
+        }
+
+        annexations_create_tripartite_extraction_event_target = yes
+
+        # Sahil al-Ahsa owner
+        if = {
+            limit = {
+                1298 = {
+                    owner = {
+                        ROOT_can_grant_land = yes
+                        NOT = { tag = event_target:tripartite_extraction }
+                    }
+                }
+            }
+            var:1298.owner = { save_event_target_as = sahil_al_ahsa }
+        }
+
+        # Summan owner
+        if = {
+            limit = {
+                1299 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:sahil_al_ahsa }
+                        NOT = { tag = event_target:tripartite_extraction }
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1299.owner = { save_event_target_as = summan }
+        }
+    }
+
+    option = { # Give to tripartite extraction
+        log = "[GetLogInfo]: event annex.6026 option annexation_events.asia.tripartite_extraction"
+        name = annexation_events.asia.tripartite_extraction
+        trigger = { has_event_target = tripartite_extraction }
+        ai_chance = {
+            base = 0
+            modifier = {
+                add = 100
+                has_subject = event_target:tripartite_extraction
+                annexations_can_annex = no
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:tripartite_extraction }
+        1297 = { transfer_state_and_notify = yes } # Qatif
+    }
+
+    option = { # Give to Sahil al-Ahsa
+        log = "[GetLogInfo]: event annex.6026 option annex.6026.a"
+        name = annex.6026.a
+        trigger = { has_event_target = sahil_al_ahsa }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = summan }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:sahil_al_ahsa = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:sahil_al_ahsa }
+        1297 = { transfer_state_and_notify = yes } # Qatif
+    }
+
+    option = { # Give to Summan
+        log = "[GetLogInfo]: event annex.6026 option annex.6026.b"
+        name = annex.6026.b
+        trigger = { has_event_target = summan }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = sahil_al_ahsa }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:summan = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:summan }
+        1297 = { transfer_state_and_notify = yes } # Qatif
+    }
+
+    option = { # Give to overlord
+        log = "[GetLogInfo]: event annex.6026 option annex.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = { annexations_should_give_lands_to_overlord = yes }
+        set_temp_variable = { tag_to_release = overlord }
+        1297 = { transfer_state_and_notify = yes } # Qatif
+    }
+
+    option = { # Annex directly
+        log = "[GetLogInfo]: event annex.6026 option annex.integration"
+        name = annex.integration
+        trigger = { annexations_can_annex = yes }
+        1297 = { transfer_state_and_notify = yes } # Qatif
+    }
+
+    option = { # Cancel
+        log = "[GetLogInfo]: event annex.6026 option annex.cancel"
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = { recheck_annexations = yes }
+}
+
+country_event = { # Fate of Sahil al-Ahsa
+    id = annex.6027
+    title = annexation_1298
+    desc = annexation_1298_desc
+    picture = GFX_report_PB_Peace_Deals_Middle_East
+
+    is_triggered_only = yes
+
+    immediate = {
+        if = {
+            limit = {
+                OR = {
+                    1297 = { is_claim_or_core_of_ROOT = yes } # Qatif
+                    1294 = { is_claim_or_core_of_ROOT = yes } # Al Ahsa
+                    original_tag = UAE
+                }
+            }
+            save_event_target_as = can_annex
+        }
+
+        annexations_create_tripartite_extraction_event_target = yes
+
+        # Qatif owner
+        if = {
+            limit = {
+                1297 = {
+                    owner = {
+                        ROOT_can_grant_land = yes
+                        NOT = { tag = event_target:tripartite_extraction }
+                    }
+                }
+            }
+            var:1297.owner = { save_event_target_as = qatif }
+        }
+
+        # Al Ahsa owner
+        if = {
+            limit = {
+                1294 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:qatif }
+                        NOT = { tag = event_target:tripartite_extraction }
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1294.owner = { save_event_target_as = al_ahsa }
+        }
+    }
+
+    option = { # Give to tripartite extraction
+        log = "[GetLogInfo]: event annex.6027 option annexation_events.asia.tripartite_extraction"
+        name = annexation_events.asia.tripartite_extraction
+        trigger = { has_event_target = tripartite_extraction }
+        ai_chance = {
+            base = 0
+            modifier = {
+                add = 100
+                has_subject = event_target:tripartite_extraction
+                annexations_can_annex = no
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:tripartite_extraction }
+        1298 = { transfer_state_and_notify = yes } # Sahil al-Ahsa
+    }
+
+    option = { # Give to Qatif
+        log = "[GetLogInfo]: event annex.6027 option annex.6027.a"
+        name = annex.6027.a
+        trigger = { has_event_target = qatif }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = al_ahsa }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:qatif = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:qatif }
+        1298 = { transfer_state_and_notify = yes } # Sahil al-Ahsa
+    }
+
+    option = { # Give to Al Ahsa
+        log = "[GetLogInfo]: event annex.6027 option annex.6027.b"
+        name = annex.6027.b
+        trigger = { has_event_target = al_ahsa }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = qatif }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:al_ahsa = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:al_ahsa }
+        1298 = { transfer_state_and_notify = yes } # Sahil al-Ahsa
+    }
+
+    option = { # Give to overlord
+        log = "[GetLogInfo]: event annex.6027 option annex.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = { annexations_should_give_lands_to_overlord = yes }
+        set_temp_variable = { tag_to_release = overlord }
+        1298 = { transfer_state_and_notify = yes } # Sahil al-Ahsa
+    }
+
+    option = { # Annex directly
+        log = "[GetLogInfo]: event annex.6027 option annex.integration"
+        name = annex.integration
+        trigger = { annexations_can_annex = yes }
+        1298 = { transfer_state_and_notify = yes } # Sahil al-Ahsa
+    }
+
+    option = { # Cancel
+        log = "[GetLogInfo]: event annex.6027 option annex.cancel"
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = { recheck_annexations = yes }
+}
+
+country_event = { # Fate of Bahrain
+    id = annex.6028
+    title = annexation_1126
+    desc = annexation_1126_desc
+    picture = GFX_report_PB_Peace_Deals_Middle_East
+
+    is_triggered_only = yes
+
+    immediate = {
+
+        # Determine eligible claimants including Persia
+        if = {
+            limit = {
+                OR = {
+                    765  = { is_claim_or_core_of_ROOT = yes } # Qatar
+                    1297 = { is_claim_or_core_of_ROOT = yes } # Qatif
+                    1298 = { is_claim_or_core_of_ROOT = yes } # Sahil al-Ahsa
+                    original_tag = PER
+                    original_tag = UAE
+                }
+            }
+            save_event_target_as = can_annex
+        }
+
+		annexations_create_tripartite_extraction_event_target = yes
+
+        if = {
+            limit = { PER = { ROOT_can_grant_land = yes } }
+            PER = {
+                save_event_target_as = persia
+                add_to_array = { ROOT.potential_grant_targets = THIS }
+            }
+        }
+
+        # Qatar owner
+        if = {
+            limit = {
+                765 = {
+                    owner = {
+                        ROOT_can_grant_land = yes
+                        NOT = { tag = event_target:persia }
+						NOT = { tag = event_target:tripartite_extraction }
+                    }
+                }
+            }
+            var:765.owner = { save_event_target_as = qatar }
+        }
+
+        # Qatif owner
+        if = {
+            limit = {
+                1297 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:qatar }
+                        NOT = { tag = event_target:persia }
+						NOT = { tag = event_target:tripartite_extraction }
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1297.owner = { save_event_target_as = qatif }
+        }
+
+        # Sahil al-Ahsa owner
+        if = {
+            limit = {
+                1298 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = {
+                        NOT = { tag = event_target:qatar }
+                        NOT = { tag = event_target:qatif }
+                        NOT = { tag = event_target:persia }
+						NOT = { tag = event_target:tripartite_extraction }
+                        ROOT_can_grant_land = yes
+                    }
+                }
+            }
+            var:1298.owner = { save_event_target_as = sahil_al_ahsa }
+        }
+    }
+
+	option = { # Give to tripartite extraction
+        log = "[GetLogInfo]: event annex.6027 option annexation_events.asia.tripartite_extraction"
+        name = annexation_events.asia.tripartite_extraction
+        trigger = { has_event_target = tripartite_extraction }
+        ai_chance = {
+            base = 0
+            modifier = {
+                add = 100
+                has_subject = event_target:tripartite_extraction
+                annexations_can_annex = no
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:tripartite_extraction }
+        1126 = { transfer_state_and_notify = yes } # Sahil al-Ahsa
+    }
+
+    option = { #give to Persia
+		log = "[GetLogInfo]: event annexation_events.6027 option annexation_events.asia.persia"
+		name = annexation_events.asia.persia
+		trigger = {
+			has_event_target = persia
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 100
+				has_subject = event_target:persia
+				annexations_can_annex = no
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:persia }
+		1126 = { transfer_state_and_notify = yes }
+	}
+
+    option = { # Give to Qatar
+        log = "[GetLogInfo]: event annex.6028 option annex.6028.a"
+        name = annex.6028.a
+        trigger = { has_event_target = qatar }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = persia }
+                NOT = { has_event_target = qatif }
+                NOT = { has_event_target = sahil_al_ahsa }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:qatar = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:qatar }
+        1126 = { transfer_state_and_notify = yes }
+    }
+
+    option = { # Give to Qatif
+        log = "[GetLogInfo]: event annex.6028 option annex.6028.b"
+        name = annex.6028.b
+        trigger = { has_event_target = qatif }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = persia }
+                NOT = { has_event_target = qatar }
+                NOT = { has_event_target = sahil_al_ahsa }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:qatif = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:qatif }
+        1126 = { transfer_state_and_notify = yes }
+    }
+
+    option = { # Give to Sahil al-Ahsa
+        log = "[GetLogInfo]: event annex.6028 option annex.6028.c"
+        name = annex.6028.c
+        trigger = { has_event_target = sahil_al_ahsa }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { has_event_target = persia }
+                NOT = { has_event_target = qatar }
+                NOT = { has_event_target = qatif }
+            }
+            modifier = {
+                factor = 0.1
+                event_target:sahil_al_ahsa = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:sahil_al_ahsa }
+        1126 = { transfer_state_and_notify = yes }
+    }
+
+    option = { # Give to overlord
+        log = "[GetLogInfo]: event annex.6028 option annex.give_to_overlord"
+        name = annex.give_to_overlord
+        trigger = { annexations_should_give_lands_to_overlord = yes }
+        set_temp_variable = { tag_to_release = overlord }
+        1126 = { transfer_state_and_notify = yes }
+    }
+
+    option = { # Annex directly
+        log = "[GetLogInfo]: event annex.6028 option annex.integration"
+        name = annex.integration
+        trigger = { annexations_can_annex = yes }
+        1126 = { transfer_state_and_notify = yes }
+    }
+
+    option = { # Cancel
+        log = "[GetLogInfo]: event annex.6028 option annex.cancel"
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = { recheck_annexations = yes }
 }

@@ -1,0 +1,278 @@
+# Scripted AI desire for peace actions.
+# See documentation.info file for more detailed scripting information.
+
+peace_ai_desires = {
+	do_not_grant_states_randomly = {
+		peace_action_type = take_states
+		enable = {
+			NOT = { tag = ROOT.FROM }
+		}
+		ai_desire = -400
+	}
+
+	take_states_default_restrictions = {
+		peace_action_type = take_states
+		enable = {
+			tag = ROOT.FROM
+			if = {
+				limit = { is_subject = yes }
+				#subjects will always take cores/claims
+				ROOT.FROM.FROM.FROM = {
+					NOT = { is_claimed_by = ROOT }
+					NOT = { is_core_of = ROOT }
+				}
+			}
+			else = {
+				#tags will always take cores/claims/ambitions
+				ROOT.FROM.FROM.FROM = {
+					NOT = { is_claimed_by = ROOT }
+					NOT = { is_core_of = ROOT }
+					NOT = { has_variable = priority_zone_@ROOT }
+				}
+			}
+			OR = {
+				#minor countries should stick to cores/claims/ambitions if in a conference with majors
+				AND = {
+					is_major = no
+					is_subject = no
+					has_global_flag = pc_has_major_winner
+
+					#sanity double-check for edge cases of multiple simultaneous PCs
+					any_of_scopes = {
+						array = global.pc_winners_array
+						pc_is_winner = yes
+						is_major = yes
+					}
+				}
+				#subjects should stick to cores/claims/ambitions if in a conference with non-subjects
+				AND = {
+					is_subject = yes
+					has_global_flag = pc_has_non_subject_winner
+
+					#sanity double-check for edge cases of multiple simultaneous PCs
+					any_of_scopes = {
+						array = global.pc_winners_array
+						pc_is_winner = yes
+						is_subject = no
+					}
+				}
+				#faction members shouldn't try to take cores/claims/ambitions of other allies
+				AND = {
+					is_in_faction = yes
+					any_allied_country = {
+						pc_is_winner = yes
+						if = {
+							limit = { is_subject = yes }
+							ROOT.FROM.FROM.FROM = {
+								OR = {
+									is_claimed_by = PREV
+									is_core_of = PREV
+								}
+							}
+						}
+						else = {
+							ROOT.FROM.FROM.FROM = {
+								OR = {
+									is_claimed_by = PREV
+									is_core_of = PREV
+									has_variable = priority_zone_@PREV
+								}
+							}
+						}
+					}
+				}
+				#overlords shouldn't try to take cores/claims/ambitions of their subjects
+				AND = {
+					num_subjects > 0
+					any_subject_country = {
+						pc_is_winner = yes
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_claimed_by = PREV
+								is_core_of = PREV
+							}
+						}
+					}
+				}
+				#subjects shouldn't try to take cores/claims/ambitions of the overlord or other puppets
+				AND = {
+					is_subject = yes
+					OR = {
+						overlord = {
+							pc_is_winner = yes
+							ROOT.FROM.FROM.FROM = {
+								OR = {
+									is_claimed_by = PREV
+									is_core_of = PREV
+									has_variable = priority_zone_@PREV
+								}
+							}
+						}
+						overlord = {
+							any_subject_country = {
+								pc_is_winner = yes
+								ROOT.FROM.FROM.FROM = {
+									OR = {
+										is_claimed_by = PREV
+										is_core_of = PREV
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		ai_desire = -1000
+	}
+
+	take_states_own_cores = {
+		peace_action_type = { take_states }
+		enable = {
+			tag = ROOT.FROM
+			ROOT.FROM.FROM.FROM = { is_core_of = ROOT.FROM }
+		}
+		ai_desire = 90
+	}
+
+	take_states_own_claims = {
+		peace_action_type = { take_states }
+		enable = {
+			tag = ROOT.FROM
+			ROOT.FROM.FROM.FROM = {
+				is_claimed_by = ROOT.FROM
+				NOT = { is_core_of = ROOT.FROM }
+			}
+		}
+		ai_desire = 60
+	}
+
+	take_states_own_ambitions = {
+		peace_action_type = { take_states }
+		enable = {
+			tag = ROOT.FROM
+			ROOT.FROM.FROM.FROM = {
+				has_variable = priority_zone_@ROOT.FROM
+				NOT = { is_claimed_by = ROOT.FROM }
+				NOT = { is_core_of = ROOT.FROM }
+			}
+		}
+		ai_desire = 30
+	}
+
+	give_states_default_restrictions = {
+		peace_action_type = take_states
+		enable = {
+			NOT = { tag = ROOT.FROM }
+			OR = {
+				#never give away cores/claims/ambitions
+				ROOT.FROM.FROM.FROM = {
+					OR = {
+						is_core_of = ROOT
+						is_claimed_by = ROOT
+						has_variable = priority_zone_@ROOT
+					}
+				}
+				#never give away cores/claims/ambitions of the overlord
+				AND = {
+					is_subject = yes
+					overlord = {
+						NOT = { tag = ROOT.FROM }
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_core_of = PREV
+								is_claimed_by = PREV
+								has_variable = priority_zone_@PREV
+							}
+						}
+					}
+				}
+				#don't contest core/claims/ambitions claimed by allies
+				if = {
+					limit = { is_in_faction = yes }
+					ROOT.FROM.FROM.FROM = { pc_is_state_claimed = yes }
+					any_allied_country = {
+						pc_is_winner = yes
+						NOT = { tag = ROOT.FROM }
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_core_of = PREV
+								is_claimed_by = PREV
+								has_variable = priority_zone_@PREV
+							}
+						}
+					}
+				}
+				else = {
+					ROOT.FROM.FROM.FROM = { pc_is_state_claimed = yes }
+					any_subject_country = {
+						pc_is_winner = yes
+						NOT = { tag = ROOT.FROM }
+						ROOT.FROM.FROM.FROM = {
+							OR = {
+								is_core_of = PREV
+								is_claimed_by = PREV
+								has_variable = priority_zone_@PREV
+							}
+						}
+					}
+				}
+			}
+		}
+		ai_desire = -1000
+	}
+
+	give_states_cores = {
+		peace_action_type = take_states
+		enable = {
+			NOT = { tag = ROOT.FROM }
+			ROOT.FROM.FROM.FROM = { is_core_of = ROOT.FROM }
+			is_ally_with = ROOT.FROM
+		}
+		ai_desire = 430 #offsets do_not_grant_states_randomly
+	}
+
+	give_states_claims = {
+		peace_action_type = take_states
+		enable = {
+			NOT = { tag = ROOT.FROM }
+			ROOT.FROM.FROM.FROM = {
+				is_claimed_by = ROOT.FROM
+				NOT = { is_core_of = ROOT.FROM }
+			}
+			is_ally_with = ROOT.FROM
+		}
+		ai_desire = 420 #offsets do_not_grant_states_randomly
+	}
+
+	give_states_ambitions = {
+		peace_action_type = take_states
+		enable = {
+			NOT = { tag = ROOT.FROM }
+			ROOT.FROM.FROM.FROM = {
+				has_variable = priority_zone_@ROOT.FROM
+				NOT = { is_claimed_by = ROOT.FROM }
+				NOT = { is_core_of = ROOT.FROM }
+			}
+			is_ally_with = ROOT.FROM
+			ROOT.FROM = { is_subject = no }
+		}
+		ai_desire = 410 #offsets do_not_grant_states_randomly
+	}
+
+	give_states_other = {
+		peace_action_type = take_states
+		enable = {
+			pc_turn > 9
+			if = {
+				limit = { is_subject = yes }
+				ROOT.FROM = { tag = ROOT.overlord }
+			}
+			else = {
+				ROOT.FROM = { tag = ROOT.faction_leader }
+				is_major = no
+			}
+		}
+		ai_desire = 400 #offsets do_not_grant_states_randomly
+	}
+}

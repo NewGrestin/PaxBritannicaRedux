@@ -522,3 +522,184 @@ annexations_give_italy_to_target = {
 	#	country_event = annexation_events.200
 	#}
 }
+
+annexations_create_tripartite_extraction_event_target = {
+	if = {
+		limit = { UAE = { ROOT_can_grant_land = yes } }
+		UAE = {
+			save_event_target_as = tripartite_extraction
+			add_to_array = { ROOT.potential_grant_targets = THIS }
+		}
+	}
+}
+
+annexations_create_west_indies_federation_event_target = {
+	if = {
+		limit = { WIS = { ROOT_can_grant_land = yes } }
+		WIS = {
+			save_event_target_as = tripartite_extraction
+			add_to_array = { ROOT.potential_grant_targets = THIS }
+		}
+	}
+}
+
+annexations_release_united_central_america = {
+	311 = { retain_state = yes } #Belize
+	475 = { retain_state = yes } #Chiapas
+	1406 = { retain_state = yes } #Angostura
+	779 = { retain_state = yes } #Hondouran Miskito
+	780 = { retain_state = yes } #Miskito
+	147 = { retain_state = yes } #Bay Islands
+	1050 = { retain_state = yes } #Providencia
+
+	set_temp_variable = { tag_to_release = CRS }
+	every_state = {
+		limit = {
+			OR = {
+				is_core_of = GUA
+				is_core_of = ELS
+				is_core_of = NIC
+				is_core_of = HON
+				is_core_of = LOS
+			}
+		}
+		add_core_of = var:tag_to_release
+	}
+	every_state = {
+		if = {
+			limit = { 
+				OR = { 
+					region = 205
+					region = 34	
+				}
+			}
+			add_claim_by = var:tag_to_release
+		}
+	}
+	release_targeted_tag = yes
+	every_subject_country = {
+		limit = {
+			OR = {
+				original_tag = GUA
+				original_tag = ELS
+				original_tag = HON
+				original_tag = NIC
+				original_tag = LOS
+			}
+		}
+		annex_splinter_tag = yes
+	}
+	if = {
+		limit = { ROOT = { has_monarchist_government = yes } }
+		CRS = {
+			set_cosmetic_tag = CRS_Occupied_Monarchy
+		}
+	}
+
+	if = {
+		limit = { ROOT = { has_republican_government = yes } }
+		CRS = {
+			set_cosmetic_tag = CRS_Occupied_Republic
+		}
+	}
+}
+
+annexations_reset_central_american_tags = {
+	if = {
+		limit = { NOT = { country_exists = LOS } }
+		every_state = {
+			if = {
+				limit = { is_los_altos = no }
+				remove_core_of = LOS
+			}
+			else = {
+				add_core_of = LOS
+			}
+			remove_claim_by = LOS
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = GUA } }
+		every_state = {
+			if = {
+				limit = { is_guatemala = no }
+				remove_core_of = GUA
+			}
+			else = {
+				add_core_of = GUA
+			}
+			remove_claim_by = GUA
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = ELS } }
+		every_state = {
+			if = {
+				limit = { is_el_salvador = no }
+				remove_core_of = ELS
+			}
+			else = {
+				add_core_of = ELS
+			}
+			remove_claim_by = ELS
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = HON } }
+		every_state = {
+			if = {
+				limit = { is_honduras = no }
+				remove_core_of = HON
+			}
+			else = {
+				add_core_of = HON
+			}
+			remove_claim_by = HON
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = NIC } }
+		every_state = {
+			if = {
+				limit = { is_nicaragua = no }
+				remove_core_of = NIC
+			}
+			else = {
+				add_core_of = NIC
+			}
+			remove_claim_by = NIC
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = COS } }
+		every_state = {
+			if = {
+				limit = { is_costa_rica = no }
+				remove_core_of = COS
+			}
+			else = {
+				add_core_of = COS
+			}
+			remove_claim_by = COS
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = PAN } }
+		every_state = {
+			if = {
+				limit = { is_panama = no }
+				remove_core_of = PAN
+			}
+			else = {
+				add_core_of = PAN
+			}
+			remove_claim_by = PAN
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = CRS } }
+		CRS = {
+			clear_cores_of_tag_if_possible = yes
+		}
+	}
+}
