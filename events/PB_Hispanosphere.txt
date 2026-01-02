@@ -5,18 +5,14 @@
 add_namespace = Hispan
 add_namespace = Hispan_Succesion
 
-country_event = { # Succession War Death
+country_event = { # Death of Alfonso
     id = Hispan_Succesion.1
     title = Hispan_Succesion.1.t
     desc = Hispan_Succesion.1.d
     picture = GFX_report_event_Generic_German_Soldier
 
     fire_only_once = yes
-
-	trigger = {
-		tag = CHR
-			date > 1933.01.03
-	}
+    is_triggered_only = yes
 
     option = { 
         name = Hispan_Succesion.1.a
@@ -33,7 +29,7 @@ country_event = { # Succession War Death
             }
         }
 
-        set_country_flag = HSP_Succesion_War
+        set_global_flag = HSP_Succesion_War
         activate_mission = PB_HSP_Succession_War_Countdown
         unlock_decision_category_tooltip = PB_HSP_Succession_War
 		
@@ -43,7 +39,6 @@ country_event = { # Succession War Death
                 id = Hispan_Succesion.4
                 days = 5
             }
-            set_country_flag = HSP_Succesion_War
             activate_mission = PB_HSP_COL_Succession_War_Countdown
         }
 
@@ -287,19 +282,12 @@ country_event = { # CHR - RLP left
 
     option = { # Send them Reinforcements!
         name = Hispan_Succesion.10.a
-        RLP = {
-            transfer_units_fraction= {
-                target = CHR
-                size = 0.1
-                stockpile_ratio = 0.08
-            }
-        }
+        
     }
 
     option = { # Keep the Reinforcements for ourselves!
         name = Hispan_Succesion.10.b
-        add_stability = 0.1
-        add_war_support = 0.1
+        add_political_power = -10
     }
 }
 
@@ -342,7 +330,6 @@ country_event = { # BRA - Oh Wow look the two retards are fighting #WIP
         827 = {
             add_claim_by = BRA
         }
-        set_country_flag = HSP_Succesion_War
     }
 }
 
@@ -433,14 +420,30 @@ country_event = { # COL - Quito Cuts off Communications #WIP for whatever gustav
 
     option = {
         name = Hispan_Succesion.15.a
-        305 = {
-            set_demilitarized_zone = yes
+        set_global_flag = HSP_Quito_Crisis
+        ECU = { 
+            transfer_state = 305
+            transfer_state = 491
+            transfer_state = 490
+            set_politics = { 
+                ruling_party = ds
+                elections_allowed = no
+               
+            }
+            add_popularity = {
+                ideology = ds
+                popularity = 0.25
+            }
+            set_cosmetic_tag = ECU_Spanish_Junta
+            activate_mission = PB_HSP_CHR_Quito_War_dummy_Countdown
         }
-        491 = {
-            set_demilitarized_zone = yes
+
+        COL = {
+            activate_mission = PB_HSP_CHR_Quito_War_dummy_Countdown
         }
-        490 = {
-            set_demilitarized_zone = yes
+        
+        CHR = { 
+            activate_mission = PB_HSP_CHR_Quito_War_Countdown
         }
         country_event = { 
             id = Hispan_Succesion.16
@@ -479,13 +482,11 @@ country_event = { # COL - Dealing with Quito
     }
     option = { # Attack 
         name = Hispan_Succesion.16.b
-        activate_mission = PB_HSP_CHR_Quito_War_Countdown
         CHR = {
             country_event = { 
                 id = Hispan_Succesion.17
                 days = 1
             }
-            activate_mission = PB_HSP_CHR_Quito_War_Countdown
         }
     }
 }
@@ -526,7 +527,7 @@ country_event = { # COL - Quito Accepts Offer
 
     option = { # Crisis Averted
         name = Hispan_Succesion.18.a
-        remove_mission = PB_HSP_CHR_Quito_War_Countdown
+        clr_country_flag = HSP_Quito_Crisis
         305 = {
             set_demilitarized_zone = no
             }
@@ -541,11 +542,6 @@ country_event = { # COL - Quito Accepts Offer
         }
         1222 = {
             add_dynamic_modifier = { modifier = PB_COL_Audiencia_Quito }
-        }
-        hidden_effect = {
-            CHR = {
-                remove_mission = PB_HSP_CHR_Quito_War_Countdown
-            }
         }
     }
 }
@@ -562,13 +558,12 @@ country_event = { # COL - Quito Declines Offer
 
     option = { # War it is then
         name = Hispan_Succesion.19.a
-        activate_mission = PB_HSP_CHR_Quito_War_Countdown
+        set_global_flag = HSP_Quito_Crisis
         CHR = {
             country_event = { 
                 id = Hispan_Succesion.17
                 days = 1
             }
-            activate_mission = PB_HSP_CHR_Quito_War_Countdown
         }
     }
 }
@@ -645,6 +640,36 @@ country_event = { # The Federal War Continues North
     option = {
         name = Hispan_Succesion.22.a
         ARG = {
+            set_cosmetic_tag = ARG_Rio_Plate
+            annex_country = {
+                target = URG
+                transfer_troops = yes
+            }
+            annex_country = {
+                target = PAR
+                transfer_troops = yes
+            }
+            every_state = { 
+                limit = { 
+                    OR = { 
+                        is_core_of = URG
+                        is_core_of = PAR
+                    }
+                   
+                }
+                add_core_of = ARG
+            }
+            every_state = { 
+                limit = { 
+                    OR = {  
+                        is_core_of = RLP
+                        is_core_of = BOL
+                        is_core_of = CHL
+                    }
+                }
+                add_claim_by = ARG
+            }
+           
             declare_war_on = {
                 target = CHR
                 type = annex_everything
