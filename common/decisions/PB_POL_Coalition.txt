@@ -1000,7 +1000,7 @@ PB_POL_Coalition = {
 	PB_POL_Warsaw_Subway_Construction = {
 		icon = generic_decision
 
-		cost = 150
+		cost = 25
 		ai_will_do = {
 			
 		}
@@ -1031,7 +1031,10 @@ PB_POL_Coalition = {
 		}
 
 		complete_effect = {
-			
+			hidden_effect = {
+				set_country_flag = POL_Start_Subway_Construction
+			}
+			activate_mission = PB_POL_Warsaw_Subway_Under_Construction
 		}
 
 		days_remove = 10
@@ -1040,6 +1043,50 @@ PB_POL_Coalition = {
 			country_event = {
 				id = pol.71
 			}
+		}
+	}
+
+	PB_POL_Second_Warsaw_Subway_Construction = {
+		icon = generic_decision
+
+		cost = 25
+		ai_will_do = {
+			
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_country_flag = POL_Warsaw_Subway_Opened
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Industralist_Support_More_49_tt
+				check_variable = { POL_Industralist_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_More_49_tt
+				check_variable = { POL_Namiestniks_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Radicals_Support_More_49_tt
+				check_variable = { POL_Radicals_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Moderates_Support_More_49_tt
+				check_variable = { POL_Modarates_Support>49 }
+			}
+		}
+
+		complete_effect = {
+
+		}
+
+		days_remove = 5
+
+		remove_effect = {
+			activate_mission  = PB_POL_Second_Warsaw_Subway_Under_Construction
 		}
 	}
 
@@ -1333,9 +1380,9 @@ PB_POL_Coalition = {
 					
 				}
 				else = {
-						set_variable = { var = POL_Conservatives_Influence value = 0 }
-						set_variable = { var = POL_Conservatives_Support value = 0 }
-					}
+					set_variable = { var = POL_Conservatives_Influence value = 0 }
+					set_variable = { var = POL_Conservatives_Support value = 0 }
+				}
 
 				if = {
 					limit = {
@@ -1364,10 +1411,10 @@ PB_POL_Coalition = {
 				}
 				else = {
 						
-							activate_advisor = PB_Stanislaw_Bulak-Balachowicz_iam
-							
-						}
-					}
+					activate_advisor = PB_Stanislaw_Bulak-Balachowicz_iam
+					
+				}
+
 				POL_namiestnik_calculations = yes
 				POL_radicals_calculations = yes
 				POL_moderates_calculations = yes
@@ -1671,7 +1718,174 @@ PB_POL_Coalition = {
 				set_variable = { var = POL_Industralist_Support value = 100 }
 		}
 	}
+	
+	PB_POL_Warsaw_Subway_Under_Construction  = {
 
+		icon = GFX_decision_generic_civil_support
+		
+		activation = {
+			original_tag = POL
+			has_country_flag = POL_Start_Subway_Construction
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+		}
+
+		available = {
+			has_country_flag = POL_Warsaw_Subway_Opened
+		}  
+
+		selectable_mission = no
+
+		is_good = yes
+		fire_only_once = yes
+				
+		days_mission_timeout = 100
+
+		timeout_effect = {
+			add_political_power = 50
+			random_owned_controlled_state = {
+				prioritize = { 10 }
+				limit = {
+					infrastructure < 5
+				}
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = infrastructure
+					level = 1
+					instant_build = yes
+				}
+			}
+			PB_POL_Increse_Moderates_Support = yes
+			PB_POL_Increse_Radicals_Support = yes
+			hidden_effect = {
+				set_country_flag = POL_Warsaw_Subway_Opened
+			}
+		}
+	}
+
+	PB_POL_Second_Warsaw_Subway_Under_Construction  = {
+
+		icon = GFX_decision_generic_civil_support
+		
+		activation = {
+			original_tag = POL
+			has_country_flag = POL_Start_Second_Subway_Construction
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+		}
+
+		available = {
+			has_country_flag = POL_Second_Warsaw_Subway_Opened
+		}  
+
+		selectable_mission = no
+
+		is_good = yes
+		fire_only_once = yes
+				
+		days_mission_timeout = 120
+
+		timeout_effect = {
+			add_political_power = 50
+			reduce_focus_completion_cost = {
+				focus = { PB_POL_Introduction_Of_The_Autonomy_Rubble
+					PB_POL_Abandon_Decaying_Corpse
+					PB_POL_Industrial_Region_Galicia
+					PB_POL_Central_Industrial_Region
+					PB_POL_Industrial_Region_Silesia
+					PB_POL_Aviation_Valley
+					PB_POL_Lilpop_Rau_Lowenstein
+					PB_POL_FSO
+					PB_POL_H_Cegielski_And_Co
+					PB_POL_Invest_In_Krakow
+					PB_POL_Invest_In_Warsaw
+					PB_POL_Invest_In_Gliwice
+					PB_POL_Alexander_II_Steelworks
+					PB_POL_Fourth_City
+					PB_POL_Lwow_School_Of_Mathematics
+					PB_POL_Jewel_Of_The_Crown
+					PB_POL_One_Last_Chance
+					PB_POL_Cooperation_Of_State_And_Ivestors
+					PB_POL_Let_Do
+					PB_POL_Open_Soup_Kitchens
+					PB_POL_Bureau_Of_Urbanization
+					PB_POL_Nationalization_Of_Metropolitan_Transport_Company
+					PB_POL_Foreign_Specialists
+					PB_POL_All_Hail_Lodzermensch
+					PB_POL_Encourage_Flow_Of_Knowledge
+					PB_POL_Subsidize_Textile_Barons
+					PB_POL_Poznanski_Grohman
+					PB_POL_Heinzel
+					PB_POL_Schreibler_Herbst
+					PB_POL_Domestic_Cotton_Farming
+					PB_POL_Import_Cotton
+					PB_POL_Promised_Land
+					PB_POL_Second_Lodz_Golden_Age
+					PB_POL_Bring_Free_Market_To_The_South
+					PB_POL_Bring_Free_Market_To_The_East
+					PB_POL_National_Development_Bank
+					PB_POL_Wirelessification_Of_The_Grid
+					PB_POL_House_Factories
+					PB_POL_New_Towns_Program
+					PB_POL_Into_The_East
+					PB_POL_Warsaw_University_Of_Technology
+					PB_POL_The_Dream_Team
+					PB_POL_Uranium_Fever
+					PB_POL_Construct_Nuclear_Cities 
+					PB_POL_Construct_Nuclear_Cities
+					PB_POL_Dr_Strangelove_Reference
+					PB_POL_Militarization_Of_Industry
+					PB_POL_Starachowice_Works
+					PB_POL_Reorganization_Of_Plane_Industry
+					PB_POL_Stalowa_Wola_Steelworks
+					PB_POL_PGZ
+					PB_POL_Last_Phase_Of_Experiments
+					PB_POL_Expanding_Anters_Program
+					PB_POL_Hive_Mapping_And_Hierarchy_Study
+					PB_POL_Specialisation_Efforts
+					PB_POL_Big_Brains_Initiative
+					PB_POL_Bury_Those_Unholy_Creatures
+					PB_POL_Investment_In_Silesia
+					PB_POL_Underground_Highway
+					PB_POL_Expand_AGH_Uni
+					PB_POL_Black_Blood
+					PB_POL_Oil_Industry_Tax_Deduction
+					PB_POL_Lukasiewicz_Shareholders_Meeting
+					PB_POL_MacGarvey_Bail-Out
+					PB_POL_Cooperate_Or_Die
+					PB_POL_Keep_It_All
+					PB_POL_One_Step_Back_Two_Steps_Forward
+					PB_POL_We_Are_So_Back
+					PB_POL_Oil_Must_Flow
+					PB_POL_Challange_Baku_Giants
+					PB_POL_Invisible_Hand
+					PB_POL_New_Polish_Army
+					PB_POL_Support_Maczeks_Group
+					PB_POL_Assault_Tactics
+					PB_POL_Rush_Motorization_Effort
+					PB_POL_Moderate_Offensive
+					PB_POL_Whatever_It_Costs
+					PB_POL_Oil_Is_Cheap
+					PB_POL_Give_In_To_Lafontaine_Society
+					PB_POL_Steel_Is_Weak
+					PB_POL_Militarize_Anters
+					PB_POL_Let_Them_Fight
+					PB_POL_Modern_Hussars
+					PB_POL_Imperial_Engineers_Corps
+					PB_POL_Always_On_Time
+					PB_POL_Order_And_First_Aid
+					PB_POL_Tip_Of_The_Spear
+					}
+
+				cost = 3
+			}
+			hidden_effect = {
+				set_country_flag = POL_Second_Warsaw_Subway_Opened
+			}
+		}
+	}
 
 	POL_Russian_Intervention  = {
 
@@ -1723,14 +1937,12 @@ PB_POL_Coalition = {
 			has_country_flag = POL_Emergency_Cabinet
 			NOT = {
 				has_country_flag = POL_Full_Power
-				has_government = rc
 			}         
 		}
 
 		available = {
-			OR = {
-				has_country_flag = POL_Full_Power
-			}
+			has_country_flag = POL_Full_Power
+
 		}
 
 		selectable_mission = no
