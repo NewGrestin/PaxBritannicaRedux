@@ -332,12 +332,7 @@ country_event = { # Fernost Crisis # SECESSION!@
 
 	is_triggered_only = yes
 	fire_only_once = yes
-    trigger = {
-        check_variable = { Bundestag_Patience = 6 }
-		NOT = {
-		has_country_flag = DAS_Bund_Already_Triggered
-	    }
-    }
+
 	immediate = {
 	    set_country_flag = DAS_Bund_Already_Triggered
         SLK = {
@@ -569,9 +564,12 @@ country_event = { # Plea for Extension #2
 	is_triggered_only = yes
 	fire_only_once = no
 	option = { # Diederichs
-		trigger = {
-			is_ai = yes
-			has_game_rule = { rule = PB_GERMAN_PACIFIC_PATH option = DAS_TOURISM_PATH }
+		ai_chance = {
+			base = 50 
+			modifier = { 
+				factor = 200
+				has_game_rule = { rule = PB_GERMAN_PACIFIC_PATH option = DAS_TOURISM_PATH }
+			}	
 		}
 		name = DAS_Orders.7.a
 		complete_national_focus = PB_DAS_Diederichs_Plan
@@ -582,9 +580,12 @@ country_event = { # Plea for Extension #2
 		promote_character = DAS_ferdinand_bredow
 	}
 	option = { # Nail Biter
-		trigger = {
-			is_ai = yes
-			has_game_rule = { rule = PB_GERMAN_PACIFIC_PATH option = DAS_FERNOST_PATH }
+		ai_chance = {
+			base = 50 
+			modifier = { 
+				factor = 200
+				has_game_rule = { rule = PB_GERMAN_PACIFIC_PATH option = DAS_FERNOST_PATH }
+			}	
 		}
 		name = DAS_Orders.7.b
 		complete_national_focus = PB_DAS_Nail_Biter_Doctrine
@@ -593,6 +594,23 @@ country_event = { # Plea for Extension #2
 			days = 365
 		}
 		promote_character = DAS_maximillian_spee
+	}
+}
+
+country_event = { # Event Reminding DAS that their manpwoer got cut off
+	id = DAS_Orders.8
+	title = DAS_Orders.8.t
+	desc = DAS_Orders.8.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+	option = { # FUCK!!!
+		name = DAS_Orders.8.a
+		add_political_power = -20
+		effect_tooltip = { 
+			remove_mission = DAS_Draft
+		}
 	}
 }
 
@@ -646,13 +664,12 @@ country_event = { # Ceasefire p2 GAMEPLAN ABOUT THIS LATER
 	fire_only_once = yes
 
 	option = {
+		clr_global_flag = third_filipino_independence_war
 		name = DAS_Ceasefire.2.a
 		DAS = {
-		clr_country_flag = third_filipino_independence_war
 		set_country_flag = DAS_Peacedeal
 		}
 		PHI = {
-		clr_country_flag = third_filipino_independence_war
 		set_country_flag = DAS_Peacedeal
 		}
 		complete_national_focus = PB_DAS_Rebuilding_Burnt_Bridges
@@ -1494,7 +1511,7 @@ country_event = { # Remind Germany to check the Far East
 	}
 }
 
-country_event = { # Eyes on Bredow
+country_event = { # Eyes on Bredow #UP FOR REWRITING
 	id = DAS_FarEastCrisis.2
 	title = DAS_FarEastCrisis.2.t
 	desc = DAS_FarEastCrisis.2.d
@@ -1521,6 +1538,75 @@ country_event = { # The Dernburg Dossier - a dossier of German Warcrimes and Eco
 	fire_only_once = no
 	option = { # Seems like bredow was on to something, we need to get to that dossier!
 	    name = DAS_FarEastCrisis.3.a
+	}
+}
+
+country_event = { # Emergency Act
+	id = DAS_FarEastCrisis.5
+	title = DAS_FarEastCrisis.5.t
+	desc = DAS_FarEastCrisis.5.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = { # Holy Fuck they accepted
+		name = DAS_FarEastCrisis.5.a
+		complete_national_focus = PB_DAS_The_Stillborn_Dream
+		remove_mission = PHI_War_Countdown
+		remove_ideas = PB_Idea_DAS_Bundestag_Patience_6
+		set_country_flag = Far_East_Crisis_Avoided
+		mark_focus_tree_layout_dirty = yes
+	}
+}
+
+country_event = { # Germany Refuses
+	id = DAS_FarEastCrisis.6
+	title = DAS_FarEastCrisis.6.t
+	desc = DAS_FarEastCrisis.6.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = { # Germany refuses the ultimatum
+		name = DAS_FarEastCrisis.6.a
+		remove_mission = PHI_War_Countdown
+		complete_national_focus = PB_DAS_Laws_Blinded_Eyes
+	}
+}
+
+country_event = { # Far Eastern Ultimatum
+	id = DAS_FarEastCrisis.4
+	title = DAS_FarEastCrisis.4.t
+	desc = DAS_FarEastCrisis.4.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+	option = { # Accept their demands
+	    name = DAS_FarEastCrisis.4.a
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 500
+				has_government = rc
+			}
+		}
+	}
+
+	option = { # Refuse!
+	    name = DAS_FarEastCrisis.4.b
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 500
+				NOT = { 
+					has_government = rc
+				}
+			}
+		}
+		DAS = { 
+			country_event = DAS_FarEastCrisis.6
+		}
 	}
 }
 
@@ -1902,6 +1988,71 @@ country_event = { # Dutch decline to Cooperate in batavia expedition
 			unlock_decision_tooltip = DAS_overthrow_INS
 			set_country_flag = INS_invasion
 		}
+	}
+}
+
+country_event = { # German Pacific Confronts you for the Batavia Expedition
+	id = DAS_Diplomacy.12
+	title = DAS_Diplomacy.12.t
+	desc = DAS_Diplomacy.12.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # Accept The Invasion Plans
+		name = DAS_Diplomacy.12.a
+		DAS = { 
+			country_event = {
+				id = DAS_Diplomacy.13
+				days = 5
+			}
+		}
+	}
+	option = { # die with the INS
+		name = DAS_Diplomacy.12.a
+		DAS = { 
+			country_event = {
+				id = DAS_Diplomacy.14
+				days = 5
+			}
+		}
+	}
+}
+
+country_event = { # German Pacific - INS puppet agrees
+	id = DAS_Diplomacy.13
+	title = DAS_Diplomacy.13.t
+	desc = DAS_Diplomacy.13.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # They're welcome to win
+		name = DAS_Diplomacy.13.a
+		INS = { 
+			end_puppet = FROM
+		}
+		ROOT = { 
+			faction_leader = { 
+				add_to_faction = FROM
+			}
+		}
+	}
+}
+
+country_event = { # German Pacific - INS puppet declines
+	id = DAS_Diplomacy.14
+	title = DAS_Diplomacy.14.t
+	desc = DAS_Diplomacy.14.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = no
+
+	option = { # They're welcome to like die
+		name = DAS_Diplomacy.14.a
 	}
 }
 

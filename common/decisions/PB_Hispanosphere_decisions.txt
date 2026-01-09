@@ -1,20 +1,15 @@
 PB_HSP_Succession_War = {
     PB_HSP_Succession_War_Countdown = {
-        icon = GFX_decision_generic_timer
+        icon = GFX_decision_generic_army_support
 
         allowed = {
             always = no
         }
-
-        visible = {
-            always = no
-            has_country_flag = HSP_Succesion_War
-        }
         
 		available = {
-			always = no
+			hidden_trigger = { always = no }
 		}
-		
+
         selectable_mission = no
         
         is_good = no
@@ -45,19 +40,14 @@ PB_HSP_Succession_War = {
     }
 
     PB_HSP_COL_Succession_War_Countdown = { #NEW GRANDA POV
-        icon = GFX_decision_generic_timer
+        icon = GFX_decision_generic_army_support
 
         allowed = {
             always = no
         }
-
-        visible = {
-            always = no
-            has_country_flag = HSP_Succesion_War
-        }
         
 		available = {
-			always = no
+			hidden_trigger = { always = no }
 		}
 		
         selectable_mission = no
@@ -70,15 +60,10 @@ PB_HSP_Succession_War = {
 
     }
 
-
-    PB_COL_Hispaniola_War_Countdown = { #NEW GRANADA WAITING FOR HAITI
-        icon = GFX_decision_generic_timer
+    PB_HAI_Hispaniola_Buildup_Timer = { #Haiti Invades!
+        icon = GFX_decision_generic_army_support
      
         allowed = {
-            tag = COL
-        }
-
-        visible = {
             always = no
         }
 
@@ -93,22 +78,52 @@ PB_HSP_Succession_War = {
         fire_only_once = yes
 
         days_mission_timeout = 60
+
+        timeout_effect = { 
+            HAI = { 
+                country_event = haiti_warfare.2
+            }
+        }
+
     }
-
-    PB_HSP_CHR_Quito_War_Countdown = {
-        icon = GFX_decision_generic_timer
-
+    PB_COL_Hispaniola_War_Countdown = { #NEW GRANADA WAITING FOR HAITI #Dummy Version
+        icon = GFX_decision_generic_army_support
+     
         allowed = {
             always = no
         }
 
+        available = {
+            always = no
+        }
+
+        selectable_mission = no
+
+        is_good = no
+
+        fire_only_once = yes
+
+        days_mission_timeout = 60
+
+        timeout_effect = { 
+            effect_tooltip = {
+                HAI = { 
+                    country_event = haiti_warfare.2
+                }
+            }
+        }
+    }
+
+    PB_HSP_CHR_Quito_War_Countdown = {
+        icon = GFX_decision_infiltrate_state
+        allowed = { always = no }
+        
         visible = {
             always = no
-            has_country_flag = HSP_Quito_Crisis
         }
         
 		available = {
-			always = no
+            always = no
 		}
 		
         selectable_mission = no
@@ -118,24 +133,91 @@ PB_HSP_Succession_War = {
         fire_only_once = yes
 
         days_mission_timeout = 100
-        #cancel_trigger = {
-            #check_variable = { quito_power < 10 }
-        #}
-        #cancel_effect = {
-            #hidden_effect = {
-            #    remove_mission = PB_HSP_CHR_Quito_War_Countdown
-            #}
-        #}
+
         timeout_effect = {
-            custom_effect_tooltip = HSP_Succession_War_tt
-            305 = {
-            set_demilitarized_zone = no
+            set_temp_variable = { temp_ecucol = CHR.ECU_influence }
+            add_to_temp_variable = { temp_ecucol = CHR.COL_influence }
+
+            if = {
+                limit = {
+                    check_variable = {
+                        var = CHR.CHR_influence
+                        value = temp_ecucol
+                        compare = greater_than
+                    }
+                }
+                CHR = { transfer_state = 305 }
             }
-            491 = {
-                set_demilitarized_zone = no
+            else_if = {
+                limit = {
+                    check_variable = {
+                        var = CHR.ECU_influence
+                        value = CHR.COL_influence
+                        compare = greater_than
+                    }
+                }
+                ECU = { transfer_state = 305 }
             }
-            490 = {
-                set_demilitarized_zone = no
+            else = {
+                COL = { transfer_state = 305 }
+            }
+
+            # COL gets if COL > CHR + ECU, otherwise higher of CHR / ECU
+
+            set_temp_variable = { temp_chrecu = CHR.CHR_influence }
+            add_to_temp_variable = { temp_chrecu = CHR.ECU_influence }
+
+            if = {
+                limit = {
+                    check_variable = {
+                        var = CHR.COL_influence
+                        value = temp_chrecu
+                        compare = greater_than
+                    }
+                }
+                COL = { transfer_state = 491 }
+            }
+            else_if = {
+                limit = {
+                    check_variable = {
+                        var = CHR.CHR_influence
+                        value = CHR.ECU_influence
+                        compare = greater_than
+                    }
+                }
+                CHR = { transfer_state = 491 }
+            }
+            else = {
+                ECU = { transfer_state = 491 }
+            }
+
+            # ECU gets if ECU > CHR + COL, otherwise higher of CHR / COL
+
+            set_temp_variable = { temp_chrcol = CHR.CHR_influence }
+            add_to_temp_variable = { temp_chrcol = CHR.COL_influence }
+
+            if = {
+                limit = {
+                    check_variable = {
+                        var = CHR.ECU_influence
+                        value = temp_chrcol
+                        compare = greater_than
+                    }
+                }
+                ECU = { transfer_state = 490 }
+            }
+            else_if = {
+                limit = {
+                    check_variable = {
+                        var = CHR.CHR_influence
+                        value = CHR.COL_influence
+                        compare = greater_than
+                    }
+                }
+                CHR = { transfer_state = 490 }
+            }
+            else = {
+                COL = { transfer_state = 490 }
             }
         }
 
@@ -150,16 +232,254 @@ PB_HSP_Succession_War = {
         }
     }
 
+    PB_HSP_CHR_Quito_War_dummy_Countdown = {
+        icon = GFX_decision_infiltrate_state
+        allowed = { 
+            always = no
+        }
+        visible = {
+            always = no
+        }
+        
+		available = {
+            always = no
+		}
+		
+        selectable_mission = no
+        
+        is_good = no
+
+        fire_only_once = yes
+
+        days_mission_timeout = 100
+        
+        timeout_effect = {
+            effect_tooltip = { 
+                set_temp_variable = { temp_ecucol = CHR.ECU_influence }
+                add_to_temp_variable = { temp_ecucol = CHR.COL_influence }
+
+                if = {
+                    limit = {
+                        check_variable = {
+                            var = CHR.CHR_influence
+                            value = temp_ecucol
+                            compare = greater_than
+                        }
+                    }
+                    CHR = { transfer_state = 305 }
+                }
+                else_if = {
+                    limit = {
+                        check_variable = {
+                            var = CHR.ECU_influence
+                            value = CHR.COL_influence
+                            compare = greater_than
+                        }
+                    }
+                    ECU = { transfer_state = 305 }
+                }
+                else = {
+                    COL = { transfer_state = 305 }
+                }
+
+                # COL gets if COL > CHR + ECU, otherwise higher of CHR / ECU
+
+                set_temp_variable = { temp_chrecu = CHR.CHR_influence }
+                add_to_temp_variable = { temp_chrecu = CHR.ECU_influence }
+
+                if = {
+                    limit = {
+                        check_variable = {
+                            var = CHR.COL_influence
+                            value = temp_chrecu
+                            compare = greater_than
+                        }
+                    }
+                    COL = { transfer_state = 491 }
+                }
+                else_if = {
+                    limit = {
+                        check_variable = {
+                            var = CHR.CHR_influence
+                            value = CHR.ECU_influence
+                            compare = greater_than
+                        }
+                    }
+                    CHR = { transfer_state = 491 }
+                }
+                else = {
+                    ECU = { transfer_state = 491 }
+                }
+
+                # ECU gets if ECU > CHR + COL, otherwise higher of CHR / COL
+
+                set_temp_variable = { temp_chrcol = CHR.CHR_influence }
+                add_to_temp_variable = { temp_chrcol = CHR.COL_influence }
+
+                if = {
+                    limit = {
+                        check_variable = {
+                            var = CHR.ECU_influence
+                            value = temp_chrcol
+                            compare = greater_than
+                        }
+                    }
+                    ECU = { transfer_state = 490 }
+                }
+                else_if = {
+                    limit = {
+                        check_variable = {
+                            var = CHR.CHR_influence
+                            value = CHR.COL_influence
+                            compare = greater_than
+                        }
+                    }
+                    CHR = { transfer_state = 490 }
+                }
+                else = {
+                    COL = { transfer_state = 490 }
+                }
+           }
+        }
+
+        highlight_states = {
+            highlight_state_targets = {
+                state = 490
+                state = 491
+                state = 305
+            }
+            highlight_color_while_active = 3
+            highlight_color_before_active = 2
+        }
+    }
+
+    PB_HSP_CHR_Add_Weapons = {
+        icon = GFX_decision_generic_timer
+
+        allowed = {
+            original_tag = CHR
+        }
+    
+        visible = {
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+		available = {
+            has_active_mission = PB_HSP_CHR_Quito_War_Countdown
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+        is_good = no
+
+        days_remove = 1
+        ai_will_do = {
+			factor = 40
+		}
+        remove_effect = {
+            CHR = {
+                add_to_variable = { CHR_influence = 1 }
+            }
+        }
+    }
+
+    PB_HSP_CHR_Sabotage_COL = {
+        icon = GFX_decision_generic_timer
+
+        allowed = {
+            original_tag = CHR
+        }
+    
+        visible = {
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+		available = {
+            has_active_mission = PB_HSP_CHR_Quito_War_Countdown
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+        is_good = no
+
+        days_remove = 1
+        ai_will_do = {
+			factor = 40
+		}
+        remove_effect = {
+            CHR = {
+                add_to_variable = { COL_influence = -1 }
+            }
+        }
+    }
+
+    PB_HSP_ECU_Add_Weapons = {
+        icon = GFX_decision_generic_timer
+
+        allowed = {
+            original_tag = ECU
+        }
+    
+        visible = {
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+		available = {
+            has_active_mission = PB_HSP_CHR_Quito_War_dummy_Countdown
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+        is_good = no
+
+        days_remove = 1
+        ai_will_do = {
+			factor = 40
+		}
+        remove_effect = {
+            CHR = { 
+                add_to_variable = { ECU_influence = 1 }
+            }
+        }
+    }
+
+    PB_HSP_COL_Add_Weapons = {
+        icon = GFX_decision_generic_timer
+
+        allowed = {
+            original_tag = COL
+        }
+    
+        visible = {
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+		available = {
+            has_active_mission = PB_HSP_CHR_Quito_War_dummy_Countdown
+            has_global_flag = HSP_Quito_Crisis
+        }
+        
+        is_good = no
+
+        days_remove = 1
+        ai_will_do = {
+			factor = 40
+		}
+        remove_effect = {
+            CHR = { 
+                add_to_variable = { COL_influence = 1 }
+            }
+        }
+    }
+
     PB_HSP_CHR_Brown_Water = {
         icon = GFX_decision_generic_timer
 
         allowed = {
-            always = no
+            original_tag = CHR
         }
-
+    
         visible = {
-            always = no
-            has_country_flag = HSP_Succesion_War
+            original_tag = CHR
+            has_war_with = COL
+            has_global_flag = HSP_Succesion_War
         }
         
 		available = {
@@ -167,9 +487,10 @@ PB_HSP_Succession_War = {
 				area = 109
 				size > 1
 			}
+            surrender_progress > 0.7
+            owns_state = 827
+            has_war_with = COL
         }
-
-        selectable_mission = yes
         
         is_good = no
 
@@ -178,13 +499,15 @@ PB_HSP_Succession_War = {
         days_remove = 50
 
         remove_effect = {
-            
+            #le wip
         }
     }
 	COL_montly_weapons_shipment = {
 	
 		icon = GFX_decision_generic_upgrade_colony
-
+        allowed = { 
+            always = no
+        }
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = COL_control_border_amazon_TT
@@ -198,10 +521,9 @@ PB_HSP_Succession_War = {
             highlight_color_while_active = 3
             highlight_color_before_active = 2
 		}
-		activation = {
-			tag = COL
+		visible = {
 			has_war_with = CHR
-			has_country_flag = HSP_Succesion_War
+			has_global_flag = HSP_Succesion_War
 		}
 
 		selectable_mission = no
@@ -242,7 +564,9 @@ PB_HSP_Succession_War = {
     CHR_montly_weapons_shipment = {
 	
 		icon = GFX_decision_generic_upgrade_colony
-
+        allowed = { 
+            always = no
+        }
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = CHR_control_border_amazon_TT
@@ -256,14 +580,9 @@ PB_HSP_Succession_War = {
             highlight_color_while_active = 3
             highlight_color_before_active = 2
 		}
-		activation = {
-			tag = CHR
-			has_war_with = COL
-			has_country_flag = HSP_Succesion_War
-		}
         visible = {
-            original_tag = CHR
 			has_war_with = COL
+            has_global_flag = HSP_Succesion_War
         }
 
 		selectable_mission = no
@@ -337,6 +656,7 @@ PB_HSP_Succession_War = {
             }
         }
         visible = {
+            original_tag = CHR
             has_war_with = COL
         }
 
@@ -393,6 +713,7 @@ PB_HSP_Succession_War = {
             }
         }
         visible = {
+            original_tag = COL
 			has_war_with = CHR
         }
 
@@ -428,8 +749,8 @@ PB_HSP_Succession_War = {
         icon = GFX_decision_generic_timer
      
         allowed = {
-            tag = COL
-            tag = COL
+            original_tag = COL
+            original_tag = VEN
         }
 
         visible = {

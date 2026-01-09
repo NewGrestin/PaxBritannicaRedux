@@ -1,0 +1,111 @@
+on_actions = {
+	on_capitulation_immediate = {
+		effect = { 
+			if = { #GER COLLAPSE
+				limit = {
+					ROOT = { 
+						original_tag = GER
+					}
+
+					FROM = {
+						OR = { 
+							original_tag = FRA
+							is_in_faction_with = FRA
+						}
+					}
+				}
+				log = "Germany Capitulated"
+
+				FRA = { 
+					country_event = germany.25
+					country_event = { id = French_postwar.5 days = 14 }	
+					country_event = { id = French.95 days = 3 } 
+					add_ideas = FRA_German_Liberation_Front_Presence_High
+					set_country_flag = FRA_Cucked_Germany
+					if = {
+						limit = {
+							has_dlc = "La Resistance"
+						}
+						9 = {
+							remove_dynamic_modifier = { modifier = czech_agitation }
+						}
+						75 = {
+							remove_dynamic_modifier = { modifier = czech_agitation }
+						}
+						28 = {
+							remove_dynamic_modifier = { modifier = french_terrorism }
+						}
+					}		
+				}
+
+				if = { #Prussia shit
+					limit = {
+						PRS = {
+							OR = {
+								exists = no
+								has_capitulated = yes
+							}
+						}
+					}
+					RUS = {
+						every_state = {
+							limit = {
+								is_core_of = PRS
+							}
+							RUS = {
+								transfer_state = PREV
+							}
+						}
+						country_event = {
+							id = Russian_Foreign_Policy.3
+							days = 3
+						}
+					}
+
+					if = {
+						limit = {
+							86 = {
+								NOT = {
+									is_core_of = PRS
+								}
+							}
+						}
+						DDR = {
+							transfer_state = 86
+						}
+					}
+				}
+					
+				GER = { 
+					GER_setup_exiles = yes
+					every_country = { 
+						limit = { 
+							has_war_with = GER
+						}
+						white_peace = GER
+					}
+					every_subject_country = {
+						if = { 
+							limit = { 
+								GER = { 
+									OR = {
+										is_in_faction_with = ENG
+										is_in_faction_with = AME
+									}
+									is_subject_of = PREV
+								}
+							}
+						}
+						overlord = {
+							set_autonomy = { target = PREV autonomy_state = autonomy_free }
+						}
+						white_peace = FROM
+						leave_faction = yes
+					}
+					leave_faction = yes
+				}
+				set_global_flag = skip_default_capitulation
+			}
+		}
+	}
+}

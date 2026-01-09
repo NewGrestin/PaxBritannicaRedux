@@ -2666,6 +2666,9 @@ country_event = { # SCA Invitation to the faction
 		ai_chance = {
 			factor = 20
 		}
+		ROOT = { 
+			set_country_flag = SCA_Can_Declare_War
+		}
 		SCA = {
 			country_event = {
 				id = SCA.63
@@ -2686,7 +2689,11 @@ country_event = { # they accept the invitation
 
 	option = {
 		name = SCA62opta
-		add_to_faction = FROM
+		ROOT = { 
+			faction_leader = { 
+				add_to_faction = FROM
+			}
+		}
 		clr_country_flag = SCA_recent_faction_invite
 	}
 }
@@ -2702,6 +2709,9 @@ country_event = { # they decline the invitation
 	option = {
 		name = SCA63opta
 		clr_country_flag = SCA_recent_faction_invite
+		ROOT = { 
+			set_country_flag = SCA_Can_Declare_War
+		}
 	}
 }
 
@@ -2739,6 +2749,9 @@ country_event = { # SCA is going to puppet us
 				id = SCA.66
 				days = 0
 			}
+		}
+		ROOT = { 
+			set_country_flag = SCA_Can_Declare_War
 		}
 	}
 }
@@ -3474,7 +3487,11 @@ country_event = { # Colombia Radicalizes
 				ruling_party = jc
 				elections_allowed = no
 			}
-			add_to_faction = FROM
+		}
+		SCA = {
+			faction_leader = { 
+				add_to_faction = VEN
+			}
 		}
 		FROM = { 
 			country_event = { id = SCA.85 days = 1 }
@@ -3488,6 +3505,9 @@ country_event = { # Colombia Radicalizes
 		}
 		FROM = { 
 			country_event = { id = SCA.86 days = 1 }
+		}
+		ROOT = { 
+			set_country_flag = SCA_Can_Declare_War
 		}
 	}
 }
@@ -3502,8 +3522,10 @@ country_event = { # Colombia Alliance
 
 	option = { # accept
 		name = SCA84opta
-		VEN = { 
-			add_to_faction = FROM
+		SCA = {
+			faction_leader = { 
+				add_to_faction = VEN
+			}
 		}
 		FROM = { 
 			country_event = { id = SCA.85 days = 1 }
@@ -3512,11 +3534,11 @@ country_event = { # Colombia Alliance
 
 	option = { # decline
 		name = SCA83optb
-		VEN = { 
-			set_country_flag = SCA_Can_Declare_War
-		}
 		FROM = { 
 			country_event = { id = SCA.86 days = 1 }
+		}
+		ROOT = { 
+			set_country_flag = SCA_Can_Declare_War
 		}
 	}
 }
@@ -3544,6 +3566,11 @@ country_event = { # Federal League Radicalizes
 					elections_allowed = no
 				}
 				add_to_faction = FROM
+				SCA = {
+					faction_leader = { 
+						add_to_faction = URG
+					}
+				}
 			}
 		}
 		if = { 
@@ -3558,7 +3585,11 @@ country_event = { # Federal League Radicalizes
 					ruling_party = jc
 					elections_allowed = no
 				}
-				add_to_faction = FROM
+				SCA = {
+					faction_leader = { 
+						add_to_faction = PAR
+					}
+				}
 			}
 		}
 		ARG = { 
@@ -3567,6 +3598,11 @@ country_event = { # Federal League Radicalizes
 				elections_allowed = no
 			}
 			add_to_faction = FROM
+			SCA = {
+				faction_leader = { 
+					add_to_faction = ARG
+				}
+			}
 		}
 		FROM = { 
 			country_event = { id = SCA.85 days = 1 }
@@ -3623,8 +3659,10 @@ country_event = { # Federal League Alliance
 					is_in_faction_with = ARG 
 				} 
 			}
-			FROM = { 
-				add_to_faction = URG
+			SCA = {
+				faction_leader = { 
+					add_to_faction = URG
+				}
 			}
 		}
 		if = {
@@ -3634,12 +3672,16 @@ country_event = { # Federal League Alliance
 					is_in_faction_with = ARG 
 				} 
 			}
-			FROM = { 
-				add_to_faction = PAR
+			SCA = {
+				faction_leader = { 
+					add_to_faction = PAR
+				}
 			}
 		}
-		FROM = { 
-			add_to_faction = ARG
+		SCA = {
+			faction_leader = { 
+				add_to_faction = ARG
+			}
 		}
 		FROM = { 
 			country_event = { id = SCA.85 days = 1 }
@@ -3703,4 +3745,257 @@ country_event = { # They declined
 	option = { 
 		name = SCA86opta
 	}	
+}
+
+country_event = { # Tonkaliwako Accord
+	id = SCA.87
+	title = SCA87title
+	desc = SCA87desc
+	picture = GFX_report_UC_Butler_5
+ 
+	is_triggered_only = yes
+
+	option = { # Demand the Natives march north into the CFT and submit
+		name = SCA87opta
+		CFT = { 
+			country_event = { id = SCA.89 days = 1 }
+		}
+		effect_tooltip = { 
+			give_resource_rights = { receiver = SCA state = 391 }
+			remove_ideas = PB_CFT_Resistance_to_Settlement
+		}
+	}
+	option = { # Establish Native Reservations
+			
+		name = SCA87optb
+		FROM = { 
+			country_event = { id = SCA.88 days = 1 }
+		}
+	}
+}
+
+country_event = { # CFT perspective - Establishment of Reservations
+	id = SCA.88
+	title = SCA88title
+	desc = SCA88desc
+	picture = GFX_report_UC_Butler_5
+ 
+	is_triggered_only = yes
+
+	option = { # Agree to the Reservation Plan
+		ai_will_do = { 
+			base = 5
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 967
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 1411
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 944
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 1
+						state = 1430
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 894
+					}
+				}	
+			}
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 1
+						state = 797
+					}
+				}	
+			}
+
+			modifier = { #if North american union
+				add = 10
+				SCA = {
+					has_completed_focus = SCA_Proclaim_The_North_American_Union
+				}	
+			}
+		}
+		name = SCA88opta
+		give_resource_rights = { receiver = SCA state = 391 }
+		remove_ideas = PB_CFT_Resistance_to_Settlement
+		366 = { 
+			add_core_of = CSA
+		}
+		797 = { 
+			add_core_of = SHO
+		}
+		894 = { 
+			add_core_of = SHO
+		}
+		SCA = { 
+			release_autonomy = {
+				target = APA
+				autonomy_state = autonomy_PB_American_Sister_Republic
+				freedom_level = 0.5
+			}
+			release_autonomy = {
+				target = SHO
+				autonomy_state = autonomy_PB_American_Sister_Republic
+				freedom_level = 0.5
+			}
+			release_autonomy = {
+				target = CMC
+				autonomy_state = autonomy_PB_American_Sister_Republic
+				freedom_level = 0.5
+			}
+			release_autonomy = {
+				target = CSA
+				autonomy_state = autonomy_PB_American_Sister_Republic
+				freedom_level = 0.5
+			}
+			release_autonomy = {
+				target = OSA
+				autonomy_state = autonomy_PB_American_Sister_Republic
+				freedom_level = 0.5
+			}
+			set_autonomy = {
+				target = CFT
+				autonomous_state = autonomy_PB_American_Sister_Republic
+				end_wars = no
+				end_civil_wars = no
+			}
+		}
+	}
+	option = { # Decline
+		name = SCA88optb
+		ai_will_do = { 
+			base = 15
+		}
+	}
+}
+
+country_event = { # CFT perspective - complete boozlement
+	id = SCA.89
+	title = SCA89title
+	desc = SCA89desc
+	picture = GFX_report_UC_Butler_5
+ 
+	is_triggered_only = yes
+
+	option = { # Agree to the Reservation Plan
+		name = SCA89opta
+		give_resource_rights = { receiver = SCA state = 391 }
+		remove_ideas = PB_CFT_Resistance_to_Settlement
+		set_autonomy = {
+			target = CFT
+			autonomous_state = autonomy_PB_American_Sister_Republic
+			end_wars = no
+			end_civil_wars = no
+		}
+		ai_will_do = {
+			base = 5
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 967
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 1411
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 944
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 1
+						state = 1430
+					}
+				}	
+			}
+
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 2
+						state = 894
+					}
+				}	
+			}
+			modifier = {
+				add = 5
+				SCA = {
+					divisions_in_state = {
+						size > 1
+						state = 797
+					}
+				}	
+			}
+
+			modifier = { #if North american union
+				add = 10
+				SCA = {
+					has_completed_focus = SCA_Proclaim_The_North_American_Union
+				}	
+			}
+		}
+	}
+	option = { # Decline
+		name = SCA89optb
+		ai_will_do = { 
+			base = 20
+		}
+	}
 }

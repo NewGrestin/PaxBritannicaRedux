@@ -82,3 +82,360 @@ PB_GER_Far_Eastern_Crisis = {
 		}
 	}
 }
+
+PB_GER_Philippine_Insurection = {
+	
+	GER_Draft = { #German POV
+
+		icon = GFX_decision_generic_militia
+
+		available = {
+			OR = {
+				custom_override_tooltip = {
+					tooltip = germany_victory_in_europe_tt
+					has_country_flag = GER_Victory_In_Europe
+				}
+                 custom_override_tooltip = {
+					tooltip = germany_is_in_exile_tt
+					has_country_flag = GER_IN_EXILE
+				}
+			}
+		}
+
+		activation = {
+			has_global_flag = third_filipino_independence_war
+		}
+
+		priority = 2
+		selectable_mission = no
+		is_good = yes
+		fire_only_once = no
+		
+
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_mission_timeout = 100
+
+		timeout_effect = {
+			effect_tooltip = {
+				DAS = { 
+					add_manpower = 10000
+				}
+				add_manpower = -10000
+			}
+			if = { 
+				limit = { 
+					has_country_flag = GER_Sent_Guns_To_DAS
+				}
+				DAS = { 
+					add_equipment_to_stockpile = {
+						type = infantry_equipment
+						amount = 2000
+					}
+				}
+				hidden_effect = {
+					add_equipment_to_stockpile = {
+						type = infantry_equipment
+						amount = -2000
+					}
+					clr_country_flag = GER_Sent_Guns_To_DAS
+				}
+			}
+			hidden_effect = { 
+				activate_mission = GER_Draft
+			}
+		}
+	}
+
+	GER_Send_Guns_To_DAS = { # Send guns
+		icon = ger_military_buildup
+		allowed = { original_tag = GER }
+		visible = {
+			country_exists = DAS
+			has_global_flag = third_filipino_independence_war
+		}
+
+		available = { 
+			NOT = { 
+				has_country_flag = GER_Sent_Guns_To_DAS
+			}
+		}
+
+		custom_cost_trigger = {
+			NOT = { has_equipment = { infantry_equipment < 2000 } }
+		}
+		custom_cost_text = 2000_guns
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				has_equipment = { infantry_equipment < 4000 }
+			}
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+
+		days_remove = 20
+		remove_effect = {
+			army_experience = 25
+			set_country_flag = GER_Sent_Guns_To_DAS
+		}
+	}
+
+
+	GER_Cut_Off_German_Aid = {
+		icon = generic_ignite_civil_war
+		allowed = {
+			original_tag = GER
+		}
+		available = {
+			DAS = { 
+				OR = { 
+					has_idea = PB_Idea_DAS_Bundestag_Patience_6
+					has_idea = PB_Idea_DAS_Bundestag_Patience_5
+					has_idea = PB_Idea_DAS_Bundestag_Patience_4
+				}
+			}
+		}
+
+		visible = {
+			has_global_flag = third_filipino_independence_war
+		}
+
+		fire_only_once = yes
+
+		cost = 10
+
+		ai_will_do = {
+			base = 0
+			modifier = {
+				factor = 50
+				DAS = { 
+					has_idea = PB_Idea_DAS_Bundestag_Patience_6
+				}
+				NOT = { 
+					has_government = rc
+				}
+			}
+		}
+		
+		complete_effect = {
+			remove_mission = GER_Draft
+			DAS = { 
+				country_event = DAS_Orders.8
+				remove_mission = DAS_Draft
+			}
+		}
+	}
+
+	GER_DAS_Division = {
+		icon = GFX_decision_generic_cavalry
+		allowed = { original_tag = GER }
+		available = {
+			has_tech = armored_car1
+			has_completed_focus = PB_GER_reinforce_donitz
+		}
+
+		days_remove = 2
+		modifier = {
+			political_power_gain = -0.5
+			command_power_gain = -0.25
+		}
+		custom_cost_trigger = {
+			NOT = { has_equipment = { infantry_equipment < 2000 } }
+			NOT = { has_manpower < 11000 }
+		}
+		custom_cost_text = GER_11000_mp_2000_eq
+
+		fire_only_once = yes
+
+		ai_will_do = { factor = 100 }
+
+		complete_effect = {
+			add_manpower = -11000
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -2000
+			}
+		}
+
+		remove_effect = {
+			#add an event to remind em
+			DAS = { 
+				custom_override_tooltip = {
+					tooltip = {
+						localization_key = tooltip_create_division_template
+						NAME = "Koloniale Luft-Boden-Division"
+						LINE_1 = { localization_key = line_battalion_tt NAME = infantry ICON = GFX_unit_infantry_icon_small COUNT = 6 }
+						LINE_2 = { localization_key = line_battalion_tt NAME = sturmtruppen ICON = GFX_unit_sturmtruppen_icon_small COUNT = 4 }
+						LINE_3 = { localization_key = line_battalion_tt NAME = armored_car ICON = GFX_unit_armored_car_icon_small COUNT = 2 }
+						SUPPORT_1 = { localization_key = support_battalion_tt NAME = attack_helicopter_brigade ICON = GFX_unit_attack_helicopter_brigade_icon_small }
+						SUPPORT_2 = { localization_key = support_battalion_tt NAME = engineer ICON = GFX_unit_engineer_icon_small }
+						SUPPORT_3 = { localization_key = support_battalion_tt NAME = artillery ICON = GFX_unit_artillery_icon_small }
+					}
+					if = {
+						limit = { has_template = "Koloniale Luft-Boden-Division" }
+						delete_unit_template_and_units = { division_template = "Koloniale Luft-Boden-Division" disband = yes } #no cheating
+					}
+					division_template = {
+						name = "Koloniale Luft-Boden-Division"
+						regiments = {
+							infantry = { x = 0 y = 0 }
+							infantry = { x = 0 y = 1 }
+							infantry = { x = 0 y = 2 }
+							infantry = { x = 1 y = 0 }
+							infantry = { x = 1 y = 1 }
+							infantry = { x = 1 y = 2 }
+							sturmtruppen = { x = 2 y = 0 }
+							sturmtruppen = { x = 2 y = 1 }
+							sturmtruppen = { x = 2 y = 2 }
+							sturmtruppen = { x = 2 y = 3 }
+							armored_car = { x = 3 y = 0 }
+							armored_car = { x = 3 y = 1 }
+						}
+						support = {
+							attack_helicopter_brigade = { x = 0 y = 0 }
+							engineer = { x = 0 y = 1 }
+							artillery = { x = 0 y = 2 }
+						}
+					}
+				}
+				random_owned_controlled_state = {
+					limit = { valid_state_for_spawning_friendly_unit = yes }
+					custom_override_tooltip = {
+						tooltip = {
+							localization_key = tooltip_spawn_unit
+							TYPE = "Koloniale Luft-Boden-Division"
+						}
+						create_unit = {
+							division = "name = \"1. Koloniale Luft-Boden-Division 'Overbeck'\" division_template = \"Koloniale Luft-Boden-Division\" start_experience_factor = 0.5"
+							owner = DAS
+						}
+					}
+				}
+			}
+		}
+		fixed_random_seed = no
+	}
+
+	GER_Return_German_Aid = {
+		icon = GFX_decision_soldierly_discipline
+		allowed = {
+			original_tag = GER
+		}
+		available = {
+			DAS = { 
+				OR = { 
+					has_idea = PB_Idea_DAS_Bundestag_Patience_3
+					has_idea = PB_Idea_DAS_Bundestag_Patience_2
+					has_idea = PB_Idea_DAS_Bundestag_Patience_1
+				}
+			}
+		}
+
+		visible = {
+			has_global_flag = third_filipino_independence_war
+			NOT = { 
+				has_active_mission = GER_Draft
+			}
+		}
+
+		fire_only_once = yes
+
+		cost = 10
+
+		ai_will_do = {
+			base = 0
+			modifier = {
+				factor = 50
+				DAS = { 
+					has_idea = PB_Idea_DAS_Bundestag_Patience_1
+				}
+				NOT = { 
+					has_government = rc
+				}
+			}
+		}
+		
+		remove_effect = {
+			activate_mission = GER_Draft
+			DAS = { 
+				country_event = DAS_Orders.9
+				activate_mission = DAS_Draft
+			}
+		}
+	}
+}
+
+PB_DAS_Influence_category = {
+	DAS_Draft = { #German POV
+
+		icon = GFX_decision_generic_militia
+
+		available = {
+			OR = {
+				custom_override_tooltip = {
+					tooltip = germany_victory_in_europe_tt
+					has_country_flag = GER_Victory_In_Europe
+				}
+                 custom_override_tooltip = {
+					tooltip = germany_is_in_exile_tt
+					has_country_flag = GER_IN_EXILE
+				}
+			}
+		}
+
+		activation = {
+			has_global_flag = third_filipino_independence_war
+		}
+
+		priority = 2
+		selectable_mission = no
+		is_good = yes
+		fire_only_once = no
+		
+		ai_will_do = {
+			factor = 4000
+		}
+
+		days_mission_timeout = 200
+
+		timeout_effect = {
+			effect_tooltip = {
+				DAS = { 
+					add_manpower = 10000
+				}
+				hidden_effect = {
+					GER = { 
+						add_manpower -10000
+					}
+				}	
+			}
+			if = { 
+				limit = { 
+					GER = { 
+						has_country_flag = GER_Sent_Guns_To_DAS
+					}
+				}
+				effect_tooltip = { 
+					DAS = { 
+						add_equipment_to_stockpile = {
+							type = infantry_equipment
+							amount = 2000
+						}
+					}
+				}
+				hidden_effect = {
+					add_equipment_to_stockpile = {
+						type = infantry_equipment
+						amount = -2000
+					}
+				}
+			}
+		}
+	}
+}

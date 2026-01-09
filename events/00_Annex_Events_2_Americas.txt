@@ -22,7 +22,7 @@
 # annex.2004 - Fate of Rio Grande
 # annex.2005 - Fate of Rio Grande North / Fate of American Texas
 # annex.2006 - Fate of Southern Rio Grande (Monclova)
-# annex.2007 - Fate of Cuzcatlan
+# annex.2007 - Fate of Honduras
 # annex.2008 - Fate of Yucatan
 # annex.2009 - Fate of Guatemala
 # annex.2010 - Fate of Los Altos
@@ -39,7 +39,7 @@
 # annex.2021 - Fate of the Great Plains
 # annex.2022 - Fate of California
 # annex.2023 - Fate of Baja California
-# annex.2024 - Fate of Apacheria (Arizona)
+# annex.2024 - Fate of East Apacheria
 # annex.2025 - Fate of Santa Fe
 # annex.2026 - Fate of Comanche
 # annex.2027 - Fate of Quebec
@@ -53,6 +53,21 @@
 # annex.2035 - Fate of New Africa
 # annex.2036 - Fate of Seminolia
 # annex.2037 - Fate of Vermont
+# annex.2038 - Fate of Ongtupqa
+# annex.2039 - Fate of Labrador
+# annex.2040 - Fate of Newfoundland
+# annex.2041 - Fate of Peten
+# annex.2042 - Fate of Angostura
+# annex.2043 - Fate of Chiapas
+# annex.2045 - Fate of Tologalpa
+# annex.2046 - Fate of Honduran Miskito
+# annex.2047 - Fate of Providencia
+# annex.2048 - Fate of Tegucigalpa
+# annex.2049 - Fate of Miskito Coast
+# annex.2050 - Fate of Mexico
+# annex.2051 - Fate of the Ohio River
+# annex.2052 - Fate of Vandalia
+# annex.2053 - Fate of Danish West Indies
 
 add_namespace = annex
 
@@ -5548,11 +5563,14 @@ country_event = { # Fate of Epstein Island
 	is_triggered_only = yes
 
 	immediate = {
+		annexations_create_west_indies_federation_event_target = yes
+
 		if = {
 			limit = {
 				OR = {
 					1369 = { is_claim_or_core_of_ROOT = yes } # Puerto Rico
 					686 = { is_claim_or_core_of_ROOT = yes } # Dutch Antilles
+					original_tag = WIS
 				}
 			}
 			save_event_target_as = can_annex
@@ -5562,7 +5580,10 @@ country_event = { # Fate of Epstein Island
 			limit = {
 				1369 = {
 					annexations_state_owner_is_valid_grant_target = yes
-					owner = { ROOT_can_grant_land = yes }
+					owner = { 
+						ROOT_can_grant_land = yes 
+						NOT = { tag = event_target:west_indies }
+					}
 				}
 			}
 			var:1369.owner = { save_event_target_as = puerto_rico }
@@ -5574,6 +5595,7 @@ country_event = { # Fate of Epstein Island
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						NOT = { tag = event_target:puerto_rico }
+						NOT = { tag = event_target:west_indies }
 						ROOT_can_grant_land = yes
 					}
 				}
@@ -5581,6 +5603,22 @@ country_event = { # Fate of Epstein Island
 			var:686.owner = { save_event_target_as = dutch_antilles }
 		}
 	}
+
+	option = { # Give to West Indies
+        log = "[GetLogInfo]: event annex.6026 option annexation_events.america.west_indies"
+        name = annexation_events.america.west_indies
+        trigger = { has_event_target = west_indies }
+        ai_chance = {
+            base = 0
+            modifier = {
+                add = 100
+                has_subject = event_target:west_indies
+                annexations_can_annex = no
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:west_indies }
+        824 = { transfer_state_and_notify = yes } # Epstein island
+    }
 
 	option = { # Return to Puerto Rico
 		log = "[GetLogInfo]: event annex.2053 option annex.2053.a"
