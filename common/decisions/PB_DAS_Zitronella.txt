@@ -86,7 +86,7 @@ PB_DAS_Zitronella_Dissolving = {
 		}
 		available = {  
 			check_variable = {
-				zitronella_shares > 1
+				zitronella_shares < 1
 			}
 		}
 		
@@ -157,6 +157,34 @@ PB_DAS_Zitronella_Dissolving = {
 			country_event = DAS_Zitronella_Deal.8
 		}
 	}
+	DAS_Assign_Minister = {
+		icon = generic_civil_support
+		cost = 11
+		fire_only_once = yes
+		allowed = {
+			original_tag = DAS
+		}
+		visible = {
+			has_active_mission = DAS_Zitronella_Timer
+			OR = { 
+				has_country_flag = clicked_on_OVBD
+				has_country_flag = clicked_on_OSTHANSA
+				has_country_flag = clicked_on_HUGENBURG
+				has_country_flag = clicked_on_MACLAY
+				has_country_flag = clicked_on_BUND
+			}
+			NOT = { 
+				has_country_flag = ZT_has_already_assigned_minister
+			}
+		}
+		days_remove = 10
+
+		remove_effect = {
+			DAS_ZIT_Add_10 = yes
+			set_country_flag = ZT_has_already_assigned_minister
+			ZT_Assign_Minister = yes
+		}
+	}
 	##### OST HANSA #####
 	DAS_OSTHANSA_Blackmail = {
 		icon = GFX_decision_generic_propaganda
@@ -208,6 +236,165 @@ PB_DAS_Zitronella_Dissolving = {
 				DAS.DAS_private_civs = 1
             }
 			DAS_ZIT_Add_5 = yes
+		}
+	}
+}
+
+
+PB_ZT = { 
+	ZT_Reinforcements = { #
+
+		icon = GFX_decision_generic_militia
+
+		allowed = { 
+			tag = DSA
+		}
+
+		activation = {
+			has_global_flag = DAS_Zit_Civilwar
+		}
+
+		available = { 
+			always = no
+		}
+		priority = 2
+		selectable_mission = no
+		is_good = no
+		fire_only_once = yes
+
+		days_mission_timeout = 70
+
+		timeout_effect = {
+			load_oob = "DSA_Wave1"
+		}
+	}
+
+	ZT_APHRODITE = { #
+
+		icon = GFX_decision_generic_militia
+
+		allowed = { 
+			tag = DSA
+		}
+
+		activation = {
+			has_global_flag = DAS_Zit_Civilwar
+		}
+
+		available = { 
+			always = no
+		}
+		priority = 2
+		selectable_mission = no
+		is_good = no
+		fire_only_once = no
+
+		days_mission_timeout = 150
+
+		timeout_effect = {
+			random_owned_controlled_state = { 
+				add_manpower = -100000
+			}
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = 2000
+			}
+			add_equipment_to_stockpile = {
+				type = combatagate_equipment
+				amount = 1000
+			}
+			add_equipment_to_stockpile = {
+				type = artillery_equipment
+				amount = 1000
+			}
+			activate_mission = ZT_APHRODITE
+		}
+	}
+
+	ZT_Target_Neighbor = {
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = {
+			tag = DSA
+		}
+		target_root_trigger = {
+			tag = DSA
+		}
+		target_trigger = {
+			FROM = {
+				is_neighbor_of = ROOT
+				NOT = {
+					tag = DSA
+				}
+			}
+		}
+		available = {
+			ROOT = {
+				has_war = no
+			}
+		}
+		on_map_mode = map_and_decisions_view
+		icon = my_icon
+		cost = 0
+		complete_effect = {
+			ROOT = {
+				declare_war_on = {
+					target = FROM
+					type = annex_everything
+				}
+			}
+		}
+	}
+
+	ZT_Integrate_State = {
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = {
+			tag = DSA
+		}
+		target_root_trigger = {
+			tag = DSA
+		}
+
+		days_remove = 25
+
+		modifier = {
+			civilian_factory_use = 1
+		}
+
+		state_target = yes
+
+		target_trigger = {
+			FROM = {
+				NOT = {
+					is_core_of = ROOT
+				}
+				OR = {
+					is_owned_by = ROOT
+					is_fully_controlled_by = ROOT
+				}
+				any_neighbor_state = {
+					is_core_of = ROOT
+				}
+			}
+		}
+		available = {
+			FROM = {
+				any_neighbor_state = {
+					is_core_of = ROOT
+				}
+			}
+		}
+		on_map_mode = map_and_decisions_view
+		icon = my_icon
+		cost = 50
+		remove_effect = {
+			FROM = {
+				add_core_of = ROOT
+			}
 		}
 	}
 }

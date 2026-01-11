@@ -70,16 +70,8 @@ focus = {
 		idea = PB_Idea_DAS_Media_Blackout
 		days = 100
 		}
-        add_to_variable = {
-            var = Bundestag_Patience
-            value = -1
-        }
-		custom_effect_tooltip = GEA_Bund_Lower_tt
-		hidden_effect = {
-			DAS_Lower_Bund = yes
-		}
 		custom_effect_tooltip = PB_spacing_tt
-		custom_effect_tooltip = GEA_Media_Blackout_tt
+		add_stability = 0.05
 	}
 }
 
@@ -141,7 +133,18 @@ focus = {
 	completion_reward = {
 		unlock_decision_category_tooltip = PB_DAS_Evacuations
 		custom_effect_tooltip = PB_spacing_tt
-		custom_effect_tooltip = GEA_Evacuate_tt
+		custom_effect_tooltip = when_taken
+		effect_tooltip = { 
+			add_days_mission_timeout = {
+				mission = PHI_War_Countdown
+   				days = 20
+			}
+			add_equipment_to_stockpile = {
+				type = convoy_1
+				amount = -50
+				producer = DAS
+			}
+		}
 	}
 }
 
@@ -168,7 +171,74 @@ focus = {
         decision = DAS_Colonial_Backlines
         }
 		custom_effect_tooltip = PB_spacing_tt
-		custom_effect_tooltip = GEA_Backlines_tt
+		custom_effect_tooltip = when_taken
+		effect_tooltip = { 
+			if = {
+				limit = {
+					DAS = {
+						controls_province = 7419
+					}
+				}
+				626 = {
+					add_building_construction = {
+						type = bunker
+						level = 3
+						instant_build = yes
+						province = 7419
+					
+					}
+				}
+			}
+	
+			if = {
+				limit = {
+					DAS = {
+						controls_province = 7360
+					}
+				}
+				1352 = {
+					add_building_construction = {
+						type = bunker
+						level = 3
+						instant_build = yes
+						province = 7360
+					
+					}
+				}
+			}
+			if = {
+				limit = {
+					DAS = {
+						controls_province = 1293
+					}
+				}
+				627 = {
+					add_building_construction = {
+						type = bunker
+						level = 3
+						instant_build = yes
+						province = 1293
+					
+					}
+				}
+			}
+			if = {
+				limit = {
+					DAS = {
+						controls_province = 12153
+					}
+				}
+				628 = {
+					add_building_construction = {
+						type = bunker
+						level = 3
+						instant_build = yes
+						province = 12153
+					
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -310,6 +380,7 @@ focus = {
             days = 70
         }
 		custom_effect_tooltip = PB_spacing_tt
+		custom_effect_tooltip = tooltip_focus_unlocked_by_event
 	}
 }
 
@@ -342,6 +413,7 @@ focus = {
             days = 70
         }
 		custom_effect_tooltip = PB_spacing_tt
+		custom_effect_tooltip = tooltip_focus_unlocked_by_event
 	}
 }
 
@@ -484,10 +556,12 @@ focus = {
 	completion_reward = {
 		country_event = DAS.2
 		custom_effect_tooltip = PB_spacing_tt
+		add_stability = 0.05
+		add_political_power = 25
 		1148 = {
 			add_building_construction = {
 				type = industrial_complex
-				level = 3
+				level = 2
 				instant_build = yes
 			}
 		}
@@ -517,7 +591,7 @@ focus = {
 		country_event = DAS.3
 		custom_effect_tooltip = PB_spacing_tt
 
-		add_stability = 0.2
+		add_stability = 0.1
 	}
 }
 
@@ -527,10 +601,6 @@ focus = {
 	x = 1
 	y = 1
 	cost = 25
-
-	available = {
-		always = no
-	}
 	
     prerequisite = {
 		focus = PB_DAS_Grant_Overbeck_Status
@@ -1218,6 +1288,12 @@ focus = {
 		ban_party_ds = yes
 		ban_party_rc = yes
 		ban_party_ni = yes
+		custom_effect_tooltip = PB_spacing_tt
+		swap_ideas = {
+			remove_idea = PB_State_Press
+			add_idea = PB_Free_Press
+		}
+		custom_effect_tooltip = PB_spacing_tt
 		add_war_support = -0.1
 	}
 }
@@ -1241,11 +1317,69 @@ focus = {
 	search_filters = {FOCUS_FILTER_STABILITY}
 
 	completion_reward = {
-		1148 = {
-			create_unit = {
-				division = "name = \"Fernost Kommando-Division\" division_template = \"Fernost Kommando-Division\" start_experience_factor = 0.5"
-				owner = DAS
+		custom_override_tooltip = {
+			tooltip = {
+				localization_key = tooltip_create_division_template
+				NAME = "Fernost Kommando-Battalion"
+				LINE_1 = { localization_key = line_battalion_tt NAME = infantry ICON = GFX_unit_elite_infantry_icon_small COUNT = 6 }
+				LINE_2 = { localization_key = line_battalion_tt NAME = sturmtruppen ICON = GFX_unit_sturmtruppen_icon_small COUNT = 4 }
+				LINE_3 = { localization_key = line_battalion_tt NAME = armored_car ICON = GFX_unit_armored_car_icon_small COUNT = 2 }
+				SUPPORT_1 = { localization_key = support_battalion_tt NAME = attack_helicopter_brigade ICON = GFX_unit_attack_helicopter_brigade_icon_small }
+				SUPPORT_2 = { localization_key = support_battalion_tt NAME = engineer ICON = GFX_unit_engineer_icon_small }
+				SUPPORT_3 = { localization_key = support_battalion_tt NAME = artillery ICON = GFX_unit_artillery_icon_small }
 			}
+			if = {
+				limit = { has_template = "Fernost Kommando-Battalion" }
+				delete_unit_template_and_units = { division_template = "Fernost Kommando-Battalion" disband = yes } #no cheating
+			}
+			division_template = {
+				name = "Fernost Kommando-Battalion"
+				regiments = {
+					elite_infantry = { x = 0 y = 0 }
+					elite_infantry = { x = 0 y = 1 }
+					elite_infantry = { x = 0 y = 2 }
+					elite_infantry = { x = 1 y = 0 }
+					elite_infantry = { x = 1 y = 1 }
+					elite_infantry = { x = 1 y = 2 }
+					sturmtruppen = { x = 2 y = 0 }
+					sturmtruppen = { x = 2 y = 1 }
+					sturmtruppen = { x = 2 y = 2 }
+					sturmtruppen = { x = 2 y = 3 }
+					armored_car = { x = 3 y = 0 }
+					armored_car = { x = 3 y = 1 }
+				}
+				support = {
+					attack_helicopter_brigade = { x = 0 y = 0 }
+					engineer = { x = 0 y = 1 }
+					artillery = { x = 0 y = 2 }
+				}
+			}
+		}
+		random_owned_controlled_state = {
+			limit = { valid_state_for_spawning_friendly_unit = yes }
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_spawn_unit
+					TYPE = "Fernost Kommando-Battalion"
+				}
+				create_unit = {
+					division = "name = \"Fernost Kommando-Battalion 'Haraissa'\" division_template = \"Fernost Kommando-Battalion\" start_experience_factor = 0.5"
+					owner = DAS
+				}
+				create_unit = {
+					division = "name = \"Fernost Kommando-Battalion 'Aesir'\" division_template = \"Fernost Kommando-Battalion\" start_experience_factor = 0.5"
+					owner = DAS
+				}
+				create_unit = {
+					division = "name = \"Fernost Kommando-Battalion 'Forseti'\" division_template = \"Fernost Kommando-Battalion\" start_experience_factor = 0.5"
+					owner = DAS
+				}
+			}
+		}
+		custom_effect_tooltip = PB_Spacing_tt
+		swap_ideas = {
+			remove_idea = PB_Law_Prev_Policing
+			add_idea = PB_Law_Secret_Police
 		}
 	}
 }
@@ -1274,7 +1408,7 @@ focus = {
 		DAS_karl_donitz = {
 			retire = yes
 		}
-		add_stability = 10
+		add_stability = 0.05
 		add_political_power = 40
 		add_popularity = {
 			ideology = ds
@@ -1647,10 +1781,16 @@ focus = { #FERNOST
 	y = 1
 	cost = 25
 	
+	available = { 
+		has_country_leader = {
+			character = DAS_maximillian_spee
+			ruling_only = yes
+		}
+	}
+
     prerequisite = {
 		focus = PB_DAS_Pacific_Periphery
 	}
-	available = { always = no }
 	
 	relative_position_id = PB_DAS_Pacific_Periphery
 
@@ -1685,6 +1825,13 @@ focus = {
 	y = 1
 	cost = 25
 
+	available = { 
+		has_country_leader = {
+			character = DAS_maximillian_spee
+			ruling_only = yes
+		}
+	}
+
     prerequisite = {
 		focus = PB_DAS_Laws_Blinded_Eyes
 	}
@@ -1708,7 +1855,12 @@ focus = {
 	x = 1
 	y = 1
 	cost = 25
-
+	available = { 
+		has_country_leader = {
+			character = DAS_maximillian_spee
+			ruling_only = yes
+		}
+	}
     prerequisite = {
 		focus = PB_DAS_Laws_Blinded_Eyes
 	}
@@ -1746,6 +1898,13 @@ focus = {
 	y = 1
 	cost = 25
 
+	available = { 
+		has_country_leader = {
+			character = DAS_maximillian_spee
+			ruling_only = yes
+		}
+	}
+
     prerequisite = {
 		focus = PB_DAS_Laws_Blinded_Eyes
 	}
@@ -1773,6 +1932,8 @@ focus = {
 			mission = GER_Fernost_Countdown
 			days = -70
 		}
+		add_war_support = 0.1
+		add_political_power = -20
 	}
 }
 
@@ -1800,9 +1961,9 @@ focus = {
 
 	search_filters = {FOCUS_FILTER_STABILITY}
 
-	#completion_reward = {
-	#	country_event =
-	#}
+	completion_reward = {
+		add_ideas = DAS_Guerre_De_Course
+	}
 }
 
 focus = {
@@ -1977,6 +2138,9 @@ focus = {
 	x = -2
 	y = 1
 	cost = 25
+	available = { 
+		has_completed_focus = PB_DAS_The_Second_Batavia_Expedition
+	}
 
     prerequisite = {
 		focus = PB_DAS_Gunboat_Diplomacy
