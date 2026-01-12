@@ -1580,7 +1580,7 @@ country_event = { #Fate of Neuchatel
 	}
 
 	option = { #give to Franche Comte owner
-		log = "[GetLogInfo: event annex.1012 option annex.1012.b"
+		log = "[GetLogInfo]: event annex.1012 option annex.1012.b"
 		name = annex.1012.b
 		trigger = {
 			has_event_target = france
@@ -8609,21 +8609,22 @@ country_event = { #Fate of Denmark
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
-			NOR = {
-				drop_cosmetic_tag = yes
+			DEN = {
 				set_cosmetic_tag = DEN_Occupied_Monarchy
 			}
 		}
 
 		if = {
-			limit = { ROOT = {
-					has_republican_government = yes } }
-			NOR = {
-				drop_cosmetic_tag = yes
+			limit = { ROOT = { has_republican_government = yes } }
+			DEN = {
 				set_cosmetic_tag = DEN_Occupied_Republic
 			}
 		}
 
+		if = {
+			limit = { ROOT = { original_tag = FRA } }
+			FRA_DEN_setup_puppet = yes
+		}
 		recheck_annexations = yes
 	}
 
@@ -8634,13 +8635,7 @@ country_event = { #Fate of Denmark
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
+		DEN = { set_transfer_target_cores = yes }
 		recheck_annexations = yes
 	}
 
@@ -8648,22 +8643,16 @@ country_event = { #Fate of Denmark
 		log = "[GetLogInfo]: event annex.1061 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		DEN = { add_claim_of_ROOT_on_valid_cores = yes }
 		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1061 option annex.cancel"
 		name = annex.cancel
-		ai_chance = { base = 0 }
-		
+		ai_chance = { base = 0 }	
     }
 
 	after = {
@@ -8706,10 +8695,17 @@ country_event = { #Fate of Sweden
 			}
 		}
 
+		set_temp_variable = { tag_to_release = SWE }
+		every_state = {
+			limit = { is_sweden = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SWE = {
-				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SWE_Occupied_Monarchy
 			}
 		}
 
@@ -8719,19 +8715,28 @@ country_event = { #Fate of Sweden
 				set_cosmetic_tag = SWE_Occupied_Republic
 			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = SWE }
-			release_targeted_tag = yes
+
+		if = {
+			limit = { 
+				ROOT = { 
+					original_tag = FRA
+				}
+			}
+			FRA_SWE_setup_puppet = yes
+		}
+		
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annexation_events.1062 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		SWE = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Integrate
@@ -8851,88 +8856,127 @@ country_event = { #Fate of Schleswig
 	}
 }
 
-country_event = { #Fate of Scania
+country_event = { # Fate of Skåne
 	id = annex.1064
-	title = annexation_scania
-	desc = annexation_scania_desc
+	title = annexation_skane
+	desc = annexation_skane_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
-	option = { #Return it to Sweden
+	immediate = { 
+		if = {
+			limit = {
+				OR = {
+					138 = { is_claim_or_core_of_ROOT = yes } # Småland
+					37  = { is_claim_or_core_of_ROOT = yes } # København
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				37 = { # København
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:37.owner = {
+				save_event_target_as = kobenhaven
+				add_to_array = { ROOT.potential_grant_targets = THIS }
+			}
+		}
+
+		if = {
+			limit = {
+				138 = { # Småland
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:kobenhaven }
+					}
+				}
+			}
+			var:138.owner = {
+				save_event_target_as = smaland
+				add_to_array = { ROOT.potential_grant_targets = THIS }
+			}
+		}
+	}
+
+	option = { # Return it to Sweden
 		log = "[GetLogInfo]: event annex.1064 option annex.1064.a"
 		name = annex.1064.a
 		trigger = {
-			is_subject = no
+			has_event_target = smaland
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:smaland }
+				is_ally_with = event_target:kobenhaven
+			}
+			modifier = {
+				factor = 0.1
+				event_target:smaland = { is_subject = yes }
+			}
 		}
-
-		SWE = {
-			transfer_state = 138
-		}
+		set_temp_variable = { tag_to_release = event_target:smaland }
+		137 = { transfer_state_and_notify = yes } # Skåne
 	}
 
-	option = { #Give it to Denmark
+	option = { # Give it to Denmark
 		log = "[GetLogInfo]: event annex.1064 option annex.1064.b"
 		name = annex.1064.b
 		trigger = {
-			is_subject = no
+			has_event_target = kobenhaven
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kobenhaven }
+				is_ally_with = event_target:smaland
+			}
+			modifier = {
+				factor = 0.1
+				event_target:kobenhaven = { is_subject = yes }
+			}
 		}
-
-		DEN = {
-			transfer_state = 138
-			add_state_core = 138
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:kobenhaven }
+		137 = { transfer_state_and_notify = yes } # Skåne
 	}
 
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1064 option annex.give_to_overlord"
-		name = annex.give_to_overlord
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annexation_events.1064 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		137 = { transfer_state_and_notify = yes } # Skåne
 	}
 
-	option = { #Integrate
+	option = { # Integrate
 		log = "[GetLogInfo]: event annex.1064 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		137 = { add_claim_of_ROOT = yes } # Skåne
 	}
 
-	option = { #Cancel
+	option = { # Cancel
 		log = "[GetLogInfo]: event annex.1064 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
@@ -8951,65 +8995,100 @@ country_event = { #Fate of Nordland
 
 	is_triggered_only = yes
 
+	immediate = { 
+		if = {
+			limit = {
+				OR = {
+					1366 = { is_claim_or_core_of_ROOT = yes } #lappland
+					143 = { is_claim_or_core_of_ROOT = yes } #Trondheim
+
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				143 = { #trondheim
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:141.owner = { save_event_target_as = trondheim add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+		if = {
+			limit = {
+				1366 = { #lappland
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:trondheim }
+					}
+				}
+			}
+			var:1366.owner = { save_event_target_as = lappland add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+	}
+
 	option = { #Return it to Sweden
 		log = "[GetLogInfo]: event annex.1065 option annex.1065.a"
 		name = annex.1065.a
 		trigger = {
-			is_subject = no
-			SWE = {
-			owns_state = 1366
-		    }   
+			has_event_target = lappland
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:lappland }
+				is_ally_with = event_target:trondheim
+			}
+			modifier = {
+				factor = 0.1
+				event_target:lappland = { is_subject = yes }
+			}
 		}
-
-		SWE = {
-			transfer_state = 1011
-		}
+		set_temp_variable = { tag_to_release = event_target:lappland }
+		1011 = { transfer_state_and_notify = yes } #Nordland
 	}
 
 	option = { #Give it to Norway
 		log = "[GetLogInfo]: event annex.1065 option annex.1065.b"
 		name = annex.1065.b
 		trigger = {
-			is_subject = no
+			has_event_target = trondheim
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:trondheim }
+				is_ally_with = event_target:lappland
+			}
+			modifier = {
+				factor = 0.1
+				event_target:trondheim = { is_subject = yes }
+			}
 		}
-
-		NOR = {
-			transfer_state = 1011
-		}
+		set_temp_variable = { tag_to_release = event_target:trondheim }
+		1011 = { transfer_state_and_notify = yes } #Nordland
 	}
 
-	option = { #Give it to Norrland
-		log = "[GetLogInfo]: event annex.1065 option annex.1065.c"
-		name = annex.1065.c
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annexation_events.1065 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
 		trigger = {
-			is_subject = no
-			MEN = {
-            exists = yes
-		    }
+			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		1011 = { transfer_state_and_notify = yes } #Nordland
 	}
 
 	option = { #Integrate
@@ -9017,14 +9096,10 @@ country_event = { #Fate of Nordland
 		name = annex.integration
 		trigger = {
 			OR = {
-				original_tag = NWL
 				annexations_can_annex = yes
 			}
 		}
-
-		MEN = {
-			transfer_state = 1011
-		}
+		1011 = { add_claim_of_ROOT = yes } #Nordland
 	}
 
 	option = { #Cancel
@@ -15401,6 +15476,8 @@ country_event = { #Fate of Norway
 		1011 = { retain_state = yes }
 		144 = { retain_state = yes }
 		100 = { retain_state = yes }
+		1437 = { retain_state = yes }
+		101 = { retain_state = yes }
     }
 
 	option = { #Release an independent Norway
@@ -15436,6 +15513,38 @@ country_event = { #Fate of Norway
 				set_cosmetic_tag = NOR_Occupied_Republic
 			}
 		}
+	}
+
+	option = { #Form Sweden-Norway
+		log = "[GetLogInfo]: event annexation_events.1137 option annexation_events.1137.c"
+		name = annexation_events.1137.b
+		trigger = {
+			original_tag = SWE
+			has_monarchist_government = yes
+			is_subject = no
+		}
+		set_cosmetic_tag = PB_SWEDEN_NORWAY
+		NOR = {
+			every_core_state = { add_claim_of_ROOT = yes }
+			every_core_state = {
+				limit = {
+					is_controlled_by = ROOT
+					has_resistance = yes
+				}
+				set_compliance = 0
+			}
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1137 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 30 }
+
+		NOR = { add_claim_of_ROOT_on_valid_cores = yes }
 	}
 
 	option = { #Cancel
