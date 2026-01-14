@@ -7,6 +7,10 @@ add_namespace = switzerland_automation_crisis
 add_namespace = switzerland_databank
 add_namespace = switzerland_mercenary
 
+##################
+#INTERNAL POLITICS
+##################
+
 country_event = { #1935 Federal Elections
 	id = switzerland.1
 	title = switzerland.1.t
@@ -132,32 +136,6 @@ country_event = { #1935 Federal Elections
 	}
 }
 
-country_event = { #automation crisis
-	id = switzerland.2
-	title = switzerland.2.t
-	desc = switzerland.2.d
-	#picture = 
-
-	is_triggered_only = yes
-	
-	option = {
-		name = switzerland.2.a
-		ai_chance = {
-			factor = 100
-		}
-
-		swap_ideas = {
-            add_ideas = PB_SWI_Automation_Crisis
-        }
-         
-		hidden_effect = {
-            set_country_flag = SWI_auto_crisis
-		} 
-		
-
-	}
-}
-
 country_event = { #SNB coalition
 	id = switzerland.3
 	title = switzerland.3.t
@@ -179,151 +157,6 @@ country_event = { #SNB coalition
 	}
 }
 
-country_event = { #strikes
-	id = switzerland.4
-	title = switzerland.4.t
-	desc = switzerland.4.d
-	#picture = 
-
-	fire_only_once = yes
-	
-	option = {
-		name = switzerland.4.a
-		ai_chance = {
-			factor = 100
-		}		
-
-		add_stability = -0.05
-
-		add_ideas = PB_SWI_automation_strikes
-
-		hidden_effect = {
-            set_country_flag = SWI_ongoing_strikes
-		} 
-		
-
-	}
-}
-
-country_event = { #Dealing with the strikes
-	id = switzerland.5
-	title = switzerland.5.t
-	desc = switzerland.5.d
-	#picture = 
-
-	is_triggered_only = yes
-	
-	option = {
-		name = switzerland.5.a
-		ai_chance = {
-			factor = 100
-		}		
-		trigger = {
-            has_government = cn
-		}
-         
-		add_stability = -0.25 
-		remove_ideas = PB_SWI_automation_strikes
-		custom_effect_tooltip = SWI_drastic_bund_tensions
-
-		hidden_effect = {
-            clr_country_flag = SWI_ongoing_strikes
-            set_country_flag = SWI_strikers_deal
-			if = {
-                limit = {
-                    has_idea = PB_SWI_bund_tensions_very_high
-                }
-				country_event = {
-                    id = switzerland.10
-                    days = 5
-                }
-            }
-			if = {
-                limit = {
-                    has_idea = PB_SWI_bund_tensions_high
-                }
-                swap_ideas = {
-                    remove_idea = PB_SWI_bund_tensions_high
-                    add_idea = PB_SWI_bund_tensions_very_high
-                }
-				country_event = {
-                    id = switzerland.10
-                    days = 5
-                }
-            }
-			if = {
-                limit = {
-                    has_idea = PB_SWI_bund_tensions_moderate
-                }
-                swap_ideas = {
-                    remove_idea = PB_SWI_bund_tensions_moderate
-                    add_idea = PB_SWI_bund_tensions_very_high
-                }
-				country_event = {
-                    id = switzerland.10
-                    days = 5
-                }
-            }
-			if = {
-                limit = {
-                    has_idea = PB_SWI_bund_tensions_low
-                }
-                swap_ideas = {
-                    remove_idea = PB_SWI_bund_tensions_low
-                    add_idea = PB_SWI_bund_tensions_very_high
-                }
-				country_event = {
-                    id = switzerland.10
-                    days = 5
-                }
-            }
-		} 
-	}
-
-	option = {
-		name = switzerland.5.b
-		ai_chance = {
-			factor = 100
-		}		
-		trigger = {
-            has_government = lb
-		}
-
-		swap_ideas = {
-            remove_idea = PB_12_Hour_Workday
-            add_idea = PB_8_Hour_Workday
-        }
-
-		
-
-		hidden_effect = {
-			clr_country_flag = SWI_ongoing_strikes
-            set_country_flag = SWI_strikers_deal
-		} 
-		
-
-	}
-
-	option = {
-		name = switzerland.5.c
-		ai_chance = {
-			factor = 100
-		}		
-		trigger = {
-            has_government = ss
-		}
-
-		
-
-		hidden_effect = {
-            clr_country_flag = SWI_ongoing_strikes
-            set_country_flag = SWI_strikers_deal
-		} 
-		
-
-	}
-}
-
 country_event = { #Habsburg deal 1
 	id = switzerland.6
 	title = switzerland.6.t
@@ -333,7 +166,7 @@ country_event = { #Habsburg deal 1
 	is_triggered_only = yes
 	
 	option = {
-		name = switzerland.5.a
+		name = switzerland_automation_crisis.3.a
 		ai_chance = {
 			factor = 100
 		}		
@@ -488,6 +321,202 @@ country_event = { #A Choice of Discipline
 		}
 	}
 }
+
+##################
+#AUTOMATION CRISIS
+##################
+
+country_event = { #automation crisis
+	id = switzerland_automation_crisis.1
+	title = switzerland_automation_crisis.1.t
+	desc = switzerland_automation_crisis.1.d
+	#picture = 
+
+	is_triggered_only = yes
+	
+	immediate = {
+		SWI = {
+			add_dynamic_modifier = { 
+				modifier = PB_SWI_Automation_Crisis_Dynamic_Modifier
+			}
+		}
+		hidden_effect = {
+			add_to_variable = {
+				var = PB_SWI_AC_stability_factor
+				value = -0.15
+			}
+			add_to_variable = {
+				var = PB_SWI_AC_research_speed_factor
+				value = -0.15
+			}
+			add_to_variable = {
+				var = PB_SWI_AC_industrial_capacity_factory
+				value = -0.3
+			}
+			add_to_variable = {
+				var = PB_SWI_AC_production_speed_building_dactor
+				value = -0.3
+			}
+			country_event = {
+				id = switzerland_automation_crisis.2
+				days = 13
+			}
+		}
+	}
+	
+	option = {
+		name = switzerland_automation_crisis.1.a
+		ai_chance = {
+			factor = 50
+		}
+		
+		add_political_power = -50
+		add_stability = 0.05
+		set_country_flag = PB_SWI_haven_against_robocracy_flag_path
+		hidden_effect = {
+			complete_national_focus = PB_SWI_automation_crisis
+		}
+	}
+	
+	option = {
+		name = switzerland_automation_crisis.1.b
+		ai_chance = {
+			factor = 50
+		}
+		
+		add_political_power = 30
+		add_stability = -0.05
+		set_country_flag = PB_SWI_embrace_new_era_flag_path
+		hidden_effect = {
+			complete_national_focus = PB_SWI_automation_crisis
+		}
+	}
+}
+
+country_event = { #Automation Strikes
+	id = switzerland_automation_crisis.2
+	title = switzerland_automation_crisis.2.t
+	desc = switzerland_automation_crisis.2.d
+	#picture = 
+
+	fire_only_once = yes
+	
+	immediate = {
+		add_ideas = PB_SWI_Automation_Strikes
+		hidden_effect = {
+            set_country_flag = SWI_Ongoing_Strikes
+		}
+	}
+	
+	option = {
+		name = switzerland.4.a
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+country_event = { #Dealing with the strikes
+	id = switzerland_automation_crisis.3
+	title = switzerland_automation_crisis.3.t
+	desc = switzerland_automation_crisis.3.d
+	#picture = 
+
+	is_triggered_only = yes
+	
+	option = {
+		name = switzerland_automation_crisis.3.a
+		ai_chance = {
+			factor = 100
+		}
+        
+		add_stability = -0.15
+		add_popularity = {
+			ideology = ss
+			popularity = 0.1
+		}
+		remove_ideas = PB_SWI_Automation_Strikes
+		SD_POV_growth_regress_moderate = yes
+
+		hidden_effect = {
+			add_manpower = -400
+            clr_country_flag = SWI_Ongoing_Strikes
+		}
+	}
+
+	option = {
+		name = switzerland_automation_crisis.3.b
+		ai_chance = {
+			factor = 100
+		}
+		
+		add_stability = -0.05
+		add_political_power = -100
+		add_popularity = {
+			ideology = ss
+			popularity = 0.05
+		}
+		remove_ideas = PB_SWI_Automation_Strikes
+		SD_ECON_growth_regress_moderate = yes
+
+		hidden_effect = {
+            clr_country_flag = SWI_Ongoing_Strikes
+		}
+	}
+
+	option = {
+		name = switzerland_automation_crisis.3.c
+		ai_chance = {
+			factor = 100
+		}
+		
+		if = {
+			limit = {
+				has_idea = PB_Limited_Welfare
+			}
+			swap_ideas = {
+				remove_idea = PB_Limited_Welfare
+				add_idea = PB_Generous_Welfare
+			}
+		}
+		else_if = {
+			limit = {
+				has_idea = PB_Basic_Welfare
+			}
+			swap_ideas = {
+				remove_idea = PB_Basic_Welfare
+				add_idea = PB_Limited_Welfare
+			}
+		}
+		else_if = {
+			limit = {
+				has_idea = PB_No_Welfare
+			}
+			swap_ideas = {
+				remove_idea = PB_No_Welfare
+				add_idea = PB_Basic_Welfare
+			}
+		}
+		add_popularity = {
+			ideology = ss
+			popularity = 0.1
+		}
+		remove_ideas = PB_SWI_Automation_Strikes
+		add_timed_idea = {
+			idea = PB_SWI_Unemployement_Insurances
+			days = 370
+		}
+		custom_effect_tooltip = PB_SWI_Satisfied_Unions_tt
+
+		hidden_effect = {
+            clr_country_flag = SWI_Ongoing_Strikes
+		}
+	}
+}
+
+##################
+##FOREIGN POLITICS
+##################
 
 country_event = { #tonkin campaign involvement
 	id = switzerland_mercenary.1
