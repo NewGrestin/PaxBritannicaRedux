@@ -1580,7 +1580,7 @@ country_event = { #Fate of Neuchatel
 	}
 
 	option = { #give to Franche Comte owner
-		log = "[GetLogInfo: event annex.1012 option annex.1012.b"
+		log = "[GetLogInfo]: event annex.1012 option annex.1012.b"
 		name = annex.1012.b
 		trigger = {
 			has_event_target = france
@@ -5740,18 +5740,32 @@ country_event = { #Fate of Germany
 	immediate = {
 		hidden_effect = {
 			every_state = {
+				if = { 
+					limit = { 
+						OR = {
+							is_rhineland = yes
+							is_wurttemberg = yes
+							is_bavaria = yes
+							is_saxony = yes
+							is_brandenburg = yes
+							is_hannover = yes
+							state = 8
+						}
+					} 
+					retain_state = yes
+				}
+			}
+			every_state = {
 				if = {
-					limit = { is_germany = yes }
+					limit = {
+						is_germany = yes 
+					}
 					add_core_of = GER
 				}
 				else = {
 					remove_core_of = GER
+					remove_claim_by = GER
 				}
-				remove_claim_by = GER
-			}
-			every_state = {
-				if = { limit = { is_rhineland = yes } }
-				retain_state = yes
 			}
 			if = {
 				limit = {
@@ -5852,7 +5866,6 @@ country_event = { #Fate of Germany
 
 		set_temp_variable = { tag_to_release = FRK }
 		release_targeted_tag = yes
-
 	}
 
 	option = { #Give to Prussia
@@ -6052,6 +6065,12 @@ country_event = { #Fate of Luxembourg
 		name = annex.1042.b
 		trigger = {
 			is_subject = no
+			NOT = {
+				OR = {
+					original_tag = WLA
+					original_tag = HOL
+				}
+			}
 		}
 		ai_chance = {
 			base = 100
@@ -6339,9 +6358,10 @@ country_event = { #Fate of Rhineland
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
-				factor = 0
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
 		}
 
@@ -6597,6 +6617,55 @@ country_event = { #Fate of Wurttemberg
 
 	is_triggered_only = yes
 
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_wurttemberg = yes }
+					add_core_of = WRT
+				}
+				else = {
+					remove_core_of = WRT
+				}
+				remove_claim_by = WRT
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+		if = {
+			limit = {
+				52 = { #Oberbayern
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						original_tag = BAV
+					}
+				}
+			}
+			var:52.owner = { save_event_target_as = oberbayern }
+		}
+	}
+
 	option = { #Release Wurttemberg
 		log = "[GetLogInfo]: event annex.1044 option annex.1044.a"
 		name = annex.1044.a
@@ -6604,10 +6673,11 @@ country_event = { #Fate of Wurttemberg
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
-				factor = 0
-			}
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}	
 		}
 
 		set_temp_variable = { tag_to_release = WRT }
@@ -6634,17 +6704,83 @@ country_event = { #Fate of Wurttemberg
 		log = "[GetLogInfo]: event annex.1044 option annex.1044.b"
 		name = annex.1044.b
 		trigger = {
-			is_subject = no
-			NOT = {
-				has_global_flag = PB_GLOBAL_Germany_is_kil
+			has_event_target = germany
+		}
+
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+				OR = {
+					is_major = yes
+					is_ally_with = event_target:oberbayern
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
 			}
 		}
 
-		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = {
+				is_wurttemberg = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 
-		GER = {
-			transfer_state = 50
-			transfer_state = 1025
+		recheck_annexations = yes
+	}
+
+	option = { #Give it to Bavaria
+		log = "[GetLogInfo]: event annex.1044 option annex.1044.c"
+		name = annex.1044.c
+		trigger = {
+			has_event_target = oberbayern
+		}
+
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:oberbayern }
+				OR = {
+					is_major = yes
+					is_ally_with = event_target:germany
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:oberbayern = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:oberbayern }
+		every_owned_state = {
+			limit = {
+				is_wurttemberg = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 
 		recheck_annexations = yes
@@ -6671,10 +6807,7 @@ country_event = { #Fate of Wurttemberg
 		log = "[GetLogInfo]: event annex.1044 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -6698,6 +6831,43 @@ country_event = { #Fate of Bavaria
 
 	is_triggered_only = yes
 
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_bavaria = yes }
+					add_core_of = BAV
+				}
+				else = {
+					remove_core_of = BAV
+				}
+				remove_claim_by = BAV
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+	}
+
 	option = { #Release Bavaria
 		log = "[GetLogInfo]: event annex.1045 option annex.1045.a"
 		name = annex.1045.a
@@ -6705,10 +6875,11 @@ country_event = { #Fate of Bavaria
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
-				factor = 0
-			}
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}	
 		}
 
 		set_temp_variable = { tag_to_release = BAV }
@@ -6736,17 +6907,39 @@ country_event = { #Fate of Bavaria
 		name = annex.1045.b
 		trigger = {
 			is_subject = no
+			has_event_target = germany
 			NOT = {
 				has_global_flag = PB_GLOBAL_Germany_is_kil
 			}
 		}
 
-		ai_chance = { base = 0 }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
 
-		GER = {
-			transfer_state = 52
-			transfer_state = 53
-			transfer_state = 54
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = {
+				is_bavaria = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 
 		recheck_annexations = yes
@@ -6773,10 +6966,7 @@ country_event = { #Fate of Bavaria
 		log = "[GetLogInfo]: event annex.1045 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -6802,18 +6992,46 @@ country_event = { #Fate of Austria
 
 	immediate = {
 		39 = { retain_state = yes }
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_austria = yes }
+					add_core_of = AUS
+				}
+				else = {
+					remove_core_of = AUS
+				}
+				remove_claim_by = AUS
+			}
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
 	}
 
-	option = { #Release Bavaria
+	option = { #Release Austria
 		log = "[GetLogInfo]: event annex.1046 option annex.1046.a"
 		name = annex.1046.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
 				factor = 0
+			}
+			modifier = {
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
 		}
 
@@ -6842,24 +7060,39 @@ country_event = { #Fate of Austria
 		name = annex.1046.b
 		trigger = {
 			is_subject = no
+			has_event_target = germany
 			NOT = {
 				has_global_flag = PB_GLOBAL_Germany_is_kil
 			}
 		}
 
-		ai_chance = { base = 0 }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
 
-		GER = {
-			transfer_state = 4
-			transfer_state = 152
-			transfer_state = 1187
-			transfer_state = 1188
-			transfer_state = 1189
-			transfer_state = 1190
-			transfer_state = 1241
-			transfer_state = 1250
-			transfer_state = 1361
-			transfer_state = 153
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = {
+				is_austria = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 
 		recheck_annexations = yes
@@ -6886,10 +7119,7 @@ country_event = { #Fate of Austria
 		log = "[GetLogInfo]: event annex.1046 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -6913,6 +7143,33 @@ country_event = { #Fate of Saxony
 
 	is_triggered_only = yes
 
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_saxony = yes }
+					add_core_of = SAX
+				}
+				else = {
+					remove_core_of = SAX
+				}
+				remove_claim_by = SAX
+			}
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+	}
+
 	option = { #Release Saxony
 		log = "[GetLogInfo]: event annex.1047 option annex.1047.a"
 		name = annex.1047.a
@@ -6920,9 +7177,13 @@ country_event = { #Fate of Saxony
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
 				factor = 0
+			}
+			modifier = {
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
 		}
 
@@ -6951,17 +7212,39 @@ country_event = { #Fate of Saxony
 		name = annex.1047.b
 		trigger = {
 			is_subject = no
+			has_event_target = germany
 			NOT = {
 				has_global_flag = PB_GLOBAL_Germany_is_kil
 			}
 		}
 
-		ai_chance = { base = 0 }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
 
-		GER = {
-			transfer_state = 60
-			transfer_state = 65
-			transfer_state = 1182
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = {
+				is_saxony = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 
 		recheck_annexations = yes
@@ -6988,10 +7271,7 @@ country_event = { #Fate of Saxony
 		log = "[GetLogInfo]: event annex.1047 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -7017,57 +7297,57 @@ country_event = { #Fate of Hannover
 
 	immediate = {
 		if = {
-				limit = {
-					OR = {
-						original_tag = AUS
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+		if = {
+			limit = {
+				5 = { #Konigsberg
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:germany }
+						ROOT_can_grant_land = yes
+						is_subject = no
 						original_tag = PRS
-						is_german_tag = yes
 					}
 				}
-				save_event_target_as = can_annex
 			}
-			if = {
-				limit = {
-					1185 = { #Frankfurt
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-							is_subject = no
-							original_tag = GER
-						}
+			var:5.owner = { save_event_target_as = prussia }
+		}
+		if = {
+			limit = {
+				4 = { #Lower Austria
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:germany }
+						NOT = { tag = event_target:prussia }
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = AUS
 					}
 				}
-				var:1185.owner = { save_event_target_as = germany }
 			}
-			if = {
-				limit = {
-					5 = { #Konigsberg
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							NOT = { tag = event_target:germany }
-							ROOT_can_grant_land = yes
-							is_subject = no
-							original_tag = PRS
-						}
-					}
-				}
-				var:5.owner = { save_event_target_as = prussia }
-			}
-			if = {
-				limit = {
-					4 = { #Lower Austria
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							NOT = { tag = event_target:germany }
-							NOT = { tag = event_target:prussia }
-							ROOT_can_grant_land = yes
-							is_subject = no
-							original_tag = AUS
-						}
-					}
-				}
-				var:4.owner = { save_event_target_as = austria }
-			}
+			var:4.owner = { save_event_target_as = austria }
+		}	
 	}
 
 	option = { #Puppet Hannover
@@ -7077,9 +7357,13 @@ country_event = { #Fate of Hannover
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
 				factor = 0
+			}
+			modifier = {
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
 		}
 
@@ -7128,8 +7412,13 @@ country_event = { #Fate of Hannover
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:germany }
-		HAN = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_hannover = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Give it to Prussia
@@ -7158,9 +7447,16 @@ country_event = { #Fate of Hannover
 				event_target:prussia = { is_subject = yes }
 			}
 		}
+
 		set_temp_variable = { tag_to_release = event_target:prussia }
-		HAN = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_hannover = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+
 	}
 
 	option = { #Give it to Austria
@@ -7190,8 +7486,13 @@ country_event = { #Fate of Hannover
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:austria }
-		HAN = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_hannover = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Give to overlord
@@ -7233,16 +7534,43 @@ country_event = { #Fate of Brandenburg-Prussia
 
 	is_triggered_only = yes
 
-	option = { #Release Hannover
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+	}
+
+	option = { #Release Brandenburg-Prussia
 		log = "[GetLogInfo]: event annex.1047 option annex.1049.a"
 		name = annex.1047.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
-				factor = 0
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
 		}
 
@@ -7271,23 +7599,39 @@ country_event = { #Fate of Brandenburg-Prussia
 		name = annex.1047.b
 		trigger = {
 			is_subject = no
+			has_event_target = germany
 			NOT = {
 				has_global_flag = PB_GLOBAL_Germany_is_kil
 			}
 		}
 
-		ai_chance = { base = 0 }
-
-		GER = {
-			transfer_state = 61
-			transfer_state = 62
-			transfer_state = 63
-			transfer_state = 64
-			transfer_state = 68
-			transfer_state = 1180
-			transfer_state = 1456
-			transfer_state = 1181
-			transfer_state = 1379
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+				OR = {
+					is_major = yes
+					is_ally_with = event_target:prussia
+					is_ally_with = event_target:austria
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = {
+				is_hannover = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 
 		recheck_annexations = yes
@@ -7314,10 +7658,7 @@ country_event = { #Fate of Brandenburg-Prussia
 		log = "[GetLogInfo]: event annex.1047 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -7341,6 +7682,32 @@ country_event = { #Fate of Czechia
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+	}
+
 	option = { #Release Czechia
 		log = "[GetLogInfo]: event annex.1047 option annex.1050.a"
 		name = annex.1047.a
@@ -7348,12 +7715,12 @@ country_event = { #Fate of Czechia
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
-				factor = 0
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
 		}
-
 		set_temp_variable = { tag_to_release = CZE }
 		release_targeted_tag = yes
 
@@ -7379,19 +7746,40 @@ country_event = { #Fate of Czechia
 		name = annex.1047.b
 		trigger = {
 			is_subject = no
+			has_event_target = germany
 			NOT = {
 				has_global_flag = PB_GLOBAL_Germany_is_kil
 			}
 		}
 
-		ai_chance = { base = 0 }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+				OR = {
+					is_major = yes
+					is_ally_with = event_target:prussia
+					is_ally_with = event_target:austria
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
 
-		GER = {
-			transfer_state = 9
-			transfer_state = 69
-			transfer_state = 74
-			transfer_state = 75
-			transfer_state = 1192
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = {
+				is_bohemia = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 
 		recheck_annexations = yes
@@ -7418,10 +7806,7 @@ country_event = { #Fate of Czechia
 		log = "[GetLogInfo]: event annex.1047 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -7445,6 +7830,32 @@ country_event = { #Fate of Slovenia
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+	}
+
 	option = { #Release Slovenia
 		log = "[GetLogInfo]: event annex.1047 option annex.1051.a"
 		name = annex.1047.a
@@ -7452,12 +7863,12 @@ country_event = { #Fate of Slovenia
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
-				factor = 0
+				factor = 10
+				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
 		}
-
 		set_temp_variable = { tag_to_release = SLV }
 		release_targeted_tag = yes
 
@@ -7519,10 +7930,7 @@ country_event = { #Fate of Slovenia
 		log = "[GetLogInfo]: event annex.1047 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -7546,11 +7954,80 @@ country_event = { #Fate of Friaul
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					original_tag = ITA
+					original_tag = IST
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+		if = {
+			limit = {
+				4 = { #Lower Austria
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = austria }
+		}
+		if = {
+			limit = {
+				117 = { #Campania
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = ITA
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = royalist_italy }
+		}
+
+		if = {
+			limit = {
+				117 = { #Campania
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = IST
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = nationalist_italy }
+		}
+	}
+
 	option = { #Return to Germany
 		log = "[GetLogInfo]: event annex.1052 option annex.1052.a"
 		name = annex.1052.a
 		trigger = {
 			is_subject = no
+			has_event_target = germany
 			NOT = {
 				has_global_flag = PB_GLOBAL_Germany_is_kil
 			}
@@ -7569,59 +8046,18 @@ country_event = { #Fate of Friaul
 		recheck_annexations = yes
 	}
 
-	option = { #Give it to Italy
+	option = { #Give it to Royalist Italy
 		log = "[GetLogInfo]: event annex.1052 option annex.1052.b"
 		name = annex.1052.b
 		trigger = {
 			is_subject = no
-			OR = {
-				AND = {
-					ITA = {
-						exists = yes
-					}
-					IST = {
-						exists = no
-					}
-				}
-				AND = {
-					ITA = {
-						exists = no
-					}
-					IST = {
-						exists = yes
-					}
-				}
-			}
+			has_event_target = royalist_italy
 		}
 
 		ai_chance = { base = 0 }
 
-		if = {
-			limit = {
-				ITA = {
-					exists = yes
-				}
-				IST = {
-					exists = no
-				}
-			}
-			ITA = {
-				transfer_state = 923
-			}
-		}
-
-		if = {
-			limit = {
-				IST = {
-					exists = yes
-				}
-				ITA = {
-					exists = no
-				}
-			}
-			IST = {
-				transfer_state = 923
-			}
+		ITA = {
+			transfer_state = 923
 		}
 
 		recheck_annexations = yes
@@ -7629,12 +8065,10 @@ country_event = { #Fate of Friaul
 
 	option = { #Return to Austria
 		log = "[GetLogInfo]: event annex.1052 option annex.1052.a"
-		name = annex.1052.a
+		name = annex.1052.c
 		trigger = {
 			is_subject = no
-			AUS = {
-				exists = yes
-			}
+			has_event_target = austria
 		}
 		ai_chance = {
 			base = 100
@@ -7649,6 +8083,24 @@ country_event = { #Fate of Friaul
 
 		recheck_annexations = yes
 	}
+
+	option = { #Give it to Nationalist Italy
+		log = "[GetLogInfo]: event annex.1052 option annex.1052.b"
+		name = annex.1052.e
+		trigger = {
+			is_subject = no
+			has_event_target = nationalist_italy
+		}
+
+		ai_chance = { base = 0 }
+
+		IST = {
+			transfer_state = 923
+		}
+
+		recheck_annexations = yes
+	}
+
 
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.1047 option annex.give_to_overlord"
@@ -7671,10 +8123,7 @@ country_event = { #Fate of Friaul
 		log = "[GetLogInfo]: event annex.1047 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -7823,10 +8272,7 @@ country_event = { #Fate of South Tyrol
 		log = "[GetLogInfo]: event annex.1053 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -7850,14 +8296,52 @@ country_event = { #Fate of Alsace
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+		if = {
+			limit = {
+				16 = { #Ile de France
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = FRA
+					}
+				}
+			}
+			var:763.owner = { save_event_target_as = france }
+		}
+	}
+
+
 	option = { #Return to Germany
 		log = "[GetLogInfo]: event annex.1054 option annex.1054.a"
 		name = annex.1054.a
 		trigger = {
 			is_subject = no
-			GER = {
-				exists = yes
-			}
+			has_event_target = germany
 		}
 		ai_chance = {
 			base = 100
@@ -7879,9 +8363,7 @@ country_event = { #Fate of Alsace
 		name = annex.1054.b
 		trigger = {
 			is_subject = no
-			FRA = {
-				exists = yes
-			}
+			has_event_target = france
 		}
 
 		ai_chance = { base = 0 }
@@ -7915,10 +8397,7 @@ country_event = { #Fate of Alsace
 		log = "[GetLogInfo]: event annex.1054 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -7942,14 +8421,78 @@ country_event = { #Fate of Silesia
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = AUS
+					original_tag = PRS
+					original_tag = POL
+					is_german_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1185 = { #Frankfurt
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = GER
+					}
+				}
+			}
+			var:1185.owner = { save_event_target_as = germany }
+		}
+		if = {
+			limit = {
+				763 = { #Konigsberg
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = PRS
+					}
+				}
+			}
+			var:763.owner = { save_event_target_as = prussia }
+		}
+		if = {
+			limit = {
+				10 = { #Warsaw
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = POL
+					}
+				}
+			}
+			var:10.owner = { save_event_target_as = poland }
+		}
+		if = {
+			limit = {
+				64 = { #Brandenburg
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						original_tag = BRN
+					}
+				}
+			}
+			var:64.owner = { save_event_target_as = brandenburg_prussia }
+		}
+	}
+
 	option = { #Return to Germany
 		log = "[GetLogInfo]: event annex.1055 option annex.1055.a"
 		name = annex.1055.a
 		trigger = {
 			is_subject = no
-			GER = {
-				exists = yes
-			}
+			has_event_target = germany
 			NOT = {
 				has_global_flag = PB_GLOBAL_Germany_is_kil
 			}
@@ -7973,9 +8516,7 @@ country_event = { #Fate of Silesia
 		name = annex.1055.b
 		trigger = {
 			is_subject = no
-			BRN = {
-				exists = yes
-			}
+			has_event_target = brandenburg_prussia
 		}
 
 		ai_chance = { base = 0 }
@@ -7992,14 +8533,29 @@ country_event = { #Fate of Silesia
 		name = annex.1055.c
 		trigger = {
 			is_subject = no
-			POL = {
-				exists = yes
-			}
+			has_event_target = poland
 		}
 
 		ai_chance = { base = 0 }
 
 		POL = {
+			transfer_state = 66
+		}
+
+		recheck_annexations = yes
+	}
+
+	option = { #Give it to East Prussia
+		log = "[GetLogInfo]: event annex.1055 option annex.1055.e"
+		name = annex.1055.e
+		trigger = {
+			is_subject = no
+			has_event_target = prussia
+		}
+
+		ai_chance = { base = 0 }
+
+		PRS = {
 			transfer_state = 66
 		}
 
@@ -8027,10 +8583,7 @@ country_event = { #Fate of Silesia
 		log = "[GetLogInfo]: event annex.1055 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8122,10 +8675,7 @@ country_event = { #Fate of German Bohemia
 		log = "[GetLogInfo]: event annex.1056 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8253,10 +8803,7 @@ country_event = { #Fate of Rijeka
 		log = "[GetLogInfo]: event annex.1057 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8357,10 +8904,7 @@ country_event = { #Fate of Basque Country
 		log = "[GetLogInfo]: event annex.1058 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8444,10 +8988,7 @@ country_event = { #Fate of Apurdi
 		log = "[GetLogInfo]: event annex.1059 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8563,10 +9104,7 @@ country_event = { #Fate of Holstein
 		log = "[GetLogInfo]: event annex.1060 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8609,21 +9147,22 @@ country_event = { #Fate of Denmark
 
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
-			NOR = {
-				drop_cosmetic_tag = yes
+			DEN = {
 				set_cosmetic_tag = DEN_Occupied_Monarchy
 			}
 		}
 
 		if = {
-			limit = { ROOT = {
-					has_republican_government = yes } }
-			NOR = {
-				drop_cosmetic_tag = yes
+			limit = { ROOT = { has_republican_government = yes } }
+			DEN = {
 				set_cosmetic_tag = DEN_Occupied_Republic
 			}
 		}
 
+		if = {
+			limit = { ROOT = { original_tag = FRA } }
+			FRA_DEN_setup_puppet = yes
+		}
 		recheck_annexations = yes
 	}
 
@@ -8634,13 +9173,7 @@ country_event = { #Fate of Denmark
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
+		DEN = { set_transfer_target_cores = yes }
 		recheck_annexations = yes
 	}
 
@@ -8648,22 +9181,16 @@ country_event = { #Fate of Denmark
 		log = "[GetLogInfo]: event annex.1061 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		DEN = { add_claim_of_ROOT_on_valid_cores = yes }
 		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1061 option annex.cancel"
 		name = annex.cancel
-		ai_chance = { base = 0 }
-		
+		ai_chance = { base = 0 }	
     }
 
 	after = {
@@ -8706,10 +9233,17 @@ country_event = { #Fate of Sweden
 			}
 		}
 
+		set_temp_variable = { tag_to_release = SWE }
+		every_state = {
+			limit = { is_sweden = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SWE = {
-				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SWE_Occupied_Monarchy
 			}
 		}
 
@@ -8719,29 +9253,35 @@ country_event = { #Fate of Sweden
 				set_cosmetic_tag = SWE_Occupied_Republic
 			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = SWE }
-			release_targeted_tag = yes
+
+		if = {
+			limit = { 
+				ROOT = { 
+					original_tag = FRA
+				}
+			}
+			FRA_SWE_setup_puppet = yes
+		}
+		
+		recheck_annexations = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annexation_events.1062 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		SWE = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.1062 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8832,10 +9372,7 @@ country_event = { #Fate of Schleswig
 		log = "[GetLogInfo]: event annex.1063 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -8851,88 +9388,127 @@ country_event = { #Fate of Schleswig
 	}
 }
 
-country_event = { #Fate of Scania
+country_event = { # Fate of Skåne
 	id = annex.1064
-	title = annexation_scania
-	desc = annexation_scania_desc
+	title = annexation_skane
+	desc = annexation_skane_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
-	option = { #Return it to Sweden
+	immediate = { 
+		if = {
+			limit = {
+				OR = {
+					138 = { is_claim_or_core_of_ROOT = yes } # Småland
+					37  = { is_claim_or_core_of_ROOT = yes } # København
+				}
+			}
+			save_event_target_as = can_annex
+		}
+
+		if = {
+			limit = {
+				37 = { # København
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:37.owner = {
+				save_event_target_as = kobenhaven
+				add_to_array = { ROOT.potential_grant_targets = THIS }
+			}
+		}
+
+		if = {
+			limit = {
+				138 = { # Småland
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:kobenhaven }
+					}
+				}
+			}
+			var:138.owner = {
+				save_event_target_as = smaland
+				add_to_array = { ROOT.potential_grant_targets = THIS }
+			}
+		}
+	}
+
+	option = { # Return it to Sweden
 		log = "[GetLogInfo]: event annex.1064 option annex.1064.a"
 		name = annex.1064.a
 		trigger = {
-			is_subject = no
+			has_event_target = smaland
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:smaland }
+				is_ally_with = event_target:kobenhaven
+			}
+			modifier = {
+				factor = 0.1
+				event_target:smaland = { is_subject = yes }
+			}
 		}
-
-		SWE = {
-			transfer_state = 138
-		}
+		set_temp_variable = { tag_to_release = event_target:smaland }
+		137 = { transfer_state_and_notify = yes } # Skåne
 	}
 
-	option = { #Give it to Denmark
+	option = { # Give it to Denmark
 		log = "[GetLogInfo]: event annex.1064 option annex.1064.b"
 		name = annex.1064.b
 		trigger = {
-			is_subject = no
+			has_event_target = kobenhaven
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kobenhaven }
+				is_ally_with = event_target:smaland
+			}
+			modifier = {
+				factor = 0.1
+				event_target:kobenhaven = { is_subject = yes }
+			}
 		}
-
-		DEN = {
-			transfer_state = 138
-			add_state_core = 138
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:kobenhaven }
+		137 = { transfer_state_and_notify = yes } # Skåne
 	}
 
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1064 option annex.give_to_overlord"
-		name = annex.give_to_overlord
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annexation_events.1064 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		137 = { transfer_state_and_notify = yes } # Skåne
 	}
 
-	option = { #Integrate
+	option = { # Integrate
 		log = "[GetLogInfo]: event annex.1064 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		137 = { add_claim_of_ROOT = yes } # Skåne
 	}
 
-	option = { #Cancel
+	option = { # Cancel
 		log = "[GetLogInfo]: event annex.1064 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
@@ -8951,65 +9527,100 @@ country_event = { #Fate of Nordland
 
 	is_triggered_only = yes
 
+	immediate = { 
+		if = {
+			limit = {
+				OR = {
+					1366 = { is_claim_or_core_of_ROOT = yes } #lappland
+					143 = { is_claim_or_core_of_ROOT = yes } #Trondheim
+
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				143 = { #trondheim
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
+				}
+			}
+			var:141.owner = { save_event_target_as = trondheim add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+		if = {
+			limit = {
+				1366 = { #lappland
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:trondheim }
+					}
+				}
+			}
+			var:1366.owner = { save_event_target_as = lappland add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+	}
+
 	option = { #Return it to Sweden
 		log = "[GetLogInfo]: event annex.1065 option annex.1065.a"
 		name = annex.1065.a
 		trigger = {
-			is_subject = no
-			SWE = {
-			owns_state = 1366
-		    }   
+			has_event_target = lappland
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:lappland }
+				is_ally_with = event_target:trondheim
+			}
+			modifier = {
+				factor = 0.1
+				event_target:lappland = { is_subject = yes }
+			}
 		}
-
-		SWE = {
-			transfer_state = 1011
-		}
+		set_temp_variable = { tag_to_release = event_target:lappland }
+		1011 = { transfer_state_and_notify = yes } #Nordland
 	}
 
 	option = { #Give it to Norway
 		log = "[GetLogInfo]: event annex.1065 option annex.1065.b"
 		name = annex.1065.b
 		trigger = {
-			is_subject = no
+			has_event_target = trondheim
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:trondheim }
+				is_ally_with = event_target:lappland
+			}
+			modifier = {
+				factor = 0.1
+				event_target:trondheim = { is_subject = yes }
+			}
 		}
-
-		NOR = {
-			transfer_state = 1011
-		}
+		set_temp_variable = { tag_to_release = event_target:trondheim }
+		1011 = { transfer_state_and_notify = yes } #Nordland
 	}
 
-	option = { #Give it to Norrland
-		log = "[GetLogInfo]: event annex.1065 option annex.1065.c"
-		name = annex.1065.c
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annexation_events.1065 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
 		trigger = {
-			is_subject = no
-			MEN = {
-            exists = yes
-		    }
+			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		1011 = { transfer_state_and_notify = yes } #Nordland
 	}
 
 	option = { #Integrate
@@ -9017,14 +9628,10 @@ country_event = { #Fate of Nordland
 		name = annex.integration
 		trigger = {
 			OR = {
-				original_tag = NWL
 				annexations_can_annex = yes
 			}
 		}
-
-		MEN = {
-			transfer_state = 1011
-		}
+		1011 = { add_claim_of_ROOT = yes } #Nordland
 	}
 
 	option = { #Cancel
@@ -9111,10 +9718,7 @@ country_event = { #Fate of Finmark
 		log = "[GetLogInfo]: event annex.1066 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 
 		MEN = {
@@ -9227,10 +9831,7 @@ country_event = { #Fate of Lika
 		log = "[GetLogInfo]: event annex.1067 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -9344,10 +9945,7 @@ country_event = { #Fate of Krajina
 		log = "[GetLogInfo]: event annex.1068 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -9458,10 +10056,7 @@ country_event = { #Fate of Tropolje
 		log = "[GetLogInfo]: event annex.1069 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -9572,10 +10167,7 @@ country_event = { #Fate of West Herzegovina
 		log = "[GetLogInfo]: event annex.1070 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -9681,10 +10273,7 @@ country_event = { #Fate of Croatia
 		log = "[GetLogInfo]: event annex.1071 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -9761,10 +10350,7 @@ country_event = { #Fate of Ragusa
 		log = "[GetLogInfo]: event annex.1072 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -9849,10 +10435,7 @@ country_event = { #Fate of Serbia
 		log = "[GetLogInfo]: event annex.1073 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -9956,10 +10539,7 @@ country_event = { #Fate of Bosnia
 		log = "[GetLogInfo]: event annex.1074 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10047,10 +10627,7 @@ country_event = { #Fate of Banja Luka
 		log = "[GetLogInfo]: event annex.1075 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10138,10 +10715,7 @@ country_event = { #Fate of East Herzegovina
 		log = "[GetLogInfo]: event annex.1076 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10260,10 +10834,7 @@ country_event = { #Fate of Montenegro
 		log = "[GetLogInfo]: event annex.1077 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10351,10 +10922,7 @@ country_event = { #Fate of Kotor
 		log = "[GetLogInfo]: event annex.1078 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10445,10 +11013,7 @@ country_event = { #Fate of Posavina
 		log = "[GetLogInfo]: event annex.1079 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10559,10 +11124,7 @@ country_event = { #Fate of Hungary
 		log = "[GetLogInfo]: event annex.1080 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10647,10 +11209,7 @@ country_event = { #Fate of Vojvodina
 		log = "[GetLogInfo]: event annex.1081 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10775,10 +11334,7 @@ country_event = { #Fate of Banat
 		log = "[GetLogInfo]: event annex.1082 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10866,10 +11422,7 @@ country_event = { #Fate of West Banat
 		log = "[GetLogInfo]: event annex.1083 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -10976,10 +11529,7 @@ country_event = { #Fate of Transylvania
 		log = "[GetLogInfo]: event annex.1084 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11079,10 +11629,7 @@ country_event = { #Fate of Slovakia
 		log = "[GetLogInfo]: event annex.1085 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11256,10 +11803,7 @@ country_event = { #Fate of Moldova
 		log = "[GetLogInfo]: event annex.1087 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11344,10 +11888,7 @@ country_event = { #Fate of Bulgaria
 		log = "[GetLogInfo]: event annex.1088 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11435,10 +11976,7 @@ country_event = { #Fate of Morava
 		log = "[GetLogInfo]: event annex.1089 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11542,10 +12080,7 @@ country_event = { #Fate of Vardar
 		log = "[GetLogInfo]: event annex.1090 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11632,10 +12167,7 @@ country_event = { #Fate of Albania
 		log = "[GetLogInfo]: event annex.1091 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11723,10 +12255,7 @@ country_event = { #Fate of Debar
 		log = "[GetLogInfo]: event annex.1092 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11814,10 +12343,7 @@ country_event = { #Fate of Kosovo
 		log = "[GetLogInfo]: event annex.1093 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11905,10 +12431,7 @@ country_event = { #Fate of Northern Epirus
 		log = "[GetLogInfo]: event annex.1094 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11998,10 +12521,7 @@ country_event = { #Fate of Greece
 		log = "[GetLogInfo]: event annex.1095 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -12089,10 +12609,7 @@ country_event = { #Fate of Thessaloniniki
 		log = "[GetLogInfo]: event annex.1096 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -12180,10 +12697,7 @@ country_event = { #Fate of West Thrace
 		log = "[GetLogInfo]: event annex.1097 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -12271,10 +12785,7 @@ country_event = { #Fate of East Thrace
 		log = "[GetLogInfo]: event annex.1098 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -12624,10 +13135,7 @@ country_event = { #Fate of Galicia
 		log = "[GetLogInfo]: event annex.1101 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -12718,10 +13226,7 @@ country_event = { #Fate of Lwów
 		log = "[GetLogInfo]: event annex.1102 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -12812,10 +13317,7 @@ country_event = { #Fate of Tarnopol
 		log = "[GetLogInfo]: event annex.1103 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -12906,10 +13408,7 @@ country_event = { #Fate of Stanislawow
 		log = "[GetLogInfo]: event annex.1104 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -13026,10 +13525,7 @@ country_event = { #Fate of Bucovina
 		log = "[GetLogInfo]: event annex.1105 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -13125,10 +13621,7 @@ country_event = { #Fate of South Bucovina
 		log = "[GetLogInfo]: event annex.1106 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				original_tag = NWL
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -15401,6 +15894,8 @@ country_event = { #Fate of Norway
 		1011 = { retain_state = yes }
 		144 = { retain_state = yes }
 		100 = { retain_state = yes }
+		1437 = { retain_state = yes }
+		101 = { retain_state = yes }
     }
 
 	option = { #Release an independent Norway
@@ -15436,6 +15931,38 @@ country_event = { #Fate of Norway
 				set_cosmetic_tag = NOR_Occupied_Republic
 			}
 		}
+	}
+
+	option = { #Form Sweden-Norway
+		log = "[GetLogInfo]: event annexation_events.1137 option annexation_events.1137.c"
+		name = annexation_events.1137.b
+		trigger = {
+			original_tag = SWE
+			has_monarchist_government = yes
+			is_subject = no
+		}
+		set_cosmetic_tag = PB_SWEDEN_NORWAY
+		NOR = {
+			every_core_state = { add_claim_of_ROOT = yes }
+			every_core_state = {
+				limit = {
+					is_controlled_by = ROOT
+					has_resistance = yes
+				}
+				set_compliance = 0
+			}
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1137 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 30 }
+
+		NOR = { add_claim_of_ROOT_on_valid_cores = yes }
 	}
 
 	option = { #Cancel
