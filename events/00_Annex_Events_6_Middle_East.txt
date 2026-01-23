@@ -53,7 +53,7 @@ country_event = { #Fate of Persia
 			PER = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = PER_Occupied_Monarchy
-				remove_ideas = PB_PER_Ummah_ottomansguard
+				remove_ideas = PB_PER_Ummah_Vanguard
 				remove_ideas = PB_PER_Uneasy_Sisterhood
 			}
 		}
@@ -3922,3 +3922,146 @@ country_event = { # Fate of Bahrain
 
     after = { recheck_annexations = yes }
 }
+
+country_event = { #Fate of Turkey/Turkiye
+	id = annex.6029
+	title = annexation_49
+	desc = annexation_49_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		344 = { retain_state = yes } #Adaneh
+		353 = { retain_state = yes } #Erzurum
+		354 = { retain_state = yes } #Taborrabzon
+		355 = { retain_state = yes } #Samsun
+		1460 = { retain_state = yes } #Lazistan
+		1049 = { retain_state = yes } #Mugla
+		340 = { retain_state = yes } #Bursa
+	}
+
+	option = { #Release Turkey
+		log = "[GetLogInfo]: event annex.6029 option annex.6029.a"
+		name = annex.6029.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+			modifier = {
+				factor = 50
+				ROOT = {
+					OR = {
+						tag = RUS
+					}
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = TUR }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			TUR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = TUR_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			TUR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = TUR_Occupied_Republic
+			}
+		}
+		recheck_annexations = yes
+	}
+	
+	option = { #Establish an Anatolian Governorate
+		log = "[GetLogInfo]: event annex.6029 option annex.6029.b"
+		name = annex.6029.b
+		trigger = {
+			is_subject = no
+			ROOT = {
+				OR = {
+					tag = RUS
+				}
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 100
+				ROOT = {
+					tag = RUS
+					OR = {
+						has_government = ds
+						has_government = ni
+					}
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = TUR }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					tag = ENG
+				}
+			}
+			TUR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = TUR_RUS_Colonial
+				add_stability = -0.1
+			}
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6029 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		TUR = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6029 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6029 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		recheck_annexations = yes
+	}
+}
+
+#Up to 6036 (6036 included) reserved for Turkey
