@@ -9,7 +9,7 @@ PB_DAS_Far_Eastern_Crisis = {
 		}
 
 		activation = {
-			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
+			has_global_flag = far_east_crisis
 		}
 
 		allowed = {
@@ -17,7 +17,7 @@ PB_DAS_Far_Eastern_Crisis = {
 		}
 
 		visible = {
-			has_country_flag = Far_East_Crisis
+			has_global_flag = far_east_crisis
 		}
 		priority = 2
 		is_good = no
@@ -38,6 +38,88 @@ PB_DAS_Far_Eastern_Crisis = {
 			}
 		}
 	}
+
+	DAS_Strategic_Withdrawal_Philippines = { # Withdraw from the philippines
+		icon = ger_military_buildup
+		allowed = { original_tag = DAS }
+		visible = {
+			has_global_flag = far_east_crisis
+		}
+
+		available = { 
+			has_war_with = PHI
+		}
+
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				factor = 100
+				surrender_progress > 0.4
+			}
+		}
+		cost = 100
+		days_remove = 20
+		fire_only_once = yes
+
+		remove_effect = {
+			PHI = { 
+				country_event = DAS_Ceasefire.15
+			}
+		}
+	}
+
+	DAS_purge_german_sleepers = {
+		icon = GFX_decision_generic_assassination
+		allowed = { original_tag = DAS }
+		activation = { 
+			FROM = { 
+				has_state_flag = GER_deploying_divs
+			}
+		}
+		available = { 
+			DAS = { 
+				divisions_in_state = {
+					size > 1
+					state = FROM
+				}
+			}
+		}
+		target_trigger = { 
+			FROM = { 
+				has_state_flag = GER_deploying_divs
+				OR = {
+					state = 633
+					state = 725
+					state = 646
+					state = 638
+					state = 634
+					state = 1148
+					state = 737
+					state = 669
+				}
+			}
+		}
+		state_target = yes
+		is_good = no
+		on_map_mode = map_and_decisions_view
+		days_mission_timeout = 9
+		complete_effect = { 
+			#WIP add something here to say divs are going here
+		}
+		cancel_effect = {
+			FROM = {
+				clr_state_flag = GER_deploying_divs
+			}
+			add_political_power = 25
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
 }
 PB_GER_Far_Eastern_Crisis = {
 	
@@ -50,7 +132,7 @@ PB_GER_Far_Eastern_Crisis = {
 		}
 
 		activation = {
-			has_completed_focus = PB_DAS_Middle_Child_Fair_Share
+			has_global_flag = far_east_crisis
 		}
 
 		allowed = {
@@ -58,7 +140,7 @@ PB_GER_Far_Eastern_Crisis = {
 		}
 
 		visible = {
-			has_country_flag = Far_East_Crisis
+			has_global_flag = far_east_crisis
 		}
 		priority = 2
 		is_good = no
@@ -78,6 +160,311 @@ PB_GER_Far_Eastern_Crisis = {
 						id = DAS.17
 					}
 				}
+			}
+		}
+	}
+	GER_Add_Fernost = { # Send guns
+		icon = ger_military_buildup
+		allowed = { original_tag = GER }
+		visible = {
+			is_debug = yes
+		}
+		fire_only_once = no
+		complete_effect = {
+			add_to_variable = { GER.FernostReadiness = 1}
+		}
+	}
+
+	GER_Add_Pacific = { # Send guns
+		icon = ger_military_buildup
+		allowed = { original_tag = GER }
+		visible = {
+			is_debug = yes
+		}
+		fire_only_once = no
+		complete_effect = {
+			add_to_variable = { DAS.PacificReadiness = 1}
+		}
+	}
+	
+	GER_Send_Guns_To_Fernost = { # Send guns
+		icon = ger_military_buildup
+		allowed = { original_tag = GER }
+		visible = {
+			has_global_flag = far_east_crisis
+		}
+
+		available = { 
+			NOT = { 
+				has_country_flag = GER_Sent_Guns_To_DAS
+			}
+		}
+
+		custom_cost_trigger = {
+			NOT = { has_equipment = { infantry_equipment < 2000 } }
+		}
+		custom_cost_text = 2000_guns
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				has_equipment = { infantry_equipment < 4000 }
+			}
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+
+		days_remove = 20
+		fire_only_once = no
+		complete_effect = {
+			hidden_effect = { 
+				add_equipment_to_stockpile = {
+					type = infantry_equipment
+					amount = -2000
+				}
+			}
+		}
+
+		remove_effect = {
+			add_to_variable = { FernostReadiness = 1}
+		}
+	}
+
+	GER_deploy_commando_sleepers_in_state = { #I DONT KNOW HOW
+		icon = GFX_decision_onmap_recruit_operative
+		allowed = {
+			original_tag = GER
+		}
+		available = {
+			is_subject = no
+			FROM = { 
+				NOT = { 
+					has_state_flag = GER_has_deployed_max_divs
+				}
+			}
+		}
+		visible = {
+			has_global_flag = far_east_crisis
+		}
+		on_map_mode = map_and_decisions_view
+		days_remove = 10
+		state_target = yes
+		target_trigger = {
+			FROM = { 
+				OR = {
+					state = 633
+					state = 725
+					state = 646
+					state = 638
+					state = 634
+					state = 1148
+					state = 737
+					state = 669
+				}
+			}
+		}
+		custom_cost_trigger = {
+			command_power > 24.9
+			has_equipment = {
+				infantry_equipment > 500
+			}
+		}
+		custom_cost_text = decision_cost_25CP_and_500_infantry_equipment
+		complete_effect = {
+			custom_effect_tooltip = DAS_FERNOST_MAX_SLEEPER_TT
+			add_command_power = -25
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -500
+			}
+			FROM = { 
+				set_state_flag = GER_deploying_divs
+			}
+		}
+		cancel_trigger = { 
+			DAS = { 
+				divisions_in_state = {
+					size > 1
+					state = FROM
+				}
+			}
+		}
+		cancel_effect = { #refund them if the das fuck em up
+			add_command_power = 5
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = 200
+			}
+			clr_state_flag = GER_deploying_divs
+		}
+		remove_effect = {
+			FROM = {
+				if = { 
+					limit = { 
+						has_state_flag = GER_has_deployed_two_divs
+					}
+					set_state_flag = GER_has_deployed_max_divs
+					clr_state_flag = GER_has_deployed_two_divs
+				}
+				else_if = { 
+					limit = { 
+						has_state_flag = GER_has_deployed_one_divs
+					}
+					set_state_flag = GER_has_deployed_two_divs
+					clr_state_flag = GER_has_deployed_one_divs
+				}
+				else = { 
+					set_state_flag = GER_has_deployed_one_divs
+				}
+				clr_state_flag = GER_deploying_divs
+			}
+		}
+		ai_will_do = {
+			factor = 5
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+	
+	GER_decapitation_strike = { # Bombing raids on em
+		icon = generic_ignite_civil_war
+		allowed = { original_tag = GER }
+		visible = {
+			has_global_flag = far_east_crisis
+		}
+
+		custom_cost_trigger = {
+			AND = {
+				command_power > 49
+			}
+		}
+		
+		available = { 
+			num_of_civilian_factories_available_for_projects > 1
+		}
+
+		custom_cost_text = PB_AME_decision_cost_NIC_command
+
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+
+		days_remove = 20
+		fire_only_once = yes
+		modifier = {
+			civilian_factory_use = 1
+		}
+
+		complete_effect ={ 
+			add_war_support = -0.025
+			hidden_effect = {
+				add_command_power = -50
+			}
+			GER = { 
+				country_event = DAS_FarEastCrisis.7
+			}
+		}
+
+		remove_effect = {
+			add_to_variable = { FernostReadiness = 1}
+			random = {
+				chance = 60
+				country_event = DAS_FarEastCrisis.10
+			}
+			random = {
+				chance = 40
+				country_event = DAS_FarEastCrisis.11
+			}
+		}
+	}
+
+	GER_Freeze_pacific_accounts = { # Send guns
+		icon = GFX_decision_assets
+		allowed = { original_tag = GER }
+		visible = {
+			has_global_flag = far_east_crisis
+		}
+		
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+
+		cost = 120
+		days_remove = 20
+		fire_only_once = yes
+
+		remove_effect = {
+			DAS = { 
+				add_stability = -0.15
+				add_cic = -800
+				random_owned_controlled_state = { 
+					limit = {
+						arms_factory < 1
+					}
+					remove_building = { 
+						type = arms_factory
+						level = 2
+					}
+				}
+			}
+			GER = { 
+				add_cic = 700
+				random_owned_controlled_state = { 
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = arms_factory
+						level = 2
+						instant_build = yes
+					}
+				}
+			}
+		}
+	}
+
+	GER_seize_navy = { #
+		icon = GFX_decision_assets
+		allowed = { original_tag = GER }
+		visible = {
+			has_global_flag = far_east_crisis
+		}
+
+		custom_cost_trigger = {
+			AND = {
+				command_power > 49
+			}
+		}
+
+		custom_cost_text = PB_AME_decision_cost_NIC_command
+		
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+
+		days_remove = 20
+		fire_only_once = yes
+
+		remove_effect = {
+			GER = { 
+				#Event on dedicating resources to the raid
 			}
 		}
 	}
@@ -104,6 +491,12 @@ PB_GER_Philippine_Insurection = {
 
 		activation = {
 			has_global_flag = third_filipino_independence_war
+		}
+
+		visible = { 
+			NOT = { 
+				has_global_flag = far_east_crisis
+			}
 		}
 
 		priority = 2
@@ -136,10 +529,6 @@ PB_GER_Philippine_Insurection = {
 					}
 				}
 				hidden_effect = {
-					add_equipment_to_stockpile = {
-						type = infantry_equipment
-						amount = -2000
-					}
 					clr_country_flag = GER_Sent_Guns_To_DAS
 				}
 			}
@@ -183,6 +572,10 @@ PB_GER_Philippine_Insurection = {
 		remove_effect = {
 			army_experience = 25
 			set_country_flag = GER_Sent_Guns_To_DAS
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -2000
+			}
 		}
 	}
 
@@ -386,6 +779,12 @@ PB_DAS_Influence_category = {
 					tooltip = germany_is_in_exile_tt
 					has_country_flag = GER_IN_EXILE
 				}
+			}
+		}
+
+		cancel_trigger = { 
+			NOT = { 
+				has_global_flag = far_east_crisis
 			}
 		}
 
