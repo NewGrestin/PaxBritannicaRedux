@@ -133,30 +133,176 @@ DAS_start_civil_war = {
 			target = SSL
 			type = annex_everything
 		}
-		set_capital = {
-			state = 627 #Mindanao
+	}
+	DAS_civilwar_ready = yes
+	SSL = { 
+		load_oob = "DAS_Fernost"
+		division_template = { 
+			name = "Fernost-Schnellaufgebot"
+			regiments = {
+				militia = { x = 0 y = 0 }
+				militia = { x = 0 y = 1 }
+				militia = { x = 0 y = 2 }
+				militia = { x = 1 y = 0 }
+				militia = { x = 1 y = 1 }
+			}
 		}
 	}
-	every_core_state = {
-		add_core_of = SSL
+	every_state = { 
+		limit = { 
+			OR = {
+				state = 633
+				state = 725
+				state = 646
+				state = 638
+				state = 634
+				state = 1148
+				state = 737
+				state = 669
+			}
+		}
+		if = { 
+			limit = { 
+				has_state_flag = GER_has_deployed_max_divs
+			}
+			hidden_effect = {
+				create_unit = {
+					division = "name = \"Fernost-Schnellaufgebot\" division_template = \"Fernost-Schnellaufgebot\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+					owner = SSL
+					count = 3
+					allow_spawning_on_enemy_provs = yes
+				}
+			}
+		}
+		else_if = { 
+			limit = { 
+				has_state_flag = GER_has_deployed_two_divs
+			}
+			hidden_effect = {
+				create_unit = {
+					division = "name = \"Fernost-Schnellaufgebot\" division_template = \"Fernost-Schnellaufgebot\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+					owner = SSL
+					count = 2
+					allow_spawning_on_enemy_provs = yes
+				}
+			}
+		}
+		else_if = { 
+			limit = { 
+				has_state_flag = GER_has_deployed_two_divs
+			}
+			hidden_effect = {
+				create_unit = {
+					division = "name = \"Fernost-Schnellaufgebot\" division_template = \"Fernost-Schnellaufgebot\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+					owner = SSL
+					count = 1
+					allow_spawning_on_enemy_provs = yes
+				}
+			}
+		}
 	}
-	every_owned_state = {
-		limit = { is_claimed_by = DAS }
-		add_claim_by = SSL
+}
+DAS_civilwar_ready = { 
+	# SSL BUFFS
+	if = { 
+		limit = {
+			check_variable = {
+				var = GER.FernostReadiness
+				value = 8
+				compare = greater_than_or_equals
+			}
+		}
+		SSL = { add_ideas = DAS_Fernost_Buff_MAX }
 	}
+	else_if = {
+		limit = {
+			check_variable = {
+				var = GER.FernostReadiness
+				value = 5
+				compare = greater_than_or_equals
+			}
+		}
+		SSL = { add_ideas = DAS_Fernost_Buff_MED }
+	}
+	else_if = {
+		limit = {
+			check_variable = {
+				var = GER.FernostReadiness
+				value = 3
+				compare = greater_than_or_equals
+			}
+		}
+		SSL = { add_ideas = DAS_Fernost_Buff_LOW }
+	}
+	else = {
+		SSL = {
+			add_stability = -0.3
+			add_war_support = -0.2
+		}
+		SSL = { add_ideas = DAS_Fernost_Buff_LOW }
+	}
+
+	# DAS BUFFS
+	if = { 
+		limit = {
+			check_variable = {
+				var = DAS.PacificReadiness
+				value = 8
+				compare = greater_than_or_equals
+			}
+		}
+		DAS = { add_ideas = DAS_Pacific_Buff_MAX }
+	}
+	else_if = {
+		limit = {
+			check_variable = {
+				var = DAS.PacificReadiness
+				value = 5
+				compare = greater_than_or_equals
+			}
+		}
+		DAS = { add_ideas = DAS_Pacific_Buff_MED }
+	}
+	else_if = {
+		limit = {
+			check_variable = {
+				var = DAS.PacificReadiness
+				value = 3
+				compare = greater_than_or_equals
+			}
+		}
+		DAS = { add_ideas = DAS_Pacific_Buff_LOW }
+	}
+	else = {
+		DAS = {
+			add_stability = -0.3
+			add_war_support = -0.2
+		}
+		DAS = { add_ideas = DAS_Pacific_Buff_LOW }
+	}
+}
+
+DAS_civilwar_setup = { 
 	SSL = {
-		transfer_state = 647
-		transfer_state = 634
-		transfer_state = 1148
+		set_state_owner = 647
+		set_state_owner = 634
+		set_state_owner = 1148
 		set_cosmetic_tag = DAS_FERNOST
 		set_country_flag = DAS_is_Fernost
 		inherit_technology = DAS
 		set_capital = {
 			state = 647 #Palau
 		}
-		load_oob = "DAS_Fernost"
 	}
-
+	DAS = { 
+		every_core_state = {
+			add_core_of = SSL
+		}
+		every_owned_state = {
+			limit = { is_claimed_by = DAS }
+			add_claim_by = SSL
+		}
+	}
 }
 
 DAS_Raise_Bund = {

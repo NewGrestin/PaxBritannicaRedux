@@ -117,14 +117,16 @@ PB_Overlord_Enforced_Formable_Nations = {
 		}
 
 		visible = {
-			NOR = {
-				is_subject_of = ROOT
-			}
-			DEN = {
-				is_subject_of = ROOT
-			}
-			SWE = {
-				is_subject_of = ROOT
+			OR = { 
+				NOR = {
+					is_subject_of = ROOT
+				}
+				DEN = {
+					is_subject_of = ROOT
+				}
+				SWE = {
+					is_subject_of = ROOT
+				}
 			}
 		}
 
@@ -136,7 +138,6 @@ PB_Overlord_Enforced_Formable_Nations = {
 							original_tag = NOR
 							original_tag = SWE
 							original_tag = DEN
-							original_tag = FRA #Included since current France focus tree might countermand this
 						}
 					}
 				}
@@ -154,7 +155,11 @@ PB_Overlord_Enforced_Formable_Nations = {
 		}
 
 		complete_effect = {
-			SWE = {
+			SND = {
+				annex_country = {
+					target = SWE
+					transfer_troops = yes
+				}
 				annex_country = {
 					target = NOR
 					transfer_troops = yes
@@ -163,8 +168,69 @@ PB_Overlord_Enforced_Formable_Nations = {
 					target = DEN
 					transfer_troops = yes
 				}
-
-				set_cosmetic_tag = PB_SWE_Puppet_Scandinavia
+				if = { 
+					limit = { 
+						ROOT = { 
+							OR = {
+								has_country_leader = {
+									name = "Charles Maurras"
+									ruling_only = yes
+								}
+								has_country_leader = {
+									name = "Jean I"
+									ruling_only = yes
+								}
+							}
+						}
+					}
+					ROOT = { 
+						set_autonomy = {
+							target = SND
+							autonomous_state = autonomy_PB_Dependent_Kingdom
+							freedom_level = 0.50
+						}
+					}
+					
+					set_cosmetic_tag = SND_Jean
+				}
+				else_if = { 
+					limit = { 
+						ROOT = { 
+							OR = {
+								has_country_leader = {
+									name = "Joseph Darnand"
+									ruling_only = yes
+								}
+								has_country_leader = {
+									name = "Xavier Vallat"
+									ruling_only = yes
+								}
+								has_country_leader = {
+									name = "Gabrielle Chanel"
+									ruling_only = yes
+								}
+							}
+						}
+					}
+					ROOT = { 
+						set_autonomy = {
+							target = SND
+							autonomous_state = autonomy_PB_SP_Client_State
+							freedom_level = 0.50
+						}
+					}
+					set_cosmetic_tag = SND_SP
+				}
+				else = { 
+					set_cosmetic_tag = PB_SWE_Puppet_Scandinavia
+					ROOT = { 
+						set_autonomy = {
+							target = SND
+							autonomous_state = autonomy_PB_Collaborator_State
+							freedom_level = 0.50
+						}
+					}
+				}
 			}
 
 			every_state = {
@@ -172,9 +238,10 @@ PB_Overlord_Enforced_Formable_Nations = {
 					OR = {
 						is_core_of = NOR
 						is_core_of = DEN
+						is_core_of = SWE
 					}
 				}
-				SWE = {
+				SND = {
 					add_state_core = PREV
 				}
 			}
