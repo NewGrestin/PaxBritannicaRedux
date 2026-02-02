@@ -89,6 +89,11 @@ country_event = { #Fate of France
 				set_cosmetic_tag = FRA_Occupied_Republic
 			}
 		}
+
+		if = { 
+			limit = { ROOT = { tag = RUS } }
+			RUS_FRA_setup_puppet = yes
+		}
 	}
 	option = { #France Delenda Est
 		log = "[GetLogInfo]: event annex.1001 option annex.1001.b"
@@ -3788,7 +3793,10 @@ country_event = { #Fate of Flanders
 	immediate = {
 		hidden_effect = {
 			if = {
-				limit = { 35 = { is_claim_or_core_of_ROOT = yes } } #Brabant
+				OR = { 
+					limit = { 35 = { is_claim_or_core_of_ROOT = yes } } #Brabant
+					tag = FRA
+				}
 				save_event_target_as = can_annex
 			}
 			if = {
@@ -8319,8 +8327,6 @@ country_event = { #Fate of Silesia
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
-						is_subject = no
-						original_tag = GER
 					}
 				}
 			}
@@ -8332,8 +8338,6 @@ country_event = { #Fate of Silesia
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
-						is_subject = no
-						original_tag = GER
 					}
 				}
 			}
@@ -13125,8 +13129,8 @@ country_event = { #Fate of Constantinople
 
 country_event = { #Fate of Galicia
 	id = annex.1101
-	title = annexation_polish_galicia
-	desc = annexation_polish_galicia_desc
+	title = annexation_88
+	desc = annexation_88_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -13289,50 +13293,197 @@ country_event = { #Fate of Lwów
 
 	is_triggered_only = yes
 
-	option = { #Give it to Galicia
-		log = "[GetLogInfo]: event annex.1102 option annex.1102.a"
-		name = annex.1102.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						any_state_of = {
+							target = { 88 89 1434 } #Krakow, Stanislawow, Chelm
+							is_claim_or_core_of_ROOT = yes
+						}
+						AND = {
+							93 = { is_claim_or_core_of_ROOT = yes } #Volhynia
+							owns_state = 89 #Stanislawow
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					88 = { #Krakow
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:88.owner = { save_event_target_as = krakow add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					89 = { #Stanislawow
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:krakow }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:89.owner = { save_event_target_as = stanislawow add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					1434 = { #Chelm
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:krakow }
+							NOT = { tag = event_target:stanislawow }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1434.owner = { save_event_target_as = chelm add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					93 = { #Volhynia
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:krakow }
+							NOT = { tag = event_target:stanislawow }
+							NOT = { tag = event_target:chelm }
+							89 = { annexations_required_state_is_owned_by_either_side = yes } #Stanislawow
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:93.owner = { save_event_target_as = volhynia add_to_array = { ROOT.potential_grant_targets = THIS } }
 			}
 		}
-
-		PGA = {
-			transfer_state = 91
-		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Give it to Ukraine
-		log = "[GetLogInfo]: event annex.1102 option annex.1102.b"
-		name = annex.1102.b
+	option = { #Give to owner of Krakow
+		log = "[GetLogInfo]: event annexation_events.1102 option annexation_events.europe.give_to_owner_of_krakow"
+		name = annexation_events.europe.give_to_owner_of_krakow
 		trigger = {
-			is_subject = no
-			UKR = {
-				exists = yes
-				NOT = {
-					has_war_with = ROOT
-				}
-			}
+			has_event_target = krakow
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:krakow }
+				OR = {
+					is_ally_with = event_target:stanislawow
+					is_ally_with = event_target:chelm
+					is_ally_with = event_target:volhynia
+				}
+			}
+			modifier = {
+				add = 30
+				event_target:krakow = { owns_state = 1088 } #Chelm
+			}
+			modifier = {
+				factor = 0.1
+				event_target:krakow = { is_subject = yes }
 			}
 		}
+		set_temp_variable = { tag_to_release = event_target:krakow }
+		91 = { transfer_state_and_notify = yes } #Lwow
+	}
 
-		UKR = {
-			transfer_state = 91
+	option = { #Give to owner of Stanislawow
+		log = "[GetLogInfo]: event annexation_events.1102 option annexation_events.1102.a"
+		name = annexation_events.1102.a
+		trigger = {
+			has_event_target = stanislawow
 		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:stanislawow }
+				OR = {
+					is_ally_with = event_target:krakow
+					is_ally_with = event_target:chelm
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:stanislawow = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:stanislawow }
+		91 = { transfer_state_and_notify = yes } #Lwow
+	}
 
-		recheck_annexations = yes
+	option = { #Give to owner of Chelm
+		log = "[GetLogInfo]: event annexation_events.1102 option annexation_events.europe.give_to_owner_of_chelm"
+		name = annexation_events.europe.give_to_owner_of_chelm
+		trigger = {
+			has_event_target = chelm
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:chelm }
+				OR = {
+					is_ally_with = event_target:krakow
+					is_ally_with = event_target:stanislawow
+					is_ally_with = event_target:volhynia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:chelm = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:chelm }
+		91 = { transfer_state_and_notify = yes } #Lwow
+	}
+
+	option = { #Give to owner of Volhynia
+		log = "[GetLogInfo]: event annexation_events.1102 option annexation_events.europe.give_to_owner_of_volhynia"
+		name = annexation_events.europe.give_to_owner_of_volhynia
+		trigger = {
+			has_event_target = volhynia
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:volhynia }
+				OR = {
+					is_ally_with = event_target:krakow
+					is_ally_with = event_target:chelm
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:volhynia = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:volhynia }
+		91 = { transfer_state_and_notify = yes } #Lwow
+		89 = { transfer_if_owned = yes } #Stanislawow
+		1402 = { transfer_if_owned = yes } #Stanislawow
 	}
 	
 	option = { #Give to overlord
@@ -13342,14 +13493,7 @@ country_event = { #Fate of Lwów
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		91 = { transfer_state_and_notify = yes } #Lwow
 	}
 
 	option = { #Integrate
@@ -13358,16 +13502,16 @@ country_event = { #Fate of Lwów
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		91 = { add_claim_of_ROOT = yes } #Lwow
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1102 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -13561,208 +13705,381 @@ country_event = { #Fate of Bucovina
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
-
-	option = { #Give it to Galicia
-		log = "[GetLogInfo]: event annex.1105 option annex.1105.a"
-		name = annex.1105.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		PGA = {
-			transfer_state = 80
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give it to Ukraine
-		log = "[GetLogInfo]: event annex.1105 option annex.1105.b"
-		name = annex.1105.b
-		trigger = {
-			is_subject = no
-			UKR = {
-				exists = yes
-				NOT = {
-					has_war_with = ROOT
+	immediate = { 
+		if = {
+			limit = {
+				OR = {
+					89 = { is_claim_or_core_of_ROOT = yes } #Stanislawow
+					AND = {
+						79 = { is_claim_or_core_of_ROOT = yes } #Moldavia
+						owns_state = 1036 #Suceava
+					}
+					AND = {
+						1238 = { is_claim_or_core_of_ROOT = yes } #Marmamures
+						owns_state = 1036 #Suceava
+						OR = {
+							original_tag = TRA
+							original_tag = ROM
+						}
+					}
 				}
 			}
+			save_event_target_as = can_annex
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		UKR = {
-			transfer_state = 80
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give it to Moldova
-		log = "[GetLogInfo]: event annex.1105 option annex.1105.c"
-		name = annex.1105.c
-		trigger = {
-			is_subject = no
-			MOL = {
-				exists = yes
-				NOT = {
-					has_war_with = ROOT
+		if = {
+			limit = {
+				89 = { #Stanislawow
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
 				}
 			}
+			var:89.owner = { save_event_target_as = galicia add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+		if = {
+			limit = {
+				79 = { #Moldavia
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:galicia }
+						713 = { annexations_required_state_is_owned_by_either_side = yes } #Suceava
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:79.owner = { save_event_target_as = romania add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+		if = {
+			limit = {
+				1238 = { #Cluj
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						OR = {
+							original_tag = TRA
+							original_tag = ROM
+						}
+						NOT = { tag = event_target:galicia }
+						NOT = { tag = event_target:romania }
+						713 = { annexations_required_state_is_owned_by_either_side = yes } #Suceava
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1238.owner = { save_event_target_as = transylvania add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+	}
+
+	option = { #Give to Galicia
+		log = "[GetLogInfo]: event annexation_events.1105 option annexation_events.europe.give_to_galicia"
+		name = annexation_events.europe.give_to_galicia
+		trigger = {
+			has_event_target = galicia
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:galicia }
+				OR = {
+					is_ally_with = event_target:romania
+					is_ally_with = event_target:transylvania
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:galicia = { is_subject = yes }
 			}
 		}
-
-		MOL = {
-			transfer_state = 80
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:galicia }
+		80 = { transfer_state_and_notify = yes } #Cernauti
 	}
-	
+
+	option = { #Give to Romania
+		log = "[GetLogInfo]: event annexation_events.1105 option annexation_events.europe.give_to_romania"
+		name = annexation_events.europe.give_to_romania
+		trigger = {
+			has_event_target = romania
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:romania }
+				OR = {
+					is_ally_with = event_target:galicia
+					is_ally_with = event_target:transylvania
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:romania = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:romania }
+		80 = { transfer_state_and_notify = yes } #Cernauti
+		713 = { transfer_if_owned = yes } #Cernauti
+	}
+
+	option = { #Give to Transylvania
+		log = "[GetLogInfo]: event annexation_events.1105 option annexation_events.europe.give_to_transylvania"
+		name = annexation_events.europe.give_to_transylvania
+		trigger = {
+			has_event_target = transylvania
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:transylvania }
+				OR = {
+					is_ally_with = event_target:galicia
+					is_ally_with = event_target:romania
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:transylvania = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:transylvania }
+		80 = { transfer_state_and_notify = yes } #Cernauti
+		1036 = { transfer_if_owned = yes } #South Bucovina
+	}
+
 	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1105 option annex.give_to_overlord"
-		name = annex.give_to_overlord
+		log = "[GetLogInfo]: event annexation_events.1105 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		80 = { transfer_if_owned = yes } #Cernauti
 	}
 
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1105 option annex.integration"
-		name = annex.integration
+	option = { #annex
+		log = "[GetLogInfo]: event annexation_events.1105 option annexation_events.integration"
+		name = annexation_events.integration
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
+		80 = { add_claim_of_ROOT = yes } #Cernauti
+		if = {
+			limit = { 89 = { is_claim_or_core_of_ROOT = no } } #Stanislawow
+			1036 = { add_claim_of_ROOT = yes } #Suceava
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1105 option annex.cancel"
-		name = annex.cancel
+		log = "[GetLogInfo]: event annexation_events.1105 option annexation_events.cancel"
+		name = annexation_events.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of South Bucovina
 	id = annex.1106
-	title = annexation_south_bucovina
-	desc = annexation_south_bucovina_desc
+	title = annexation_1036
+	desc = annexation_1036_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
-	option = { #Give it to Galicia
-		log = "[GetLogInfo]: event annex.1106 option annex.1106.a"
-		name = annex.1106.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-			}
-			modifier = {
-				factor = 0
+	immediate = {
+		if = {
+			limit = {
 				OR = {
-					tag = GER
-					tag = ENG
+					79 = { is_claim_or_core_of_ROOT = yes } #Moldavia
+					AND = {
+						OR = {
+							original_tag = GAL
+							original_tag = TRA
+						}
+						owns_state = 80 #Cernauti
+					}
+					AND = {
+						OR = {
+							original_tag = TRA
+							AUS_is_unified = yes
+						}
+						OR = {
+							owns_state = 80 #Cernauti
+							1238 = { is_claim_or_core_of_ROOT = yes } #Marmures
+						}
+					}
 				}
 			}
+			save_event_target_as = can_annex
 		}
-
-		PGA = {
-			transfer_state = 1036
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give it to Moldova
-		log = "[GetLogInfo]: event annex.1106 option annex.1106.b"
-		name = annex.1106.b
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				OR = {
-					tag = HUN
-					tag = POL
+		if = {
+			limit = {
+				79 = { #Moldavia
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = { ROOT_can_grant_land = yes }
 				}
 			}
+			var:79.owner = { save_event_target_as = romania add_to_array = { ROOT.potential_grant_targets = THIS } }
 		}
-
-		MOL = {
-			transfer_state = 1036
+		if = {
+			limit = {
+				var:80.owner = { #Cernauti
+					NOT = { tag = event_target:romania }
+					OR = {
+						original_tag = GAL
+						original_tag = TRA
+						AUS_is_unified = yes
+					}
+					ROOT_can_grant_land = yes
+				}
+			}
+			var:80.owner = { save_event_target_as = galicia add_to_array = { ROOT.potential_grant_targets = THIS } }
 		}
-
-		recheck_annexations = yes
+		if = {
+			limit = {
+				var:1238.owner = { #Cluj
+					NOT = { tag = event_target:romania }
+					NOT = { tag = event_target:galicia }
+					OR = {
+						original_tag = TRA
+						AUS_is_unified = yes
+					}
+					ROOT_can_grant_land = yes
+				}
+			}
+			var:1238.owner = { save_event_target_as = transylvania add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
 	}
-	
+
+	option = { #Give to Romania
+		log = "[GetLogInfo]: event annexation_events.1106 option annexation_events.europe.give_to_romania"
+		name = annexation_events.europe.give_to_romania
+		trigger = {
+			has_event_target = romania
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.25
+				NOT = { is_ally_with = event_target:romania }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:romania = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:romania }
+		1036 = { transfer_state_and_notify = yes } #Suceava
+	}
+
+	option = { #Give to Galicia
+		log = "[GetLogInfo]: event annexation_events.1106 option annexation_events.europe.give_to_galicia"
+		name = annexation_events.europe.give_to_galicia
+		trigger = {
+			has_event_target = galicia
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:galicia }
+				OR = {
+					is_ally_with = event_target:romania
+					is_ally_with = event_target:transylvania
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:galicia = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:galicia }
+		1036 = { transfer_state_and_notify = yes } #Suceava
+	}
+
+	option = { #Give to Transylvania
+		log = "[GetLogInfo]: event annexation_events.1106 option annexation_events.europe.give_to_transylvania"
+		name = annexation_events.europe.give_to_transylvania
+		trigger = {
+			has_event_target = transylvania
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:transylvania }
+				OR = {
+					is_ally_with = event_target:romania
+					is_ally_with = event_target:galicia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:transylvania = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:transylvania }
+		1036 = { transfer_state_and_notify = yes } #Suceava
+	}
+
 	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1106 option annex.give_to_overlord"
-		name = annex.give_to_overlord
+		log = "[GetLogInfo]: event annexation_events.1106 option annexation_events.give_to_overlord"
+		name = annexation_events.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		1036 = { transfer_if_owned = yes } #Suceava
 	}
 
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1106 option annex.integration"
-		name = annex.integration
+	option = { #annex
+		log = "[GetLogInfo]: event annexation_events.1106 option annexation_events.integration"
+		name = annexation_events.integration
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
+		1036 = { add_claim_of_ROOT = yes } #Suceava
+		if = {
+			limit = {
+				76 = { is_claim_or_core_of_ROOT = no } #Cluj
+				79 = { is_claim_or_core_of_ROOT = no } #Moldavia
+			}
+			80 = { add_claim_of_ROOT = yes } #Cernauti
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1106 option annex.cancel"
-		name = annex.cancel
+		log = "[GetLogInfo]: event annexation_events.1106 option annexation_events.cancel"
+		name = annexation_events.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -13776,6 +14093,40 @@ country_event = { #Fate of Cieszyn
 	is_triggered_only = yes
 
 	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						75 = { is_claim_or_core_of_ROOT = yes } #Moravia
+						88 = { is_claim_or_core_of_ROOT = yes } #lodz
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					75 = { #Moravia
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:75.owner = { save_event_target_as = moravia }
+			}
+			if = {
+				limit = {
+					88 = { #lodz
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:moravia }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:88.owner = { save_event_target_as = galicia }
+			}
+		}
 	}
 
 	option = { #Grant it to the Poland
@@ -13783,28 +14134,10 @@ country_event = { #Fate of Cieszyn
 		name = annex.1107.a
 		trigger = {
 			is_subject = no
-			POL = {
-				exists = yes
-			}
+			has_event_target = moravia
 		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 10
-				OR = {
-					ROOT = {
-						original_tag = ENG
-						original_tag = GER
-					}
-				}
-			}
-		}
-
-		POL = {
-			transfer_state = 762
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:moravia }
+		762 = { transfer_if_owned = yes } #Katowice
 	}
 
 	option = { #Give it to Czechia
@@ -13812,42 +14145,46 @@ country_event = { #Fate of Cieszyn
 		name = annex.1107.b
 		trigger = {
 			is_subject = no
-			CZE = {
-				exists = yes
-			}
+			has_event_target = galicia
 		}
+		set_temp_variable = { tag_to_release = event_target:galicia }
+		762 = { transfer_if_owned = yes } #Katowice
+	}
 
-		ai_chance = { 
-			base = 10
-			modifier = {
-				factor = 10
-				OR = {
-					ROOT = {
-						original_tag = RUS
-					}
-				}
-			}
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1107 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
 		}
+		set_temp_variable = { tag_to_release = overlord }
+		762 = { transfer_if_owned = yes } #Katowice
+	}
 
-		CZE = {
-			transfer_state = 762
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1107 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
 		}
-
-		recheck_annexations = yes
+		762 = { add_claim_of_ROOT = yes } #Katowice
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1107 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Poland
 	id = annex.1108
-	title = annexation_poland
-	desc = annexation_poland_desc
+	title = annexation_10
+	desc = annexation_10_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -13877,6 +14214,12 @@ country_event = { #Fate of Poland
 		94 = { retain_state = yes } #Brest-Litovsk
 		1436 = { retain_state = yes } #Pinsk
 		93 = { retain_state = yes } #Volhynia
+		67 = { retain_state = yes } #Oberschliesen
+		762 = { retain_state = yes } #Katowice
+		97 = { retain_state = yes } #Bialyostok
+		95 = { retain_state = yes } #Nowogordek
+		784 = { retain_state = yes } #Vilnius
+		96 = { retain_state = yes } #Wilijeka
 	}
 
 	option = { #Release Poland
@@ -14709,6 +15052,9 @@ country_event = { #Fate of Vilnius
 		log = "[GetLogInfo]: event annex.1115 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -15119,6 +15465,10 @@ country_event = { #Fate of Belarus
 		log = "[GetLogInfo]: event annex.1119 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+		
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -15269,6 +15619,9 @@ country_event = { #Fate of Crimea
 		log = "[GetLogInfo]: event annex.1120 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -15398,51 +15751,174 @@ country_event = { #Fate of Belarussian Poland
 	is_triggered_only = yes
 
 	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						1436 = { is_claim_or_core_of_ROOT = yes } #Pinsk
+						201 = { is_claim_or_core_of_ROOT = yes } #Zhitomir
+						1434 = { is_claim_or_core_of_ROOT = yes } #Chelm
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					1436 = { #Pinsk
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1436.owner = { save_event_target_as = pinsk }
+			}
+			if = {
+				limit = {
+					201 = { #Zhitomir
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:pinsk }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:201.owner = { save_event_target_as = zhitomir }
+			}
+			if = {
+				limit = {
+					1434 = { #Chelm
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:zhitomir }
+							NOT = { tag = event_target:pinsk }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1434.owner = { save_event_target_as = chelm }
+			}
+		}
 	}
 
 	option = { #Grant the land to Belarus
 		log = "[GetLogInfo]: event annex.1122 option annex.1122.a"
 		name = annex.1122.a
 		trigger = {
-			is_subject = no
+			has_event_target = pinsk
 		}
 		ai_chance = {
-			base = 10
-		}
-
-		BLR = {
-			transfer_state = 94
-			transfer_state = 93
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Grant the land to Poland
-		log = "[GetLogInfo]: event annex.1122 option annex.1122.a"
-		name = annex.1122.b
-		trigger = {
-			is_subject = no
-			UKR = {
-				exists = yes
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:pinsk }
+				OR = {
+					is_ally_with = event_target:chelm
+					is_ally_with = event_target:zhitomir
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:pinsk = { is_subject = yes }
 			}
 		}
+		set_temp_variable = { tag_to_release = event_target:pinsk }
+		94 = { transfer_state_and_notify = yes } #Brest Litovsk
+		93 = { transfer_state_and_notify = yes } #Volhynia
+	}
+
+	option = { #Grant the land to chelm
+		log = "[GetLogInfo]: event annex.1122 option annex.1122.b"
+		name = annex.1122.b
+		trigger = {
+			has_event_target = chelm
+		}
 		ai_chance = {
-			base = 10
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:chelm }
+				OR = {
+					is_ally_with = event_target:pinsk
+					is_ally_with = event_target:zhitomir
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:chelm = { is_subject = yes }
+			}
 		}
+		set_temp_variable = { tag_to_release = event_target:chelm }
+		94 = { transfer_state_and_notify = yes } #Brest Litovsk
+		93 = { transfer_state_and_notify = yes } #Volhynia
+	}
 
-		POL = {
-			transfer_state = 94
-			transfer_state = 93
+	option = { #Grant the land to zhitomir
+		log = "[GetLogInfo]: event annex.1122 option annex.1122.c"
+		name = annex.1122.c
+		trigger = {
+			has_event_target = zhitomir
 		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_AI_wants_to_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:zhitomir }
+				OR = {
+					is_ally_with = event_target:pinsk
+					is_ally_with = event_target:chelm
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:zhitomir = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:zhitomir }
+		94 = { transfer_state_and_notify = yes } #Brest Litovsk
+		93 = { transfer_state_and_notify = yes } #Volhynia
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1115 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		94 = { transfer_if_owned = yes } #Brest Litovsk
+		93 = { transfer_if_owned = yes } #Volhynia
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1115 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		94 = { add_claim_of_ROOT = yes } #Brest Litovsk
+		93 = { transfer_if_owned = yes } #Volhynia
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1122 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -20069,7 +20545,7 @@ country_event = { #Fate of Tyrol
 			has_event_target = bavaria
 		}
 
-		ai_chance = { base = 0 }
+		ai_chance = { base = 100 }
 
 		set_temp_variable = { tag_to_release = event_target:bavaria }
 		153 = { transfer_if_owned = yes } #North Tyrol
@@ -20096,6 +20572,544 @@ country_event = { #Fate of Tyrol
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1162 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Glukhov
+	id = annex.1163
+	title = annexation_225
+	desc = annexation_225_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						224 = { is_claim_or_core_of_ROOT = yes } #Bryansk
+						193 = { is_claim_or_core_of_ROOT = yes } #Kiev
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					224 = { #Bransk
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:224.owner = { save_event_target_as = bryansk }
+			}
+			if = {
+				limit = {
+					193 = { #Kiev
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:bryansk }
+						}
+					}
+				}
+				var:193.owner = { save_event_target_as = kiev }
+			}
+		}
+	}
+
+	option = { #Return to Russia
+		log = "[GetLogInfo]: event annex.1163 option annex.1163.a"
+		name = annex.europe.give_to_russia
+		trigger = {
+			is_subject = no
+			has_event_target = bryansk
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bryansk }
+		225 = { transfer_if_owned = yes } #Glukhov
+	}
+
+	option = { #Give it to Ukraine
+		log = "[GetLogInfo]: event annex.1163 option annex.1163.b"
+		name = annex.1163.b
+		trigger = {
+			is_subject = no
+			has_event_target = kiev
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:kiev }
+		225 = { transfer_if_owned = yes } #Glukhov
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1163 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		225 = { transfer_if_owned = yes } #Glukhov
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1163 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		225 = { add_claim_of_ROOT = yes } #Glukhov
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1163 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Voralberg
+	id = annex.1164
+	title = annexation_1189
+	desc = annexation_1189_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						1187 = { is_claim_or_core_of_ROOT = yes } #Salzburg
+						151 = { is_claim_or_core_of_ROOT = yes } #Eastern Switzerland
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					1187 = { #Salzburg
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1187.owner = { save_event_target_as = salzburg }
+			}
+			if = {
+				limit = {
+					151 = { #Eastern Switzerland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:salzburg }
+						}
+					}
+				}
+				var:151.owner = { save_event_target_as = swiss }
+			}
+		}
+	}
+
+	option = { #Return to Salzburg
+		log = "[GetLogInfo]: event annex.1164 option annex.1164.a"
+		name = annex.1164.a
+		trigger = {
+			is_subject = no
+			has_event_target = salzburg
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:salzburg }
+		1189 = { transfer_if_owned = yes } #Voralberg
+		1361 = { transfer_if_owned = yes } #Liechtenstein
+	}
+
+	option = { #Give it to The Swiss
+		log = "[GetLogInfo]: event annex.1164 option annex.1164.b"
+		name = annex.1164.b
+		trigger = {
+			is_subject = no
+			has_event_target = swiss
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:swiss }
+		1189 = { transfer_if_owned = yes } #Voralberg
+		1361 = { transfer_if_owned = yes } #Liechtenstein
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1164 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1189 = { transfer_if_owned = yes } #Voralberg
+		1361 = { transfer_if_owned = yes } #Liechtenstein
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1164 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1189 = { add_claim_of_ROOT = yes } #Voralberg
+		1361 = { add_claim_of_ROOT = yes } #Liechtenstein
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1164 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Gelderland
+	id = annex.1165
+	title = annexation_35
+	desc = annexation_35_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						911 = { is_claim_or_core_of_ROOT = yes } #betuweland
+						6 = { is_claim_or_core_of_ROOT = yes } #flanders
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					911 = { #betuweland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:911.owner = { save_event_target_as = betuweland }
+			}
+			if = {
+				limit = {
+					6 = { #flanders
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:betuweland }
+						}
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders }
+			}
+		}
+	}
+
+	option = { #Return to betuweland
+		log = "[GetLogInfo]: event annex.1165 option annex.1165.a"
+		name = annex.1165.a
+		trigger = {
+			is_subject = no
+			has_event_target = betuweland
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:betuweland }
+		35 = { transfer_if_owned = yes } #Gelderland
+		1580 = { transfer_if_owned = yes } #Zeeland
+	}
+
+	option = { #Give it to The flanders
+		log = "[GetLogInfo]: event annex.1165 option annex.1165.b"
+		name = annex.1165.b
+		trigger = {
+			is_subject = no
+			has_event_target = flanders
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:flanders }
+		35 = { transfer_if_owned = yes } #Gelderland
+		1580 = { transfer_if_owned = yes } #Zeeland
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1165 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		35 = { transfer_if_owned = yes } #Gelderland
+		1580 = { transfer_if_owned = yes } #Zeeland
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1165 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		35 = { add_claim_of_ROOT = yes } #Gelderland
+		1580 = { add_claim_of_ROOT = yes } #Zeeland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1165 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Betuweland
+	id = annex.1166
+	title = annexation_911
+	desc = annexation_911_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						35 = { is_claim_or_core_of_ROOT = yes } #belgium
+						7 = { is_claim_or_core_of_ROOT = yes } #netherlands
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					35 = { #belgium
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:35.owner = { save_event_target_as = belgium }
+			}
+			if = {
+				limit = {
+					7 = { #netherlands
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:belgium }
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands }
+			}
+		}
+	}
+
+	option = { #Return to belgium
+		log = "[GetLogInfo]: event annex.1166 option annex.1166.a"
+		name = annex.1166.a
+		trigger = {
+			is_subject = no
+			has_event_target = belgium
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:belgium }
+		911 = { transfer_if_owned = yes } #Betuweland
+	}
+
+	option = { #Give it to The netherlands
+		log = "[GetLogInfo]: event annex.1166 option annex.1166.b"
+		name = annex.1166.b
+		trigger = {
+			is_subject = no
+			has_event_target = netherlands
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		911 = { transfer_if_owned = yes } #Betuweland
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1166 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		911 = { transfer_if_owned = yes } #Betuweland
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1166 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		911 = { add_claim_of_ROOT = yes } #Betuweland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1166 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Gelderland
+	id = annex.1167
+	title = annexation_910
+	desc = annexation_910_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						1580 = { is_claim_or_core_of_ROOT = yes } #Zeeland
+						6 = { is_claim_or_core_of_ROOT = yes } #flanders
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					1580 = { #Zeeland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:911.owner = { save_event_target_as = zeeland }
+			}
+			if = {
+				limit = {
+					6 = { #flanders
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:betuweland }
+						}
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders }
+			}
+		}
+	}
+
+	option = { #Return to Zeeland
+		log = "[GetLogInfo]: event annex.1165 option annex.1165.a"
+		name = annex.1165.a
+		trigger = {
+			is_subject = no
+			has_event_target = zeeland
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:zeeland }
+		910 = { transfer_if_owned = yes } #Gelderland
+	}
+
+	option = { #Give it to The flanders
+		log = "[GetLogInfo]: event annex.1165 option annex.1165.b"
+		name = annex.1165.b
+		trigger = {
+			is_subject = no
+			has_event_target = flanders
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:flanders }
+		910 = { transfer_if_owned = yes } #Gelderland
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1165 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		910 = { transfer_if_owned = yes } #Gelderland
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1165 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		910 = { add_claim_of_ROOT = yes } #Gelderland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1165 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
