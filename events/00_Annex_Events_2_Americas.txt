@@ -2981,8 +2981,22 @@ country_event = { #Fate of Quebec
 				annexations_AI_country_wants_to_dismantle_america = yes
 			}
 		}
+		set_temp_variable = { tag_to_release = QUE }
+		every_state = {
+			limit = { is_core_of = QUE}
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
 		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
+			limit = { 
+				ROOT = { 
+					AND = {
+						has_monarchist_government = yes 
+						NOT = { tag = ENG }
+					}
+
+				}
+			}
 			QUE = {
 				set_cosmetic_tag = QUE_Occupied_Monarchy
 			}
@@ -3034,11 +3048,13 @@ country_event = { #Fate of Huron
 					320 = { #Upper Canada
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
+							NOT = { tag = event_target:michigan }
 							ROOT_can_grant_land = yes
 							is_subject = no
 						}
 					}
 				}
+				log = "[GetLogInfo]: quebec event target saved"
 				var:320.owner = { save_event_target_as = quebec }
 			}
 			if = {
@@ -3124,24 +3140,59 @@ country_event = { #Fate of Huron
 
 country_event = { #Fate of Michigan
 	id = annex.2029
-	title = annexation_michigan
-	desc = annexation_michigan_desc
+	title = annexation_393
+	desc = annexation_393_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						276 = { is_claim_or_core_of_ROOT = yes } #Huron
+						original_tag = QUE
+					}
+					950 = { is_claim_or_core_of_ROOT = yes } #Cavallier
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					276 = { #Huron
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:america }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:276.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					950 = { #Cavallier
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:393.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2029 option annex.2029.a"
 		name = annex.2029.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-				owns_state = 950
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3151,10 +3202,8 @@ country_event = { #Fate of Michigan
 			}
 		}
 
-		AME = {
-			transfer_state = 393
-			add_state_core = 393
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		393 = { transfer_state_and_notify = yes } #Michigan
 		
 	}
 
@@ -3162,10 +3211,7 @@ country_event = { #Fate of Michigan
 		log = "[GetLogInfo]: event annex.2029 option annex.2029.b"
 		name = annex.2029.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 276
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3173,12 +3219,28 @@ country_event = { #Fate of Michigan
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 393
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		393 = { transfer_state_and_notify = yes } #Michigan
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2029 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		393 = { add_claim_of_ROOT = yes } #Huron
 	}
 
 	option = { #Cancel
@@ -3194,24 +3256,59 @@ country_event = { #Fate of Michigan
 
 country_event = { #Fate of Superieur
 	id = annex.2030
-	title = annexation_superieur
-	desc = annexation_superieur_desc
+	title = annexation_817
+	desc = annexation_817_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						682 = { is_claim_or_core_of_ROOT = yes } #L'Acadie Du Nord
+						original_tag = QUE
+					}
+					394 = { is_claim_or_core_of_ROOT = yes } #Ouisconsin
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					682 = { #L'Acadie Du Nord
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:america }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:682.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					394 = { #Ouisconsin
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:394.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2030 option annex.2030.a"
 		name = annex.2030.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-				owns_state = 394
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3221,10 +3318,8 @@ country_event = { #Fate of Superieur
 			}
 		}
 
-		AME = {
-			transfer_state = 817
-			add_state_core = 817
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		817 = { transfer_state_and_notify = yes } #Superieur
 		
 	}
 
@@ -3232,10 +3327,7 @@ country_event = { #Fate of Superieur
 		log = "[GetLogInfo]: event annex.2030 option annex.2030.b"
 		name = annex.2030.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 682
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3243,12 +3335,28 @@ country_event = { #Fate of Superieur
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 817
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		817 = { transfer_state_and_notify = yes } #Superiur
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2030 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		817 = { add_claim_of_ROOT = yes } #Superieur
 	}
 
 	option = { #Cancel
@@ -3264,24 +3372,59 @@ country_event = { #Fate of Superieur
 
 country_event = { #Fate of Ouisconsin
 	id = annex.2031
-	title = annexation_wisconsin
-	desc = annexation_wisconsin_desc
+	title = annexation_394
+	desc = annexation_394_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						817 = { is_claim_or_core_of_ROOT = yes } #Superieur
+						original_tag = QUE
+					}
+					950 = { is_claim_or_core_of_ROOT = yes } #Cavallier
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					817 = { #Superieur
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:america }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:817.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					950 = { #Cavallier
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:950.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2031 option annex.2031.a"
 		name = annex.2031.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-				owns_state = 950
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3291,10 +3434,8 @@ country_event = { #Fate of Ouisconsin
 			}
 		}
 
-		AME = {
-			transfer_state = 394
-			add_state_core = 394
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		394 = { transfer_state_and_notify = yes } #Ouisconsin
 		
 	}
 
@@ -3302,11 +3443,7 @@ country_event = { #Fate of Ouisconsin
 		log = "[GetLogInfo]: event annex.2031 option annex.2031.b"
 		name = annex.2031.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 817
-			owns_state = 682
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3314,12 +3451,28 @@ country_event = { #Fate of Ouisconsin
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 394
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		394 = { transfer_state_and_notify = yes } #Ouisconsin
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2031 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		394 = { add_claim_of_ROOT = yes } #Ouisconsin
 	}
 
 	option = { #Cancel
@@ -3335,23 +3488,59 @@ country_event = { #Fate of Ouisconsin
 
 country_event = { #Fate of Cavalier
 	id = annex.2032
-	title = annexation_cavalier
-	desc = annexation_cavalier_desc
+	title = annexation_950
+	desc = annexation_950_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						393 = { is_claim_or_core_of_ROOT = yes } #Michigan
+						original_tag = QUE
+					}
+					261 = { is_claim_or_core_of_ROOT = yes } #Ohio
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					393 = { #Michigan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:america }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:393.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					261 = { #Ohio
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:261.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2032 option annex.2032.a"
 		name = annex.2032.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3361,10 +3550,8 @@ country_event = { #Fate of Cavalier
 			}
 		}
 
-		AME = {
-			transfer_state = 950
-			add_state_core = 950
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		950 = { transfer_state_and_notify = yes } #Cavallier
 		
 	}
 
@@ -3372,11 +3559,7 @@ country_event = { #Fate of Cavalier
 		log = "[GetLogInfo]: event annex.2032 option annex.2032.b"
 		name = annex.2032.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 393
-			owns_state = 394
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3384,12 +3567,28 @@ country_event = { #Fate of Cavalier
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 950
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		950 = { transfer_state_and_notify = yes } #Cavallier
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2032 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		950 = { add_claim_of_ROOT = yes } #Cavallier
 	}
 
 	option = { #Cancel
