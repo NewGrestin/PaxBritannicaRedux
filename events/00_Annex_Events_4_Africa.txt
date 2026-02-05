@@ -4719,3 +4719,133 @@ country_event = { #Fate of Borkou
 		recheck_annexations = yes
     }
 }
+
+country_event = { #Fate of Tripolitania
+	id = annex.4060
+	title = annexation_decision_448
+	desc = annexation_decision_448_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+
+	option = { #Give to Cyrenica
+		log = "[GetLogInfo]: event annex.4060 option annex.4060.a"
+		name = annex.4060.a
+		trigger = {
+			CYR = {
+				exists = yes
+			}
+        }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CYR = {
+            transfer_state = 448
+            transfer_state = 449 
+            transfer_state = 661 
+            transfer_state = 1008
+            transfer_state = 1487
+            transfer_state = 1488
+		}
+	}
+	
+	option = { #Give to Egypt
+		log = "[GetLogInfo]: event annex.4060 option annex.4060.a"
+		name = annex.4060.a
+		trigger = {
+			EGY = {
+				exists = yes
+				owns_state = 450
+			}
+        }
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					is_ally_with = EGY
+				}
+			}
+		}
+
+		EGY = {
+            transfer_state = 448
+            transfer_state = 449 
+            transfer_state = 661 
+            transfer_state = 1008
+            transfer_state = 1487
+            transfer_state = 1488
+		}                    
+		448 = { add_claim_by = EGY }
+		449 = { add_claim_by = EGY }
+		661 = { add_claim_by = EGY }
+		1008 = { add_claim_by = EGY }
+		1487 = { add_claim_by = EGY }
+		1488 = { add_claim_by = EGY }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4060 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		448 = { transfer_if_owned = yes }
+		448 = { transfer_if_owned = yes }
+		449 = { transfer_if_owned = yes } 
+		661 = { transfer_if_owned = yes } 
+		1008 = { transfer_if_owned = yes }
+		1487 = { transfer_if_owned = yes }
+		1488 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4060 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 80
+				ROOT = {
+					AND = {
+						tag = EGY
+						owns_state = 450
+					}
+				}
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4060 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
