@@ -2948,6 +2948,7 @@ country_event = { #Fate of Quebec
 				if = {
 					limit = {
 						OR = {
+							state = 943 # Rainy River
 							state = 465 # New Brunswick
 							state = 464 # Nova Scotia
 							state = 950 # Cavalier
@@ -3053,7 +3054,6 @@ country_event = { #Fate of Huron
 						}
 					}
 				}
-				log = "[GetLogInfo]: quebec event target saved"
 				var:320.owner = { save_event_target_as = quebec }
 			}
 			if = {
@@ -6013,3 +6013,308 @@ country_event = { #Fate of Condeferacy of Free Tribes
 		recheck_annexations = yes
 	}
 }	
+
+country_event = { #Northwest Territory Colonial Authority
+	id = annex.2055
+	title = annexation_891
+	desc = annexation_891_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = {
+						OR = {
+							state = 943 # Rainy River
+							state = 740 # Victoria Island
+						}
+					} 
+					remove_core_of = BCL
+					retain_state = yes
+				}
+				remove_claim_by = BCL
+			}
+		}
+	}
+
+	option = { #Liberate Most of Northwest Territory Colonial Authority
+		log = "[GetLogInfo]: event annex.2055 option annex.2055.a"
+		name = annex.2055.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = BCL }
+		every_state = {
+			limit = { is_core_of = BCL }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+		if = {
+			limit = { 
+				ROOT = { 
+					AND = {
+						has_monarchist_government = yes 
+						NOT = { tag = ENG }
+					}
+
+				}
+			}
+			BCL = {
+				set_cosmetic_tag = BCL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BCL = {
+				set_cosmetic_tag = BCL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2055 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}	
+
+country_event = { #Fate of Rainy River
+	id = annex.2056
+	title = annexation_943
+	desc = annexation_943_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						682 = { is_claim_or_core_of_ROOT = yes } #L'Acadie du Nord
+						original_tag = QUE
+					}
+					683 = { is_claim_or_core_of_ROOT = yes } #Keewatin
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					682 = { #L'Acadie du Nord
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:682.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					683 = { #Keewatin
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:683.owner = { save_event_target_as = borealia }
+			}
+		}
+    }
+	option = { #Give to Borealia
+		log = "[GetLogInfo]: event annex.2056 option annex.2056.a"
+		name = annex.2056.a
+		trigger = {
+			has_event_target = borealia
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:borealia }
+		943 = { transfer_state_and_notify = yes } #Rainy River
+		
+	}
+
+	option = { #Give it to Quebec
+		log = "[GetLogInfo]: event annex.2056 option annex.2056.b"
+		name = annex.2056.b
+		trigger = {
+			has_event_target = quebec 
+	    }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:borealia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		943 = { transfer_state_and_notify = yes } #Rainy River
+		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2056 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		943 = { add_claim_of_ROOT = yes } #Rainy River
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2056 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Victoria Island
+	id = annex.2057
+	title = annexation_740
+	desc = annexation_740_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						473 = { is_claim_or_core_of_ROOT = yes } #British Columbia
+						original_tag = BCL
+					}
+					1006 = { is_claim_or_core_of_ROOT = yes } #Novo-Arkhangelsk
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					473 = { #British Columbia
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:473.owner = { save_event_target_as = borealia }
+			}
+			if = {
+				limit = {
+					1006 = { #Novo-Arkhangelsk
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:borealia }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1006.owner = { save_event_target_as = alaska }
+			}
+		}
+    }
+	option = { #Give to Borealia
+		log = "[GetLogInfo]: event annex.2057 option annex.2057.a"
+		name = annex.2057.a
+		trigger = {
+			has_event_target = borealia
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:borealia }
+		740 = { transfer_state_and_notify = yes } #Victoria Island
+		
+	}
+
+	option = { #Give it to Quebec
+		log = "[GetLogInfo]: event annex.2057 option annex.2057.b"
+		name = annex.2057.b
+		trigger = {
+			has_event_target = alaska
+	    }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:borealia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:alaska }
+		740 = { transfer_state_and_notify = yes } #Victoria Island
+		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2057 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		740 = { add_claim_of_ROOT = yes } #Victoria Island
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2057 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
