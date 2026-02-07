@@ -69,6 +69,10 @@
 # annex.2052 - Fate of Vandalia
 # annex.2053 - Fate of Danish West Indies
 # annex.2054 - Fate of Confederacy of Free Tribes
+# annex.2055 - Fate of Northwestern Territory Colonial Authority (Borealia)
+# annex.2056 - Fate of Rainy River
+# annex.2057 - Fate of Victoria Island
+# annex.2058 - Fate of Alaska
 
 add_namespace = annex
 
@@ -6318,3 +6322,79 @@ country_event = { #Fate of Victoria Island
 		recheck_annexations = yes
 	}
 }
+
+country_event = { #Fate of Alaska
+	id = annex.2058
+	title = annexation_463
+	desc = annexation_463_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = {
+						state = 740 # Victoria Island
+					} 
+					remove_core_of = ASK
+					retain_state = yes
+				}
+				remove_claim_by = ASK
+			}
+		}
+	}
+
+	option = { #Liberate Most of Alaska
+		log = "[GetLogInfo]: event annex.2058 option annex.2058.a"
+		name = annex.2058.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = ASK }
+		every_state = {
+			limit = { is_core_of = ASK }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+		if = {
+			limit = { 
+				ROOT = { 
+					AND = {
+						has_monarchist_government = yes 
+						NOT = { tag = RUS }
+					}
+
+				}
+			}
+			ASK = {
+				set_cosmetic_tag = ASK_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ASK = {
+				set_cosmetic_tag = ASK_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2058 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}	
