@@ -73,6 +73,7 @@
 # annex.2056 - Fate of Rainy River
 # annex.2057 - Fate of Victoria Island
 # annex.2058 - Fate of Alaska
+# annex.2059 - Fate of Alaska
 
 add_namespace = annex
 
@@ -263,8 +264,7 @@ country_event = { # Fate of Tejas
 
 	immediate = {
 		hidden_effect = {
-			383 = { retain_state = yes }
-			963 = { retain_state = yes }
+			955 = { retain_state = yes }
 			
 			if = {
 				limit = {
@@ -287,10 +287,18 @@ country_event = { # Fate of Tejas
 		}
 	}
 
-	option = { # Release Tejas as Puppet
+	option = { # Release American Texas as Puppet
 		log = "[GetLogInfo]: event annex.2002 option annex.2002.a"
 		name = annex.2002.a
-		trigger = { is_subject = no }
+		trigger = { 
+			is_subject = no 
+			ROOT = {
+				OR = {
+					tag = ENG
+					tag = AME
+				}
+			}
+		}
 		ai_chance = {
 			base = 60
 			modifier = { factor = 0 annexations_can_annex = yes }
@@ -305,6 +313,36 @@ country_event = { # Fate of Tejas
 
 		if = { limit = { ROOT = { has_monarchist_government = yes } } ATX = { set_cosmetic_tag = ATX_Occupied_Monarchy } }
 		if = { limit = { ROOT = { has_republican_government = yes } } ATX = { set_cosmetic_tag = ATX_Occupied_Republic } }
+	}
+
+	option = { # Release Tejas as Puppet
+		log = "[GetLogInfo]: event annex.2002 option annex.2002.a"
+		name = annex.2002.c
+		trigger = { 
+			is_subject = no
+			NOT = {
+				ROOT = {
+					OR = {
+						tag = ENG
+						tag = AME
+					}
+				}
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = { factor = 0 annexations_can_annex = yes }
+		}
+
+		set_temp_variable = { tag_to_release = TEX }
+		every_state = {
+			limit = { is_tejas = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = { limit = { ROOT = { has_monarchist_government = yes } } TEX = { set_cosmetic_tag = TEX_Occupied_Monarchy } }
+		if = { limit = { ROOT = { has_republican_government = yes } } TEX = { set_cosmetic_tag = TEX_Occupied_Republic } }
 	}
 
 	option = { # Give Tejas to Mexico City
@@ -354,10 +392,10 @@ country_event = { # Fate of Tejas
 	after = { recheck_annexations = yes }
 }
 
-country_event = { # Fate of American Texas
-	id = annex.2005
-	title = annexation_383
-	desc = annexation_383_desc
+country_event = { # Fate of Llano Estacado
+	id = annex.2003
+	title = annexation_955
+	desc = annexation_955_desc
 	picture = GFX_report_PB_Peace_Deals_North_America
 
 	is_triggered_only = yes
@@ -367,7 +405,8 @@ country_event = { # Fate of American Texas
 			if = {
 				limit = {
 					OR = {
-						375 = { is_claim_or_core_of_ROOT = yes }
+						1428 = { is_claim_or_core_of_ROOT = yes }
+						964 = { is_claim_or_core_of_ROOT = yes }
 					}
 				}
 				save_event_target_as = can_annex
@@ -375,72 +414,83 @@ country_event = { # Fate of American Texas
 
 			if = {
 				limit = {
-					375 = {
+					1428 = { #Naanapusookuni
 						annexations_state_owner_is_valid_grant_target = yes
-						owner = { ROOT_can_grant_land = yes }
+						owner = {
+							ROOT_can_grant_land = yes
+						}
 					}
 				}
-				var:375.owner = { save_event_target_as = san_antonio }
+				var:1428.owner = { save_event_target_as = comanche }
+			}
+			if = {
+				limit = {
+					964 = { #Santa Anna
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:comanche }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:964.owner = { save_event_target_as = texas }
 			}
 		}
 	}
 
-	option = { # Puppet American Texas
-		log = "[GetLogInfo]: event annex.2005 option annex.2005.a"
-		name = annex.2005.a
+	option = { #Give to Texas
+		log = "[GetLogInfo]: event annex.2003 option annex.2003.a"
+		name = annex.2003.a
 		trigger = {
-			is_subject = no
+			has_event_target = texas
 		}
-
 		ai_chance = {
 			base = 100
-			modifier = { factor = 0 }
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
 		}
 
-		set_temp_variable = { tag_to_release = ATX }
-
-		383 = { remove_claim_and_add_core_of_target = yes }
-		963 = { remove_claim_and_add_core_of_target = yes }
-
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			ATX = { set_cosmetic_tag = ATX_Occupied_Monarchy }
-		}
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			ATX = { set_cosmetic_tag = ATX_Occupied_Republic }
-		}
+		set_temp_variable = { tag_to_release = event_target:texas }
+		955 = { transfer_state_and_notify = yes } #Llano Estacado
+		
 	}
 
-	option = { # Give Texas to San Antonio claimant
-		log = "[GetLogInfo]: event annex.2005 option annex.2005.b"
-		name = annex.2005.b
+	option = { #Give it to Quebec
+		log = "[GetLogInfo]: event annex.2003 option annex.2003.b"
+		name = annex.2003.b
 		trigger = {
-			has_event_target = san_antonio
-		}
-
+			has_event_target = comanche 
+	    }
 		ai_chance = {
-			base = 70
+			base = 100
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0.1
-				event_target:san_antonio = { is_subject = yes }
+				event_target:quebec = { is_subject = yes }
 			}
 		}
 
-		set_temp_variable = { tag_to_release = event_target:san_antonio }
+		set_temp_variable = { tag_to_release = event_target:comanche }
+		955 = { transfer_state_and_notify = yes } #Llano Estacado
+		
+	}
 
-		383 = { transfer_if_owned = yes }
-		963 = { transfer_if_owned = yes }
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2003 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		955 = { add_claim_of_ROOT = yes } #Llano Estacado
 	}
 
 	option = { # Give to overlord
-		log = "[GetLogInfo]: event annex.2005 option annex.give_to_overlord"
+		log = "[GetLogInfo]: event annex.2003 option annex.give_to_overlord"
 		name = annex.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
@@ -448,24 +498,11 @@ country_event = { # Fate of American Texas
 
 		set_temp_variable = { tag_to_release = overlord }
 
-		383 = { transfer_if_owned = yes }
-		963 = { transfer_if_owned = yes }
-	}
-
-	option = { # Integrate Texas
-		log = "[GetLogInfo]: event annex.2005 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-
-		383 = { add_claim_of_ROOT = yes }
-		963 = { add_claim_of_ROOT = yes }
-		375 = { add_claim_of_ROOT = yes } # San Antonio remains disputed
+		955 = { transfer_if_owned = yes }
 	}
 
 	option = { # Cancel
-		log = "[GetLogInfo]: event annex.2005 option annex.cancel"
+		log = "[GetLogInfo]: event annex.2003 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
