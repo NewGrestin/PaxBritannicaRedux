@@ -443,6 +443,9 @@ PB_POL_Floating_City = {
 				set_global_flag = POL_Floating_City1
 				set_global_flag = POL_Floating_City_Launched
 				set_global_flag = POL_City_Did_Something
+				POL = {
+					set_country_flag = POL_Floating_City_Was_Here
+				}
 			}
 		}
 	}
@@ -483,7 +486,7 @@ PB_POL_Floating_City = {
 
 		fire_only_once = no
 
-		days_remove = 5
+		days_remove = 2
 
 		complete_effect = {
 			hidden_effect = {
@@ -535,7 +538,7 @@ PB_POL_Floating_City = {
 
 		fire_only_once = yes
 
-		days_remove = 5
+		days_remove = 2
 
 		complete_effect = {
 			hidden_effect = {
@@ -561,11 +564,137 @@ PB_POL_Floating_City = {
 		}
 	}
 
+	PB_POL_travel_to_capital = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 12
+
+		#highlight_states = {
+		#	highlight_state_targets = {
+		#		state = 127
+		#	}
+		#}
+
+		available = {
+			NOT = {
+				has_country_flag = POL_moving_city
+				has_global_flag = POL_deactivating_or_activating
+			}
+			hidden_trigger = {
+				has_global_flag = { flag = POL_City_Did_Something days > 1 }
+			}
+			
+		}
+
+		visible = {
+			
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				POL = {
+					set_country_flag = POL_moving_city
+				}
+				clr_global_flag = POL_City_Did_Something
+			}
+		}
+
+		modifier = {
+			#political_power_cost = 0.5
+		}
+
+		remove_effect = {
+
+			every_state = {
+				limit = {
+					has_state_flag = POL_Where_Floating_City
+				}
+				if = {
+					limit = {
+						has_global_flag = POL_Floating_City1
+					}
+					remove_dynamic_modifier = { modifier = POL_Floating_City1 }
+					else = {
+						remove_dynamic_modifier = { modifier = POL_Floating_City2 }
+					}
+				}
+				
+				clr_state_flag = POL_Where_Floating_City
+
+				controller = {
+					set_country_flag = POL_Floating_City_Was_Here
+					capital_scope = {
+						if = {
+							limit = {
+								has_global_flag = POL_Floating_City1
+							}
+							add_dynamic_modifier = { modifier = POL_Floating_City1 }
+							else = {
+								add_dynamic_modifier = { modifier = POL_Floating_City2 }
+							}
+						}
+						set_state_flag = POL_Where_Floating_City
+					}
+					ROOT = {
+						random_list = {
+							10 = {
+								country_event = {
+									id = pol.129
+								}
+							}
+							10 = {
+								country_event = {
+									id = pol.130
+								}
+							}
+							10 = {
+								country_event = {
+									id = pol.131
+								}
+							}
+							10 = {
+								country_event = {
+									id = pol.132
+								}
+							}
+							10 = {
+								country_event = {
+									id = pol.133
+								}
+							}
+							10 = {
+								modifier = {
+									factor = 2
+									FROM = {
+										controller = {
+											has_government = POL
+										}
+									}
+								}
+								country_event = {
+									id = pol.134
+								}
+							}
+						}
+					}
+				}
+			}
+
+			hidden_effect = {
+				clr_country_flag = POL_moving_city
+				set_global_flag = POL_City_Did_Something
+			}
+			
+		}
+
+	}
+
 	PB_POL_travel = {
 
 		icon = GFX_decision_move_city
 
-		days_remove = 5
+		days_remove = 2
 
 		available = {
 			NOT = {
