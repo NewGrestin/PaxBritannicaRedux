@@ -1,0 +1,30 @@
+PB_calculate_grain_fulfillment = {
+    set_variable = { PB_agriculture_per_pop = 0.001 }
+    
+    set_variable = { PB_agriculture_per_pop_military = PB_agriculture_per_pop }
+    set_variable = { PB_agriculture_per_pop_military_factor = 1.2 }
+    multiply_variable = { PB_agriculture_per_pop_military = PB_agriculture_per_pop_military_factor }
+
+    set_variable = { PB_agriculture_demand_base = max_manpower_k }
+    multiply_variable = { PB_agriculture_demand_base = PB_agriculture_per_pop }
+
+    set_variable = { PB_agriculture_total_military_pop = deployed_army_manpower_k }
+    add_to_variable = { PB_agriculture_total_military_pop = deployed_navy_manpower_k }
+    add_to_variable = { PB_agriculture_total_military_pop = deployed_airforce_manpower_k }
+
+    set_variable = { PB_agriculture_demand_military = PB_agriculture_total_military_pop }
+    multiply_variable = { PB_agriculture_demand_military = PB_agriculture_per_pop_military }
+
+    set_variable = { PB_agriculture_demand = PB_agriculture_demand_base }
+    add_to_variable = { PB_agriculture_demand = PB_agriculture_demand_military }
+
+    set_variable = { PB_agriculture_fulfillment_pct = resource@grain }
+    divide_variable = { PB_agriculture_fulfillment_pct = PB_agriculture_demand }
+    set_variable = { PB_agriculture_fulfillment = PB_agriculture_fulfillment_pct }
+    multiply_variable = { PB_agriculture_fulfillment = 100 }
+    clamp_variable = { var = PB_agriculture_fulfillment min = 0 max = 100 }
+
+    log = "[THIS.GetTag] - resource@grain: [?resource@grain]"
+    log = "[THIS.GetTag] - PB_agriculture_demand: [?PB_agriculture_demand]"
+    log = "[THIS.GetTag] - PB_agriculture_fulfillment: [?PB_agriculture_fulfillment]"
+}
