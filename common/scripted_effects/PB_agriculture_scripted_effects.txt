@@ -1,23 +1,26 @@
 PB_calculate_grain_fulfillment = {
     set_variable = { PB_agriculture_per_pop = 0.001 }
-
-    # Modified consumption = base * (1 + consumption factor)
-    set_temp_variable = { pop_modifier_calc = 1 }
-    add_to_temp_variable = { pop_modifier_calc = modifier@food_consumption_factor }
-    multiply_variable = { PB_agriculture_per_pop = pop_modifier_calc }
     
     set_variable = { PB_agriculture_per_pop_military = PB_agriculture_per_pop }
-    multiply_variable = { PB_agriculture_per_pop_military = 1.2 }
+    multiply_variable = { PB_agriculture_per_pop_military = 5 }
 
-    # Modified consumption = base * (1 + consumption factor)
-    # Applies military modifier (civilian modifier included)
+    ## Modifiers calculation
+    # Modified consumption = base * (1 + consumption factor) - Military
     set_temp_variable = { mil_modifier_calc = 1 }
     add_to_temp_variable = { mil_modifier_calc = modifier@food_consumption_factor_military }
     multiply_variable = { PB_agriculture_per_pop_military = mil_modifier_calc }
+    
+    # Modified consumption = base * (1 + consumption factor) - Civilian
+    set_temp_variable = { pop_modifier_calc = 1 }
+    add_to_temp_variable = { pop_modifier_calc = modifier@food_consumption_factor }
+    multiply_variable = { PB_agriculture_per_pop = pop_modifier_calc }
 
+    ## Calculating demand
+    # Civilians
     set_variable = { PB_agriculture_demand_base = max_manpower_k }
     multiply_variable = { PB_agriculture_demand_base = PB_agriculture_per_pop }
 
+    # Military
     set_variable = { PB_agriculture_total_military_pop = deployed_army_manpower_k }
     add_to_variable = { PB_agriculture_total_military_pop = deployed_navy_manpower_k }
     add_to_variable = { PB_agriculture_total_military_pop = deployed_airforce_manpower_k }
@@ -25,9 +28,11 @@ PB_calculate_grain_fulfillment = {
     set_variable = { PB_agriculture_demand_military = PB_agriculture_total_military_pop }
     multiply_variable = { PB_agriculture_demand_military = PB_agriculture_per_pop_military }
 
+    ## Sum both Civilians and Military demand
     set_variable = { PB_agriculture_demand = PB_agriculture_demand_base }
     add_to_variable = { PB_agriculture_demand = PB_agriculture_demand_military }
 
+    # Subtract grain stockpile by amount of demand
     set_variable = { PB_agriculture_demand_rounded = PB_agriculture_demand }
     round_variable = PB_agriculture_demand_rounded
     force_update_dynamic_modifier = yes
