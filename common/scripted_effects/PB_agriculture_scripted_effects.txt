@@ -1,9 +1,21 @@
 PB_calculate_grain_fulfillment = {
     set_variable = { PB_agriculture_per_pop = 0.001 }
+
+    # Modified consumption = base * (1 + consumption factor)
+    set_temp_variable = { pop_modifier_calc = 1 }
+    add_to_temp_variable = { pop_modifier_calc = modifier@food_consumption_factor }
+    multiply_variable = { PB_agriculture_per_pop = pop_modifier_calc }
     
     set_variable = { PB_agriculture_per_pop_military = PB_agriculture_per_pop }
     set_variable = { PB_agriculture_per_pop_military_factor = 1.2 }
     multiply_variable = { PB_agriculture_per_pop_military = PB_agriculture_per_pop_military_factor }
+
+    # Modified consumption = base * (1 + consumption factor)
+    # Applies both civilian and military modifier
+    set_temp_variable = { mil_modifier_calc = 1 }
+    add_to_temp_variable = { mil_modifier_calc = modifier@food_consumption_factor }
+    multiply_variable = { PB_agriculture_per_pop = pop_modifier_calc }
+    multiply_variable = { PB_agriculture_per_pop = mil_modifier_calc }
 
     set_variable = { PB_agriculture_demand_base = max_manpower_k }
     multiply_variable = { PB_agriculture_demand_base = PB_agriculture_per_pop }
@@ -17,6 +29,7 @@ PB_calculate_grain_fulfillment = {
 
     set_variable = { PB_agriculture_demand = PB_agriculture_demand_base }
     add_to_variable = { PB_agriculture_demand = PB_agriculture_demand_military }
+
 
     set_variable = { PB_agriculture_fulfillment_pct = resource@grain }
     divide_variable = { PB_agriculture_fulfillment_pct = PB_agriculture_demand }
