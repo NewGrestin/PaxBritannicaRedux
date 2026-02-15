@@ -58,6 +58,7 @@ PB_calculate_grain_fulfillment = {
 	multiply_variable = { PB_agriculture_fulfillment = 100 }
 	clamp_variable = { var = PB_agriculture_fulfillment min = 0 max = 100 }
 
+	## Dynamic modifier calculation for food shortages
 	if = {
 		limit = {
 			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.5 compare = less_than_or_equals }
@@ -81,15 +82,44 @@ PB_calculate_grain_fulfillment = {
 		remove_dynamic_modifier = { modifier = PB_agriculture_famine }
 	}
 
+	## Intel calculations
+	every_other_country = {
+		limit = { is_ai = no }
+		if = {
+			limit = {
+				# 10% <= civilian_intel@PREV < 50%
+				check_variable = { var = civilian_intel@PREV value = 10 compare = greater_than_or_equals }
+				check_variable = { var = civilian_intel@PREV value = 50 compare = less_than }
+			}
+			# x' = 0.625 - (5/4)x {10 <= x < 50} -> {50 >= x' > 0}
+			set_temp_variable = { epsilon = 62.5 }
+			set_temp_variable = { epsilon_calc = 1.25 }
+			multiply_temp_variable = { epsilon_calc = civilian_intel@PREV }
+			subtract_from_temp_variable = { epsilon = epsilon_calc }
+
+			set_temp_variable_to_random = { var = lower_delta min = 0 max = epsilon }
+			set_temp_variable_to_random = { var = upper_delta min = 0 max = epsilon }
+
+			log = "THIS: [?THIS.GetTag]"
+			log = "PREV: [?PREV.GetTag]"
+			set_variable = { PB_agriculture_intel_var_lower@PREV = PREV.PB_agriculture_fulfillment }
+			subtract_from_variable = { PB_agriculture_intel_var_lower@PREV = lower_delta }
+			clamp_variable = { var = PB_agriculture_intel_var_lower@PREV min = 0 max = 100 }
+
+			set_variable = { PB_agriculture_intel_var_upper@PREV = PREV.PB_agriculture_fulfillment }
+			add_to_variable = { PB_agriculture_intel_var_upper@PREV = upper_delta }
+			clamp_variable = { var = PB_agriculture_intel_var_upper@PREV min = 0 max = 100 }
+
+			PB_evaluate_food_modifiers_intel = yes
+		}
+	}
+
 	log = "[THIS.GetTag] - resource@grain: [?resource@grain]"
 	log = "[THIS.GetTag] - PB_agriculture_demand: [?PB_agriculture_demand]"
 	log = "[THIS.GetTag] - PB_agriculture_fulfillment: [?PB_agriculture_fulfillment]"
 }
 
 PB_clear_food_modifiers = {
-	clear_variable = PB_agriculture_famine_progress_stage_1
-	clear_variable = PB_agriculture_famine_progress_stage_2
-	clear_variable = PB_agriculture_famine_progress_stage_3
 	clear_variable = PB_agriculture_dynmod_10_20_30
 	clear_variable = PB_agriculture_dynmod_10_20_30_neg
 	clear_variable = PB_agriculture_dynmod_5_10_20
@@ -99,85 +129,144 @@ PB_clear_food_modifiers = {
 }
 
 PB_evaluate_food_modifiers = {
+	set_temp_variable = { temp_agriculture_fulfillment_pct = PB_agriculture_fulfillment_pct }
+	PB_calculate_food_variables = yes
+	set_variable = { PB_agriculture_dynmod_10_20_30 = temp_agriculture_dynmod_10_20_30 }
+	set_variable = { PB_agriculture_dynmod_10_20_30_neg = temp_agriculture_dynmod_10_20_30_neg }
+	set_variable = { PB_agriculture_dynmod_5_10_20 = temp_agriculture_dynmod_5_10_20 }
+	set_variable = { PB_agriculture_dynmod_5_10_20_neg = temp_agriculture_dynmod_5_10_20_neg }
+	set_variable = { PB_agriculture_dynmod_0_10_30 = temp_agriculture_dynmod_0_10_30 }
+	set_variable = { PB_agriculture_dynmod_0_10_30_neg = temp_agriculture_dynmod_0_10_30_neg }
+	
+	force_update_dynamic_modifier = yes
+}
 
+# Scoped to the country that has intel on PREV
+PB_evaluate_food_modifiers_intel = {
+	clear_variable = PB_agriculture_dynmod_intel_lower_10_20_30@PREV
+	clear_variable = PB_agriculture_dynmod_intel_lower_10_20_30_neg@PREV
+	clear_variable = PB_agriculture_dynmod_intel_lower_5_10_20@PREV
+	clear_variable = PB_agriculture_dynmod_intel_lower_5_10_20_neg@PREV
+	clear_variable = PB_agriculture_dynmod_intel_lower_0_10_30@PREV
+	clear_variable = PB_agriculture_dynmod_intel_lower_0_10_30_neg@PREV
+
+	clear_variable = PB_agriculture_dynmod_intel_upper_10_20_30@PREV
+	clear_variable = PB_agriculture_dynmod_intel_upper_10_20_30_neg@PREV
+	clear_variable = PB_agriculture_dynmod_intel_upper_5_10_20@PREV
+	clear_variable = PB_agriculture_dynmod_intel_upper_5_10_20_neg@PREV
+	clear_variable = PB_agriculture_dynmod_intel_upper_0_10_30@PREV
+	clear_variable = PB_agriculture_dynmod_intel_upper_0_10_30_neg@PREV
+
+	if = {
+		limit = {
+			check_variable = { var = PB_agriculture_intel_var_lower@PREV value = 50 compare = less_than_or_equals }
+		}
+		# Lower
+		set_temp_variable = { temp_agriculture_fulfillment_pct = PB_agriculture_intel_var_lower@PREV }
+		divide_temp_variable = { temp_agriculture_fulfillment_pct = 100 }
+		PB_calculate_food_variables = yes
+		set_variable = { PB_agriculture_dynmod_intel_lower_10_20_30@PREV = temp_agriculture_dynmod_10_20_30 }
+		set_variable = { PB_agriculture_dynmod_intel_lower_10_20_30_neg@PREV = temp_agriculture_dynmod_10_20_30_neg }
+		set_variable = { PB_agriculture_dynmod_intel_lower_5_10_20@PREV = temp_agriculture_dynmod_5_10_20 }
+		set_variable = { PB_agriculture_dynmod_intel_lower_5_10_20_neg@PREV = temp_agriculture_dynmod_5_10_20_neg }
+		set_variable = { PB_agriculture_dynmod_intel_lower_0_10_30@PREV = temp_agriculture_dynmod_0_10_30 }
+		set_variable = { PB_agriculture_dynmod_intel_lower_0_10_30_neg@PREV = temp_agriculture_dynmod_0_10_30_neg }
+	}
+
+	if = {
+		limit = {
+			check_variable = { var = PB_agriculture_intel_var_upper@PREV value = 50 compare = less_than_or_equals }
+		}
+		# Upper
+		set_temp_variable = { temp_agriculture_fulfillment_pct = PB_agriculture_intel_var_upper@PREV }
+		divide_temp_variable = { temp_agriculture_fulfillment_pct = 100 }
+		PB_calculate_food_variables = yes
+		set_variable = { PB_agriculture_dynmod_intel_upper_10_20_30@PREV = temp_agriculture_dynmod_10_20_30 }
+		set_variable = { PB_agriculture_dynmod_intel_upper_10_20_30_neg@PREV = temp_agriculture_dynmod_10_20_30_neg }
+		set_variable = { PB_agriculture_dynmod_intel_upper_5_10_20@PREV = temp_agriculture_dynmod_5_10_20 }
+		set_variable = { PB_agriculture_dynmod_intel_upper_5_10_20_neg@PREV = temp_agriculture_dynmod_5_10_20_neg }
+		set_variable = { PB_agriculture_dynmod_intel_upper_0_10_30@PREV = temp_agriculture_dynmod_0_10_30 }
+		set_variable = { PB_agriculture_dynmod_intel_upper_0_10_30_neg@PREV = temp_agriculture_dynmod_0_10_30_neg }
+	}
+}
+
+PB_calculate_food_variables = {
 	## I hate my life
 	## - Scars
 
 	if = {
 		limit = {
-			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.5 compare = less_than_or_equals }
-			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.3 compare = greater_than }
+			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.5 compare = less_than_or_equals }
+			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.3 compare = greater_than }
 		}
-		set_variable = { PB_agriculture_famine_progress_stage_1 = 0.5 }
-		subtract_from_variable = { PB_agriculture_famine_progress_stage_1 = PB_agriculture_fulfillment_pct }
-		divide_variable = { PB_agriculture_famine_progress_stage_1 = 0.2 }
+		set_temp_variable = { temp_agriculture_famine_progress_stage_1 = 0.5 }
+		subtract_from_temp_variable = { temp_agriculture_famine_progress_stage_1 = temp_agriculture_fulfillment_pct }
+		divide_temp_variable = { temp_agriculture_famine_progress_stage_1 = 0.2 }
 
-		set_variable = { PB_agriculture_dynmod_10_20_30 = 0.1 }
-		multiply_variable = { PB_agriculture_dynmod_10_20_30 = PB_agriculture_famine_progress_stage_1 }
-		set_variable = { PB_agriculture_dynmod_10_20_30_neg = PB_agriculture_dynmod_10_20_30 }
-		multiply_variable = { PB_agriculture_dynmod_10_20_30_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30 = 0.1 }
+		multiply_temp_variable = { temp_agriculture_dynmod_10_20_30 = temp_agriculture_famine_progress_stage_1 }
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30_neg = temp_agriculture_dynmod_10_20_30 }
+		multiply_temp_variable = { temp_agriculture_dynmod_10_20_30_neg = -1 }
 
-		set_variable = { PB_agriculture_dynmod_5_10_20 = 0.05 }
-		multiply_variable = { PB_agriculture_dynmod_5_10_20 = PB_agriculture_famine_progress_stage_1 }
-		set_variable = { PB_agriculture_dynmod_5_10_20_neg = PB_agriculture_dynmod_5_10_20 }
-		multiply_variable = { PB_agriculture_dynmod_5_10_20_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20 = 0.05 }
+		multiply_temp_variable = { temp_agriculture_dynmod_5_10_20 = temp_agriculture_famine_progress_stage_1 }
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20_neg = temp_agriculture_dynmod_5_10_20 }
+		multiply_temp_variable = { temp_agriculture_dynmod_5_10_20_neg = -1 }
 
-		set_variable = { PB_agriculture_dynmod_0_10_30 = 0 }
-		set_variable = { PB_agriculture_dynmod_0_10_30_neg = 0 }
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30 = 0 }
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30_neg = 0 }
 
 	}
 	else_if = {
 		limit = {
-			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.3 compare = less_than_or_equals }
-			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.1 compare = greater_than }
+			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.3 compare = less_than_or_equals }
+			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.1 compare = greater_than }
 		}
-		set_variable = { PB_agriculture_famine_progress_stage_2 = 0.3 }
-		subtract_from_variable = { PB_agriculture_famine_progress_stage_2 = PB_agriculture_fulfillment_pct }
-		divide_variable = { PB_agriculture_famine_progress_stage_2 = 0.2 }
+		set_temp_variable = { temp_agriculture_famine_progress_stage_2 = 0.3 }
+		subtract_from_temp_variable = { temp_agriculture_famine_progress_stage_2 = temp_agriculture_fulfillment_pct }
+		divide_temp_variable = { temp_agriculture_famine_progress_stage_2 = 0.2 }
 
-		set_variable = { PB_agriculture_dynmod_10_20_30 = 0.1 }
-		multiply_variable = { PB_agriculture_dynmod_10_20_30 = PB_agriculture_famine_progress_stage_2 }
-		add_to_variable = { PB_agriculture_dynmod_10_20_30 = 0.1 }
-		set_variable = { PB_agriculture_dynmod_10_20_30_neg = PB_agriculture_dynmod_10_20_30 }
-		multiply_variable = { PB_agriculture_dynmod_10_20_30_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30 = 0.1 }
+		multiply_temp_variable = { temp_agriculture_dynmod_10_20_30 = temp_agriculture_famine_progress_stage_2 }
+		add_to_temp_variable = { temp_agriculture_dynmod_10_20_30 = 0.1 }
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30_neg = temp_agriculture_dynmod_10_20_30 }
+		multiply_temp_variable = { temp_agriculture_dynmod_10_20_30_neg = -1 }
 
-		set_variable = { PB_agriculture_dynmod_5_10_20 = 0.05 }
-		multiply_variable = { PB_agriculture_dynmod_5_10_20 = PB_agriculture_famine_progress_stage_2 }
-		add_to_variable = { PB_agriculture_dynmod_5_10_20 = 0.05 }
-		set_variable = { PB_agriculture_dynmod_5_10_20_neg = PB_agriculture_dynmod_5_10_20 }
-		multiply_variable = { PB_agriculture_dynmod_5_10_20_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20 = 0.05 }
+		multiply_temp_variable = { temp_agriculture_dynmod_5_10_20 = temp_agriculture_famine_progress_stage_2 }
+		add_to_temp_variable = { temp_agriculture_dynmod_5_10_20 = 0.05 }
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20_neg = temp_agriculture_dynmod_5_10_20 }
+		multiply_temp_variable = { temp_agriculture_dynmod_5_10_20_neg = -1 }
 
-		set_variable = { PB_agriculture_dynmod_0_10_30 = 0.1 }
-		multiply_variable = { PB_agriculture_dynmod_0_10_30 = PB_agriculture_famine_progress_stage_2 }
-		set_variable = { PB_agriculture_dynmod_0_10_30_neg = PB_agriculture_dynmod_0_10_30 }
-		multiply_variable = { PB_agriculture_dynmod_0_10_30_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30 = 0.1 }
+		multiply_temp_variable = { temp_agriculture_dynmod_0_10_30 = temp_agriculture_famine_progress_stage_2 }
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30_neg = temp_agriculture_dynmod_0_10_30 }
+		multiply_temp_variable = { temp_agriculture_dynmod_0_10_30_neg = -1 }
 	}
 	else_if = {
 		limit = {
-			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.1 compare = less_than_or_equals }
+			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.1 compare = less_than_or_equals }
 		}
-		set_variable = { PB_agriculture_famine_progress_stage_3 = 0.1 }
-		subtract_from_variable = { PB_agriculture_famine_progress_stage_3 = PB_agriculture_fulfillment_pct }
-		divide_variable = { PB_agriculture_famine_progress_stage_3 = 0.1 }
+		set_temp_variable = { temp_agriculture_famine_progress_stage_3 = 0.1 }
+		subtract_from_temp_variable = { temp_agriculture_famine_progress_stage_3 = temp_agriculture_fulfillment_pct }
+		divide_temp_variable = { temp_agriculture_famine_progress_stage_3 = 0.1 }
 
-		set_variable = { PB_agriculture_dynmod_10_20_30 = 0.1 }
-		multiply_variable = { PB_agriculture_dynmod_10_20_30 = PB_agriculture_famine_progress_stage_3 }
-		add_to_variable = { PB_agriculture_dynmod_10_20_30 = 0.2 }
-		set_variable = { PB_agriculture_dynmod_10_20_30_neg = PB_agriculture_dynmod_10_20_30 }
-		multiply_variable = { PB_agriculture_dynmod_10_20_30_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30 = 0.1 }
+		multiply_temp_variable = { temp_agriculture_dynmod_10_20_30 = temp_agriculture_famine_progress_stage_3 }
+		add_to_temp_variable = { temp_agriculture_dynmod_10_20_30 = 0.2 }
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30_neg = temp_agriculture_dynmod_10_20_30 }
+		multiply_temp_variable = { temp_agriculture_dynmod_10_20_30_neg = -1 }
 
-		set_variable = { PB_agriculture_dynmod_5_10_20 = 0.1 }
-		multiply_variable = { PB_agriculture_dynmod_5_10_20 = PB_agriculture_famine_progress_stage_3 }
-		add_to_variable = { PB_agriculture_dynmod_5_10_20 = 0.1 }
-		set_variable = { PB_agriculture_dynmod_5_10_20_neg = PB_agriculture_dynmod_5_10_20 }
-		multiply_variable = { PB_agriculture_dynmod_5_10_20_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20 = 0.1 }
+		multiply_temp_variable = { temp_agriculture_dynmod_5_10_20 = temp_agriculture_famine_progress_stage_3 }
+		add_to_temp_variable = { temp_agriculture_dynmod_5_10_20 = 0.1 }
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20_neg = temp_agriculture_dynmod_5_10_20 }
+		multiply_temp_variable = { temp_agriculture_dynmod_5_10_20_neg = -1 }
 
-		set_variable = { PB_agriculture_dynmod_0_10_30 = 0.2 }
-		multiply_variable = { PB_agriculture_dynmod_0_10_30 = PB_agriculture_famine_progress_stage_3 }
-		add_to_variable = { PB_agriculture_dynmod_0_10_30 = 0.1 }
-		set_variable = { PB_agriculture_dynmod_0_10_30_neg = PB_agriculture_dynmod_0_10_30 }
-		multiply_variable = { PB_agriculture_dynmod_0_10_30_neg = -1 }
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30 = 0.2 }
+		multiply_temp_variable = { temp_agriculture_dynmod_0_10_30 = temp_agriculture_famine_progress_stage_3 }
+		add_to_temp_variable = { temp_agriculture_dynmod_0_10_30 = 0.1 }
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30_neg = temp_agriculture_dynmod_0_10_30 }
+		multiply_temp_variable = { temp_agriculture_dynmod_0_10_30_neg = -1 }
 	}
-
-	force_update_dynamic_modifier = yes
 }
