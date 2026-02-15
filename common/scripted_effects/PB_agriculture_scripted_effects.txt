@@ -58,17 +58,47 @@ PB_calculate_grain_fulfillment = {
 	multiply_variable = { PB_agriculture_fulfillment = 100 }
 	clamp_variable = { var = PB_agriculture_fulfillment min = 0 max = 100 }
 
-	PB_evaluate_food_modifiers = yes
+	PB_clear_food_modifiers = yes
+	if = {
+		limit = {
+			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.5 compare = less_than_or_equals }
+		}
+		PB_evaluate_food_modifiers = yes
+
+		if = {
+			limit = {
+				NOT = {
+					has_dynamic_modifier = { modifier = PB_agriculture_famine }
+				}
+			}
+			add_dynamic_modifier = { modifier = PB_agriculture_famine }
+		}
+	}
+	else_if = {
+		limit = {
+			has_dynamic_modifier = { modifier = PB_agriculture_famine }
+		}
+		remove_dynamic_modifier = { modifier = PB_agriculture_famine }
+	}
 
 	log = "[THIS.GetTag] - resource@grain: [?resource@grain]"
 	log = "[THIS.GetTag] - PB_agriculture_demand: [?PB_agriculture_demand]"
 	log = "[THIS.GetTag] - PB_agriculture_fulfillment: [?PB_agriculture_fulfillment]"
 }
 
-PB_evaluate_food_modifiers = {
+PB_clear_food_modifiers = {
 	clear_variable = PB_agriculture_famine_progress_stage_1
 	clear_variable = PB_agriculture_famine_progress_stage_2
 	clear_variable = PB_agriculture_famine_progress_stage_3
+	clear_variable = PB_agriculture_dynmod_10_20_30
+	clear_variable = PB_agriculture_dynmod_10_20_30_neg
+	clear_variable = PB_agriculture_dynmod_5_10_20
+	clear_variable = PB_agriculture_dynmod_5_10_20_neg
+	clear_variable = PB_agriculture_dynmod_0_10_20
+	clear_variable = PB_agriculture_dynmod_0_10_20_neg
+}
+
+PB_evaluate_food_modifiers = {
 
 	## I hate my life
 	## - Scars
