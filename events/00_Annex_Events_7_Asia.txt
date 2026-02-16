@@ -3534,7 +3534,10 @@ country_event = { #Fate of Vietnam
 			is_subject = no
 			ROOT = {
 				NOT = {
-					tag = BFE
+					OR = {
+						tag = BFE
+						has_subject = BFE
+					}
 				}
 			}
 		}
@@ -3813,6 +3816,10 @@ country_event = { #Fate of Laos
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate = {
+		1122 = { retain_state = yes }
+	}
 
 	option = { #Release Laos
 		log = "[GetLogInfo]: event annex.7016 option annex.7016.a"
@@ -4075,6 +4082,20 @@ country_event = { #Fate of Laos
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
+			tag = SIA
+			tag = BFE
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				ROOT = {
+					OR = {
+						tag = SIA
+						tag = BFE
+					}
+				}
+				factor = 100
+			}
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -4097,8 +4118,12 @@ country_event = { #Fate of Cambodia
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate = {
+		1417 = { retain_state = yes }
+	}
 
-	option = { #Release Laos
+	option = { #Release Cambodia
 		log = "[GetLogInfo]: event annex.7017 option annex.7017.a"
 		name = annex.7017.a
 		trigger = {
@@ -4150,7 +4175,47 @@ country_event = { #Fate of Cambodia
 				set_cosmetic_tag = CAM_Occupied_Republic
 			}
 		}
-		recheck_annexations = yes
+	}
+	
+	option = { #Leave it to Siam
+		log = "[GetLogInfo]: event annex.7017 option annex.7017.b"
+		name = annex.7017.b
+		trigger = {
+			is_subject = no
+			SIA = {
+				exists = yes
+			}
+			NOT = {
+				ROOT = {
+					tag = VIN
+					tag = BFE
+					tag = SIA
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				ROOT = {
+					has_subject = BFE
+				}
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = CAM }
+		release_targeted_tag = yes
+		
+		SIA = {
+			transfer_state = 741
+			transfer_state = 1118
+		}
+		741 = { add_claim_by = SIA }
+		1118 = { add_claim_by = SIA }
 	}
 	
 	option = { #reform a colonial federation
@@ -4252,7 +4317,6 @@ country_event = { #Fate of Cambodia
 				}
 			}
 		}
-		recheck_annexations = yes
 	}
 	
 	option = { #integrate it to the Indochinese holdings
@@ -4338,7 +4402,6 @@ country_event = { #Fate of Cambodia
 			transfer_state = 1118
 			transfer_state = 1417
 		}
-		recheck_annexations = yes
 	}
 	
 	option = { #Give to overlord
@@ -4357,17 +4420,33 @@ country_event = { #Fate of Cambodia
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
+			tag = SIA
+			tag = BFE
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				ROOT = {
+					OR = {
+						tag = SIA
+						tag = BFE
+					}
+				}
+				factor = 100
+			}
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7017 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -4475,6 +4554,11 @@ country_event = { #Fate of Malaysia
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate = {
+		1125 = { retain_state = yes }
+		1140 = { retain_state = yes }
+	}
 
 	option = { #Release Malaysia
 		log = "[GetLogInfo]: event annex.7019 option annex.7019.a"
@@ -15307,44 +15391,9 @@ country_event = { # Fate of South Shan
 		1115 = { add_claim_by = BUR }
 	}
 	
-	option = { #Expand our colonial asset
+	option = { #Give it to the Thai State
 		log = "[GetLogInfo]: event annex.7091 option annex.7091.b"
 		name = annex.7091.b
-		trigger = {
-			is_subject = no
-			BUR = {
-				exists = no
-			}
-			BEN = {
-				exists = yes
-			}
-			ROOT = {
-				has_subject = BEN
-			}
-			ROOT = {
-				NOT = {
-					tag = BEN
-					tag = SIA
-				}
-			}
-		}
-		ai_chance = {
-			base = 80
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		
-		BEN = {
-			transfer_state = 1115
-		}
-		1115 = { add_claim_by = BEN }
-	}
-	
-	option = { #Give it to the Thai State
-		log = "[GetLogInfo]: event annex.7091 option annex.7091.c"
-		name = annex.7091.c
 		trigger = {
 			is_subject = no
 			OR = {
@@ -15474,44 +15523,9 @@ country_event = { # Fate of North Shan
 		1116 = { add_claim_by = BUR }
 	}
 	
-	option = { #Expand our colonial asset
+	option = { #Give it to the Thai State
 		log = "[GetLogInfo]: event annex.7092 option annex.7092.b"
 		name = annex.7092.b
-		trigger = {
-			is_subject = no
-			BUR = {
-				exists = no
-			}
-			BEN = {
-				exists = yes
-			}
-			ROOT = {
-				has_subject = BEN
-			}
-			ROOT = {
-				NOT = {
-					tag = BEN
-					tag = SIA
-				}
-			}
-		}
-		ai_chance = {
-			base = 80
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		
-		BEN = {
-			transfer_state = 1116
-		}
-		1116 = { add_claim_by = BEN }
-	}
-	
-	option = { #Give it to the Thai State
-		log = "[GetLogInfo]: event annex.7092 option annex.7092.c"
-		name = annex.7092.c
 		trigger = {
 			is_subject = no
 			OR = {
@@ -16537,6 +16551,587 @@ country_event = { # Fate of Manipur
 
 	option = { # Cancel
 		log = "[GetLogInfo]: event annex.7099 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Manipur
+	id = annex.7100
+	title = annexation_decision_1114
+	desc = annexation_decision_1114_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Bengalese administration
+		log = "[GetLogInfo]: event annex.7100 option annex.7100.a"
+		name = annex.7100.a
+		trigger = {
+			is_subject = no
+			BEN = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = BEN
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		BEN = {
+			transfer_state = 1114
+		}
+		1114 = { add_claim_by = BEN }
+	}
+	
+	option = { #Give it to Burma
+		log = "[GetLogInfo]: event annex.7100 option annex.7100.b"
+		name = annex.7100.b
+		trigger = {
+			is_subject = no
+			BUR = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = BUR
+				}
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		BUR = {
+			transfer_state = 1114
+		}
+		1114 = { add_claim_by = BUR }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7100 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1114 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7100 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				tag = BEN
+				tag = RAJ
+				tag = BUR
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					tag = BEN
+					tag = BUR
+					tag = RAJ
+					tag = BAN
+				}
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7100 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Isan
+	id = annex.7101
+	title = annexation_decision_1122
+	desc = annexation_decision_1122_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Laos
+		log = "[GetLogInfo]: event annex.7101 option annex.7101.a"
+		name = annex.7101.a
+		trigger = {
+			is_subject = no
+			LAO = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = LAO
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		LAO = {
+			transfer_state = 1122
+		}
+		1122 = { add_claim_by = LAO }
+	}
+	
+	option = { #Give it to Siam
+		log = "[GetLogInfo]: event annex.7101 option annex.7101.b"
+		name = annex.7101.b
+		trigger = {
+			is_subject = no
+			SIA = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = SIA
+				}
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		SIA = {
+			transfer_state = 1122
+		}
+		1122 = { add_claim_by = SIA }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7101 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1122 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7101 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				tag = SIA
+				tag = LAO
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					tag = SIA
+					tag = LAO
+				}
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7101 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Siem Reap
+	id = annex.7102
+	title = annexation_decision_1417
+	desc = annexation_decision_1417_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Laos
+		log = "[GetLogInfo]: event annex.7102 option annex.7102.a"
+		name = annex.7102.a
+		trigger = {
+			is_subject = no
+			CAM = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = CAM
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CAM = {
+			transfer_state = 1417
+		}
+		1417 = { add_claim_by = CAM }
+	}
+	
+	option = { #Give it to Siam
+		log = "[GetLogInfo]: event annex.7102 option annex.7102.b"
+		name = annex.7102.b
+		trigger = {
+			is_subject = no
+			SIA = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = SIA
+				}
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		SIA = {
+			transfer_state = 1417
+		}
+		1417 = { add_claim_by = SIA }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7102 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1417 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7102 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				tag = SIA
+				tag = BFE
+				tag = CAM
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					tag = SIA
+					tag = BFE
+					tag = CAM
+				}
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7102 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Pattani
+	id = annex.7103
+	title = annexation_decision_1125
+	desc = annexation_decision_1125_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to Siam
+		log = "[GetLogInfo]: event annex.7103 option annex.7103.a"
+		name = annex.7103.a
+		trigger = {
+			is_subject = no
+			SIA = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = SIA
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		SIA = {
+			transfer_state = 1125
+			transfer_state = 1140
+		}
+		1125 = { add_claim_by = SIA }
+		1140 = { add_claim_by = SIA }
+	}
+	
+	option = { #Give it to Malaya
+		log = "[GetLogInfo]: event annex.7103 option annex.7103.b"
+		name = annex.7103.b
+		trigger = {
+			is_subject = no
+			MAL = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = MAL
+				}
+			}
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		MAL = {
+			transfer_state = 1125
+			transfer_state = 1140
+		}
+		1125 = { add_claim_by = MAL }
+		1140 = { add_claim_by = MAL }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7103 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1125 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7103 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				tag = SIA
+				tag = BFE
+				tag = MAL
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					tag = SIA
+					tag = BFE
+					tag = MAL
+				}
+			}
+		}
+		every_owned_state = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7103 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Singapore
+	id = annex.7104
+	title = annexation_decision_916
+	desc = annexation_decision_916_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Release Singapore
+		log = "[GetLogInfo]: event annex.7104 option annex.7104.a"
+		name = annex.7104.a
+		trigger = {
+			is_subject = no
+			SIA = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = SIA
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		SIA = {
+			transfer_state = 916
+		}
+		916 = { add_claim_by = SIA }
+	}
+	
+	option = { #Give it to Malaya
+		log = "[GetLogInfo]: event annex.7104 option annex.7104.b"
+		name = annex.7104.b
+		trigger = {
+			is_subject = no
+			MAL = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					tag = MAL
+				}
+			}
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		MAL = {
+			transfer_state = 916
+		}
+		916 = { add_claim_by = MAL }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7104 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		916 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7104 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				tag = BFE
+				tag = MAL
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					tag = BFE
+					tag = MAL
+				}
+			}
+		}
+		916 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7104 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
