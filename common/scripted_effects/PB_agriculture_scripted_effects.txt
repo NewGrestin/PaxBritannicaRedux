@@ -54,14 +54,17 @@ PB_calculate_grain_fulfillment = {
 
 	set_variable = { PB_agriculture_fulfillment_pct = resource@grain }
 	divide_variable = { PB_agriculture_fulfillment_pct = PB_agriculture_demand }
+	clamp_variable = { var = PB_agriculture_fulfillment_pct min = 0 max = 1 }
 	set_variable = { PB_agriculture_fulfillment = PB_agriculture_fulfillment_pct }
 	multiply_variable = { PB_agriculture_fulfillment = 100 }
-	clamp_variable = { var = PB_agriculture_fulfillment min = 0 max = 100 }
 
 	## Dynamic modifier calculation for food shortages
 	if = {
 		limit = {
-			check_variable = { var = PB_agriculture_fulfillment_pct value = 0.5 compare = less_than_or_equals }
+			OR = {
+				check_variable = { var = PB_agriculture_fulfillment_pct value = 0.5 compare = less_than_or_equals }
+				check_variable = { var = PB_agriculture_fulfillment_pct value = 0.8 compare = greater_than_or_equals }
+			}
 		}
 		PB_evaluate_food_modifiers = yes
 
@@ -159,7 +162,10 @@ PB_evaluate_food_modifiers_intel = {
 
 	if = {
 		limit = {
-			check_variable = { var = PB_agriculture_intel_var_lower@PREV value = 50 compare = less_than_or_equals }
+			OR = {
+				check_variable = { var = PB_agriculture_intel_var_lower@PREV value = 50 compare = less_than_or_equals }
+				check_variable = { var = PB_agriculture_intel_var_lower@PREV value = 80 compare = greater_than_or_equals }
+			}
 		}
 		# Lower
 		set_temp_variable = { temp_agriculture_fulfillment_pct = PB_agriculture_intel_var_lower@PREV }
@@ -175,7 +181,10 @@ PB_evaluate_food_modifiers_intel = {
 
 	if = {
 		limit = {
-			check_variable = { var = PB_agriculture_intel_var_upper@PREV value = 50 compare = less_than_or_equals }
+			OR = {
+				check_variable = { var = PB_agriculture_intel_var_upper@PREV value = 50 compare = less_than_or_equals }
+				check_variable = { var = PB_agriculture_intel_var_upper@PREV value = 80 compare = greater_than_or_equals }
+			}
 		}
 		# Upper
 		set_temp_variable = { temp_agriculture_fulfillment_pct = PB_agriculture_intel_var_upper@PREV }
@@ -195,6 +204,30 @@ PB_calculate_food_variables = {
 	## - Scars
 
 	if = {
+		limit = {
+			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.8 compare = greater_than_or_equals }
+		}
+		set_temp_variable = { temp_agriculture_bonus_progress = temp_agriculture_fulfillment_pct }
+		subtract_from_temp_variable = { temp_agriculture_bonus_progress = 0.8 }
+		divide_temp_variable = { temp_agriculture_bonus_progress = 0.2 }
+
+		set_temp_variable = { temp_modifier_value = 0.05 }
+		multiply_temp_variable = { temp_modifier_value = temp_agriculture_bonus_progress }
+
+		# negative and positive are switched
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30 = temp_modifier_value }
+		set_temp_variable = { temp_agriculture_dynmod_10_20_30_neg = temp_modifier_value }
+		multiply_temp_variable = { temp_agriculture_dynmod_10_20_30 = -1 }
+
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20 = temp_modifier_value }
+		set_temp_variable = { temp_agriculture_dynmod_5_10_20_neg = temp_modifier_value }
+		multiply_temp_variable = { temp_agriculture_dynmod_5_10_20 = -1 }
+
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30 = temp_modifier_value }
+		set_temp_variable = { temp_agriculture_dynmod_0_10_30_neg = temp_modifier_value }
+		multiply_temp_variable = { temp_agriculture_dynmod_0_10_30 = -1 }
+	}
+	else_if = {
 		limit = {
 			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.5 compare = less_than_or_equals }
 			check_variable = { var = temp_agriculture_fulfillment_pct value = 0.3 compare = greater_than }
