@@ -1293,6 +1293,11 @@ country_event = { #Fate of Xibei San Man
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate = {
+		604 = { retain_state = yes }
+		755 = { retain_state = yes }
+	}
 
 	option = { #Release Xibei San Man
 		log = "[GetLogInfo]: event annex.7005 option annex.7005.a"
@@ -2934,6 +2939,11 @@ country_event = { #Fate of Heibei/Republic of China
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate = {
+		622 = { retain_state = yes }
+		615 = { retain_state = yes }
+	}
 
 	option = { #Release Republic of China
 		log = "[GetLogInfo]: event annex.7013 option annex.7013.a"
@@ -3213,6 +3223,15 @@ country_event = { #Fate of Southern China/Taiping
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate = {
+		594 = { retain_state = yes }
+		591 = { retain_state = yes }
+		604 = { retain_state = yes }
+		755 = { retain_state = yes }
+		622 = { retain_state = yes }
+		615 = { retain_state = yes }
+	}
 
 	option = { #Release Taiping
 		log = "[GetLogInfo]: event annex.7014 option annex.7014.a"
@@ -3332,7 +3351,6 @@ country_event = { #Fate of Southern China/Taiping
 			transfer_state = 598
 			transfer_state = 599
 			transfer_state = 600
-			transfer_state = 601
 			transfer_state = 602
 			transfer_state = 603
 			transfer_state = 605
@@ -3408,7 +3426,6 @@ country_event = { #Fate of Southern China/Taiping
 			transfer_state = 598
 			transfer_state = 599
 			transfer_state = 600
-			transfer_state = 601
 			transfer_state = 602
 			transfer_state = 603
 			transfer_state = 605
@@ -3476,7 +3493,6 @@ country_event = { #Fate of Southern China/Taiping
 			transfer_state = 598
 			transfer_state = 599
 			transfer_state = 600
-			transfer_state = 601
 			transfer_state = 602
 			transfer_state = 603
 			transfer_state = 605
@@ -17580,6 +17596,894 @@ country_event = { # Fate of Battambang
 
 	option = { # Cancel
 		log = "[GetLogInfo]: event annex.7106 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Nanning
+	id = annex.7107
+	title = annexation_decision_594
+	desc = annexation_decision_594_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Taiping
+		log = "[GetLogInfo]: event annex.7107 option annex.7107.a"
+		name = annex.7107.a
+		trigger = {
+			is_subject = no
+			CHI = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_republican_government = yes
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = HNK
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CHI = {
+			transfer_state = 594
+			transfer_state = 591
+		}
+		594 = { add_claim_by = CHI }
+		591 = { add_claim_by = CHI }
+	}
+	
+	option = { #Leave it to the Republic of China
+		log = "[GetLogInfo]: event annex.7107 option annex.7107.b"
+		name = annex.7107.b
+		trigger = {
+			is_subject = no
+			ROC = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_monarchist_government = yes
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = HNK
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		ROC = {
+			transfer_state = 594
+			transfer_state = 591
+		}
+		594 = { add_claim_by = ROC }
+		591 = { add_claim_by = ROC }
+	}
+	
+	option = { #Give it to Guangdong
+		log = "[GetLogInfo]: event annex.7107 option annex.7107.c"
+		name = annex.7107.c
+		trigger = {
+			is_subject = no
+			HNK = {
+				exists = yes
+				owns_state = 592
+			}
+			ROOT = {
+				NOT = {
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = HNK
+				}
+			}
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		HNK = {
+			transfer_state = 594
+			transfer_state = 591
+		}
+		594 = { add_claim_by = HNK }
+		591 = { add_claim_by = HNK }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7107 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		594 = { transfer_if_owned = yes }
+		591 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7107 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				original_tag = CHI
+				original_tag = ROC
+				original_tag = HNK
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = HNK
+				}
+			}
+		}
+		594 = {
+			add_claim_of_ROOT = yes
+		}
+		591 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7107 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Qinghai
+	id = annex.7108
+	title = annexation_decision_604
+	desc = annexation_decision_604_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Taiping
+		log = "[GetLogInfo]: event annex.7108 option annex.7108.a"
+		name = annex.7108.a
+		trigger = {
+			is_subject = no
+			CHI = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_republican_government = yes
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CHI = {
+			transfer_state = 604
+		}
+		604 = { add_claim_by = CHI }
+	}
+	
+	option = { #Leave it to the Republic of China
+		log = "[GetLogInfo]: event annex.7108 option annex.7108.b"
+		name = annex.7108.b
+		trigger = {
+			is_subject = no
+			ROC = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_monarchist_government = yes
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		ROC = {
+			transfer_state = 604
+		}
+		604 = { add_claim_by = ROC }
+	}
+	
+	option = { #Give it to Xibei
+		log = "[GetLogInfo]: event annex.7108 option annex.7108.c"
+		name = annex.7108.c
+		trigger = {
+			is_subject = no
+			XSM = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+				OR = {
+					is_ally_with = XSM
+					is_subject_of = XSM
+					original_tag = TUR
+					original_tag = ETR
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		XSM = {
+			transfer_state = 604
+		}
+		604 = { add_claim_by = XSM }
+	}
+	
+	option = { #Give it to Tibet
+		log = "[GetLogInfo]: event annex.7108 option annex.7108.c"
+		name = annex.7108.c
+		trigger = {
+			is_subject = no
+			TIB = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		TIB = {
+			transfer_state = 604
+		}
+		604 = { add_claim_by = TIB }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7108 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		604 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7108 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				original_tag = CHI
+				original_tag = ROC
+				original_tag = XSM
+				original_tag = TIB
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+			}
+		}
+		604 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7108 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Qinghai
+	id = annex.7109
+	title = annexation_decision_754
+	desc = annexation_decision_754_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Taiping
+		log = "[GetLogInfo]: event annex.7109 option annex.7109.a"
+		name = annex.7109.a
+		trigger = {
+			is_subject = no
+			CHI = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_republican_government = yes
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CHI = {
+			transfer_state = 754
+		}
+		754 = { add_claim_by = CHI }
+	}
+	
+	option = { #Leave it to the Republic of China
+		log = "[GetLogInfo]: event annex.7109 option annex.7109.b"
+		name = annex.7109.b
+		trigger = {
+			is_subject = no
+			ROC = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_monarchist_government = yes
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		ROC = {
+			transfer_state = 754
+		}
+		754 = { add_claim_by = ROC }
+	}
+	
+	option = { #Give it to Xibei
+		log = "[GetLogInfo]: event annex.7109 option annex.7109.c"
+		name = annex.7109.c
+		trigger = {
+			is_subject = no
+			XSM = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+				OR = {
+					is_ally_with = XSM
+					is_subject_of = XSM
+					original_tag = TUR
+					original_tag = ETR
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		XSM = {
+			transfer_state = 754
+		}
+		754 = { add_claim_by = XSM }
+	}
+	
+	option = { #Give it to Tibet
+		log = "[GetLogInfo]: event annex.7109 option annex.7109.c"
+		name = annex.7109.c
+		trigger = {
+			is_subject = no
+			TIB = {
+				exists = yes
+				owns_state = 604
+			}
+			ROOT = {
+				NOT = {
+					original_tag = CHI
+					original_tag = ROC
+					original_tag = XSM
+					original_tag = TIB
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		
+		TIB = {
+			transfer_state = 754
+		}
+		754 = { add_claim_by = TIB }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7109 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		754 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7109 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				original_tag = CHI
+				original_tag = ROC
+				original_tag = XSM
+				AND = {
+					original_tag = TIB
+					owns_state = 604
+				}
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					OR = {
+						original_tag = CHI
+						original_tag = ROC
+						original_tag = XSM
+						original_tag = TIB
+					}
+				}
+			}
+		}
+		754 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7109 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Shaanxi
+	id = annex.7110
+	title = annexation_decision_622
+	desc = annexation_decision_622_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Taiping
+		log = "[GetLogInfo]: event annex.7110 option annex.7110.a"
+		name = annex.7110.a
+		trigger = {
+			is_subject = no
+			CHI = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_republican_government = yes
+					original_tag = CHI
+					original_tag = ROC
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CHI = {
+			transfer_state = 622
+		}
+		622 = { add_claim_by = CHI }
+	}
+	
+	option = { #Leave it to the Republic of China
+		log = "[GetLogInfo]: event annex.7110 option annex.7110.b"
+		name = annex.7110.b
+		trigger = {
+			is_subject = no
+			ROC = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_monarchist_government = yes
+					original_tag = CHI
+					original_tag = ROC
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		ROC = {
+			transfer_state = 622
+		}
+		622 = { add_claim_by = ROC }
+	}
+	
+	option = { #Release Shanxi
+		log = "[GetLogInfo]: event annex.7110 option annex.7110.c"
+		name = annex.7110.c
+		trigger = {
+			is_subject = no
+			ROOT = {
+				original_tag = CHI
+				original_tag = ROC
+			}
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				ROOT = {
+					original_tag = RUS
+					original_tag = ENG
+				}
+				factor = 60
+			}
+		}
+		
+		622 = { add_core_of = SHX }
+
+		set_temp_variable = { tag_to_release = SHX }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			SHX = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SHX_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			SHX = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SHX_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7110 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		SHX = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7110 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				original_tag = CHI
+				original_tag = ROC
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					OR = {
+						original_tag = CHI
+						original_tag = ROC
+					}
+				}
+			}
+		}
+		every_owned_state = {
+			limit = { is_core_of = SHX }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7110 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+        recheck_annexations = yes
+    }
+}
+
+country_event = { # Fate of Shanxi
+	id = annex.7111
+	title = annexation_decision_615
+	desc = annexation_decision_615_desc
+	picture = GFX_report_PB_Peace_Deals_Asia
+
+	is_triggered_only = yes
+	
+	option = { #Leave it to the Taiping
+		log = "[GetLogInfo]: event annex.7111 option annex.7111.a"
+		name = annex.7111.a
+		trigger = {
+			is_subject = no
+			CHI = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_republican_government = yes
+					original_tag = CHI
+					original_tag = ROC
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		CHI = {
+			transfer_state = 615
+		}
+		615 = { add_claim_by = CHI }
+	}
+	
+	option = { #Leave it to the Republic of China
+		log = "[GetLogInfo]: event annex.7111 option annex.7111.b"
+		name = annex.7111.b
+		trigger = {
+			is_subject = no
+			ROC = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					has_monarchist_government = yes
+					original_tag = CHI
+					original_tag = ROC
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		ROC = {
+			transfer_state = 615
+		}
+		615 = { add_claim_by = ROC }
+	}
+	
+	option = { #Leave it to Shanxi
+		log = "[GetLogInfo]: event annex.7111 option annex.7111.c"
+		name = annex.7111.c
+		trigger = {
+			is_subject = no
+			SHX = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					original_tag = CHI
+					original_tag = ROC
+				}
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 60
+				ROOT = {
+					original_tag = RUS
+					original_tag = ENG
+				}
+			}
+		}
+
+		SHX = {
+			transfer_state = 615
+		}
+		615 = { add_claim_by = SHX }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7111 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		615 = { transfer_if_owned = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7111 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				original_tag = CHI
+				original_tag = ROC
+				original_tag = SHX
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = {
+					OR = {
+						original_tag = CHI
+						original_tag = ROC
+						original_tag = SHX
+					}
+				}
+			}
+		}
+		615 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.7111 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
