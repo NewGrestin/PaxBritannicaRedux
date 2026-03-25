@@ -14,6 +14,7 @@ NDefines.NDiplomacy.BASE_TRUCE_PERIOD = 400									-- Vanilla is 180
 NDefines.NDiplomacy.VERY_GOOD_OPINION = 100									-- Vanilla is 50
 NDefines.NDiplomacy.VERY_BAD_OPINION = -100									-- Vanilla is -50
 NDefines.NDiplomacy.FRONT_IS_DANGEROUS = 0									-- Vanilla is -100
+NDefines.NDiplomacy.TENSION_TIME_SCALE_START_DATE = "1933.1.1.12"
 NDefines.NAI.DIPLOMACY_ACCEPT_CONDITIONAL_SURRENDER_GLOBAL_TENSION = -1000	-- Vanilla is -10. Adds -10 to conditional surrender acceptance per 1 WT point - disables conditional surrender for AI
 -- Country
 NDefines.NCountry.MIN_STABILITY = -1.0

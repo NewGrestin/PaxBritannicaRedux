@@ -41,39 +41,23 @@ country_event = { # Release Overbeck
 	option = {
 		name = DAS.2.a
 		custom_effect_tooltip = GEA_Bund_Lower_tt
-		SSL = {
-			set_cosmetic_tag = SSL_Overbeck_German
-			set_state_owner = 1414
-			set_state_owner = 1148
-			set_state_owner = 1352
-			set_state_owner = 1579
-		}
-		puppet = {
-			target = SSL
-			end_wars = no
-		}
-	}
-
-	option = {
-		name = DAS.2.b
-		custom_effect_tooltip = GEA_Bund_Lower_tt
-		SSL = {
-			set_cosmetic_tag = SSL_Overbeck_German
-			set_state_owner = 1414
-			set_state_owner = 1148
-			set_state_owner = 1352
-			set_state_owner = 1579
-		}
-		DAS = {
-			change_tag_from = SSL
+		DAS = { 
+			every_owned_state = { 
+				limit = { 
+					state = 1414
+					state = 1148
+					state = 1352
+					state = 1579
+				}
+				transfer_state_to = SSL
+			}
 			puppet = {
 				target = SSL
 				end_wars = no
 			}
-			SSL = {
-				change_tag_from = DAS
-				add_ideas = SSL_Moro_War
-			}
+		}
+		SSL = {
+			set_cosmetic_tag = SSL_Overbeck_German
 		}
 	}
 }
@@ -88,18 +72,41 @@ country_event = { # Approach the Magdalo Faction
 	fire_only_once = yes
 
 	option = {
-		name = DAS.2.a
-		activate_mission = PHI_Cease_Fire_Countdown
-		set_country_flag = DAS_Ceasefire
-		remove_mission = PHI_War_Countdown
-	}
-	option = {
-		name = DAS.2.b # Nothing RN.
-		DAS_check_zitronella_influence_dynmod_vars = yes
+		name = DAS.3.a
+		PHI = { 
+			country_event = { 
+				id = DAS.4
+				days = 4
+			}
+		}
 	}
 }
 
-# 4 & 5 is gone now
+country_event = { # Germany Approaches us with a peace offering
+	id = DAS.4
+	title = DAS.4.t
+	desc = DAS.4.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = { #Yah
+		name = DAS.4.a
+		set_global_flag = DAS_Ceasefire
+		DAS = { 
+			country_event = { id = DAS_Ceasefire.17 days = 3 }
+		}
+	}
+
+	option = { #Nah
+		name = DAS.4.b
+		DAS = { 
+			country_event  = { id = DAS_Ceasefire.16 days = 3 }
+		}
+	}
+}
+#5 is gone now
 
 country_event = { # Post-War Peace
 	id = DAS.7
@@ -109,22 +116,6 @@ country_event = { # Post-War Peace
 
 	is_triggered_only = yes
 	fire_only_once = yes
-
-	trigger = {
-		tag = DAS
-		PHI = {
-			has_war_with = DAS
-			has_capitulated = yes
-		}
-		OR = {
-			PHI = {
-				NOT = {
-					controls_state = 623
-					controls_state = 327
-				}
-			}
-		}
-	}
 
 	option = { # Establish Captaincy
 		name = DAS.7.a
@@ -170,7 +161,7 @@ country_event = { # Post-War Peace
 			target = PHI
 			end_wars = no
 		}
-		remove_ideas = PB_Colonial_Insurrection
+		remove_ideas = PB_Idea_Philippine_Emergency
 	}
 
 	option = { # Direct Rule (Pacific Commonwealth is fully Expanded and centered on Manila)
@@ -184,7 +175,7 @@ country_event = { # Post-War Peace
 			remember_old_capital = yes
 		}
 		swap_ideas = {
-			remove_idea = PB_Colonial_Insurrection
+			remove_idea = PB_Idea_Philippine_Emergency
 			add_idea = PB_Idea_DAS_Colonial_Occupation
 		}
 	}
@@ -625,7 +616,7 @@ country_event = {
 
 	option = {
 		name = DAS_Ceasefire.14.a
-		remove_ideas = PB_Colonial_Insurrection
+		remove_ideas = PB_Idea_Philippine_Emergency
 		news_event = {
             id = PBNews.338
             days = 1
@@ -650,7 +641,7 @@ country_event = {
 		name = DAS_Ceasefire.15.a
 		DAS = { 
 			country_event = {
-            	DAS_Ceasefire.14
+            	id = DAS_Ceasefire.16
            	 	days = 1
 			}
 		}
@@ -660,14 +651,14 @@ country_event = {
 		name = DAS_Ceasefire.15.b
 		DAS = { 
 			country_event = {
-            	DAS_Ceasefire.16
+            	id = DAS_Ceasefire.16
            	 	days = 1
 			}
 		}
 	}
 }
 
-country_event = {
+country_event = { # Philippines declines peace
 	id = DAS_Ceasefire.16
 	title = DAS_Ceasefire.16.t
 	desc = DAS_Ceasefire.16.d
@@ -678,25 +669,38 @@ country_event = {
 
 	option = { # darn
 		name = DAS_Ceasefire.16.a
+		if = { 
+			limit = { 
+				has_completed_focus = PB_DAS_Diederichs_Plan
+			}
+			DAS_Lower_Bund = yes
+			DAS_bypass_peace = yes
+		}
 	}
 
 	option = { # okay nevermind were leaving if you like it or not
 		name = DAS_Ceasefire.16.b
-
-		DAS = {
-			every_owned_state = {
-				IF = {
-					limit = {
-						OR = { 
-							region = 160
-							region = 412
-							region = 411
-						}
-					}
-					transfer_state_to = PHI
-				}
+		DAS_peace_out_philippines = yes
+		if = { 
+			limit = { 
+				has_completed_focus = PB_DAS_Diederichs_Plan
 			}
+			DAS_Lower_Bund = yes
 		}
+	}
+}
+
+country_event = { # Philippines accepts peace
+	id = DAS_Ceasefire.17
+	title = DAS_Ceasefire.17.t
+	desc = DAS_Ceasefire.17.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = { # cool
+		name = DAS_Ceasefire.17.a
 	}
 }
 
@@ -711,32 +715,13 @@ country_event = { # The Ceasefire
 	fire_only_once = yes
 
 	immediate = {
-		DAS = {
-			every_owned_state = {
-				IF = {
-					limit = {
-						is_controlled_by = PHI
-					}
-					transfer_state_to = PHI
-				}
-			}
-		}
+		DAS_Ceasefire = yes
 	}
 
 	option = {
 		name = DAS_Ceasefire.1.a
-		remove_ideas = PB_Colonial_Insurrection
-		custom_effect_tooltip = GEA_Bund_Lower_tt
-		white_peace = {
-			tag = PHI
-			message = my_peace_tt
-		}
 		DAS = {
 			country_event = DAS_Ceasefire.2
-		}
-		news_event = {
-            id = PBNews.338
-            days = 1
 		}
 	}
 }
@@ -1016,19 +1001,16 @@ country_event = { # They dont wanna be neutral???
 	option = { #welp, we lost
 		name = DAS_Ceasefire.10.a
         PHI = {
-		country_event = DAS_Ceasefire.6
+			country_event = DAS_Ceasefire.6
 	    }
-		complete_national_focus = PB_DAS_The_Calm_Before_The_Storm
-		set_country_flag = DAS_Peace_Breakdown
 	}
     option = { #ROUND 2, NO LIMITS
 		name = DAS_Ceasefire.10.b
 		declare_war_on = {
-        target = PHI
-        type = annex_everything
+			target = PHI
+			type = annex_everything
         }
-		complete_national_focus = PB_DAS_The_Calm_Before_The_Storm
-		set_country_flag = DAS_Peace_Breakdown
+		DAS_bypass_peace = yes
 	}
 }
 
@@ -1056,7 +1038,7 @@ country_event = { # The Final Fucking Event
 				target = PHI
 				end_wars = no
 			}
-			remove_ideas = PB_Colonial_Insurrection
+			remove_ideas = PB_Idea_Philippine_Emergency
 			set_country_flag = Tag_in_German_Sphere
 			clr_country_flag = Tag_in_Japanese_Sphere
 			news_event = {
@@ -1099,74 +1081,18 @@ country_event = { # The Final Fucking Event
 				days = 1
 			}
 		}
-		if = {
-			limit = {
-				DAS = {
-					owns_state = 624
+		DAS = {
+			every_owned_state = {
+				IF = {
+					limit = {
+						OR = { 
+							region = 160
+							region = 412
+							region = 411
+						}
+					}
+					transfer_state_to = PHI
 				}
-			}
-			PHI = {
-				transfer_state = 624
-			}
-		}
-		if = {
-			limit = {
-				DAS = {
-					owns_state = 628
-				}
-			}
-			PHI = {
-				transfer_state = 628
-			}
-		}
-		if = {
-			limit = {
-				DAS = {
-					owns_state = 625
-				}
-			}
-			PHI = {
-				transfer_state = 625
-			}
-		}
-		if = {
-			limit = {
-				DAS = {
-					owns_state = 627
-				}
-			}
-			PHI = {
-				transfer_state = 627
-			}
-		}
-		if = {
-			limit = {
-				DAS = {
-					owns_state = 626
-				}
-			}
-			PHI = {
-				transfer_state = 626
-			}
-		}
-		if = {
-			limit = {
-				DAS = {
-					owns_state = 1578
-				}
-			}
-			PHI = {
-				transfer_state = 1578
-			}
-		}
-		if = {
-			limit = {
-				DAS = {
-					owns_state = 1577
-				}
-			}
-			PHI = {
-				transfer_state = 1577
 			}
 		}
 	}
@@ -1302,9 +1228,9 @@ country_event = { # Start Finalization
 			factor = 100
 		}
 		activate_mission = DAS_Zitronella_Timer
-		custom_effect_tooltip = PB_spacing_tt
+		custom_effect_tooltip = tooltip_white_line
 		custom_effect_tooltip = DAS_Can_Not_Be_Reversed_tt
-		custom_effect_tooltip = PB_spacing_tt
+		custom_effect_tooltip = tooltip_white_line
 		custom_effect_tooltip = DAS_Initiate_Blocker_tt
 		clr_country_flag = DAS_Warning_Finalization
 	}

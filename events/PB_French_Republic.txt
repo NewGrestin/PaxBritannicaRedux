@@ -10084,6 +10084,7 @@ country_event = {#Outcome of the Prague Conference - Franco-Russian War - For Ru
 
 		hidden_effect = {
 			set_global_flag = PB_Franco_Russian_War
+			set_global_flag = PB_petrograd_pact_formed
 			RUS = {
 				leave_faction = yes
 				create_faction_from_template = faction_template_petrograd_pact
@@ -10091,7 +10092,6 @@ country_event = {#Outcome of the Prague Conference - Franco-Russian War - For Ru
 					id = PBNews.282
 					days = 1
 				}
-				set_country_flag = PB_RUS_form_petrograd_pact
 			}
 			every_country = {
 				limit = {
@@ -10156,14 +10156,14 @@ country_event = {#Outcome of the Prague Conference - Franco-Russian Split - For 
 
 		hidden_effect = {
 			set_global_flag = PB_Franco_Russian_Split
+			set_global_flag = PB_petrograd_pact_formed
 			RUS = {
 				leave_faction = yes
-				create_faction = PETROGRAD_PACT
+				create_faction_from_template = faction_template_petrograd_pact
 				news_event = {
 					id = PBNews.283
 					days = 1
 				}
-				set_country_flag = PB_RUS_form_petrograd_pact
 			}
 			every_country = {
 				limit = {
@@ -10243,16 +10243,19 @@ country_event = {#Russia Invited to the Prague Conference
 
 	option = { 
 		name = Prague_Conf.1.a
-		modifier = {
-			factor = 1000
-			OR = {
-				has_game_rule = {
-					rule = PB_FRANCO_RUSSIAN_WAR
-					option = FRANCO_RUSSIAN_SPLIT
-				}
-				has_game_rule = {
-					rule = PB_FRANCO_RUSSIAN_WAR
-					option = FRANCO_RUSSIAN_ALLIANCE
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				OR = {
+					has_game_rule = {
+						rule = PB_FRANCO_RUSSIAN_WAR
+						option = FRANCO_RUSSIAN_SPLIT
+					}
+					has_game_rule = {
+						rule = PB_FRANCO_RUSSIAN_WAR
+						option = FRANCO_RUSSIAN_ALLIANCE
+					}
 				}
 			}
 		}
@@ -10273,19 +10276,18 @@ country_event = {#Russia Invited to the Prague Conference
 				}
 			}
 		}
-
-		ai_chance = {
-			factor = 1
-		}
 	}
 
 	option = { # decline (Automatically fires the war)
 		name = Prague_Conf.1.b
-		modifier = {
-			factor = 1000
-			has_game_rule = {
-				rule = PB_FRANCO_RUSSIAN_WAR
-				option = FRANCO_RUSSIAN_WAR
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 100
+				has_game_rule = {
+					rule = PB_FRANCO_RUSSIAN_WAR
+					option = FRANCO_RUSSIAN_WAR
+				}
 			}
 		}
 
@@ -10320,10 +10322,6 @@ country_event = {#Russia Invited to the Prague Conference
 				}
 			}
 		}
-
-		ai_chance = {
-			factor = 1
-		}
 	}
 }
 
@@ -10340,7 +10338,7 @@ country_event = {#Outcome of the Prague Conference - Franco-Russian War - For Fr
 	option = { 
 		name = Prague_Conf.2.a
 		ai_chance = {
-			factor = 1
+			base = 10
 		}
 	}
 }
@@ -10357,10 +10355,6 @@ country_event = { # Outcome of the Prague Conference - Franco-Russian War - For 
 
 	option = { # ROOT sides with france
 		name = Prague_Conf.4.a
-		modifier = {
-			factor = 1000
-			has_country_flag = Tag_in_French_Sphere
-		}
 		ROOT = {
 			if = {
 				limit = { has_country_flag = Tag_in_French_Sphere } 
@@ -10368,25 +10362,31 @@ country_event = { # Outcome of the Prague Conference - Franco-Russian War - For 
 			}
 		}
 		ai_chance = {
-			factor = 1
+			base = 1
+			modifier = {
+				factor = 1000
+				has_country_flag = Tag_in_French_Sphere
+			}
 		}
 	}
 
 	option = { # ROOT sides with russia
 		name = Prague_Conf.4.a
-		modifier = {
-			factor = 1000
-			has_country_flag = Tag_in_Russian_Sphere
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				has_country_flag = Tag_in_Russian_Sphere
+			}
 		}
 		ROOT = {
 			if = { 
-				limit = { has_country_flag = Tag_in_Russian_Sphere } 
+				limit = { 
+					has_country_flag = Tag_in_Russian_Sphere 
+				} 
 				set_country_flag = Tag_in_Russian_Sphere
 			}
 			RUS = { add_to_faction = PREV }
-		}
-		ai_chance = {
-			factor = 1
 		}
 	}
 }
@@ -10491,92 +10491,7 @@ country_event = { # Prague Conf Choices
 	}
 }
 
-country_event = { # Russia Demands on Scandinavia - FRANCE
-	id = Prague_Conf.7
-	title = Prague_Conf.7.t
-	desc = Prague_Conf.7.d
-	picture = GFX_report_PB_Conference
-
-	is_triggered_only = yes
-
-	fire_only_once = yes
-
-	option = { # We wont listen to these demands!
-		name = Prague_Conf.7.b
-		ai_chance = {
-			factor = 1
-		}
-		custom_effect_tooltip = FRA_Prague_Conference_angry_Russia_tt
-	}
-	option = { # Let Russia do what they want to scandinavia
-		name = Prague_Conf.7.b
-		ai_chance = {
-			factor = 1
-		}
-		add_to_variable = {
-			var = PB_PC_Outcome
-			value = 1
-		}
-		if = { 
-			limit = { RUS = { has_country_flag = RUS_conf_demand_scandinavia_partition } }
-			every_state = { 
-				limit = { 
-					is_owned_by_ROOT_or_subject = yes
-					OR = { 
-						state = 1422
-						state = 1018
-						state = 1019
-						state = 1011
-						state = 144
-					}
-				}
-				transfer_state_to = var:110.owner
-			}
-			every_state = { 
-				limit = { 
-					is_owned_by_ROOT_or_subject = yes
-					OR = { 
-						is_finland = yes
-						state = 145
-						state = 124
-						state = 1363
-						state = 1362
-						state = 1079
-					}
-				}
-				transfer_state_to = RUS
-			}
-		}
-		if = { 
-			limit = { RUS = { has_country_flag = RUS_conf_demand_scandinavia_lenient } }
-			every_state = { 
-				limit = { 
-					is_owned_by_ROOT_or_subject = yes
-					is_finland = yes
-				}
-				transfer_state_to = RUS
-			}
-		}
-		if = { 
-			limit = { RUS = { has_country_flag = RUS_conf_demand_scandinavia_harsh } }
-			every_state = { 
-				limit = { 
-					is_owned_by_ROOT_or_subject = yes
-					OR = { 
-						is_finland = yes
-						is_sweden = yes
-						is_norway = yes
-						is_denmark = yes
-					}
-				}
-				transfer_state_to = RUS
-			}
-		}
-	}
-	custom_effect_tooltip = FRA_Prague_Conference_happy_Russia_tt
-}
-
-country_event = { # Russia Demands on Scandinavia - Sweden
+country_event = { # Russia Demands States
 	id = Prague_Conf.8
 	title = Prague_Conf.8.t
 	desc = Prague_Conf.8.d
@@ -10584,86 +10499,38 @@ country_event = { # Russia Demands on Scandinavia - Sweden
 
 	is_triggered_only = yes
 
-	fire_only_once = yes
-
-	option = { # We will not acquiesce to Russian Bullying!
-		name = Prague_Conf.8.a
-		every_country = {
-			limit = {
-				is_in_faction_with = FRA
-			}
-			country_event = Prague_Conf.9
-		}
-		custom_effect_tooltip = FRA_Prague_Conference_angry_Russia_tt
-	}
-	option = { # Acquiesce to Russian Demands
+	option = { # We wont listen to these demands!
 		name = Prague_Conf.8.b
 		ai_chance = {
 			factor = 1
 		}
-		every_country = {
-			limit = {
-				is_in_faction_with = FRA
-			}
-			country_event = Prague_Conf.10
+		RUS = { 
+			country_event = { id = Prague_Conf.10 days = 1 }
 		}
-		if = { 
-			limit = { RUS = { has_country_flag = RUS_conf_demand_scandinavia_partition } }
-			every_owned_state = { 
-				limit = { 
-					OR = { 
-						state = 1422
-						state = 1018
-						state = 1019
-						state = 1011
-						state = 144
-					}
-				}
-				transfer_state_to = var:110.owner
-			}
-			every_owned_state = { 
-				limit = { 
-					OR = { 
-						is_finland = yes
-						state = 145
-						state = 124
-						state = 1363
-						state = 1362
-						state = 1079
-					}
-					
-				}
-				transfer_state_to = RUS
-			}
+		custom_effect_tooltip = FRA_Prague_Conference_angry_Russia_tt
+	}
+	option = { # Concede the land
+		name = Prague_Conf.8.b
+		ai_chance = {
+			factor = 100
 		}
-		if = { 
-			limit = { RUS = { has_country_flag = RUS_conf_demand_scandinavia_lenient } }
-			every_owned_state = { 
-				limit = { 
-					is_finland = yes
-				}
-				transfer_state_to = RUS
-			}
+		add_to_variable = {
+			var = PB_PC_Outcome
+			value = 1
 		}
-		if = { 
-			limit = { RUS = { has_country_flag = RUS_conf_demand_scandinavia_harsh } }
-			every_owned_state = { 
-				limit = { 
-					OR = { 
-						is_finland = yes
-						is_sweden = yes
-						is_norway = yes
-						is_denmark = yes
-					}
-				}
-				transfer_state_to = RUS
-			}
+		RUS = { 
+			country_event = { id = Prague_Conf.9 days = 1 }
+		}
+		every_state = {
+			limit = { has_state_flag = PC_RUS_Claim }
+			transfer_state_to = RUS
+			clr_state_flag = PC_RUS_Claim
 		}
 		custom_effect_tooltip = FRA_Prague_Conference_happy_Russia_tt
 	}
 }
 
-country_event = { # Sweden Stands up to Russia
+country_event = { # TAG Stands up to Russia
 	id = Prague_Conf.9
 	title = Prague_Conf.9.t
 	desc = Prague_Conf.9.d
@@ -10671,14 +10538,12 @@ country_event = { # Sweden Stands up to Russia
 
 	is_triggered_only = yes
 
-	fire_only_once = yes
-
 	option = { # Shocking!
 		name = Prague_Conf.9.a
 	}
 }
 
-country_event = { # Sweden Folds to Russian demands
+country_event = { # TAG Folds to Russian demands
 	id = Prague_Conf.10
 	title = Prague_Conf.10.t
 	desc = Prague_Conf.10.d
@@ -10690,95 +10555,5 @@ country_event = { # Sweden Folds to Russian demands
 
 	option = { # Shocking!
 		name = Prague_Conf.10.a
-	}
-}
-
-country_event = { # RUS - how harsh to make demands
-	id = Prague_Conf.11
-	title = Prague_Conf.11.t
-	desc = Prague_Conf.11.d
-	picture = GFX_report_PB_Conference
-
-	is_triggered_only = yes
-
-	fire_only_once = yes
-
-	option = { # Leniant Demands
-		name = Prague_Conf.11.a
-		set_country_flag = RUS_conf_demand_scandinavia_lenient
-		if = { #if sweden isnt ai, let them take the lead
-			limit = { 
-				SWE = { 
-					is_in_faction_with = FRA
-					is_ai = no
-				}
-			}
-			SWE = { 
-				country_event = { id = Prague_Conf.8 days = 1 }
-			}
-		}
-		else = { 
-			FRA = { 
-				country_event = { id = Prague_Conf.7 days = 1 }
-			}
-		}
-	}
-	option = { # Demand Complete Control
-		name = Prague_Conf.11.b
-		set_country_flag = RUS_conf_demand_scandinavia_harsh
-		if = { #if sweden isnt ai, let them take the lead
-			limit = { 
-				SWE = { 
-					is_in_faction_with = FRA
-					is_ai = no
-				}
-			}
-			SWE = { 
-				country_event = { id = Prague_Conf.8 days = 1 }
-			}
-		}
-		else = { 
-			FRA = { 
-				country_event = { id = Prague_Conf.7 days = 1 }
-			}
-		}
-	}
-	option = { # Partition Sweden between our danish allies and ourselves
-		name = Prague_Conf.11.c
-		trigger = { 
-			RUS = { 
-				has_completed_focus = PB_RUS_The_Romanov_Crown_In_Kristiana
-			}
-			DEN = { 
-				is_in_faction_with = RUS
-			}
-		}
-		set_country_flag = RUS_conf_demand_scandinavia_partition
-		if = { #if sweden isnt ai, let them take the lead
-			limit = { 
-				SWE = { 
-					is_in_faction_with = FRA
-					is_ai = no
-				}
-			}
-			SWE = { 
-				country_event = { id = Prague_Conf.8 days = 1 }
-			}
-		}
-		else = { 
-			FRA = { 
-				country_event = { id = Prague_Conf.7 days = 1 }
-			}
-		}
-	}
-	option = { # Allow Scandinavia unfettered
-		name = Prague_Conf.11.d
-		set_country_flag = RUS_conf_demand_scandinavia_abstain
-		RUS = { 
-			country_event = { id = Prague_Conf.5 days = 1 }
-		}
-		FRA = { 
-			country_event = { id = Prague_Conf.12 days = 1 }
-		}
 	}
 }

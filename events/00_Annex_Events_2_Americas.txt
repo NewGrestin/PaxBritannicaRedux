@@ -68,6 +68,12 @@
 # annex.2051 - Fate of the Ohio River
 # annex.2052 - Fate of Vandalia
 # annex.2053 - Fate of Danish West Indies
+# annex.2054 - Fate of Confederacy of Free Tribes
+# annex.2055 - Fate of Northwestern Territory Colonial Authority (Borealia)
+# annex.2056 - Fate of Rainy River
+# annex.2057 - Fate of Victoria Island
+# annex.2058 - Fate of Alaska
+# annex.2059 - Fate of Alaska
 
 add_namespace = annex
 
@@ -258,8 +264,7 @@ country_event = { # Fate of Tejas
 
 	immediate = {
 		hidden_effect = {
-			383 = { retain_state = yes }
-			963 = { retain_state = yes }
+			955 = { retain_state = yes }
 			
 			if = {
 				limit = {
@@ -282,10 +287,18 @@ country_event = { # Fate of Tejas
 		}
 	}
 
-	option = { # Release Tejas as Puppet
+	option = { # Release American Texas as Puppet
 		log = "[GetLogInfo]: event annex.2002 option annex.2002.a"
 		name = annex.2002.a
-		trigger = { is_subject = no }
+		trigger = { 
+			is_subject = no 
+			ROOT = {
+				OR = {
+					tag = ENG
+					tag = AME
+				}
+			}
+		}
 		ai_chance = {
 			base = 60
 			modifier = { factor = 0 annexations_can_annex = yes }
@@ -300,6 +313,36 @@ country_event = { # Fate of Tejas
 
 		if = { limit = { ROOT = { has_monarchist_government = yes } } ATX = { set_cosmetic_tag = ATX_Occupied_Monarchy } }
 		if = { limit = { ROOT = { has_republican_government = yes } } ATX = { set_cosmetic_tag = ATX_Occupied_Republic } }
+	}
+
+	option = { # Release Tejas as Puppet
+		log = "[GetLogInfo]: event annex.2002 option annex.2002.a"
+		name = annex.2002.c
+		trigger = { 
+			is_subject = no
+			NOT = {
+				ROOT = {
+					OR = {
+						tag = ENG
+						tag = AME
+					}
+				}
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = { factor = 0 annexations_can_annex = yes }
+		}
+
+		set_temp_variable = { tag_to_release = TEX }
+		every_state = {
+			limit = { is_tejas = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = { limit = { ROOT = { has_monarchist_government = yes } } TEX = { set_cosmetic_tag = TEX_Occupied_Monarchy } }
+		if = { limit = { ROOT = { has_republican_government = yes } } TEX = { set_cosmetic_tag = TEX_Occupied_Republic } }
 	}
 
 	option = { # Give Tejas to Mexico City
@@ -349,10 +392,10 @@ country_event = { # Fate of Tejas
 	after = { recheck_annexations = yes }
 }
 
-country_event = { # Fate of American Texas
-	id = annex.2005
-	title = annexation_383
-	desc = annexation_383_desc
+country_event = { # Fate of Llano Estacado
+	id = annex.2003
+	title = annexation_955
+	desc = annexation_955_desc
 	picture = GFX_report_PB_Peace_Deals_North_America
 
 	is_triggered_only = yes
@@ -362,7 +405,8 @@ country_event = { # Fate of American Texas
 			if = {
 				limit = {
 					OR = {
-						375 = { is_claim_or_core_of_ROOT = yes }
+						1428 = { is_claim_or_core_of_ROOT = yes }
+						964 = { is_claim_or_core_of_ROOT = yes }
 					}
 				}
 				save_event_target_as = can_annex
@@ -370,72 +414,83 @@ country_event = { # Fate of American Texas
 
 			if = {
 				limit = {
-					375 = {
+					1428 = { #Naanapusookuni
 						annexations_state_owner_is_valid_grant_target = yes
-						owner = { ROOT_can_grant_land = yes }
+						owner = {
+							ROOT_can_grant_land = yes
+						}
 					}
 				}
-				var:375.owner = { save_event_target_as = san_antonio }
+				var:1428.owner = { save_event_target_as = comanche }
+			}
+			if = {
+				limit = {
+					964 = { #Santa Anna
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:comanche }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:964.owner = { save_event_target_as = texas }
 			}
 		}
 	}
 
-	option = { # Puppet American Texas
-		log = "[GetLogInfo]: event annex.2005 option annex.2005.a"
-		name = annex.2005.a
+	option = { #Give to Texas
+		log = "[GetLogInfo]: event annex.2003 option annex.2003.a"
+		name = annex.2003.a
 		trigger = {
-			is_subject = no
+			has_event_target = texas
 		}
-
 		ai_chance = {
 			base = 100
-			modifier = { factor = 0 }
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
 		}
 
-		set_temp_variable = { tag_to_release = ATX }
-
-		383 = { remove_claim_and_add_core_of_target = yes }
-		963 = { remove_claim_and_add_core_of_target = yes }
-
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			ATX = { set_cosmetic_tag = ATX_Occupied_Monarchy }
-		}
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			ATX = { set_cosmetic_tag = ATX_Occupied_Republic }
-		}
+		set_temp_variable = { tag_to_release = event_target:texas }
+		955 = { transfer_state_and_notify = yes } #Llano Estacado
+		
 	}
 
-	option = { # Give Texas to San Antonio claimant
-		log = "[GetLogInfo]: event annex.2005 option annex.2005.b"
-		name = annex.2005.b
+	option = { #Give it to Quebec
+		log = "[GetLogInfo]: event annex.2003 option annex.2003.b"
+		name = annex.2003.b
 		trigger = {
-			has_event_target = san_antonio
-		}
-
+			has_event_target = comanche 
+	    }
 		ai_chance = {
-			base = 70
+			base = 100
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0.1
-				event_target:san_antonio = { is_subject = yes }
+				event_target:quebec = { is_subject = yes }
 			}
 		}
 
-		set_temp_variable = { tag_to_release = event_target:san_antonio }
+		set_temp_variable = { tag_to_release = event_target:comanche }
+		955 = { transfer_state_and_notify = yes } #Llano Estacado
+		
+	}
 
-		383 = { transfer_if_owned = yes }
-		963 = { transfer_if_owned = yes }
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2003 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		955 = { add_claim_of_ROOT = yes } #Llano Estacado
 	}
 
 	option = { # Give to overlord
-		log = "[GetLogInfo]: event annex.2005 option annex.give_to_overlord"
+		log = "[GetLogInfo]: event annex.2003 option annex.give_to_overlord"
 		name = annex.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
@@ -443,24 +498,11 @@ country_event = { # Fate of American Texas
 
 		set_temp_variable = { tag_to_release = overlord }
 
-		383 = { transfer_if_owned = yes }
-		963 = { transfer_if_owned = yes }
-	}
-
-	option = { # Integrate Texas
-		log = "[GetLogInfo]: event annex.2005 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-
-		383 = { add_claim_of_ROOT = yes }
-		963 = { add_claim_of_ROOT = yes }
-		375 = { add_claim_of_ROOT = yes } # San Antonio remains disputed
+		955 = { transfer_if_owned = yes }
 	}
 
 	option = { # Cancel
-		log = "[GetLogInfo]: event annex.2005 option annex.cancel"
+		log = "[GetLogInfo]: event annex.2003 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
@@ -472,86 +514,124 @@ country_event = { # Fate of American Texas
 
 country_event = { #Fate of Riogrande
 	id = annex.2004
-	title = annexation_riogrand
-	desc = annexation_riogrand_desc
+	title = annexation_riogrande
+	desc = annexation_riogrande_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		hidden_effect = {
+		hidden_effect = {		
 			if = {
 				limit = {
 					OR = {
-						original_tag = MEX
-						original_tag = TEX
+						277 = { is_claim_or_core_of_ROOT = yes } # Mexico City
+						375 = { is_claim_or_core_of_ROOT = yes } # San Antonio
 					}
 				}
 				save_event_target_as = can_annex
 			}
-			
+
 			if = {
 				limit = {
-					TEX = {
-						ROOT_can_grant_land = yes
-						OR	= {
-							owns_state = 962
-							owns_state = 964
+					277 = {
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:277.owner = { save_event_target_as = mexico }
+			}
+			if = {
+				limit = {
+					375 = {
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:mexico }
+							ROOT_can_grant_land = yes
 						}
 					}
 				}
-				TEX  = { save_event_target_as = give_to_tejas }
+				var:375.owner = { save_event_target_as = texas }	
 			}
 		}
 	}
 
-	option = { #Liberate all of rio grande
+	option = { # Release Rio Grande as Puppet
 		log = "[GetLogInfo]: event annex.2004 option annex.2004.a"
 		name = annex.2004.a
-		trigger = {
-			is_subject = no
+		trigger = { 
+			is_subject = no 
 		}
 		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
+			base = 60
+			modifier = { factor = 0 annexations_can_annex = yes }
 		}
-		if = {
-			limit = { country_exists = RGD }
-			custom_effect_tooltip = RGD_puppet_tooltip
-			
+
+		set_temp_variable = { tag_to_release = RGD }
+		every_state = {
+			limit = { is_rio_grande = yes }
+			remove_claim_and_add_core_of_target = yes
 		}
-		else = {
-			set_temp_variable = { tag_to_release = RGD }
-			release_targeted_tag = yes
-		}
-		
+		release_targeted_tag = yes
 	}
 
-
-	option = { #Split Rio Grande Up
+	option = { # Give Rio Grande to Mexico City
 		log = "[GetLogInfo]: event annex.2004 option annex.2004.b"
 		name = annex.2004.b
-		trigger = {
-			is_subject = no
-		}
+		trigger = { has_event_target = mexico }
 		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
+			base = 20
+			modifier = { factor = 0.1 event_target:mexico = { is_subject = yes } }
 		}
-		ROOT = {
-			set_country_flag = rio_grande_divide
+		set_temp_variable = { tag_to_release = event_target:mexico }
+		every_state = {
+			limit = { is_rio_grande = yes }
+			transfer_if_owned = yes
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { # Give Rio Grande to Texas
+		log = "[GetLogInfo]: event annex.2004 option annex.2004.c"
+		name = annex.2004.c
+		trigger = { has_event_target = texas }
+		ai_chance = {
+			base = 20
+			modifier = { factor = 0.1 event_target:mexico = { is_subject = yes } }
+		}
+		set_temp_variable = { tag_to_release = event_target:texas }
+		every_state = {
+			limit = { is_rio_grande = yes }
+			transfer_if_owned = yes
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.2004 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = { annexations_should_give_lands_to_overlord = yes }
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = { is_rio_grande = yes }
+			transfer_state_and_notify = yes
+		}
+		recheck_annexations = yes
+	}
+
+	option = { # Annex Rio Grande
+		log = "[GetLogInfo]: event annex.2004 option annex.integration"
+		name = annex.integration
+		trigger = { annexations_can_annex = yes }
+		every_owned_state = {
+			limit = { is_rio_grande = yes }
+			add_claim_of_ROOT = yes
 		}
 	}
 
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.2010 option annex.cancel"
+		log = "[GetLogInfo]: event annex.2004 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		
@@ -2943,40 +3023,61 @@ country_event = { #Fate of Quebec
 
 	immediate = {
 		hidden_effect = {
-			465 = { retain_state = yes }
-			464 = { retain_state = yes } 
-			332 = { retain_state = yes }
-			331 = { retain_state = yes } 
 			every_state = {
-				IF = {
+				if = {
 					limit = {
-						is_great_lakes = yes
-					}
+						OR = {
+							state = 943 # Rainy River
+							state = 465 # New Brunswick
+							state = 464 # Nova Scotia
+							state = 950 # Cavalier
+							state = 393 # Michigan
+							state = 276 #Huron
+							state = 394 #Ouisconsin
+							state = 817 #Supperiur
+						}
+					} 
+					remove_core_of = QUE
 					retain_state = yes
 				}
+				remove_claim_by = QUE
 			}
 		}
-		
 	}
 
-	option = { #Puppet Quebec
+	option = { #Liberate Most of Quebec
 		log = "[GetLogInfo]: event annex.2027 option annex.2027.a"
 		name = annex.2027.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 50
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 5
+				annexations_AI_country_wants_to_dismantle_america = yes
+			}
 		}
 		set_temp_variable = { tag_to_release = QUE }
-		release_targeted_tag = yes	
-
+		every_state = {
+			limit = { is_core_of = QUE}
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
 		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
+			limit = { 
+				ROOT = { 
+					AND = {
+						has_monarchist_government = yes 
+						NOT = { tag = ENG }
+					}
+
+				}
+			}
 			QUE = {
 				set_cosmetic_tag = QUE_Occupied_Monarchy
 			}
@@ -2987,18 +3088,7 @@ country_event = { #Fate of Quebec
 			QUE = {
 				set_cosmetic_tag = QUE_Occupied_Republic
 			}
-		}			
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.2027 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
 		}
-		set_temp_variable = { tag_to_release = overlord }
-		QUE = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
 	}
 
 	option = { #Cancel
@@ -3010,7 +3100,7 @@ country_event = { #Fate of Quebec
 	after = {
 		recheck_annexations = yes
 	}
-}
+}	
 
 country_event = { #Fate of Huron
 	id = annex.2028
@@ -3040,7 +3130,6 @@ country_event = { #Fate of Huron
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
-							is_subject = no
 						}
 					}
 				}
@@ -3053,7 +3142,6 @@ country_event = { #Fate of Huron
 						owner = {
 							NOT = { tag = event_target:quebec }
 							ROOT_can_grant_land = yes
-							is_subject = no
 						}
 					}
 				}
@@ -3129,24 +3217,56 @@ country_event = { #Fate of Huron
 
 country_event = { #Fate of Michigan
 	id = annex.2029
-	title = annexation_michigan
-	desc = annexation_michigan_desc
+	title = annexation_393
+	desc = annexation_393_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						276 = { is_claim_or_core_of_ROOT = yes } #Huron
+						original_tag = QUE
+					}
+					950 = { is_claim_or_core_of_ROOT = yes } #Cavallier
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					276 = { #Huron
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:276.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					950 = { #Cavallier
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:950.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2029 option annex.2029.a"
 		name = annex.2029.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-				owns_state = 950
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3156,10 +3276,8 @@ country_event = { #Fate of Michigan
 			}
 		}
 
-		AME = {
-			transfer_state = 393
-			add_state_core = 393
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		393 = { transfer_state_and_notify = yes } #Michigan
 		
 	}
 
@@ -3167,10 +3285,7 @@ country_event = { #Fate of Michigan
 		log = "[GetLogInfo]: event annex.2029 option annex.2029.b"
 		name = annex.2029.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 276
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3178,12 +3293,28 @@ country_event = { #Fate of Michigan
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 393
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		393 = { transfer_state_and_notify = yes } #Michigan
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2029 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		393 = { add_claim_of_ROOT = yes } #Huron
 	}
 
 	option = { #Cancel
@@ -3199,24 +3330,56 @@ country_event = { #Fate of Michigan
 
 country_event = { #Fate of Superieur
 	id = annex.2030
-	title = annexation_superieur
-	desc = annexation_superieur_desc
+	title = annexation_817
+	desc = annexation_817_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						682 = { is_claim_or_core_of_ROOT = yes } #L'Acadie Du Nord
+						original_tag = QUE
+					}
+					394 = { is_claim_or_core_of_ROOT = yes } #Ouisconsin
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					682 = { #L'Acadie Du Nord
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:682.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					394 = { #Ouisconsin
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:394.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2030 option annex.2030.a"
 		name = annex.2030.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-				owns_state = 394
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3226,10 +3389,8 @@ country_event = { #Fate of Superieur
 			}
 		}
 
-		AME = {
-			transfer_state = 817
-			add_state_core = 817
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		817 = { transfer_state_and_notify = yes } #Superieur
 		
 	}
 
@@ -3237,10 +3398,7 @@ country_event = { #Fate of Superieur
 		log = "[GetLogInfo]: event annex.2030 option annex.2030.b"
 		name = annex.2030.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 682
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3248,12 +3406,28 @@ country_event = { #Fate of Superieur
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 817
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		817 = { transfer_state_and_notify = yes } #Superiur
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2030 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		817 = { add_claim_of_ROOT = yes } #Superieur
 	}
 
 	option = { #Cancel
@@ -3269,24 +3443,56 @@ country_event = { #Fate of Superieur
 
 country_event = { #Fate of Ouisconsin
 	id = annex.2031
-	title = annexation_wisconsin
-	desc = annexation_wisconsin_desc
+	title = annexation_394
+	desc = annexation_394_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						817 = { is_claim_or_core_of_ROOT = yes } #Superieur
+						original_tag = QUE
+					}
+					950 = { is_claim_or_core_of_ROOT = yes } #Cavallier
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					817 = { #Superieur
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:817.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					950 = { #Cavallier
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:950.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2031 option annex.2031.a"
 		name = annex.2031.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-				owns_state = 950
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3296,10 +3502,8 @@ country_event = { #Fate of Ouisconsin
 			}
 		}
 
-		AME = {
-			transfer_state = 394
-			add_state_core = 394
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		394 = { transfer_state_and_notify = yes } #Ouisconsin
 		
 	}
 
@@ -3307,11 +3511,7 @@ country_event = { #Fate of Ouisconsin
 		log = "[GetLogInfo]: event annex.2031 option annex.2031.b"
 		name = annex.2031.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 817
-			owns_state = 682
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3319,12 +3519,28 @@ country_event = { #Fate of Ouisconsin
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 394
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		394 = { transfer_state_and_notify = yes } #Ouisconsin
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2031 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		394 = { add_claim_of_ROOT = yes } #Ouisconsin
 	}
 
 	option = { #Cancel
@@ -3340,23 +3556,56 @@ country_event = { #Fate of Ouisconsin
 
 country_event = { #Fate of Cavalier
 	id = annex.2032
-	title = annexation_cavalier
-	desc = annexation_cavalier_desc
+	title = annexation_950
+	desc = annexation_950_desc
 	picture = GFX_report_event_Generic_Art_Gallery
 
 	is_triggered_only = yes
 
 	immediate = {
-		
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						393 = { is_claim_or_core_of_ROOT = yes } #Michigan
+						original_tag = QUE
+					}
+					261 = { is_claim_or_core_of_ROOT = yes } #Ohio
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					393 = { #Michigan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:393.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					261 = { #Ohio
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:261.owner = { save_event_target_as = america }
+			}
+		}
     }
 	option = { #Give to America
 		log = "[GetLogInfo]: event annex.2032 option annex.2032.a"
 		name = annex.2032.a
 		trigger = {
-			is_subject = no
-			AME = {
-				exists = yes
-			}
+			has_event_target = america
 		}
 		ai_chance = {
 			base = 100
@@ -3366,10 +3615,8 @@ country_event = { #Fate of Cavalier
 			}
 		}
 
-		AME = {
-			transfer_state = 950
-			add_state_core = 950
-		}
+		set_temp_variable = { tag_to_release = event_target:america }
+		950 = { transfer_state_and_notify = yes } #Cavallier
 		
 	}
 
@@ -3377,11 +3624,7 @@ country_event = { #Fate of Cavalier
 		log = "[GetLogInfo]: event annex.2032 option annex.2032.b"
 		name = annex.2032.b
 		trigger = {
-			QUE = {
-            exists = yes
-			owns_state = 393
-			owns_state = 394
-		    }   
+			has_event_target = quebec 
 	    }
 		ai_chance = {
 			base = 100
@@ -3389,12 +3632,28 @@ country_event = { #Fate of Cavalier
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:america
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
 		}
 
-		QUE = {
-			transfer_state = 950
-		}
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		950 = { transfer_state_and_notify = yes } #Cavallier
 		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2032 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		950 = { add_claim_of_ROOT = yes } #Cavallier
 	}
 
 	option = { #Cancel
@@ -4017,7 +4276,10 @@ country_event = { # Fate of Ongtupqa
 	immediate = {
 		if = {
 			limit = {
-				905 = { is_claim_or_core_of_ROOT = yes }
+				OR =  {
+					905 = { is_claim_or_core_of_ROOT = yes }
+					tag = APA
+				}
 			}
 			save_event_target_as = can_annex
 		}
@@ -5780,3 +6042,437 @@ country_event = { # Fate of Epstein Island
 		recheck_annexations = yes
 	}
 }
+
+country_event = { #Fate of Condeferacy of Free Tribes
+	id = annex.2054
+	title = annexation_388
+	desc = annexation_388_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+
+	option = { #Liberate All of Confederacy of Free Tribes
+		log = "[GetLogInfo]: event annex.2054 option annex.2054.a"
+		name = annex.2054.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = CFT }
+		every_state = {
+			limit = { is_core_of = CFT }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.2054 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = { annexations_should_give_lands_to_overlord = yes }
+
+		set_temp_variable = { tag_to_release = overlord }
+		388 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2054 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}	
+
+country_event = { #Northwest Territory Colonial Authority
+	id = annex.2055
+	title = annexation_891
+	desc = annexation_891_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = {
+						OR = {
+							state = 943 # Rainy River
+							state = 740 # Victoria Island
+						}
+					} 
+					remove_core_of = BCL
+					retain_state = yes
+				}
+				remove_claim_by = BCL
+			}
+		}
+	}
+
+	option = { #Liberate Most of Northwest Territory Colonial Authority
+		log = "[GetLogInfo]: event annex.2055 option annex.2055.a"
+		name = annex.2055.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = BCL }
+		every_state = {
+			limit = { is_core_of = BCL }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+		if = {
+			limit = { 
+				ROOT = { 
+					AND = {
+						has_monarchist_government = yes 
+						NOT = { tag = ENG }
+					}
+
+				}
+			}
+			BCL = {
+				set_cosmetic_tag = BCL_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BCL = {
+				set_cosmetic_tag = BCL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2055 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}	
+
+country_event = { #Fate of Rainy River
+	id = annex.2056
+	title = annexation_943
+	desc = annexation_943_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						682 = { is_claim_or_core_of_ROOT = yes } #L'Acadie du Nord
+						original_tag = QUE
+					}
+					683 = { is_claim_or_core_of_ROOT = yes } #Keewatin
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					682 = { #L'Acadie du Nord
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:682.owner = { save_event_target_as = quebec }
+			}
+			if = {
+				limit = {
+					683 = { #Keewatin
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:quebec }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:683.owner = { save_event_target_as = borealia }
+			}
+		}
+    }
+	option = { #Give to Borealia
+		log = "[GetLogInfo]: event annex.2056 option annex.2056.a"
+		name = annex.2056.a
+		trigger = {
+			has_event_target = borealia
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:borealia }
+		943 = { transfer_state_and_notify = yes } #Rainy River
+		
+	}
+
+	option = { #Give it to Quebec
+		log = "[GetLogInfo]: event annex.2056 option annex.2056.b"
+		name = annex.2056.b
+		trigger = {
+			has_event_target = quebec 
+	    }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:borealia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:quebec }
+		943 = { transfer_state_and_notify = yes } #Rainy River
+		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2056 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		943 = { add_claim_of_ROOT = yes } #Rainy River
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2056 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Victoria Island
+	id = annex.2057
+	title = annexation_740
+	desc = annexation_740_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					AND = {
+						473 = { is_claim_or_core_of_ROOT = yes } #British Columbia
+						original_tag = BCL
+					}
+					1006 = { is_claim_or_core_of_ROOT = yes } #Novo-Arkhangelsk
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					473 = { #British Columbia
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:473.owner = { save_event_target_as = borealia }
+			}
+			if = {
+				limit = {
+					1006 = { #Novo-Arkhangelsk
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:borealia }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1006.owner = { save_event_target_as = alaska }
+			}
+		}
+    }
+	option = { #Give to Borealia
+		log = "[GetLogInfo]: event annex.2057 option annex.2057.a"
+		name = annex.2057.a
+		trigger = {
+			has_event_target = borealia
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:borealia }
+		740 = { transfer_state_and_notify = yes } #Victoria Island
+		
+	}
+
+	option = { #Give it to Quebec
+		log = "[GetLogInfo]: event annex.2057 option annex.2057.b"
+		name = annex.2057.b
+		trigger = {
+			has_event_target = alaska
+	    }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:borealia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:quebec = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:alaska }
+		740 = { transfer_state_and_notify = yes } #Victoria Island
+		
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.2057 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		740 = { add_claim_of_ROOT = yes } #Victoria Island
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2057 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Alaska
+	id = annex.2058
+	title = annexation_463
+	desc = annexation_463_desc
+	picture = GFX_report_event_Generic_Art_Gallery
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = {
+						state = 740 # Victoria Island
+					} 
+					remove_core_of = ASK
+					retain_state = yes
+				}
+				remove_claim_by = ASK
+			}
+		}
+	}
+
+	option = { #Liberate Most of Alaska
+		log = "[GetLogInfo]: event annex.2058 option annex.2058.a"
+		name = annex.2058.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = ASK }
+		every_state = {
+			limit = { is_core_of = ASK }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+		if = {
+			limit = { 
+				ROOT = { 
+					AND = {
+						has_monarchist_government = yes 
+						NOT = { tag = RUS }
+					}
+
+				}
+			}
+			ASK = {
+				set_cosmetic_tag = ASK_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ASK = {
+				set_cosmetic_tag = ASK_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2058 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }	
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}	
