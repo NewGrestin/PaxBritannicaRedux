@@ -5394,14 +5394,52 @@ country_event = { #Fate of Summan
 		# Sahil al-Ahsa owner
 		if = {
 			limit = {
-				1299 = {
+				1294 = {
 					owner = {
 						ROOT_can_grant_land = yes
 						NOT = { tag = event_target:tripartite_extraction }
 					}
 				}
 			}
-			var:1299.owner = { save_event_target_as = sahil_al_ahsa }
+			var:1294.owner = { save_event_target_as = sahil_al_ahsa }
+		}
+		
+		# Qatif owner
+		if = {
+			limit = {
+				1297 = {
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:tripartite_extraction }
+					}
+				}
+			}
+			var:1297.owner = { save_event_target_as = qatif }
+		}
+		
+		# Ha'il owner
+		if = {
+			limit = {
+				1091 = {
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:tripartite_extraction }
+					}
+				}
+			}
+			var:1091.owner = { save_event_target_as = hail }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					1294 = { is_claim_or_core_of_ROOT = yes } # Sahil al-Ahsa
+					1297 = { is_claim_or_core_of_ROOT = yes } # Qatif
+					1091 = { is_claim_or_core_of_ROOT = yes } # Ha'il
+				}
+			}
+			save_event_target_as = can_annex
 		}
 	}
 	
@@ -5417,7 +5455,12 @@ country_event = { #Fate of Summan
             }
             modifier = {
                 factor = 2
-                NOT = { has_event_target = summan }
+                NOT = { 
+					OR = {
+						has_event_target = qatif
+						has_event_target = hail 
+					}
+				}
             }
             modifier = {
                 factor = 0.1
@@ -5425,6 +5468,62 @@ country_event = { #Fate of Summan
             }
         }
         set_temp_variable = { tag_to_release = event_target:sahil_al_ahsa }
+        1299 = { transfer_state_and_notify = yes } #Summan
+    }
+	
+	option = { # Give to Qatif
+        log = "[GetLogInfo]: event annex.6039 option annex.6039.b"
+        name = annex.6039.b
+        trigger = { has_event_target = qatif }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { 
+					OR = {
+						has_event_target = sahil_al_ahsa
+						has_event_target = hail 
+					}
+				}
+            }
+            modifier = {
+                factor = 0.1
+                event_target:qatif = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:qatif }
+        1299 = { transfer_state_and_notify = yes } #Summan
+    }
+	
+	option = { # Give to Ha'il
+        log = "[GetLogInfo]: event annex.6039 option annex.6039.c"
+        name = annex.6039.c
+        trigger = { has_event_target = hail }
+        ai_chance = {
+            base = 40
+            modifier = {
+                factor = 0
+                annexations_AI_wants_to_annex = yes
+            }
+            modifier = {
+                factor = 2
+                NOT = { 
+					OR = {
+						has_event_target = sahil_al_ahsa
+						has_event_target = qatif
+					}
+				}
+            }
+            modifier = {
+                factor = 0.1
+                event_target:hail = { is_subject = yes }
+            }
+        }
+        set_temp_variable = { tag_to_release = event_target:hail }
         1299 = { transfer_state_and_notify = yes } #Summan
     }
 	
