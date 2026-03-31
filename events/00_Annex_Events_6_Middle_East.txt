@@ -866,130 +866,114 @@ country_event = { #Fate of Kuzestan
 
 country_event = { #Fate of Orumiyeh
 	id = annex.6007
-	title = annexation_orumiyeh
-	desc = annexation_orumiyeh_desc
+	title = annexation_1426
+	desc = annexation_1426_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate = {
+		# Armenia owner
+		if = {
+			limit = {
+				230 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:230.owner = { save_event_target_as = armenia }
+		}
+		
+		# Van owner
+		if = {
+			limit = {
+				352 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:352.owner = { save_event_target_as = van }
+		}
+		
+		# Persian Azeirbadjan owner
+		if = {
+			limit = {
+				419 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:419.owner = { save_event_target_as = persian_azeirbadjan }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					230 = { is_claim_or_core_of_ROOT = yes } # Armenia
+					352 = { is_claim_or_core_of_ROOT = yes } # Van
+					419 = { is_claim_or_core_of_ROOT = yes } # Persian Azeirbadjan
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
 
-	option = { #Leave it to Persia
+	option = { #Leave it to Armenia
 		log = "[GetLogInfo]: event annex.6007 option annex.6007.a"
 		name = annex.6007.a
 		trigger = {
 			is_subject = no
+			trigger = { has_event_target = armenia }
 		}
 		ai_chance = {
-			base = 100
+			base = 50
 			modifier = {
 				factor = 0
 			}
 		}
 
-		PER = {
-			transfer_state = 1426
-		}
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:armenia }
+        1426 = { transfer_state_and_notify = yes } #Orumiyeh
 	}
 	
-	option = { #Grant it to Kurdistan
+	option = { #Grant it to Van
 		log = "[GetLogInfo]: event annex.6007 option annex.6007.b"
 		name = annex.6007.b
 		trigger = {
 			is_subject = no
-			KRD = {
-				exists = yes
-			}
+			trigger = { has_event_target = van }
 		}
 		ai_chance = {
-			base = 10
+			base = 50
 			modifier = {
 				factor = 0
 			}
 		}
 		
-		KRD = {
-			transfer_state = 1426
-		}
-		1426 = { add_claim_by = KRD }
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:van }
+        1426 = { transfer_state_and_notify = yes } #Orumiyeh
 	}
 	
-	option = { #Grant it to the Ottoman Empire
+	option = { #Grant it to Azeirbadjan
 		log = "[GetLogInfo]: event annex.6007 option annex.6007.c"
 		name = annex.6007.c
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-			}
+			trigger = { has_event_target = persian_azeirbadjan }
 		}
 		ai_chance = {
-			base = 10
+			base = 50
 			modifier = {
 				factor = 0
 			}
 		}
 		
-		TUR = {
-			transfer_state = 1426
-		}
-		1426 = { add_claim_by = TUR }
-		
-		recheck_annexations = yes
-	}
-	
-	option = { #Grant it to Russia
-		log = "[GetLogInfo]: event annex.6007 option annex.6007.d"
-		name = annex.6007.d
-		trigger = {
-			is_subject = no
-			RUS = {
-				exists = yes
-				is_subject = no
-			}
-			OR = {
-				RUS = {
-					owns_state = 230
-				}
-				TRS = {
-					owns_state = 230
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-			}
-		}
-		
-		if = {
-			limit = {
-				TRS = {
-					country_exists = yes
-					is_subject_of = RUS
-				}
-			}
-			TRS = {
-				transfer_state = 1426
-			}
-			1426 = { add_claim_by = TRS }
-		}
-		else_if = {
-			limit = {
-				TRS = {
-					country_exists = no
-				}
-			}
-			RUS = {
-				transfer_state = 1426
-			}
-			1426 = { add_claim_by = RUS }
-		}
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:persian_azeirbadjan }
+        1426 = { transfer_state_and_notify = yes } #Orumiyeh
 	}
 	
 	option = { #Give to overlord
@@ -1011,13 +995,15 @@ country_event = { #Fate of Orumiyeh
 		every_owned_state = {
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.6007 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -6619,6 +6605,1073 @@ country_event = { #Fate of Hejaz/Medine
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.6045 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Yemen
+	id = annex.6046
+	title = annexation_293
+	desc = annexation_293_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		659 = { retain_state = yes } #Yaman Al Janubi
+		1307 = { retain_state = yes } #Mahrah
+		
+		# Hejaz owner
+		if = {
+			limit = {
+				1090 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1090.owner = { save_event_target_as = hejaz }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					1090 = { is_claim_or_core_of_ROOT = yes } # Asir
+					659 = { is_claim_or_core_of_ROOT = yes } # Yaman Al Janubi
+					1292 = { is_claim_or_core_of_ROOT = yes } # Najran
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Release Yemen
+		log = "[GetLogInfo]: event annex.6046 option annex.6046.a"
+		name = annex.6046.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = YEM }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			YEM = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = YEM_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			YEM = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = YEM_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Grant it to Hejaz
+		log = "[GetLogInfo]: event annex.6046 option annex.6046.b"
+		name = annex.6046.b
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = hejaz }
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 90
+				ROOT = {
+					original_tag = TUR
+					has_subject = HEJ
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:hejaz }
+        293 = { transfer_state_and_notify = yes } #Yemen
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6046 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		YEM = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6046 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		293 = { transfer_state_and_notify = yes } # Yemen
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6046 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Yaman Al Janubi
+	id = annex.6047
+	title = annexation_659
+	desc = annexation_659_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Yemen owner
+		if = {
+			limit = {
+				293 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:293.owner = { save_event_target_as = yemen }
+		}
+		
+		# Aden owner
+		if = {
+			limit = {
+				1290 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1290.owner = { save_event_target_as = aden }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					1290 = { is_claim_or_core_of_ROOT = yes } # Aden
+					293 = { is_claim_or_core_of_ROOT = yes } # Yemen
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Grant it to Yemen
+		log = "[GetLogInfo]: event annex.6047 option annex.6047.a"
+		name = annex.6047.a
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = yemen }
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 40
+				ROOT = {
+					has_subject = ADE
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:yemen }
+        659 = { transfer_state_and_notify = yes } #Yaman Al Janubi
+	}
+
+	option = { #Grant it to Aden
+		log = "[GetLogInfo]: event annex.6047 option annex.6047.b"
+		name = annex.6047.b
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = aden }
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 90
+				ROOT = {
+					has_subject = ADE
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:aden }
+        659 = { transfer_state_and_notify = yes } #Yaman Al Janubi
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6047 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        659 = { transfer_state_and_notify = yes } #Yaman Al Janubi
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6047 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		659 = { transfer_state_and_notify = yes } #Yaman Al Janubi
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6047 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Mahrah
+	id = annex.6048
+	title = annexation_1307
+	desc = annexation_1307_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Yemen owner
+		if = {
+			limit = {
+				293 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:293.owner = { save_event_target_as = yemen }
+		}
+		
+		# Aden owner
+		if = {
+			limit = {
+				1290 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1290.owner = { save_event_target_as = aden }
+		}
+		
+		# Rub Al-Khali owner
+		if = {
+			limit = {
+				678 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:678.owner = { save_event_target_as = rub_al_khali }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					1290 = { is_claim_or_core_of_ROOT = yes } # Aden
+					293 = { is_claim_or_core_of_ROOT = yes } # Yemen
+					678 = { is_claim_or_core_of_ROOT = yes } # Yemen
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Grant it to Yemen
+		log = "[GetLogInfo]: event annex.6048 option annex.6048.a"
+		name = annex.6048.a
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = yemen }
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 40
+				ROOT = {
+					has_subject = ADE
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:yemen }
+        1307 = { transfer_state_and_notify = yes } #Mahrah
+	}
+
+	option = { #Grant it to Aden
+		log = "[GetLogInfo]: event annex.6048 option annex.6048.b"
+		name = annex.6048.b
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = aden }
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 90
+				ROOT = {
+					has_subject = ADE
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:aden }
+        1307 = { transfer_state_and_notify = yes } #Mahrah
+	}
+	
+	option = { #Grant it to Rub Al-Khali
+		log = "[GetLogInfo]: event annex.6048 option annex.6048.c"
+		name = annex.6048.c
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = rub_al_khali }
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:rub_al_khali }
+        1307 = { transfer_state_and_notify = yes } #Mahrah
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6048 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1307 = { transfer_state_and_notify = yes } #Mahrah
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6048 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1307 = { transfer_state_and_notify = yes } #Mahrah
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6048 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Aden
+	id = annex.6049
+	title = annexation_1290
+	desc = annexation_1290_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		1288 = { retain_state = yes } #Berbera
+		1093 = { retain_state = yes } #Hadramawt
+		659 = { retain_state = yes } #Yaman Al-Janubi
+		
+		# Yemen owner
+		if = {
+			limit = {
+				293 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:293.owner = { save_event_target_as = yemen }
+		}
+		
+		# Yaman Al-Janubi owner
+		if = {
+			limit = {
+				659 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:659.owner = { save_event_target_as = yaman_al_janubi }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					293 = { is_claim_or_core_of_ROOT = yes } # Yemen
+					659 = { is_claim_or_core_of_ROOT = yes } # Yaman Al Janubi
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Release Aden
+		log = "[GetLogInfo]: event annex.6049 option annex.6049.a"
+		name = annex.6049.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				ROOT = {
+					original_tag = ENG
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = ADE }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			ADE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ADE_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			ADE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ADE_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Grant it to Yemen
+		log = "[GetLogInfo]: event annex.6049 option annex.6049.b"
+		name = annex.6049.b
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = yemen }
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 30
+				ROOT = {
+					original_tag = ENG
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:yemen }
+        1290 = { transfer_state_and_notify = yes } #Aden
+	}
+	
+	option = { #Grant it to Yaman Al Janubi
+		log = "[GetLogInfo]: event annex.6049 option annex.6049.c"
+		name = annex.6049.c
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = yaman_al_janubi }
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 30
+				ROOT = {
+					original_tag = ENG
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:yaman_al_janubi }
+        1290 = { transfer_state_and_notify = yes } #Aden
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6049 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		ADE = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6049 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1290 = { transfer_state_and_notify = yes } # Aden
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6049 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Hadramawt
+	id = annex.6050
+	title = annexation_1093
+	desc = annexation_1093_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Yemen owner
+		if = {
+			limit = {
+				293 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:293.owner = { save_event_target_as = yemen }
+		}
+		
+		# Aden owner
+		if = {
+			limit = {
+				1290 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1290.owner = { save_event_target_as = aden }
+		}
+		
+		# Mahrah owner
+		if = {
+			limit = {
+				1307 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1307.owner = { save_event_target_as = mahrah }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					1290 = { is_claim_or_core_of_ROOT = yes } # Aden
+					293 = { is_claim_or_core_of_ROOT = yes } # Yemen
+					1307 = { is_claim_or_core_of_ROOT = yes } # Mahrah
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Grant it to Yemen
+		log = "[GetLogInfo]: event annex.6050 option annex.6050.a"
+		name = annex.6050.a
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = yemen }
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 40
+				ROOT = {
+					has_subject = ADE
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:yemen }
+        1093 = { transfer_state_and_notify = yes } #Hadramawt
+	}
+
+	option = { #Grant it to Aden
+		log = "[GetLogInfo]: event annex.6050 option annex.6050.b"
+		name = annex.6050.b
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = aden }
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 90
+				ROOT = {
+					has_subject = ADE
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:aden }
+        1093 = { transfer_state_and_notify = yes } #Hadramawt
+	}
+	
+	option = { #Grant it to Mahrah
+		log = "[GetLogInfo]: event annex.6050 option annex.6050.c"
+		name = annex.6050.c
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = mahrah }
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:mahrah }
+        1093 = { transfer_state_and_notify = yes } #Hadramawt
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6050 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1093 = { transfer_state_and_notify = yes } #Mahrah
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6050 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1093 = { transfer_state_and_notify = yes } #Hadramawt
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6050 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Tabuk
+	id = annex.6051
+	title = annexation_1311
+	desc = annexation_1311_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Medine owner
+		if = {
+			limit = {
+				679 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:679.owner = { save_event_target_as = medine }
+		}
+		
+		# Ha'il owner
+		if = {
+			limit = {
+				1091 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1091.owner = { save_event_target_as = hail }
+		}
+		
+		# Sharq Al-Urdunn owner
+		if = {
+			limit = {
+				455 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:455.owner = { save_event_target_as = sharq_al_urdunn }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					679 = { is_claim_or_core_of_ROOT = yes } # Medine
+					1091 = { is_claim_or_core_of_ROOT = yes } # Ha'il
+					455 = { is_claim_or_core_of_ROOT = yes } # Sharq Al-Urdunn
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Grant it to Medine
+		log = "[GetLogInfo]: event annex.6051 option annex.6051.a"
+		name = annex.6051.a
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = medine }
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				HEJ = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = HEJ
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:medine }
+        1311 = { transfer_state_and_notify = yes } #Tabuk
+	}
+
+	option = { #Grant it to Ha'il
+		log = "[GetLogInfo]: event annex.6051 option annex.6051.b"
+		name = annex.6051.b
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = hail }
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 10
+				HEJ = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = HEJ
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:hail }
+        1311 = { transfer_state_and_notify = yes } #Tabuk
+	}
+	
+	option = { #Grant it to Sharq Al-Urdunn
+		log = "[GetLogInfo]: event annex.6051 option annex.6051.c"
+		name = annex.6051.c
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = sharq_al_urdunn }
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 100
+				SYR = {
+					exists = yes
+					owns_state = 455
+				}
+				ROOT = {
+					has_subject = SYR
+				}
+			}
+			modifier = {
+				factor = 10
+				HEJ = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = HEJ
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:sharq_al_urdunn }
+        1311 = { transfer_state_and_notify = yes } #Tabuk
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6051 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1311 = { transfer_state_and_notify = yes } #Tabuk
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6051 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1311 = { transfer_state_and_notify = yes } #Tabuk
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6051 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Sharq Al-Urdunn
+	id = annex.6052
+	title = annexation_455
+	desc = annexation_455_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Dimashq owner
+		if = {
+			limit = {
+				554 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:554.owner = { save_event_target_as = dimashq }
+		}
+		
+		# Tabuk owner
+		if = {
+			limit = {
+				1311 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1311.owner = { save_event_target_as = tabuk }
+		}
+		
+		# Naqab owner
+		if = {
+			limit = {
+				1310 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1310.owner = { save_event_target_as = naqab }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					554 = { is_claim_or_core_of_ROOT = yes } # Dimashq
+					1311 = { is_claim_or_core_of_ROOT = yes } # Tabuk
+					1310 = { is_claim_or_core_of_ROOT = yes } # Naqab
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Grant it to Dimashq
+		log = "[GetLogInfo]: event annex.6052 option annex.6052.a"
+		name = annex.6052.a
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = dimashq }
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				SYR = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = SYR
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:dimashq }
+        455 = { transfer_state_and_notify = yes } #Sharq Al-Urdunn
+	}
+
+	option = { #Grant it to Tabuk
+		log = "[GetLogInfo]: event annex.6052 option annex.6052.b"
+		name = annex.6052.b
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = tabuk }
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				HEJ = {
+					exists = yes
+					owns_state = 1311
+				}
+				ROOT = {
+					has_subject = HEJ
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:tabuk }
+        455 = { transfer_state_and_notify = yes } #Sharq Al-Urdunn
+	}
+	
+	option = { #Grant it to Naqab
+		log = "[GetLogInfo]: event annex.6052 option annex.6052.c"
+		name = annex.6052.c
+		trigger = {
+			is_subject = no
+			trigger = { has_event_target = naqab }
+		}
+		ai_chance = {
+			base = 50
+		}
+
+		set_temp_variable = { tag_to_release = event_target:naqab }
+        455 = { transfer_state_and_notify = yes } #Sharq Al-Urdunn
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6052 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        455 = { transfer_state_and_notify = yes } #Sharq Al-Urdunn
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6052 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		455 = { transfer_state_and_notify = yes } #Sharq Al-Urdunn
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6052 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
