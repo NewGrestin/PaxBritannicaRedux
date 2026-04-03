@@ -2121,10 +2121,10 @@ country_event = { # Fate of Lebanon
 	}
 }
 
-country_event = { # Fate of Filastin
+country_event = { # Fate of Al-Quds/Palestine
 	id = annex.6017
-	title = annexation_decision_553
-	desc = annexation_decision_553_desc
+	title = annexation_decision_454
+	desc = annexation_decision_454_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
@@ -2133,20 +2133,30 @@ country_event = { # Fate of Filastin
 		hidden_effect = {
 			if = {
 				limit = {
-					OR = {
-						554 = { is_claim_or_core_of_ROOT = yes } # Damascus
-						original_tag = SYR
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			if = {
-				limit = {
 					554 = { # Damascus
 						owner = { ROOT_can_grant_land = yes }
 					}
 				}
 				var:554.owner = { save_event_target_as = syria }
+			}
+			if = {
+				limit = {
+					453 = { # Sinai
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:453.owner = { save_event_target_as = sinai }
+			}
+			if = {
+				limit = {
+					OR = {
+						554 = { is_claim_or_core_of_ROOT = yes } # Damascus
+						453 = { is_claim_or_core_of_ROOT = yes } # Sinai
+						original_tag = SYR
+						original_tag = EGY
+					}
+				}
+				save_event_target_as = can_annex
 			}
 		}
 	}
@@ -2164,7 +2174,6 @@ country_event = { # Fate of Filastin
 		set_temp_variable = { tag_to_release = PAL }
 		1420 = { remove_claim_and_add_core_of_target = yes } #Akka
 		454 = { remove_claim_and_add_core_of_target = yes } #Quds
-		1310 = { remove_claim_and_add_core_of_target = yes } #Naqab
 		release_targeted_tag = yes
 
 		if = {
@@ -2209,7 +2218,29 @@ country_event = { # Fate of Filastin
 		set_temp_variable = { tag_to_release = event_target:syria }
 		1420 = { transfer_state_and_notify = yes } # Akka
 		454 = { transfer_state_and_notify = yes } # Quds
-		1310 = { transfer_state_and_notify = yes } # Naqab
+	}
+	
+	option = { # Give to Sinai
+		log = "[GetLogInfo]: event annex.6017 option annex.6017.c"
+		name = annex.6017.c
+		trigger = {
+			has_event_target = sinai
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sinai = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:sinai }
+		1420 = { transfer_state_and_notify = yes } # Akka
+		454 = { transfer_state_and_notify = yes } # Quds
 	}
 
 	option = { # Give to overlord
@@ -2237,7 +2268,6 @@ country_event = { # Fate of Filastin
 			limit = { 
 				state = 1420
 				state = 454
-				state = 1310
 			}
 			add_claim_of_ROOT = yes
 		}
@@ -7672,6 +7702,265 @@ country_event = { #Fate of Sharq Al-Urdunn
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.6052 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Naqab
+	id = annex.6053
+	title = annexation_1310
+	desc = annexation_1310_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Al-Quds/Palestine owner
+		if = {
+			limit = {
+				454 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:454.owner = { save_event_target_as = palestine }
+		}
+		
+		# Sinai owner
+		if = {
+			limit = {
+				453 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:453.owner = { save_event_target_as = sinai }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					454 = { is_claim_or_core_of_ROOT = yes } # Al-Quds
+					453 = { is_claim_or_core_of_ROOT = yes } # Sinai
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Grant it to Al-Quds
+		log = "[GetLogInfo]: event annex.6053 option annex.6053.a"
+		name = annex.6053.a
+		trigger = {
+			is_subject = no
+			has_event_target = palestine
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				SYR = {
+					exists = yes
+					owns_state = 454
+				}
+				ROOT = {
+					has_subject = SYR
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:palestine }
+        1310 = { transfer_state_and_notify = yes } #Naqab
+	}
+
+	option = { #Grant it to Sinai
+		log = "[GetLogInfo]: event annex.6053 option annex.6053.b"
+		name = annex.6053.b
+		trigger = {
+			is_subject = no
+			has_event_target = sinai
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				EGY = {
+					exists = yes
+					owns_state = 453
+				}
+				ROOT = {
+					has_subject = EGY
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:sinai }
+        1310 = { transfer_state_and_notify = yes } #Naqab
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6053 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1310 = { transfer_state_and_notify = yes } #Naqab
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6053 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1310 = { transfer_state_and_notify = yes } #Naqab
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6053 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Naqab
+	id = annex.6054
+	title = annexation_453
+	desc = annexation_453_desc
+	picture = GFX_report_PB_Peace_Deals_Middle_East
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Egypt owner
+		if = {
+			limit = {
+				446 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:446.owner = { save_event_target_as = egypt }
+		}
+		
+		# Naqab owner
+		if = {
+			limit = {
+				1310 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1310.owner = { save_event_target_as = naqab }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					446 = { is_claim_or_core_of_ROOT = yes } # Egypt
+					1310 = { is_claim_or_core_of_ROOT = yes } # Naqab
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Grant it to Egypt
+		log = "[GetLogInfo]: event annex.6054 option annex.6054.a"
+		name = annex.6054.a
+		trigger = {
+			is_subject = no
+			has_event_target = egypt
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				EGY = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = EGY
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:egypt }
+        453 = { transfer_state_and_notify = yes } #Sinai
+	}
+
+	option = { #Grant it to Naqab
+		log = "[GetLogInfo]: event annex.6054 option annex.6054.b"
+		name = annex.6054.b
+		trigger = {
+			is_subject = no
+			has_event_target = naqab
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				SYR = {
+					exists = yes
+					owns_state = 1310
+				}
+				ROOT = {
+					has_subject = SYR
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:naqab }
+        453 = { transfer_state_and_notify = yes } #Sinai
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.6054 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        453 = { transfer_state_and_notify = yes } #Sinai
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.6054 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		453 = { transfer_state_and_notify = yes } #Sinai
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.6054 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
