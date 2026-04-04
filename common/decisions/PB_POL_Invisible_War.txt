@@ -284,6 +284,9 @@ PB_POL_Invisible_War = {
 			FROM = {
 				is_core_of = POL
 				has_state_flag = POL_Resistance_State_Flag
+				NOT = {
+					has_state_flag = PB_POL_Pacified_State
+				}
 			}
 		}
 
@@ -333,10 +336,17 @@ PB_POL_Invisible_War = {
 
 		days_remove = 15
 
-		cost = 15
+		custom_cost_trigger = {
+			command_power > 14
+			has_political_power>19
+		}
+		custom_cost_text = PB_POL_decision_cost_CP_15
 
 		available = {
-			
+			divisions_in_state = {
+				state = FROM
+				size > 4
+			}
 		}
 
 		visible = {
@@ -357,7 +367,15 @@ PB_POL_Invisible_War = {
 		}
 
 		complete_effect = {
-			
+			add_command_power = -15
+			add_political_power = -20
+		}
+
+		remove_trigger = {
+			divisions_in_state = {
+				state = FROM
+				size < 5
+			}
 		}
 
 		modifier = {
@@ -367,6 +385,12 @@ PB_POL_Invisible_War = {
 		remove_effect = {
 			FROM = {
 				add_core_of = POL
+			}
+			add_manpower = -500
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -50
+				producer = POL
 			}
 		}
 
@@ -406,23 +430,107 @@ PB_POL_Invisible_War = {
 			FROM = {
 				is_core_of = POL
 				has_state_flag = POL_Resistance_State_Flag
+				NOT = {
+					has_state_flag = PB_POL_Pacified_State
+				}
 			}
 		}
 
 		complete_effect = {
-			
+			add_command_power = -10
 		}
 
 		modifier = {
 			#political_power_cost = 0.5
 		}
 
+		remove_trigger = {
+			divisions_in_state = {
+				state = FROM
+				size < 2
+			}
+		}
+
 		remove_effect = {
 			FROM = {
 				PB_POL_Decrease_Local_Resistance_Medium = yes
 			}
-			add_command_power = -10
+			
 			add_manpower = -10
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+	PB_POL_Bring_Order = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 20
+
+		custom_cost_trigger = {
+			command_power > 10
+		}
+		custom_cost_text = PB_POL_decision_cost_CP_10
+		available = {
+			has_completed_focus = PB_POL_White_Red_Ops
+			divisions_in_state = {
+				state = FROM
+				size > 1
+			}
+		}
+
+		visible = {
+
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				is_core_of = POL
+				has_state_flag = POL_Resistance_State_Flag
+				NOT = {
+					has_state_flag = PB_POL_Pacified_State
+				}
+				custom_trigger_tooltip = {
+					tooltip = PB_POL_Local_Resistance_Less_40_tt
+					check_variable = { id.Resistance_Number<40 }
+				}
+			}
+		}
+
+		complete_effect = {
+			add_command_power = -10
+		}
+
+		modifier = {
+			political_power_cost = 0.05
+		}
+
+		remove_trigger = {
+			divisions_in_state = {
+				state = FROM
+				size < 2
+			}
+		}
+
+		remove_effect = {
+			custom_effect_tooltip = POL_Bring_Order_tt
+			FROM = {
+				set_variable = { var = id.Resistance_Number value = 0 }
+			}
+			add_command_power = -10
+			add_manpower = -100
+			hidden_effect = {
+				FROM = {
+					set_state_flag = PB_POL_Pacified_State
+				}
+			}
 		}
 
 		ai_will_do = {
@@ -467,6 +575,9 @@ PB_POL_Invisible_War = {
 					limit = {
 						is_core_of = POL
 						has_state_flag = POL_Resistance_State_Flag
+						NOT = {
+							has_state_flag = PB_POL_Pacified_State
+						}
 					}
 					add_to_variable = {
 						var = id.Resistance_Number
@@ -494,11 +605,13 @@ PB_POL_Invisible_War = {
 						limit = {
 							check_variable = { id.Resistance_Number>80 }
 						}
-						resistance_number = {
-							remove_core_of = POL
-						}
-						difference_number = {
+						random_list = {
+							resistance_number = {
+								remove_core_of = POL
+							}
+							difference_number = {
 
+							}
 						}
 					}
 					random_list = {
@@ -533,23 +646,20 @@ PB_POL_Invisible_War = {
 
 						}
 					}
-					FROM = {
-						random_list = {
-							resistance_number = {
-
-								damage_building = {
-									type = arms_factory
-									damage = 0.5
-								}
+					random_list = {
+						resistance_number = {
+							damage_building = {
+								type = arms_factory
+								state = id
+								damage = 0.5
 							}
-							difference_number = {
+						}
+						difference_number = {
 
-							}
 						}
 					}
 				}
 			}
 		}
 	}
-	
 }
