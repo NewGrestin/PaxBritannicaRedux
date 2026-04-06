@@ -424,18 +424,21 @@ country_event = {#Doriot Coup Success
 
 		clr_country_flag = FRA_Charles_Nogues_Militarists
 		set_country_flag = FRA_Claire_Chennault_Militarists
-
-		add_ideas = PB_Ultranationalist_Dictatorship
+		
+		swap_ideas = {
+			remove_idea = PB_Parliamentary_Monarchy
+			add_idea = PB_Presidential_Dictatorship
+		}
 
 		remove_ideas = PB_FRA_Crumbling_Coalition
 
-		set_politics = {
-			ruling_party = ni
-		}
-
 		add_popularity = {
 			ideology = ni
-			popularity = 0.1
+			popularity = 0.05
+		}
+		add_popularity = {
+			ideology = ss
+			popularity = 0.03
 		}
 
 		hidden_effect = {
@@ -452,11 +455,6 @@ country_event = {#Doriot Coup Success
             ban_party_lb = yes
             ban_party_ss = yes
             ban_party_jc = yes
-		}
-
-		country_event = {
-			id = French_personality.5
-			days = 30
 		}
 
 		add_popularity = {
@@ -525,6 +523,11 @@ country_event = {#Doriot Coup Failure
 		add_popularity = {
 			ideology = rc
 			popularity = 0.1
+		}
+		
+		swap_ideas = {
+			remove_idea = PB_Parliamentary_Monarchy
+			add_idea = PB_Ultranationalist_Dictatorship
 		}
 
 		remove_ideas = PB_FRA_Crumbling_Coalition
@@ -661,14 +664,17 @@ country_event = {#Doriot Coup Failure - Armandists turn on Muarras
 			ideology = rc
 			popularity = -0.05
 		}
+		
+		swap_ideas = {
+			remove_idea = PB_Parliamentary_Monarchy
+			add_idea = PB_Presidential_Dictatorship
+		}
 
 		set_cosmetic_tag = FRA_Armand
 		set_country_flag = PB_FRA_Armandist_Counter_Coup
 
 		clr_country_flag = FRA_Charles_Nogues_Militarists
 		set_country_flag = FRA_Maxime_Weygand_Militarists
-
-		add_ideas = PB_Ultranationalist_Dictatorship
 
 		remove_ideas = PB_FRA_Crumbling_Coalition
 
@@ -747,7 +753,10 @@ country_event = {#Maurras restores the legitimate king
 
 		set_cosmetic_tag = FRA_Monarchy
 		set_country_flag = DS_Subideology_Absolutism
-		add_ideas = PB_Absolute_Monarchy
+		swap_ideas = {
+			remove_idea = PB_Ultranationalist_Dictatorship
+			add_idea = PB_Absolute_Monarchy
+		}
 	}
 }
 
@@ -1695,20 +1704,19 @@ country_event = {#Alliance with Spain
 		FRA = {
             add_to_faction = SPR
 		}
-
 	}
 
-	option = { #Refuse the Pact
-		name = French.38.b
-
-		ai_chance = {
-			factor = 0
-		}
-
-	}
+	#option = { #Refuse the Pact
+	#	name = French.38.b
+	#
+	#	ai_chance = {
+	#		factor = 0
+	#	}
+	#
+	#}
 }
 
-country_event = {#Policy towards Italy
+country_event = {#Policy towards Denmark
 	id = French.39
 	title = French.39.t
 	desc = French.39.d
@@ -1718,29 +1726,30 @@ country_event = {#Policy towards Italy
 
 	fire_only_once = yes
 
-	option = { #Restore Diplomatic Relations
+	option = { #Adhere to the Pact Entirely
 		name = French.39.a
 
-		#ai_chance = {
-		#	factor = 50
-		#	modifier = {
-		#		factor = 2
-		#		ISTA = {
-		#			OR = {
-		#				has_government = cn
-		#				has_government = rc
-		#				has_government = ds
-		#				has_government = ni
-		#			}
-		#		}
-		#	}
-		#}
-
+		ai_chance = {
+			factor = 100
+		}
 
 		FRA = {
-			add_opinion_modifier = {
-				target = IST modifier = diplomatic_outreach
-			}
+            add_to_faction = DEN
+		}
+	}
+
+	option = { #Perhaps an Observer status would be more fitting for us
+		name = French.38.b
+
+		ai_chance = {
+			factor = 0
+		}
+		
+		FRA = {
+			give_guarantee = DEN
+		}
+		DEN = {
+			give_guarantee = FRA
 		}
 	}
 }
@@ -6111,6 +6120,400 @@ country_event = {#test for dutch being SP controlled REMOVE WHEN STARTING WORK O
 	}
 }
 
+country_event = {#Volte Face
+	id = French.117
+	title = French.117.t
+	desc = French.117.d
+	picture = GFX_report_PB_French_Soldiers
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				check_variable = { PB_FRA_Dissonance_Left > 1 }
+				check_variable = { PB_FRA_Dissonance_Right < 2 }
+			}
+			FRA = { save_event_target_as = political_dissonance_left }
+		}
+		
+		if = {
+			limit = {
+				check_variable = { PB_FRA_Dissonance_Left > 2 }
+				check_variable = { PB_FRA_Dissonance_Right < 1 }
+			}
+			FRA = { save_event_target_as = political_dissonance_far_left }
+		}
+		
+		if = {
+			limit = {
+				check_variable = { PB_FRA_Dissonance_Left < 2 }
+				check_variable = { PB_FRA_Dissonance_Right > 1 }
+			}
+			FRA = { save_event_target_as = political_dissonance_right }
+		}
+		
+		if = {
+			limit = {
+				check_variable = { PB_FRA_Dissonance_Left < 1 }
+				check_variable = { PB_FRA_Dissonance_Right > 2 }
+			}
+			FRA = { save_event_target_as = political_dissonance_far_right }
+		}
+		
+		if = {
+			limit = {
+				AND = {
+					check_variable = { PB_FRA_Dissonance_Left < 2 }
+					check_variable = { PB_FRA_Dissonance_Right < 2 }
+				}
+				OR = {
+					NOT = {
+						AND = {
+							has_completed_focus = PB_FRA_Audace
+							has_completed_focus = PB_FRA_Triumph_of_Will
+						}
+						AND = {
+							has_completed_focus = PB_FRA_Plebeians_Tribune
+							has_completed_focus = PB_FRA_Nation_First_Son
+						}
+						AND = {
+							has_completed_focus = PB_FRA_Beloved_President
+							has_completed_focus = PB_FRA_Mighty_Marshal
+						}
+					}
+				}
+			}
+			FRA = { save_event_target_as = political_dissonance_center }
+		}
+		
+		if = {
+			limit = {
+				AND = {
+					check_variable = { PB_FRA_Dissonance_Left > 0 }
+					check_variable = { PB_FRA_Dissonance_Left < 3 }
+					check_variable = { PB_FRA_Dissonance_Right > 0 }
+					check_variable = { PB_FRA_Dissonance_Right < 3 }
+				}
+				NOT = {
+					AND = {
+						has_completed_focus = PB_FRA_Class_Collaboration
+						OR = {
+							has_completed_focus = PB_FRA_Plebeians_Tribune
+							has_completed_focus = PB_FRA_Nation_First_Son
+						}
+					}
+				}
+			}
+			FRA = { save_event_target_as = political_dissonance_corporatist }
+		}
+		
+		if = {
+			limit = {
+				AND = {
+					check_variable = { PB_FRA_Dissonance_Left > 2 }
+					check_variable = { PB_FRA_Dissonance_Right > 2 }
+				}
+			}
+			FRA = { save_event_target_as = political_dissonance_confusion }
+		}
+	}
+
+	option = { #The Man From the People
+		log = "[GetLogInfo]: event French.117 option French.117.a"
+		name = French.117.a
+		trigger = {
+			has_event_target = political_dissonance_left
+		}
+		ai_chance = {
+			base = 100
+		}
+		
+		add_country_leader_trait = PB_FRA_Man_From_People_trait
+		set_country_leader_ideology = DS_VARIANT_08
+		add_popularity = {
+			ideology = ds
+			popularity = 0.1
+		}
+		add_popularity = {
+			ideology = lb
+			popularity = 0.05
+		}
+		add_popularity = {
+			ideology = ss
+			popularity = 0.02
+		}
+	}
+	
+	option = { #The Modern Danton
+		log = "[GetLogInfo]: event French.117 option French.117.b"
+		name = French.117.b
+		trigger = {
+			has_event_target = political_dissonance_far_left
+		}
+		ai_chance = {
+			base = 100
+		}
+		
+		if = {
+			limit = {
+				FRA_jacques_doriot = {
+					has_trait = PB_FRA_Beloved_President
+				}
+			}
+			swap_ruler_traits = { 
+				remove = PB_FRA_Beloved_President
+				add = PB_FRA_Modern_Danton_trait
+			}
+		}
+		else = {
+			add_country_leader_trait = PB_FRA_Modern_Danton_trait
+		}
+		swap_ideas = {
+			remove_idea = PB_Presidential_Dictatorship
+			add_idea = PB_Parliamentary_Republic
+		}
+		retire_ideology_leader = ss
+		set_country_leader_ideology = SS_VARIANT_08
+		set_politics = {
+			ruling_party = ss
+			elections_allowed = no
+		}
+		add_popularity = {
+			ideology = ss
+			popularity = 0.15
+		}
+		add_popularity = {
+			ideology = ni
+			popularity = -0.05
+		}
+		add_popularity = {
+			ideology = rc
+			popularity = -0.1
+		}
+		add_popularity = {
+			ideology = lb
+			popularity = 0.05
+		}
+		add_popularity = {
+			ideology = ds
+			popularity = 0.05
+		}
+		add_popularity = {
+			ideology = jc
+			popularity = 0.05
+		}
+		set_party_name = {
+			ideology = ss
+			long_name = FRA_fpf_party_long
+			name = FRA_fpf_party
+		}
+		unban_party_ss = yes
+		unban_party_jc = yes
+		add_to_leading_coalition_ss = yes
+	}
+	
+	option = { #The Father of the Nation
+		log = "[GetLogInfo]: event French.117 option French.117.c"
+		name = French.117.c
+		trigger = {
+			has_event_target = political_dissonance_right
+		}
+		ai_chance = {
+			base = 100
+		}
+		
+		add_country_leader_trait = PB_FRA_Father_of_Nation_trait
+		set_country_leader_ideology = NI_VARIANT_02
+		set_politics = {
+			ruling_party = ni
+			elections_allowed = no
+		}
+		add_popularity = {
+			ideology = ni
+			popularity = 0.1
+		}
+		add_popularity = {
+			ideology = rc
+			popularity = 0.05
+		}
+		set_party_name = {
+			ideology = rc
+			long_name = FRA_fpf_party_long
+			name = FRA_fpf_party
+		}
+		unban_party_rc = yes
+		add_to_leading_coalition_rc = yes
+	}
+	
+	option = { #Our Grand Marshal
+		log = "[GetLogInfo]: event French.117 option French.117.e"
+		name = French.117.e
+		trigger = {
+			has_event_target = political_dissonance_far_right
+		}
+		ai_chance = {
+			base = 100
+		}
+		
+		if = {
+			limit = {
+				FRA_jacques_doriot = {
+					has_trait = PB_FRA_Grand_Marshal_Inexperienced_trait
+				}
+			}
+			swap_ruler_traits = { 
+				remove = PB_FRA_Grand_Marshal_Inexperienced_trait
+				add = PB_FRA_Grand_Marshal_Experienced_trait 
+			}
+		}
+		else = {
+			add_country_leader_trait = PB_FRA_Grand_Marshal_Experienced_trait
+		}
+		FRA_jacques_doriot = {
+			gain_xp = 50
+		}
+		set_country_leader_ideology = NI_VARIANT_07
+		set_politics = {
+			ruling_party = ni
+			elections_allowed = no
+		}
+		swap_ideas = {
+			remove_idea = PB_Presidential_Dictatorship
+			add_idea = PB_Ultranationalist_Dictatorship
+		}
+		add_popularity = {
+			ideology = ni
+			popularity = 0.15
+		}
+	}
+	
+	option = { #The Wisest Among All
+		log = "[GetLogInfo]: event French.117 option French.117.f"
+		name = French.117.f
+		trigger = {
+			has_event_target = political_dissonance_center
+		}
+		ai_chance = {
+			base = 100
+		}
+		
+		add_country_leader_trait = PB_FRA_Wisest_Among_All_trait
+		set_country_leader_ideology = DS_VARIANT_05
+	}
+	
+	option = { #Protector of the Organic Country
+		log = "[GetLogInfo]: event French.117 option French.117.g"
+		name = French.117.g
+		trigger = {
+			has_event_target = political_dissonance_corporatist
+		}
+		ai_chance = {
+			base = 100
+		}
+		
+		add_country_leader_trait = PB_FRA_Corporatist_trait
+		set_country_leader_ideology = NI_VARIANT_03
+		set_politics = {
+			ruling_party = ni
+			elections_allowed = no
+		}
+		add_popularity = {
+			ideology = ni
+			popularity = 0.1
+		}
+		add_popularity = {
+			ideology = ds
+			popularity = 0.04
+		}
+		add_popularity = {
+			ideology = rc
+			popularity = 0.04
+		}
+		add_popularity = {
+			ideology = an
+			popularity = 0.04
+		}
+	}
+	
+	option = { #The One Who Transcend Politics
+		log = "[GetLogInfo]: event French.117 option French.117.h"
+		name = French.117.h
+		trigger = {
+			has_event_target = political_dissonance_confusion
+			check_variable = { FRA_Factionalism < 0.16 }
+		}
+		ai_chance = {
+			base = 100
+		}
+		
+		add_country_leader_trait = PB_FRA_The_One_Who_Transcend_trait
+		swap_ideas = {
+			remove_idea = PB_Presidential_Dictatorship
+			add_idea = PB_Religious_Cult
+		}
+		set_popularities = {
+			ni = 17
+			ds = 16
+			rc = 9
+			cn = 11
+			lb = 10
+			an = 9
+			ss = 16
+			jc = 12
+		}
+	}
+	
+	option = { #The Opportunist
+		log = "[GetLogInfo]: event French.117 option French.117.i"
+		name = French.117.i
+		trigger = {
+			has_event_target = political_dissonance_confusion
+			check_variable = { FRA_Factionalism > 0.15 }
+		}
+		ai_chance = {
+			base = 10
+		}
+		
+		add_country_leader_trait = PB_FRA_Opportunist_trait
+		add_popularity = {
+			ideology = ni
+			popularity = -0.1
+		}
+		add_popularity = {
+			ideology = ds
+			popularity = -0.1
+		}
+		add_popularity = {
+			ideology = rc
+			popularity = 0.04
+		}
+		add_popularity = {
+			ideology = cn
+			popularity = 0.03
+		}
+		add_popularity = {
+			ideology = lb
+			popularity = 0.03
+		}
+		add_popularity = {
+			ideology = ss
+			popularity = 0.03
+		}
+		add_popularity = {
+			ideology = jc
+			popularity = 0.04
+		}
+	}
+	
+	after = {
+		clear_variable = PB_FRA_Dissonance_Left
+		clear_variable = PB_FRA_Dissonance_Right
+	}
+}
+
 country_event = {#France invites Nationalist Turkey
 	id = French.1000
 	title = French.1000.t
@@ -7921,7 +8324,7 @@ country_event = { #The SP demand Hannover
 			}
 
 			division_template = {
-				name = "Division d'Sécurité Publique"
+				name = "Division de Sécurité Publique"
 
 				regiments = {
 					light_infantry = { x = 0 y = 0 }
