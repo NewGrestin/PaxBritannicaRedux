@@ -255,4 +255,155 @@ PB_POL_New_Administration = {
 		}
 	}
 
+	PB_Fight_Bandits_Lithuania = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 35
+
+		cost = 25
+
+		days_re_enable = 50
+
+		available = {
+			divisions_in_state = {
+				state = FROM
+				size > 2
+			}
+		}
+
+		visible = {
+			has_country_flag = POL_LIT_Promises_Broken
+		}
+
+		remove_trigger = {
+			divisions_in_state = {
+				state = FROM
+				size < 3
+			}
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				OR = {
+					is_claimed_by = LIT
+					is_core_of = LIT
+				}
+				NOT = {
+					is_core_of = POL
+				}
+			}
+		}
+
+		complete_effect = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.5
+		}
+
+		remove_effect = {
+
+			FROM = {
+				add_compliance = -5
+				add_resistance = -15
+			}
+			add_manpower = -20
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -50
+				producer = POL
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+	PB_POL_Peace_In_Lithuania = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 35
+
+		cost = 25
+
+		available = {
+			if = {
+				limit = {
+					has_country_flag = POL_LIT_Promises_Kept
+				}
+				FROM = {
+					compliance > 50
+					resistance < 30
+				}
+				
+				else = {
+					FROM = {
+						compliance > 80
+						resistance < 10
+					}	
+				}
+			}	
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_global_flag = PB_POL_Lithuania_Russians_Agree_Annexation
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				NOT = {
+					is_core_of = POL
+				}
+				OR = {
+					is_claimed_by = LIT
+					is_core_of = LIT
+				}
+			}
+		}
+
+		complete_effect = {
+
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+		}
+
+		remove_effect = {
+
+			FROM = {
+				add_core_of = POL
+				hidden_effect = {
+					set_state_flag = POL_Resistance_State_Flag
+					set_variable = { var = id.Resistance_Number value = 40 }
+				}
+				IF = {
+					LIMIT = {
+						has_dynamic_modifier = {
+							modifier = baltic_brothers_state_war
+						}
+					}
+					remove_dynamic_modifier = { modifier = baltic_brothers_state_war }
+				}
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
 }
