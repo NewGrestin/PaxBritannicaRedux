@@ -10975,56 +10975,6 @@ country_event = { #Outcome of the Prague Conference - Franco-Russian War - For R
 	}
 }
 
-country_event = { # Prague Conf Choices
-	id = Prague_Conf.5
-	title = Prague_Conf.5.t
-	desc = Prague_Conf.5.d
-	picture = GFX_report_PB_Conference
-
-	is_triggered_only = yes
-
-	fire_only_once = yes
-
-	option = { # Scandinavia
-		name = Prague_Conf.5.a
-		trigger = { 
-			any_state_of = {
-				target = { 37 110 141 111 }
-				OR = { 
-					is_owned_by_ROOT_or_subject = yes
-					controller = { is_ally_with = FRA }
-				}
-			}
-			NOT = { has_country_flag = RUS_conf_demand_scandinavia }
-		}
-		set_country_flag = RUS_conf_demand_scandinavia
-		ai_chance = {
-			factor = 1
-		}
-		RUS = { 
-			country_event = { id = Prague_Conf.11 days = 1 }
-		}
-	}
-	option = { # Balkans
-		name = Prague_Conf.5.b
-		ai_chance = {
-			factor = 1
-		}
-	}
-	option = { # Germany
-		name = Prague_Conf.5.c
-		ai_chance = {
-			factor = 1
-		}
-	}
-	option = { # Czechia
-		name = Prague_Conf.5.d
-		ai_chance = {
-			factor = 1
-		}
-	}
-}
-
 country_event = { # Russia Demands States
 	id = Prague_Conf.8
 	title = Prague_Conf.8.t
@@ -11089,5 +11039,88 @@ country_event = { # TAG Folds to Russian demands
 
 	option = { # Shocking!
 		name = Prague_Conf.10.a
+	}
+}
+
+country_event = { # Russia Demands Sweden Withdraw from Finland #WIP make sure it cuts off aid
+	id = Prague_Conf.11
+	title = Prague_Conf.11.t
+	desc = Prague_Conf.11.d
+	picture = GFX_report_PB_Conference
+
+	is_triggered_only = yes
+
+	option = { # We wont listen to these demands!
+		name = Prague_Conf.11.a
+		ai_chance = {
+			factor = 1
+		}
+		RUS = { 
+			country_event = { id = Prague_Conf.10 days = 1 }
+		}
+		custom_effect_tooltip = FRA_Prague_Conference_angry_Russia_tt
+	}
+	option = { # Concede the land
+		name = Prague_Conf.11.b
+		ai_chance = {
+			factor = 100
+		}
+		add_to_variable = {
+			var = PB_PC_Outcome
+			value = 1
+		}
+		RUS = { 
+			country_event = { id = Prague_Conf.9 days = 1 }
+		}
+		every_state = {
+			limit = { is_finland = yes }
+			remove_claim_by = SWE
+		}
+		custom_effect_tooltip = FRA_Prague_Conference_happy_Russia_tt
+	}
+}
+country_event = {#Outcome of the Prague Conference - Franco-Russian Split - For Russia
+	id = Prague_Conf.12
+	title = Prague_Conf.12.t
+	desc = Prague_Conf.12.d
+	picture = GFX_report_PB_Conference
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { 
+		name = Prague_Conf.12.a
+
+		hidden_effect = {
+			set_global_flag = PB_Franco_Russian_Split
+			set_global_flag = PB_petrograd_pact_formed
+			RUS = {
+				leave_faction = yes
+				create_faction_from_template = faction_template_petrograd_pact
+				news_event = {
+					id = PBNews.283
+					days = 1
+				}
+			}
+			every_country = {
+				limit = {
+					AND = {
+						is_in_faction_with = RUS
+						OR = {
+							is_subject_of = RUS
+							is_guaranteed_by = RUS
+							has_country_flag = Tag_in_Russian_Sphere
+						}
+					}
+				}
+				RUS = { add_to_faction = PREV }
+			}
+		}
+
+
+		ai_chance = {
+			factor = 1
+		}
 	}
 }
