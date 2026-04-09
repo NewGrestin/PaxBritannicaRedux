@@ -1008,110 +1008,109 @@ country_event = { #Fate of Orumiyeh
 	}
 }
 
-country_event = { #Fate of Kordestan
-	id = annex.6008
-	title = annexation_kordestan
-	desc = annexation_kordestan_desc
-	picture = GFX_report_PB_Peace_Deals_Asia
+country_event = { # Fate of Kordestan
+    id = annex.6008
+    title = annexation_kordestan
+    desc = annexation_kordestan_desc
+    picture = GFX_report_PB_Peace_Deals_Asia
 
-	is_triggered_only = yes
+    is_triggered_only = yes
 
-	option = { #Leave it to Persia
-		log = "[GetLogInfo]: event annex.6008 option annex.6008.a"
-		name = annex.6008.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
+    immediate = {
+         if = { 
+			limit = { 
+				OR = {  
+					original_tag = KRD
+					original_tag = PER
+				}
 			}
+			save_event_target_as = can_annex
 		}
 
-		PER = {
-			transfer_state = 421
-		}
-		
-		recheck_annexations = yes
-	}
-	
-	option = { #Grant it to Kurdistan
-		log = "[GetLogInfo]: event annex.6008 option annex.6008.b"
-		name = annex.6008.b
-		trigger = {
-			is_subject = no
-			KRD = {
-				exists = yes
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-			}
-		}
-		
-		KRD = {
-			transfer_state = 421
-		}
-		421 = { add_claim_by = KRD }
-		
-		recheck_annexations = yes
-	}
-	
-	option = { #Grant it to the Ottoman Empire
-		log = "[GetLogInfo]: event annex.6008 option annex.6008.c"
-		name = annex.6008.c
-		trigger = {
-			is_subject = no
-			TUR = {
-				exists = yes
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-			}
-		}
-		
-		TUR = {
-			transfer_state = 421
-		}
-		421 = { add_claim_by = TUR }
-		
-		recheck_annexations = yes
-	}
-	
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.6008 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		421 = { transfer_if_owned = yes }
-	}
+        annexations_create_kurdistan_event_target = yes
+		if = {
+            limit = {
+                417 = {
+                    is_owned_by = KRD
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = { ROOT_can_grant_land = yes }
+					NOT = { tag = event_target:kurdistan }
+                }
+            }
+            var:417.owner = { save_event_target_as = persia }
+        }
+    }
 
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.6008 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
-	}
+    option = { # Grant it to Persia
+        name = annex.6008.a
+        trigger = { has_event_target = persia }
 
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.6008 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
-	}
+        ai_chance = {
+            base = 100
+            modifier = {
+                factor = 0
+                annexations_can_annex = yes
+            }
+        }
+
+        set_temp_variable = { tag_to_release = event_target:persia }
+
+        421 = { transfer_state_and_notify = yes } # Kordestan
+
+    }
+
+    option = { # Grant to Kurdistan
+        name = annex.6008.b
+        trigger = { has_event_target = kurdistan }
+
+        ai_chance = {
+            base = 100
+            modifier = {
+                factor = 0
+                annexations_can_annex = yes
+            }
+        }
+
+        set_temp_variable = { tag_to_release = event_target:kurdistan }
+
+        421 = { transfer_state_and_notify = yes }
+
+        # Erbil only if valid
+        if = {
+            limit = { has_event_target = erbil_owner }
+            676 = { transfer_if_owned = yes }
+        }
+    }
+
+    option = { # Give to overlord
+        name = annex.give_to_overlord
+        trigger = {
+            annexations_should_give_lands_to_overlord = yes
+        }
+
+        set_temp_variable = { tag_to_release = overlord }
+        421 = { transfer_and_notify = yes }
+    }
+
+    option = { # Integrate
+        name = annex.integration
+        trigger = {
+            annexations_can_annex = yes
+        }
+        421 = { add_claim_of_ROOT = yes }
+        417 = { add_claim_of_ROOT = yes }
+        676 = { add_claim_of_ROOT = yes }
+        352 = { add_claim_of_ROOT = yes }
+    }
+
+    option = {
+        name = annex.cancel
+        ai_chance = { base = 0 }
+    }
+
+    after = {
+        recheck_annexations = yes
+    }
 }
 
 country_event = { #Fate of Lorestan

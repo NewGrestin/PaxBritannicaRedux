@@ -8694,7 +8694,26 @@ country_event = { #Fate of Basque Country
 	is_triggered_only = yes
 
 	immediate = {
-		841 = { retain_state = yes } 
+		if = {
+			limit = {
+				OR = {
+					original_tag = SPR
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				176 = { #Castille
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+					}
+				}
+			}
+			var:176.owner = { save_event_target_as = spain }
+		}
 	}
 
 	option = { #Release Basque
@@ -8705,9 +8724,7 @@ country_event = { #Fate of Basque Country
 		}
 		ai_chance = {
 			base = 100
-			modifier = {
-				factor = 0
-			}
+			modifier = { factor = 0 }
 		}
 
 		set_temp_variable = { tag_to_release = BSQ }
@@ -8716,7 +8733,7 @@ country_event = { #Fate of Basque Country
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			BSQ = {
-				set_cosmetic_tag = GER_Occupied_Monarchy
+				set_cosmetic_tag = BSQ_Occupied_Monarchy
 			}
 		}
 
@@ -8726,8 +8743,6 @@ country_event = { #Fate of Basque Country
 				drop_cosmetic_tag = yes
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
 	option = { #Return it to Spain
@@ -8735,18 +8750,23 @@ country_event = { #Fate of Basque Country
 		name = annex.1058.b
 		trigger = {
 			is_subject = no
-			SPR = {
-				exists = yes
+			has_event_target = spain
+		}
+
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:spain }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:spain = { is_subject = yes }
 			}
 		}
 
-		ai_chance = { base = 0 }
-
-		SPR = {
-			transfer_state = 172
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = SPR }
+		172 = { transfer_state_and_notify = yes } #Basque Country
 	}
 
 	option = { #Give to overlord
@@ -8758,12 +8778,10 @@ country_event = { #Fate of Basque Country
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				#is_starting_french_state = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Integrate
@@ -8772,18 +8790,16 @@ country_event = { #Fate of Basque Country
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		841 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1058 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
 	}
+
+	after = { recheck_annexations = yes }
 }
 
 country_event = { #Fate of Apurdi
@@ -8794,24 +8810,69 @@ country_event = { #Fate of Apurdi
 
 	is_triggered_only = yes
 
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = SPR
+					original_tag = FRA
+					original_tag = OCT
+					original_tag = BSQ
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				172 = { #Castille
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+					}
+				}
+			}
+			var:172.owner = { save_event_target_as = spain }
+		}
+		if = {
+			limit = {
+				19 = { #Aquitane
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						is_subject = no
+						NOT = { tag = event_target:spain}
+					}
+				}
+			}
+			var:19.owner = { save_event_target_as = france }
+		}
+	}
+
 	option = { #Return it to Basque
 		log = "[GetLogInfo]: event annex.1059 option annex.1059.a"
 		name = annex.1059.a
 		trigger = {
 			is_subject = no
+			has_event_target = basque
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				NOT = { is_ally_with = event_target:basque }
+				OR = {
+					is_ally_with = event_target:france
+					is_ally_with = event_target:spain
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:basque = { is_subject = yes }
 			}
 		}
-		
-		BSQ = {
-			transfer_state = 841
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:basque }
+		841 = { transfer_state_and_notify = yes } #Apurdi
 	}
 
 	option = { #Return it to France
@@ -8819,18 +8880,53 @@ country_event = { #Fate of Apurdi
 		name = annex.1059.b
 		trigger = {
 			is_subject = no
-			FRA = {
-				exists = yes
+			has_event_target = france
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:france }
+				OR = {
+					is_ally_with = event_target:basque
+					is_ally_with = event_target:spain
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
 			}
 		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		841 = { transfer_state_and_notify = yes }
+	}
 
-		ai_chance = { base = 0 }
-
-		FRA = {
-			transfer_state = 841
+	option = { #Return it to Spain
+		log = "[GetLogInfo]: event annex.1059 option annex.1059.b"
+		name = annex.1059.c
+		trigger = {
+			is_subject = no
+			has_event_target = spain
 		}
 
-		recheck_annexations = yes
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:spain }
+				OR = {
+					is_ally_with = event_target:basque
+					is_ally_with = event_target:france
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:spain = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:spain }
+		841 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Give to overlord
@@ -8841,7 +8937,6 @@ country_event = { #Fate of Apurdi
 		}
 		set_temp_variable = { tag_to_release = overlord }
 		144 = { transfer_state_and_notify = yes }
-		recheck_annexations = yes
 	}
 
 	option = { #Integrate
@@ -8851,16 +8946,17 @@ country_event = { #Fate of Apurdi
 			annexations_can_annex = yes
 		}
 		144 = { add_claim_of_ROOT = yes }
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1059 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
 	}
+
+	after = { recheck_annexations = yes }
 }
+
 
 country_event = { #Fate of Holstein
 	id = annex.1060
