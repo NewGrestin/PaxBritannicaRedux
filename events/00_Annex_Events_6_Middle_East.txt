@@ -1030,20 +1030,29 @@ country_event = { # Fate of Kordestan
         annexations_create_kurdistan_event_target = yes
 		if = {
             limit = {
-                417 = {
-                    is_owned_by = KRD
+                676 = {
                     annexations_state_owner_is_valid_grant_target = yes
                     owner = { ROOT_can_grant_land = yes }
 					NOT = { tag = event_target:kurdistan }
                 }
             }
-            var:417.owner = { save_event_target_as = persia }
+            var:676.owner = { save_event_target_as = persian_kurdistan }
+        }
+		if = {
+            limit = {
+                417 = {
+                    annexations_state_owner_is_valid_grant_target = yes
+                    owner = { ROOT_can_grant_land = yes }
+					NOT = { tag = event_target:kurdistan }
+                }
+            }
+            var:417.owner = { save_event_target_as = hamadan }
         }
     }
 
     option = { # Grant it to Persia
         name = annex.6008.a
-        trigger = { has_event_target = persia }
+        trigger = { has_event_target = hamadan }
 
         ai_chance = {
             base = 100
@@ -1053,7 +1062,7 @@ country_event = { # Fate of Kordestan
             }
         }
 
-        set_temp_variable = { tag_to_release = event_target:persia }
+        set_temp_variable = { tag_to_release = event_target:hamadan }
 
         421 = { transfer_state_and_notify = yes } # Kordestan
 
@@ -1061,7 +1070,7 @@ country_event = { # Fate of Kordestan
 
     option = { # Grant to Kurdistan
         name = annex.6008.b
-        trigger = { has_event_target = kurdistan }
+        trigger = { has_event_target = persian_kurdistan }
 
         ai_chance = {
             base = 100
@@ -1071,7 +1080,7 @@ country_event = { # Fate of Kordestan
             }
         }
 
-        set_temp_variable = { tag_to_release = event_target:kurdistan }
+        set_temp_variable = { tag_to_release = event_target:persian_kurdistan }
 
         421 = { transfer_state_and_notify = yes }
 
@@ -5641,6 +5650,16 @@ country_event = { #Fate of Qatar
 			}
 			var:678.owner = { save_event_target_as = rub_al_khali }
 		}
+		if = {
+			limit = {
+				OR = {
+					1299 = { is_claim_or_core_of_ROOT = yes } # Sahil al-Ahsa
+					658 = { is_claim_or_core_of_ROOT = yes } # Abu Zhabi
+					678 = { is_claim_or_core_of_ROOT = yes } # Rub al-Khali
+				}
+			}
+			save_event_target_as = can_annex
+		}
 	}
 	
 	option = { # Give to Sahil al-Ahsa
@@ -5795,6 +5814,17 @@ country_event = { #Fate of Dubayy
 			}
 			var:678.owner = { save_event_target_as = rub_al_khali }
 		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					294 = { is_claim_or_core_of_ROOT = yes } # Masqat
+					678 = { is_claim_or_core_of_ROOT = yes } # Rub al-Khali
+				}
+			}
+			save_event_target_as = can_annex
+		}
 	}
 	
 	option = { # Give to Masqat
@@ -5905,7 +5935,24 @@ country_event = { #Fate of Najd
 	is_triggered_only = yes
 	
 	immediate = {
+		1297 = { retain_state = yes }
 		1298 = { retain_state = yes }
+		1299 = { retain_state = yes }
+		1091 = { retain_state = yes }
+		678 = { retain_state = yes }
+		1292 = { retain_state = yes }
+		
+		# Ha'il owner
+		if = {
+			limit = {
+				1091 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1091.owner = { save_event_target_as = hail }
+		}
 	}
 	
 	option = { #Release Najd
@@ -5964,9 +6011,7 @@ country_event = { #Fate of Najd
 		name = annex.6042.b
 		trigger = {
 			is_subject = no
-			JBS = {
-				exists = yes
-			}
+			has_event_target = hail
 			ROOT = {
 				NOT = {
 					OR = {
@@ -5988,8 +6033,8 @@ country_event = { #Fate of Najd
 				factor = 100
 			}
 		}
-
-		set_temp_variable = { tag_to_release = JBS }
+		
+		set_temp_variable = { tag_to_release = event_target:hail }
 		SAU = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
 	}

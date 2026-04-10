@@ -1466,7 +1466,7 @@ country_event = { #Fate of Buganda
 				remove_claim_by = UGA
 			}
 			if = { 
-				llimit = { 
+				limit = { 
 					OR = { 
 						original_tag = BEF
 					}
@@ -1599,7 +1599,7 @@ country_event = { #Fate of Kenya
 				remove_claim_by = KEN
 			}
 			if = { 
-				llimit = { 
+				limit = { 
 					OR = { 
 						original_tag = BEF
 					}
@@ -7627,4 +7627,190 @@ country_event = { #Fate of Madagascar
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
     }
+}
+
+country_event = { #Fate of Darfur
+	id = annex.4084
+	title = annexation_767
+	desc = annexation_767_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		# Dongola owner
+		if = {
+			limit = {
+				1281 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1281.owner = { save_event_target_as = dongola }
+		}
+		
+		# Kordofan owner
+		if = {
+			limit = {
+				549 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:549.owner = { save_event_target_as = kordofan }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					1281 = { is_claim_or_core_of_ROOT = yes } # Dongola
+					549 = { is_claim_or_core_of_ROOT = yes } # Kordofan
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Release Darfur
+		log = "[GetLogInfo]: event annex.4084 option annex.4084.a"
+		name = annex.4084.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+			modifier = {
+				factor = 0
+				BEF = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = BEF
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = DAR }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			DAR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = DAR_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			DAR = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = DAR_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Grant it to Kordofan
+		log = "[GetLogInfo]: event annex.4084 option annex.4084.b"
+		name = annex.4084.b
+		trigger = {
+			is_subject = no
+			has_event_target = kordofan
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 100
+				BEF = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = BEF
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:kordofan }
+        767 = { transfer_state_and_notify = yes } #North Darfur
+		1527 = { transfer_state_and_notify = yes } #Ennedi
+		1528 = { transfer_state_and_notify = yes } #Wadi
+	}
+
+	option = { #Grant it to Dongola
+		log = "[GetLogInfo]: event annex.4084 option annex.4084.c"
+		name = annex.4084.c
+		trigger = {
+			is_subject = no
+			has_event_target = dongola
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				BEF = {
+					exists = yes
+				}
+				ROOT = {
+					has_subject = BEF
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:dongola }
+        767 = { transfer_state_and_notify = yes } #North Darfur
+		1527 = { transfer_state_and_notify = yes } #Ennedi
+		1528 = { transfer_state_and_notify = yes } #Wadi
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4084 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        767 = { transfer_state_and_notify = yes } #North Darfur
+		1527 = { transfer_state_and_notify = yes } #Ennedi
+		1528 = { transfer_state_and_notify = yes } #Wadi
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4084 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		767 = { transfer_state_and_notify = yes } #North Darfur
+		1527 = { transfer_state_and_notify = yes } #Ennedi
+		1528 = { transfer_state_and_notify = yes } #Wadi
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4084 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
 }
