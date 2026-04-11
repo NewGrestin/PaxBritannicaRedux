@@ -7,11 +7,40 @@ add_namespace = annex
 
 country_event = { #Fate of New Georgia
 	id = annex.5001
-	title = annexation_new_georgia
-	desc = annexation_new_georgia_desc
+	title = annexation_285
+	desc = annexation_285_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+
+	immediate = { 
+		hidden_effect = { 
+			if = { 
+				limit = { 
+					OR = { 
+						is_imperial_federation = yes
+						is_australian_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			every_state = {
+				remove_claim_by = CNG
+				if = {
+					limit = { is_new_georgia = yes }
+					add_core_of = CNG
+				}
+				else = {
+					remove_core_of = CNG
+				}
+			}
+			CNG = { 
+				remove_ideas = { 
+					PB_CNG_Shades_Of_Red
+				}
+			}
+		}
+	}
 	
 	option = { #Release New Georgia Whole
 		log = "[GetLogInfo]: event annex.5001 option annex.5001.a"
@@ -28,12 +57,21 @@ country_event = { #Fate of New Georgia
 		}
 
 		if = {
-			limit = { country_exists = CNG }
-			custom_effect_tooltip = CNG_puppet_tooltip
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			CNG = {
+				set_cosmetic_tag = CNG_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = CNG }
-			release_targeted_tag = yes
+		
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			CNG = {
+				set_cosmetic_tag = CNG_Occupied_Republic
+			}
 		}
 	}
 	
@@ -44,8 +82,13 @@ country_event = { #Fate of New Georgia
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		CNG = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = { 
+			limit = { 
+				is_new_georgia =yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -57,13 +100,15 @@ country_event = { #Fate of New Georgia
 		ai_chance = {
 			base = 0
 			modifier = {
-				ROOT = {
-					tag = FST
-				}
 				factor = 100
+				annexations_can_annex = yes
 			}
 		}
-		every_owned_state = {
+		every_owned_state = { 
+			limit = { 
+				is_new_georgia =yes
+				is_valid_annexation_state = yes
+			}
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -87,7 +132,30 @@ country_event = { #Fate of New Georgia
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
-	
+
+	immediate = { 
+		hidden_effect = { 
+			if = { 
+				limit = { 
+					OR = { 
+						is_australian_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			every_state = {
+				remove_claim_by = FST
+				if = {
+					limit = { is_australie = yes }
+					add_core_of = FST
+				}
+				else = {
+					remove_core_of = FST
+				}
+			}
+		}
+	}
+
 	option = { #Release Australie Whole
 		log = "[GetLogInfo]: event annex.5002 option annex.5002.a"
 		name = annex.5002.a
@@ -103,12 +171,21 @@ country_event = { #Fate of New Georgia
 		}
 
 		if = {
-			limit = { country_exists = FST }
-			custom_effect_tooltip = FST_puppet_tooltip
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			FST = {
+				set_cosmetic_tag = FST_Occupied_Monarchy
+			}
 		}
-		else = {
-			set_temp_variable = { tag_to_release = FST }
-			release_targeted_tag = yes
+		
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			FST = {
+				set_cosmetic_tag = FST_Occupied_Republic
+			}
 		}
 	}	
 
@@ -119,8 +196,13 @@ country_event = { #Fate of New Georgia
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		FST = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = { 
+			limit = { 
+				is_australie = yes
+				is_valid_annexation_state = yes
+			}
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Integrate
@@ -136,7 +218,11 @@ country_event = { #Fate of New Georgia
 				annexations_can_annex = yes
 			}
 		}
-		every_owned_state = {
+		every_owned_state = { 
+			limit = { 
+				is_australie = yes
+				is_valid_annexation_state = yes
+			}
 			add_claim_of_ROOT = yes
 		}
 	}
