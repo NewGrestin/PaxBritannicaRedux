@@ -12618,8 +12618,8 @@ country_event = { #Fate of Northern Epirus
 
 country_event = { #Fate of Greece
 	id = annex.1095
-	title = annexation_greece
-	desc = annexation_greece_desc
+	title = annexation_47
+	desc = annexation_47_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -12631,6 +12631,8 @@ country_event = { #Fate of Greece
 		822 = { retain_state = yes }
 		339 = { retain_state = yes }
 		823 = { retain_state = yes }
+		1043 = { retain_state = yes }
+		1046 = { retain_state = yes }
 	}
 
 	option = { #Release Greece
@@ -12665,8 +12667,6 @@ country_event = { #Fate of Greece
 				set_cosmetic_tag = GRE_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
 	option = { #Give to overlord
@@ -12683,7 +12683,6 @@ country_event = { #Fate of Greece
 			}
 			transfer_state_and_notify = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Integrate
@@ -12695,30 +12694,83 @@ country_event = { #Fate of Greece
 		every_owned_state = {
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1095 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Thessaloniniki
 	id = annex.1096
-	title = annexation_thessaloniki
-	desc = annexation_thessaloniki_desc
+	title = annexation_731
+	desc = annexation_731_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+	
+	immediate = {
+		# South Macedonia owner
+		if = {
+			limit = {
+				1043 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1043.owner = { save_event_target_as = south_macedonia }
+		}
+		
+		# Pirin owner
+		if = {
+			limit = {
+				1042 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1042.owner = { save_event_target_as = pirin }
+		}
+		
+		# West Thrace owner
+		if = {
+			limit = {
+				184 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:184.owner = { save_event_target_as = west_thrace }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					1043 = { is_claim_or_core_of_ROOT = yes } # South Macedonia
+					1042 = { is_claim_or_core_of_ROOT = yes } # Pirin
+					184 = { is_claim_or_core_of_ROOT = yes } # West Thrace
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
 
-	option = { #Transfer it to Greece
+	option = { #Transfer it to South Macedonia
 		log = "[GetLogInfo]: event annex.1096 option annex.1096.a"
 		name = annex.1096.a
 		trigger = {
 			is_subject = no
+			has_event_target = south_macedonia
 		}
 		ai_chance = {
 			base = 100
@@ -12727,21 +12779,16 @@ country_event = { #Fate of Thessaloniniki
 			}
 		}
 
-		GRE = {
-			transfer_state = 731
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:south_macedonia }
+        731 = { transfer_state_and_notify = yes } #Thessaloniniki
 	}
 
-	option = { #Transfer it to Bulgaria
+	option = { #Transfer it to Pirin
 		log = "[GetLogInfo]: event annex.1096 option annex.1096.b"
 		name = annex.1096.b
 		trigger = {
 			is_subject = no
-			BUL = {
-				exists = yes
-			}
+			has_event_target = pirin
 		}
 		ai_chance = {
 			base = 100
@@ -12750,11 +12797,26 @@ country_event = { #Fate of Thessaloniniki
 			}
 		}
 
-		BUL = {
-			transfer_state = 731
+		set_temp_variable = { tag_to_release = event_target:pirin }
+        731 = { transfer_state_and_notify = yes } #Thessaloniniki
+	}
+	
+	option = { #Transfer it to West Thrace
+		log = "[GetLogInfo]: event annex.1096 option annex.1096.c"
+		name = annex.1096.c
+		trigger = {
+			is_subject = no
+			has_event_target = west_thrace
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
 		}
 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:west_thrace }
+        731 = { transfer_state_and_notify = yes } #Thessaloniniki
 	}
 
 	option = { #Give to overlord
@@ -12764,14 +12826,7 @@ country_event = { #Fate of Thessaloniniki
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		731 = { transfer_state_and_notify = yes } #Thessaloniniki
 	}
 
 	option = { #Integrate
@@ -12780,33 +12835,84 @@ country_event = { #Fate of Thessaloniniki
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		add_claim_of_ROOT = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1096 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of West Thrace
 	id = annex.1097
-	title = annexation_west_thrace
-	desc = annexation_west_thrace_desc
+	title = annexation_184
+	desc = annexation_184_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+	
+	immediate = {
+		# East Thrace owner
+		if = {
+			limit = {
+				821 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:821.owner = { save_event_target_as = east_thrace }
+		}
+		
+		# Plovdiv owner
+		if = {
+			limit = {
+				212 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:212.owner = { save_event_target_as = plovdiv }
+		}
+		
+		# Thessaloniniki owner
+		if = {
+			limit = {
+				731 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:731.owner = { save_event_target_as = thessaloniniki }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					821 = { is_claim_or_core_of_ROOT = yes } # East Thrace
+					212 = { is_claim_or_core_of_ROOT = yes } # Plovdiv
+					731 = { is_claim_or_core_of_ROOT = yes } # Thessaloniniki
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
 
-	option = { #Transfer it to Greece
+	option = { #Transfer it to East Thrace
 		log = "[GetLogInfo]: event annex.1097 option annex.1097.a"
 		name = annex.1097.a
 		trigger = {
 			is_subject = no
+			has_event_target = east_thrace
 		}
 		ai_chance = {
 			base = 100
@@ -12815,21 +12921,16 @@ country_event = { #Fate of West Thrace
 			}
 		}
 
-		GRE = {
-			transfer_state = 184
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:east_thrace }
+        184 = { transfer_state_and_notify = yes } #West Thrace
 	}
 
-	option = { #Transfer it to Bulgaria
+	option = { #Transfer it to Plovdiv
 		log = "[GetLogInfo]: event annex.1097 option annex.1097.b"
 		name = annex.1097.b
 		trigger = {
 			is_subject = no
-			BUL = {
-				exists = yes
-			}
+			has_event_target = plovdiv
 		}
 		ai_chance = {
 			base = 100
@@ -12838,11 +12939,26 @@ country_event = { #Fate of West Thrace
 			}
 		}
 
-		BUL = {
-			transfer_state = 184
+		set_temp_variable = { tag_to_release = event_target:plovdiv }
+        184 = { transfer_state_and_notify = yes } #West Thrace
+	}
+	
+	option = { #Transfer it to Thessaloniniki
+		log = "[GetLogInfo]: event annex.1097 option annex.1097.c"
+		name = annex.1097.c
+		trigger = {
+			is_subject = no
+			has_event_target = thessaloniniki
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
 		}
 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:thessaloniniki }
+        184 = { transfer_state_and_notify = yes } #West Thrace
 	}
 
 	option = { #Give to overlord
@@ -12852,14 +12968,7 @@ country_event = { #Fate of West Thrace
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		184 = { transfer_state_and_notify = yes } #West Thrace
 	}
 
 	option = { #Integrate
@@ -12868,33 +12977,86 @@ country_event = { #Fate of West Thrace
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
+		184 = {
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1097 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of East Thrace
 	id = annex.1098
-	title = annexation_east_thrace
-	desc = annexation_east_thrace_desc
+	title = annexation_821
+	desc = annexation_821_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+	
+	immediate = {
+		# West Thrace owner
+		if = {
+			limit = {
+				184 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:184.owner = { save_event_target_as = west_thrace }
+		}
+		
+		# Burgas owner
+		if = {
+			limit = {
+				211 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:211.owner = { save_event_target_as = burgas }
+		}
+		
+		# Constantinople owner
+		if = {
+			limit = {
+				341 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:341.owner = { save_event_target_as = constantinople }
+		}
+		
+		#
+		if = {
+			limit = {
+				OR = {
+					184 = { is_claim_or_core_of_ROOT = yes } # East Thrace
+					211 = { is_claim_or_core_of_ROOT = yes } # Plovdiv
+					341 = { is_claim_or_core_of_ROOT = yes } # Thessaloniniki
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
 
-	option = { #Transfer it to Greece
+	option = { #Transfer it to West Thrace
 		log = "[GetLogInfo]: event annex.1098 option annex.1098.a"
 		name = annex.1098.a
 		trigger = {
 			is_subject = no
+			has_event_target = east_thrace
 		}
 		ai_chance = {
 			base = 100
@@ -12903,21 +13065,16 @@ country_event = { #Fate of East Thrace
 			}
 		}
 
-		GRE = {
-			transfer_state = 821
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:west_thrace }
+        821 = { transfer_state_and_notify = yes } #West Thrace
 	}
 
-	option = { #Transfer it to turkey
+	option = { #Transfer it to Burgas
 		log = "[GetLogInfo]: event annex.1098 option annex.1098.b"
 		name = annex.1098.b
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-			}
+			has_event_target = burgas
 		}
 		ai_chance = {
 			base = 100
@@ -12926,11 +13083,26 @@ country_event = { #Fate of East Thrace
 			}
 		}
 
-		TUR = {
-			transfer_state = 821
+		set_temp_variable = { tag_to_release = event_target:burgas }
+        821 = { transfer_state_and_notify = yes } #West Thrace
+	}
+	
+	option = { #Transfer it to Constantinople
+		log = "[GetLogInfo]: event annex.1098 option annex.1098.c"
+		name = annex.1098.c
+		trigger = {
+			is_subject = no
+			has_event_target = constantinople
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
 		}
 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:constantinople }
+        821 = { transfer_state_and_notify = yes } #West Thrace
 	}
 
 	option = { #Give to overlord
@@ -12940,14 +13112,7 @@ country_event = { #Fate of East Thrace
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		821 = { transfer_state_and_notify = yes } #West Thrace
 	}
 
 	option = { #Integrate
@@ -12956,16 +13121,18 @@ country_event = { #Fate of East Thrace
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
+		821 = {
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1098 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -21154,8 +21321,8 @@ country_event = { #Fate of Gelderland
 	}
 
 	option = { #Return to Zeeland
-		log = "[GetLogInfo]: event annex.1165 option annex.1165.a"
-		name = annex.1165.a
+		log = "[GetLogInfo]: event annex.1167 option annex.1167.a"
+		name = annex.1167.a
 		trigger = {
 			is_subject = no
 			has_event_target = zeeland
@@ -21172,8 +21339,8 @@ country_event = { #Fate of Gelderland
 	}
 
 	option = { #Give it to The flanders
-		log = "[GetLogInfo]: event annex.1165 option annex.1165.b"
-		name = annex.1165.b
+		log = "[GetLogInfo]: event annex.1167 option annex.1167.b"
+		name = annex.1167.b
 		trigger = {
 			is_subject = no
 			has_event_target = flanders
@@ -21186,7 +21353,7 @@ country_event = { #Fate of Gelderland
 	}
 
 	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1165 option annex.give_to_overlord"
+		log = "[GetLogInfo]: event annex.1167 option annex.give_to_overlord"
 		name = annex.give_to_overlord
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
@@ -21196,7 +21363,7 @@ country_event = { #Fate of Gelderland
 	}
 
 	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1165 option annex.integration"
+		log = "[GetLogInfo]: event annex.1167 option annex.integration"
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
@@ -21205,7 +21372,243 @@ country_event = { #Fate of Gelderland
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1165 option annex.cancel"
+		log = "[GetLogInfo]: event annex.1167 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of South Macedonia
+	id = annex.1168
+	title = annexation_1043
+	desc = annexation_1043_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						731 = { is_claim_or_core_of_ROOT = yes } #Thessaloniniki
+						106 = { is_claim_or_core_of_ROOT = yes } #Vardar
+						1045 = { is_claim_or_core_of_ROOT = yes } #Thessaly
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					731 = { #Thessaloniniki
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:731.owner = { save_event_target_as = thessaloniniki }
+			}
+			if = {
+				limit = {
+					106 = { #Vardar
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:106.owner = { save_event_target_as = vardar }
+			}
+			if = {
+				limit = {
+					1045 = { #Thessaly
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1045.owner = { save_event_target_as = thessaly }
+			}
+		}
+	}
+
+	option = { #Return to Thessaloniniki
+		log = "[GetLogInfo]: event annex.1168 option annex.1168.a"
+		name = annex.1168.a
+		trigger = {
+			is_subject = no
+			has_event_target = thessaloniniki
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:thessaloniniki }
+		1043 = { transfer_if_owned = yes } #South Macedonia
+	}
+
+	option = { #Give it to Vardar
+		log = "[GetLogInfo]: event annex.1168 option annex.1168.b"
+		name = annex.1168.b
+		trigger = {
+			is_subject = no
+			has_event_target = vardar
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:vardar }
+		1043 = { transfer_if_owned = yes } #South Macedonia
+	}
+	
+	option = { #Give it to Thessaly
+		log = "[GetLogInfo]: event annex.1168 option annex.1168.c"
+		name = annex.1168.c
+		trigger = {
+			is_subject = no
+			has_event_target = thessaly
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:thessaly }
+		1043 = { transfer_if_owned = yes } #South Macedonia
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1168 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1043 = { transfer_if_owned = yes } #South Macedonia
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1168 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1043 = { add_claim_of_ROOT = yes } #Gelderland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1168 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of East Aegan Islands
+	id = annex.1169
+	title = annexation_1046
+	desc = annexation_1046_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						339 = { is_claim_or_core_of_ROOT = yes } #Smyrna
+						47 = { is_claim_or_core_of_ROOT = yes } #Attica
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					339 = { #Smyrna
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:339.owner = { save_event_target_as = smyrna }
+			}
+			if = {
+				limit = {
+					47 = { #Attica
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:47.owner = { save_event_target_as = attica }
+			}
+		}
+	}
+
+	option = { #Return to Smyrna
+		log = "[GetLogInfo]: event annex.1169 option annex.1169.a"
+		name = annex.1169.a
+		trigger = {
+			is_subject = no
+			has_event_target = smyrna
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:smyrna }
+		1046 = { transfer_if_owned = yes } #East Aegan Islands
+	}
+
+	option = { #Give it to Attica
+		log = "[GetLogInfo]: event annex.1169 option annex.1169.b"
+		name = annex.1169.b
+		trigger = {
+			is_subject = no
+			has_event_target = attica
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:attica }
+		1046 = { transfer_if_owned = yes } #East Aegan Islands
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1169 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1046 = { transfer_if_owned = yes } #East Aegan Islands
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1169 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1046 = { add_claim_of_ROOT = yes } #Gelderland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1169 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
