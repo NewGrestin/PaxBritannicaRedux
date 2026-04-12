@@ -12626,13 +12626,16 @@ country_event = { #Fate of Greece
 
 	immediate = {
 		731 = { retain_state = yes }
+		182 = { retain_state = yes }
 		184 = { retain_state = yes }
+		185 = { retain_state = yes }
 		821 = { retain_state = yes }
 		822 = { retain_state = yes }
 		339 = { retain_state = yes }
 		823 = { retain_state = yes }
 		1043 = { retain_state = yes }
 		1046 = { retain_state = yes }
+		164 = { retain_state = yes }
 	}
 
 	option = { #Release Greece
@@ -13306,88 +13309,204 @@ country_event = { #Fate of Sardinia
 
 country_event = { #Fate of Constantinople
 	id = annex.1100
-	title = annexation_constantinople
-	desc = annexation_constantinople_desc
+	title = annexation_341
+	desc = annexation_341_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					821 = { is_claim_or_core_of_ROOT = yes } #East Thrace
+					49 = { is_claim_or_core_of_ROOT = yes } #Osman
+					47 = { is_claim_or_core_of_ROOT = yes } #Attica
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		if = {
+			limit = {
+				821 = { #East Thrace
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:821.owner = { save_event_target_as = east_thrace }
+		}
+		
+		if = {
+			limit = {
+				49 = { #Osman
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:49.owner = { save_event_target_as = osman }
+		}
+		
+		if = {
+			limit = {
+				47 = { #Attica
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:47.owner = { save_event_target_as = attica }
+		}
 	}
 
-	option = { #Grant it to the Ottomans
+	option = { #Grant it to East Thrace
 		log = "[GetLogInfo]: event annex.1100 option annex.1100.a"
 		name = annex.1100.a
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-				NOT = {
-					has_war_with = ROOT
-				}
-			}
+			has_event_target = east_thrace
 		}
 		ai_chance = {
-			base = 100
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				original_tag = ENG
+			}
 		}
 
-		TUR = {
-			transfer_state = 341
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:east_thrace }
+		341 = { transfer_if_owned = yes } #Constantinople
 	}
 
-	option = { #Give it to Greece
+	option = { #Grant it to Osman
 		log = "[GetLogInfo]: event annex.1100 option annex.1100.b"
 		name = annex.1100.b
 		trigger = {
 			is_subject = no
-			GRE = {
-				exists = yes
-				NOT = {
-					has_war_with = ROOT
-				}
+			has_event_target = osman
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 70
+				original_tag = ENG
+			}
+			modifier = {
+				factor = 0
+				original_tag = RUS
 			}
 		}
 
-		ai_chance = { base = 0 }
-
-		GRE = {
-			transfer_state = 341
+		set_temp_variable = { tag_to_release = event_target:osman }
+		341 = { transfer_if_owned = yes } #Constantinople
+	}
+	
+	option = { #Grant it to Attica
+		log = "[GetLogInfo]: event annex.1100 option annex.1100.c"
+		name = annex.1100.c
+		trigger = {
+			is_subject = no
+			has_event_target = attica
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 80
+				original_tag = RUS
+			}
+			modifier = {
+				factor = 10
+				original_tag = ENG
+			}
 		}
 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:attica }
+		341 = { transfer_if_owned = yes } #Constantinople
 	}
 
 	option = { #Create a Mandate
-		log = "[GetLogInfo]: event annex.1100 option annex.1100.c"
-		name = annex.1100.c
+		log = "[GetLogInfo]: event annex.1100 option annex.1100.d"
+		name = annex.1100.d
 		trigger = {
 			is_subject = no
 			BYZ = {
 				exists = no
 			}
 			original_tag = ENG
+			original_tag = RUS
 		}
 		ai_chance = {
-			base = 100
+			base = 90
 		}
 
 		set_temp_variable = { tag_to_release = BYZ }
 		release_targeted_tag = yes
-
-		BYZ = {
-			set_cosmetic_tag = BYZ_League_Mandate
+		
+		if = {
+			limit = { ROOT = { original_tag = ENG } }
+			BYZ = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BYZ_League_Mandate
+			}
 		}
+		if = {
+			limit = { ROOT = { original_tag = RUS } }
+			BYZ = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BYZ_RUS_Mandate
+			}
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1100 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		341 = { transfer_state_and_notify = yes } #Constantinople
+	}
 
-		recheck_annexations = yes
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1101 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+				AND = {
+					original_tag = RUS
+					is_subject = no
+				}
+			}
+		}
+		341 = { add_claim_of_ROOT = yes } #Constantinople
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1100 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -21604,11 +21723,901 @@ country_event = { #Fate of East Aegan Islands
 		trigger = {
 			annexations_can_annex = yes
 		}
-		1046 = { add_claim_of_ROOT = yes } #Gelderland
+		1046 = { add_claim_of_ROOT = yes } #East Aegan Islands
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1169 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Dodecanese
+	id = annex.1170
+	title = annexation_164
+	desc = annexation_164_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						1049 = { is_claim_or_core_of_ROOT = yes } #Mugla
+						182 = { is_claim_or_core_of_ROOT = yes } #Crete
+						47 = { is_claim_or_core_of_ROOT = yes } #Attica
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					1049 = { #Mugla
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1049.owner = { save_event_target_as = mugla }
+			}
+			if = {
+				limit = {
+					182 = { #Crete
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:182.owner = { save_event_target_as = crete }
+			}
+			if = {
+				limit = {
+					47 = { #Attica
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:47.owner = { save_event_target_as = attica }
+			}
+		}
+	}
+
+	option = { #Return to Mugla
+		log = "[GetLogInfo]: event annex.1170 option annex.1170.a"
+		name = annex.1170.a
+		trigger = {
+			is_subject = no
+			has_event_target = mugla
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:mugla }
+		164 = { transfer_if_owned = yes } #Dodecanese
+	}
+
+	option = { #Give it to Crete
+		log = "[GetLogInfo]: event annex.1170 option annex.1170.b"
+		name = annex.1170.b
+		trigger = {
+			is_subject = no
+			has_event_target = crete
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:crete }
+		164 = { transfer_if_owned = yes } #Dodecanese
+	}
+	
+	option = { #Give it to Attica
+		log = "[GetLogInfo]: event annex.1170 option annex.1170.c"
+		name = annex.1170.c
+		trigger = {
+			is_subject = no
+			has_event_target = attica
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:attica }
+		164 = { transfer_if_owned = yes } #Dodecanese
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1170 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		164 = { transfer_if_owned = yes } #Dodecanese
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1170 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		164 = { add_claim_of_ROOT = yes } #Dodecanese
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1170 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Crete
+	id = annex.1171
+	title = annexation_182
+	desc = annexation_182_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						47 = { is_claim_or_core_of_ROOT = yes } #Attica
+						452 = { is_claim_or_core_of_ROOT = yes } #Marsa Matruh
+						183 = { is_claim_or_core_of_ROOT = yes } #Cyprus
+						164 = { is_claim_or_core_of_ROOT = yes } #Dodecanese
+						1210 = { is_claim_or_core_of_ROOT = yes } #Ionian Isles
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					47 = { #Attica
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:47.owner = { save_event_target_as = attica }
+			}
+			if = {
+				limit = {
+					452 = { #Marsa Matruh
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:452.owner = { save_event_target_as = marsa }
+			}
+			if = {
+				limit = {
+					183 = { #Cyprus
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:183.owner = { save_event_target_as = cyprus }
+			}
+			if = {
+				limit = {
+					164 = { #Dodecanese
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:164.owner = { save_event_target_as = dodecanese }
+			}
+			if = {
+				limit = {
+					1210 = { #Ionian Isles
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1210.owner = { save_event_target_as = ionian }
+			}
+		}
+	}
+
+	option = { #Return to Attica
+		log = "[GetLogInfo]: event annex.1171 option annex.1171.a"
+		name = annex.1171.a
+		trigger = {
+			is_subject = no
+			has_event_target = attica
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:attica }
+		182 = { transfer_if_owned = yes } #Crete
+	}
+
+	option = { #Give it to Marsa Matruh
+		log = "[GetLogInfo]: event annex.1171 option annex.1171.b"
+		name = annex.1171.b
+		trigger = {
+			is_subject = no
+			has_event_target = marsa
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:marsa }
+		182 = { transfer_if_owned = yes } #Crete
+	}
+	
+	option = { #Give it to Cyprus
+		log = "[GetLogInfo]: event annex.1171 option annex.1171.c"
+		name = annex.1171.c
+		trigger = {
+			is_subject = no
+			has_event_target = cyprus
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:cyprus }
+		182 = { transfer_if_owned = yes } #Crete
+	}
+	
+	option = { #Give it to Dodecanese
+		log = "[GetLogInfo]: event annex.1171 option annex.1171.c"
+		name = annex.1171.c
+		trigger = {
+			is_subject = no
+			has_event_target = dodecanese
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:dodecanese }
+		182 = { transfer_if_owned = yes } #Crete
+	}
+	
+	option = { #Give it to Ionian Isles
+		log = "[GetLogInfo]: event annex.1171 option annex.1171.c"
+		name = annex.1171.c
+		trigger = {
+			is_subject = no
+			has_event_target = ionian
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:ionian }
+		182 = { transfer_if_owned = yes } #Crete
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1171 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		182 = { transfer_if_owned = yes } #Crete
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1171 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		182 = { add_claim_of_ROOT = yes } #Crete
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1171 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Epirus
+	id = annex.1172
+	title = annexation_185
+	desc = annexation_185_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						1044 = { is_claim_or_core_of_ROOT = yes } #Akarnania
+						1209 = { is_claim_or_core_of_ROOT = yes } #Northern Epirus
+						1229 = { is_claim_or_core_of_ROOT = yes } #Corfu
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					1044 = { #Akarnania
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1044.owner = { save_event_target_as = akarnania }
+			}
+			if = {
+				limit = {
+					1209 = { #Northern Epirus
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1209.owner = { save_event_target_as = north_epirus }
+			}
+			if = {
+				limit = {
+					1229 = { #Corfu
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1229.owner = { save_event_target_as = corfu }
+			}
+		}
+	}
+
+	option = { #Return to Akarnania
+		log = "[GetLogInfo]: event annex.1172 option annex.1172.a"
+		name = annex.1172.a
+		trigger = {
+			is_subject = no
+			has_event_target = akarnania
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:akarnania }
+		185 = { transfer_if_owned = yes } #Epirus
+	}
+
+	option = { #Give it to Northern Epirus
+		log = "[GetLogInfo]: event annex.1172 option annex.1172.b"
+		name = annex.1172.b
+		trigger = {
+			is_subject = no
+			has_event_target = north_epirus
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:north_epirus }
+		185 = { transfer_if_owned = yes } #Epirus
+	}
+	
+	option = { #Give it to Corfu
+		log = "[GetLogInfo]: event annex.1172 option annex.1172.c"
+		name = annex.1172.c
+		trigger = {
+			is_subject = no
+			has_event_target = corfu
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:corfu }
+		185 = { transfer_if_owned = yes } #Epirus
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1172 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		185 = { transfer_if_owned = yes } #Epirus
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1172 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		185 = { add_claim_of_ROOT = yes } #Epirus
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1172 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Troas
+	id = annex.1173
+	title = annexation_822
+	desc = annexation_822_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						340 = { is_claim_or_core_of_ROOT = yes } #Bursa
+						339 = { is_claim_or_core_of_ROOT = yes } #Smyrna
+						1046 = { is_claim_or_core_of_ROOT = yes } #East Aegan
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					340 = { #Bursa
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:340.owner = { save_event_target_as = bursa }
+			}
+			if = {
+				limit = {
+					339 = { #Smyrna
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:339.owner = { save_event_target_as = smyrna }
+			}
+			if = {
+				limit = {
+					1046 = { #East Aegan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1046.owner = { save_event_target_as = east_aegan }
+			}
+		}
+	}
+
+	option = { #Return to Bursa
+		log = "[GetLogInfo]: event annex.1173 option annex.1173.a"
+		name = annex.1173.a
+		trigger = {
+			is_subject = no
+			has_event_target = bursa
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bursa }
+		822 = { transfer_if_owned = yes } #Troas
+	}
+
+	option = { #Give it to Smyrna
+		log = "[GetLogInfo]: event annex.1173 option annex.1173.b"
+		name = annex.1173.b
+		trigger = {
+			is_subject = no
+			has_event_target = smyrna
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:smyrna }
+		822 = { transfer_if_owned = yes } #Troas
+	}
+	
+	option = { #Give it to East Aegan
+		log = "[GetLogInfo]: event annex.1173 option annex.1173.c"
+		name = annex.1173.c
+		trigger = {
+			is_subject = no
+			has_event_target = east_aegan
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:east_aegan }
+		822 = { transfer_if_owned = yes } #Troas
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1173 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		822 = { transfer_if_owned = yes } #Troas
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1173 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		822 = { add_claim_of_ROOT = yes } #Troas
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1173 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Smyrna
+	id = annex.1174
+	title = annexation_339
+	desc = annexation_339_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						822 = { is_claim_or_core_of_ROOT = yes } #Troas
+						1048 = { is_claim_or_core_of_ROOT = yes } #Alasehir
+						1046 = { is_claim_or_core_of_ROOT = yes } #East Aegan
+						47 = { is_claim_or_core_of_ROOT = yes } #Attica
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					822 = { #Troas
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:822.owner = { save_event_target_as = troas }
+			}
+			if = {
+				limit = {
+					1048 = { #Alasehir
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1048.owner = { save_event_target_as = alasehir }
+			}
+			if = {
+				limit = {
+					1046 = { #East Aegan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1046.owner = { save_event_target_as = east_aegan }
+			}
+			if = {
+				limit = {
+					47 = { #Attica
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:47.owner = { save_event_target_as = attica }
+			}
+		}
+	}
+
+	option = { #Return to Troas
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.a"
+		name = annex.1174.a
+		trigger = {
+			is_subject = no
+			has_event_target = troas
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:troas }
+		339 = { transfer_if_owned = yes } #Smyrna
+	}
+
+	option = { #Give it to Alasehir
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.b"
+		name = annex.1174.b
+		trigger = {
+			is_subject = no
+			has_event_target = alasehir
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:alasehir }
+		339 = { transfer_if_owned = yes } #Smyrna
+	}
+	
+	option = { #Give it to East Aegan
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.c"
+		name = annex.1174.c
+		trigger = {
+			is_subject = no
+			has_event_target = east_aegan
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:east_aegan }
+		339 = { transfer_if_owned = yes } #Smyrna
+	}
+	
+	option = { #Give it to Attica
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.d"
+		name = annex.1174.d
+		trigger = {
+			is_subject = no
+			has_event_target = attica
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:attica }
+		339 = { transfer_if_owned = yes } #Smyrna
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1174 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		339 = { transfer_if_owned = yes } #Smyrna
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1174 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		339 = { add_claim_of_ROOT = yes } #Smyrna
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1174 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Aydin
+	id = annex.1174
+	title = annexation_823
+	desc = annexation_823_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						339 = { is_claim_or_core_of_ROOT = yes } #Smyrna
+						1048 = { is_claim_or_core_of_ROOT = yes } #Alasehir
+						1046 = { is_claim_or_core_of_ROOT = yes } #East Aegan
+						47 = { is_claim_or_core_of_ROOT = yes } #Attica
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					339 = { #Smyrna
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:339.owner = { save_event_target_as = smyrna }
+			}
+			if = {
+				limit = {
+					1048 = { #Alasehir
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1048.owner = { save_event_target_as = alasehir }
+			}
+			if = {
+				limit = {
+					1046 = { #East Aegan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1046.owner = { save_event_target_as = east_aegan }
+			}
+			if = {
+				limit = {
+					47 = { #Attica
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:47.owner = { save_event_target_as = attica }
+			}
+		}
+	}
+
+	option = { #Return to Smyrna
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.a"
+		name = annex.1174.a
+		trigger = {
+			is_subject = no
+			has_event_target = smyrna
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:smyrna }
+		823 = { transfer_if_owned = yes } #Aydin
+	}
+
+	option = { #Give it to Alasehir
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.b"
+		name = annex.1174.b
+		trigger = {
+			is_subject = no
+			has_event_target = alasehir
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:alasehir }
+		823 = { transfer_if_owned = yes } #Aydin
+	}
+	
+	option = { #Give it to East Aegan
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.c"
+		name = annex.1174.c
+		trigger = {
+			is_subject = no
+			has_event_target = east_aegan
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:east_aegan }
+		823 = { transfer_if_owned = yes } #Aydin
+	}
+	
+	option = { #Give it to Attica
+		log = "[GetLogInfo]: event annex.1174 option annex.1174.d"
+		name = annex.1174.d
+		trigger = {
+			is_subject = no
+			has_event_target = attica
+		}
+
+		ai_chance = { base = 100 }
+
+		set_temp_variable = { tag_to_release = event_target:attica }
+		823 = { transfer_if_owned = yes } #Aydin
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1174 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		823 = { transfer_if_owned = yes } #Aydin
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1174 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		823 = { add_claim_of_ROOT = yes } #Aydin
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1174 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
