@@ -417,8 +417,6 @@ country_event = {#Doriot Coup Success
 			value = -0.06
 		}
 
-		set_cosmetic_tag = FRA_Dorito
-
 		set_country_flag = PB_FRA_Muarras_Died_Coup_Success
 		clr_country_flag = FRA_Doriot_Plot_Power
 
@@ -440,7 +438,12 @@ country_event = {#Doriot Coup Success
 			ideology = ss
 			popularity = 0.03
 		}
-
+		
+		FRA = {
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = FRA_Dorito
+		}
+		
 		hidden_effect = {
 			FRA_jean_dorleans = {
 				retire = yes
@@ -531,6 +534,11 @@ country_event = {#Doriot Coup Failure
 		}
 
 		remove_ideas = PB_FRA_Crumbling_Coalition
+		
+		FRA = {
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = FRA_Regency
+		}
 
 		if = {
 			limit = {
@@ -571,13 +579,18 @@ country_event = {#Doriot Coup Failure
 			activate_advisor = FRA_georges_valois_iam
 			
 			hidden_effect = {
+				set_party_name = {
+					ideology = ni
+					long_name = FRA_af_party_long
+					name = FRA_af_party
+				}
+				unban_party_rc = yes
+				add_to_leading_coalition_rc = yes
 				remove_from_leading_coalition_ni = yes
 				remove_from_leading_coalition_ds = yes
 				remove_from_leading_coalition_cn = yes
 				remove_from_leading_coalition_an = yes
-                remove_from_farright_coalition_ni = yes
 			    remove_from_farright_coalition_ds = yes
-				ban_party_ni = yes
                 ban_party_ds = yes
                 ban_party_an = yes
                 ban_party_cn = yes
@@ -750,7 +763,8 @@ country_event = {#Maurras restores the legitimate king
 			ideology = rc
 			popularity = 0.1
 		}
-
+		
+		drop_cosmetic_tag = yes
 		set_cosmetic_tag = FRA_Monarchy
 		set_country_flag = DS_Subideology_Absolutism
 		swap_ideas = {
@@ -6291,6 +6305,12 @@ country_event = {#Volte Face
 			name = FRA_fpf_party
 		}
 		add_to_leading_coalition_ss = yes
+		
+		FRA = {
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = FRA_Doriot_Left
+		}
+		
 		hidden_effect = {
 			retire_ideology_leader = ss
 			add_popularity = {
@@ -6405,6 +6425,12 @@ country_event = {#Volte Face
 			ruling_party = ni
 			elections_allowed = no
 		}
+		
+		FRA = {
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = FRA_Doriot_Right
+		}
+		
 		hidden_effect = {
 			set_country_leader_ideology = NI_VARIANT_07
 			add_popularity = {
@@ -9206,6 +9232,174 @@ country_event = { #The SP demand furhter autonomy
 			add_dynamic_modifier = { modifier = FRA_SP_governed_state_angry }
 		}
 		add_political_power = -100
+	}
+}
+country_event = { # Bourbon Spain Flavour
+	id = French_postwar.14
+	title = French_postwar.14.t
+	desc = French_postwar.14.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+
+	option = { # Offer them to the Carlists!
+		name = French_postwar.14.a
+		trigger = { 
+			COL = { 
+				exists = yes
+				has_government = rc
+				NOT = { has_country_flag = NWG_Rejected_Spain }
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+		COL = { 
+			country_event = { id = French_postwar.15 days = 2 }
+		}
+	}
+
+	option = { # Offer them to the Ferdinandists!
+		name = French_postwar.14.b
+		trigger = { 
+			CHR = { 
+				exists = yes
+				NOT = { has_country_flag = CHR_Rejected_Spain }
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+		CHR = { 
+			country_event = { id = French_postwar.15 days = 2 }
+		}
+	}
+
+	option = { # Let them come to us, we wont let go of spain
+		name = French_postwar.14.c
+		ai_chance = {
+			factor = 0
+		}
+		SPR = { 
+			retire_character = SPR_regency
+			promote_character = SPR_andre
+			set_party_name = {
+				ideology = ds
+				long_name = "Casa de Borbón"
+				name = "Casa de Borbón"
+			}
+		}
+		
+	}
+}
+
+country_event = { # New Granada Recieves Carlists
+	id = French_postwar.15
+	title = French_postwar.15.t
+	desc = French_postwar.15.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+
+	option = { # Offer them the Mainland! (Play as Spain)
+		name = French_postwar.15.a
+		FRA = { 
+			country_event = { id = French_postwar.16 hours = 2 }
+		}
+		transfer_units_fraction= {
+			target = SPR
+			size = 0.7
+			stockpile_ratio = 0.7
+			army_ratio = 0.7
+			navy_ratio = 1
+			air_ratio = 1
+			keep_unit_leaders_trigger = {
+				is_character = COL_miguel_rivera
+			}
+		}
+		set_nationality = { # LATER ACCOUNT FOR IF HE DIES
+			target_country = SPR
+			character = COL_jaime_iii
+		}
+		FRA = { 
+			end_puppet = SPR
+		}
+		SPR = { 
+			set_politics = { 
+				ruling_party = rc
+			}
+			retire_character = SPR_regency
+			change_tag_from = ROOT
+			set_autonomy = {
+				target = ROOT
+				autonomous_state = autonomy_PB_Dependent_Kingdom
+				freedom_level = 0.50
+			}
+			promote_character = COL_jaime_iii
+			set_cosmetic_tag = SPR_CARLIST
+		}
+		COL = { 
+			promote_character = COL_miguel_rivera
+		}
+	}
+	
+	option = { # Offer them the Mainland! (Stay NWG)
+		name = French_postwar.14.a
+		ai_chance = {
+			factor = 100
+		}
+		FRA = { 
+			country_event = { id = French_postwar.16 hours = 2 }
+		}
+		#WORK ON OOBS FOR THIS
+		ROOT = { 
+			set_autonomy = {
+				target = SPR
+				autonomous_state = autonomy_PB_Dependent_Kingdom
+				freedom_level = 0.50
+			}
+		} 
+		SPR = { 
+			set_politics = { 
+				ruling_party = rc
+			}
+			retire_character = SPR_regency
+			promote_character = SPR_xavier
+			set_cosmetic_tag = SPR_CARLIST
+		}
+	}
+
+	option = { # We'll aproach this later...
+		name = French_postwar.14.a
+		ai_chance = {
+			factor = 0
+		}
+		FRA = { 
+			country_event = { id = French_postwar.17 hours = 2 }
+		}
+		set_country_flag = NWG_Rejected_Spain
+	}
+}
+country_event = { # New Granada Agrees
+	id = French_postwar.16
+	title = French_postwar.16.t
+	desc = French_postwar.16.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+
+	option = { # Welcome!
+		name = French_postwar.16.a
+		add_to_faction = COL
+	}
+}
+country_event = { # New Granada Declines
+	id = French_postwar.17
+	title = French_postwar.17.t
+	desc = French_postwar.17.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+
+	option = { # Fools..
+		name = French_postwar.17.a
+		country_event = { id = French_postwar.14 hours = 2 }
 	}
 }
 
