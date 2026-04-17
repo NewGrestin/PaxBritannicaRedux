@@ -2561,11 +2561,28 @@ country_event = { #Fate of Terror Victoria
 
 country_event = { #Fate of Greater Buenos Aires
 	id = annex.3023
-	title = annexation_buenos_aires
-	desc = annexation_buenos_aires_desc
+	title = annexation_1367
+	desc = annexation_1367_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						278 = { is_claim_or_core_of_ROOT = yes } #Buenos Aires
+						510 = { is_claim_or_core_of_ROOT = yes } #Entre Rios
+						ROOT = {
+							tag = TVI
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
+	}
 
 	option = { #Return to Arroyo
 		log = "[GetLogInfo]: event annex.3023 option annex.3023.a"
@@ -2584,11 +2601,9 @@ country_event = { #Fate of Greater Buenos Aires
 				annexations_can_annex = yes
 			}
 		}
-
-		ARG = {
-			transfer_state = 1367
-		}
 		
+		set_temp_variable = { tag_to_release = event_target:ARG }
+		1367 = { transfer_state_and_notify = yes } #Greater Buenos Aires
 	}
 
 	option = { #Return to Rio De La Plata
@@ -2609,19 +2624,23 @@ country_event = { #Fate of Greater Buenos Aires
 			}
 		}
 
-		RLP = {
-			transfer_state = 1367
-		}
-		
+		set_temp_variable = { tag_to_release = event_target:RLP }
+		1367 = { transfer_state_and_notify = yes } #Greater Buenos Aires
 	}
-
 	
-
+	option = { # Annex
+		log = "[GetLogInfo]: event annex.3023 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1367 = { add_claim_of_ROOT = yes } #Greater Buenos Aires
+	}
+	
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.3023 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		
     }
 
 	after = {
