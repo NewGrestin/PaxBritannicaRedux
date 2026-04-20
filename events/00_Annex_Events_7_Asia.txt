@@ -2777,8 +2777,8 @@ country_event = { #Fate of Area Zero
 
 country_event = { #Fate of Korea
 	id = annex.7012
-	title = annexation_decision_korea
-	desc = annexation_decision_korea_desc
+	title = annexation_525
+	desc = annexation_525_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
@@ -2793,6 +2793,7 @@ country_event = { #Fate of Korea
 			base = 100
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 		}
 
@@ -2856,12 +2857,6 @@ country_event = { #Fate of Korea
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 0
-			}
 		}
 		every_owned_state = {
 			limit = { is_core_of = KOR }
@@ -3388,40 +3383,53 @@ country_event = { #Fate of Taiping/Southern China
 
 country_event = { #Fate of Vietnam
 	id = annex.7015
-	title = annexation_decision_vietnam
-	desc = annexation_decision_vietnam_desc
+	title = annexation_840
+	desc = annexation_840_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_vietnam = no }
+					remove_core_of = VIN
+				}
+				else = {
+					add_core_of = VIN
+				}
+				remove_claim_by = VIN
+			}
+			VIN = { drop_cosmetic_tag = yes }
+			if = {
+				limit = {
+					OR = {
+						original_tag = BFE
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
+	}
 
 	option = { #Release Vietnam
 		log = "[GetLogInfo]: event annex.7015 option annex.7015.a"
 		name = annex.7015.a
 		trigger = {
 			is_subject = no
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = BFE
-						has_subject = BFE
-					}
-				}
-			}
 		}
 		ai_chance = {
-			base = 100
+			base = 20
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				ROOT = {
-					has_subject = BFE
+				OR = {
+					annexations_can_annex = yes
+					original_tag = CAM
+					original_tag = SIA
 				}
-				factor = 0
 			}
 		}
-
 		set_temp_variable = { tag_to_release = VIN }
 		release_targeted_tag = yes
 
@@ -3429,27 +3437,10 @@ country_event = { #Fate of Vietnam
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = CHI
-					}
 				}
 			}
 			VIN = {
-				drop_cosmetic_tag = yes
 				set_cosmetic_tag = VIN_Occupied_Monarchy
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = CHI
-				}
-			}
-			VIN = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = VIN_CHI_Occupied_Monarchy
 			}
 		}
 
@@ -3465,181 +3456,35 @@ country_event = { #Fate of Vietnam
 		}
 	}
 	
-	option = { #Reform a colonial federation
-		log = "[GetLogInfo]: event annex.7015 option annex.vietnam_colonial_fed"
-		name = annex.vietnam_colonial_fed
-		trigger = {
-			AND = {
-				ROOT = {
-					OR = {
-						tag = ENG
-						tag = FRA
-						tag = RUS
-						tag = GER
-					}
-				}
-				NOT = {
-					country_exists = BFE
-				}
-			}
-		}
-		ai_chance = {
-			base = 80
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		
-		BFE = {
-			transfer_state = 840
-			transfer_state = 671
-			transfer_state = 286
-			transfer_state = 1119
-			if = {
-				limit = {
-					original_tag = RUS
-				}
-				RUS = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Imperial_Autonomy
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_RUS
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = GER
-				}
-				GER = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_GER
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = FRA
-				}
-				FRA = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_FRA
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = ENG
-				}
-				ENG = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_constituent_dominion
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-				}
-			}
-		}
-	}
-	
-	option = { #Integrate it to the Indochinese holdings
-		log = "[GetLogInfo]: event annex.7015 option annex.vietnam_integration"
-		name = annex.vietnam_integration
+	option = { #Form indochina
+		log = "[GetLogInfo]: event annex.7015 option annex.create_indochina"
+		name = annex.create_indochina
 		trigger = {
 			country_exists = BFE
 			BFE = {
 				is_subject = yes
 			}
-			ROOT = {
-				NOT = {
-					tag = BFE
-				}
-			}
 		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = RUS
-					}
-					BFE = {
-						OR = {
-							is_subject_of = GER
-							is_subject_of = ENG
-						}
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = ENG
-					}
-					BFE = {
-						OR = {
-							is_subject_of = RUS
-							is_subject_of = FRA
-						}
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = GER
-					}
-					BFE = {
-						OR = {
-							is_subject_of = RUS
-							is_subject_of = FRA
-						}
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = FRA
-					}
-					BFE = {
-						OR = {
-							is_subject_of = GER
-							is_subject_of = ENG
-						}
-					}
-				}
-			}
+
+		every_state = {
+			limit = { 
+				is_indochina = yes
+			} 
+			add_core_of = VIN
 		}
-		BFE = {
-			transfer_state = 840
-			transfer_state = 671
-			transfer_state = 286
-			transfer_state = 1119
+		VIN = {
+			set_cosmetic_tag = VIN_Indochinese_Republic
+			save_global_event_target_as = INC_TAG
+		}
+		set_temp_variable = { tag_to_release = VIN }
+		release_targeted_tag = yes
+		if = {
+			limit = { has_subject = CAM }
+			annex_country = { target = CAM }
+		}
+		if = {
+			limit = { has_subject = LAO }
+			annex_country = { target = LAO }
 		}
 	}
 	
@@ -3662,7 +3507,7 @@ country_event = { #Fate of Vietnam
 			original_tag = BFE
 		}
 		every_owned_state = {
-			limit = { is_core_of = VIN }
+			limit = { is_vietnam = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -3681,14 +3526,62 @@ country_event = { #Fate of Vietnam
 
 country_event = { #Fate of Laos
 	id = annex.7016
-	title = annexation_decision_laos
-	desc = annexation_decision_laos_desc
+	title = annexation_670
+	desc = annexation_670_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 	
 	immediate = {
-		1122 = { retain_state = yes }
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_laos = no }
+					remove_core_of = LAO
+				}
+				else = {
+					add_core_of = LAO
+				}
+				remove_claim_by = LAO
+			}
+			if = { 
+				limit = { 
+					OR = { 
+						has_cosmetic_tag = VIN_Indochinese_Republic
+						original_tag = SIA
+						original_tag = BFE
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			if = {
+				limit = { 
+					VIN = { 
+						ROOT_can_grant_land = yes 
+						has_cosmetic_tag = VIN_Indochinese_Republic
+					} 
+				}
+				VIN = { save_event_target_as = indochina add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = { 
+					SIA = { 
+						ROOT_can_grant_land = yes 
+					} 
+				}
+				SIA = { save_event_target_as = siam add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = { 
+					BFE = { 
+						ROOT_can_grant_land = yes 
+					} 
+				}
+				BFE = { save_event_target_as = british_far_east add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			1122 = { retain_state = yes }
+		}
 	}
 
 	option = { #Release Laos
@@ -3696,12 +3589,6 @@ country_event = { #Fate of Laos
 		name = annex.7016.a
 		trigger = {
 			is_subject = no
-			ROOT = {
-				NOT = {
-					tag = BFE
-					tag = VIN
-				}
-			}
 		}
 		ai_chance = {
 			base = 100
@@ -3744,193 +3631,107 @@ country_event = { #Fate of Laos
 			}
 		}
 	}
-	
-	option = { #reform a colonial federation
-		log = "[GetLogInfo]: event annex.7016 option annex.vietnam_colonial_fed"
-		name = annex.vietnam_colonial_fed
+
+	option = { #Leave it to Siam
+		log = "[GetLogInfo]: event annex.7016 option annex.7016.b"
+		name = annex.give_to_siam
 		trigger = {
-			AND = {
-				ROOT = {
-					OR = {
-						tag = ENG
-						tag = FRA
-						tag = RUS
-						tag = GER
-					}
-				}
-				NOT = {
-					country_exists = BFE
-					ROOT = {
-						tag = VIN
-						tag = BFE
-					}
-				}
-			}
+			is_subject = no
 		}
 		ai_chance = {
-			base = 80
+			base = 0
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					has_subject = BFE
+				factor = 0
+				NOT = { is_ally_with = event_target:siam }
+				OR = { 
+					is_ally_with = event_target:british_far_east
+					is_ally_with = event_target:indochina
 				}
-				factor = 100
+			}
+			modifier = {
+				factor = 0.1
+				is_ally_with = event_target:siam
+			}
+			modifier = {
+				factor = 0.1
+				event_target:siam = { is_subject = yes }
 			}
 		}
-		BFE = {
-			transfer_state = 670
-			transfer_state = 1122
-			transfer_state = 1418
-			transfer_state = 1419
-			if = {
-				limit = {
-					original_tag = RUS
-				}
-				RUS = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_RUS
+		set_temp_variable = { tag_to_release = event_target:siam }
+		CAM = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Leave it to British Far East
+		log = "[GetLogInfo]: event annex.7016 option annex.give_to_bfe"
+		name = annex.give_to_bfe
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:british_far_east }
+				OR = { 
+					is_ally_with = event_target:siam
+					is_ally_with = event_target:indochina
 				}
 			}
-			else_if = {
-				limit = {
-					original_tag = GER
-				}
-				GER = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_GER
-				}
+			modifier = {
+				factor = 0.1
+				is_ally_with = event_target:british_far_east
 			}
-			else_if = {
-				limit = {
-					original_tag = FRA
-				}
-				FRA = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_FRA
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = ENG
-				}
-				ENG = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_constituent_dominion
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-				}
+			modifier = {
+				factor = 0.1
+				event_target:british_far_east = { is_subject = yes }
 			}
 		}
+		set_temp_variable = { tag_to_release = event_target:british_far_east }
+		CAM = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 	
-	option = { #integrate it to the Indochinese holdings
-		log = "[GetLogInfo]: event annex.7016 option annex.vietnam_integration"
-		name = annex.vietnam_integration
+	option = { # Give to Indochina
+		log = "[GetLogInfo]: event annex.7016 option annex.create_indochina"
+		name = annex.create_indochina
 		trigger = {
-			country_exists = BFE
-			BFE = {
-				is_subject = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = VIN
-					tag = BFE
-				}
-			}
+			has_event_target = indochina
 		}
 		ai_chance = {
-			base = 50
+			base = 0
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0
-				AND = {
-					ROOT = {
-						tag = RUS
-					}
-					BFE = {
-						OR = {
-							is_subject_of = GER
-							is_subject_of = ENG
-						}
-					}
+				NOT = { is_ally_with = event_target:indochina }
+				OR = { 
+					is_ally_with = event_target:british_far_east
+					is_ally_with = event_target:siam
 				}
 			}
 			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = ENG
-					}
-					BFE = {
-						OR = {
-							is_subject_of = RUS
-							is_subject_of = FRA
-						}
-					}
-				}
+				factor = 0.1
+				is_ally_with = event_target:indochina
 			}
 			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = GER
-					}
-					BFE = {
-						OR = {
-							is_subject_of = RUS
-							is_subject_of = FRA
-						}
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = FRA
-					}
-					BFE = {
-						OR = {
-							is_subject_of = GER
-							is_subject_of = ENG
-						}
-					}
-				}
+				factor = 0.1
+				event_target:indochina = { is_subject = yes }
 			}
 		}
-		BFE = {
-			transfer_state = 670
-			transfer_state = 1122
-			transfer_state = 1418
-			transfer_state = 1419
-		}
+		set_temp_variable = { tag_to_release = event_target:indochina }
+		LAO = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 	
 	option = { #Give to overlord
@@ -3949,31 +3750,9 @@ country_event = { #Fate of Laos
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-			original_tag = SIA
-			original_tag = BFE
-			original_tag = VIN
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					OR = {
-						original_tag = SIA
-						original_tag = BFE
-						AND = {
-							original_tag = VIN
-							OR = {
-								has_government = jc
-								has_government = ni
-							}
-						}
-					}
-				}
-				factor = 100
-			}
 		}
 		every_owned_state = {
-			limit = { is_core_of = LAO }
+			limit = { is_laos = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -3991,14 +3770,62 @@ country_event = { #Fate of Laos
 
 country_event = { #Fate of Cambodia
 	id = annex.7017
-	title = annexation_decision_cambodia
-	desc = annexation_decision_cambodia_desc
+	title = annexation_741
+	desc = annexation_741_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 	
 	immediate = {
-		1417 = { retain_state = yes }
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_cambodia = no }
+					remove_core_of = CAM
+				}
+				else = {
+					add_core_of = CAM
+				}
+				remove_claim_by = CAM
+			}
+			if = { 
+				limit = { 
+					OR = { 
+						has_cosmetic_tag = VIN_Indochinese_Republic
+						original_tag = SIA
+						original_tag = BFE
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			if = {
+				limit = { 
+					VIN = { 
+						ROOT_can_grant_land = yes 
+						has_cosmetic_tag = VIN_Indochinese_Republic
+					} 
+				}
+				VIN = { save_event_target_as = indochina add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = { 
+					SIA = { 
+						ROOT_can_grant_land = yes 
+					} 
+				}
+				SIA = { save_event_target_as = siam add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = { 
+					BFE = { 
+						ROOT_can_grant_land = yes 
+					} 
+				}
+				BFE = { save_event_target_as = british_far_east add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			1417 = { retain_state = yes }
+		}
 	}
 
 	option = { #Release Cambodia
@@ -4006,12 +3833,6 @@ country_event = { #Fate of Cambodia
 		name = annex.7017.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				ROOT = {
-					tag = VIN
-					tag = BFE
-				}
-			}
 		}
 		ai_chance = {
 			base = 100
@@ -4056,232 +3877,107 @@ country_event = { #Fate of Cambodia
 	}
 	
 	option = { #Leave it to Siam
-		log = "[GetLogInfo]: event annex.7017 option annex.7017.b"
-		name = annex.7017.b
+		log = "[GetLogInfo]: event annex.7017 option annex.give_to_siam"
+		name = annex.give_to_siam
 		trigger = {
 			is_subject = no
-			SIA = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = VIN
-					tag = BFE
-					tag = SIA
-				}
-			}
 		}
 		ai_chance = {
-			base = 50
+			base = 0
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					has_subject = BFE
-				}
 				factor = 0
+				NOT = { is_ally_with = event_target:siam }
+				OR = { 
+					is_ally_with = event_target:british_far_east
+					is_ally_with = event_target:indochina
+				}
+			}
+			modifier = {
+				factor = 0.1
+				is_ally_with = event_target:siam
+			}
+			modifier = {
+				factor = 0.1
+				event_target:siam = { is_subject = yes }
 			}
 		}
+		set_temp_variable = { tag_to_release = event_target:siam }
+		CAM = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
 
-		set_temp_variable = { tag_to_release = CAM }
-		release_targeted_tag = yes
-		
-		SIA = {
-			transfer_state = 741
-			transfer_state = 1118
-		}
-		741 = { add_claim_by = SIA }
-		1118 = { add_claim_by = SIA }
-	}
-	
-	option = { #reform a colonial federation
-		log = "[GetLogInfo]: event annex.7017 option annex.vietnam_colonial_fed"
-		name = annex.vietnam_colonial_fed
+	option = { #Leave it to British Far East
+		log = "[GetLogInfo]: event annex.7017 option annex.give_to_bfe"
+		name = annex.give_to_bfe
 		trigger = {
-			AND = {
-				ROOT = {
-					OR = {
-						tag = ENG
-						tag = FRA
-						tag = RUS
-						tag = GER
-					}
-				}
-				NOT = {
-					country_exists = BFE
-					ROOT = {
-						tag = VIN
-						tag = BFE
-					}
-				}
-			}
+			is_subject = no
 		}
 		ai_chance = {
-			base = 80
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				ROOT = {
-					has_subject = BFE
-				}
-				factor = 100
-			}
-		}
-		BFE = {
-			transfer_state = 741
-			transfer_state = 1118
-			transfer_state = 1417
-			if = {
-				limit = {
-					original_tag = RUS
-				}
-				RUS = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_RUS
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = GER
-				}
-				GER = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_GER
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = FRA
-				}
-				FRA = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_FRA
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = ENG
-				}
-				ENG = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_constituent_dominion
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-				}
-			}
-		}
-	}
-	
-	option = { #integrate it to the Indochinese holdings
-		log = "[GetLogInfo]: event annex.7017 option annex.vietnam_integration"
-		name = annex.vietnam_integration
-		trigger = {
-			country_exists = BFE
-			BFE = {
-				is_subject = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = VIN
-					tag = BFE
-				}
-			}
-		}
-		ai_chance = {
-			base = 50
+			base = 0
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0
-				AND = {
-					ROOT = {
-						tag = RUS
-					}
-					BFE = {
-						OR = {
-							is_subject_of = GER
-							is_subject_of = ENG
-						}
-					}
+				NOT = { is_ally_with = event_target:british_far_east }
+				OR = { 
+					is_ally_with = event_target:siam
+					is_ally_with = event_target:indochina
 				}
 			}
 			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = ENG
-					}
-					BFE = {
-						OR = {
-							is_subject_of = RUS
-							is_subject_of = FRA
-						}
-					}
-				}
+				factor = 0.1
+				is_ally_with = event_target:british_far_east
 			}
 			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = GER
-					}
-					BFE = {
-						OR = {
-							is_subject_of = RUS
-							is_subject_of = FRA
-						}
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				AND = {
-					ROOT = {
-						tag = FRA
-					}
-					BFE = {
-						OR = {
-							is_subject_of = GER
-							is_subject_of = ENG
-						}
-					}
-				}
+				factor = 0.1
+				event_target:british_far_east = { is_subject = yes }
 			}
 		}
-		BFE = {
-			transfer_state = 741
-			transfer_state = 1118
-			transfer_state = 1417
-		}
+		set_temp_variable = { tag_to_release = event_target:british_far_east }
+		CAM = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 	
+	option = { # Give to Indochina
+		log = "[GetLogInfo]: event annex.7017 option annex.create_indochina"
+		name = annex.create_indochina
+		trigger = {
+			has_event_target = indochina
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:indochina }
+				OR = { 
+					is_ally_with = event_target:british_far_east
+					is_ally_with = event_target:siam
+				}
+			}
+			modifier = {
+				factor = 0.1
+				is_ally_with = event_target:indochina
+			}
+			modifier = {
+				factor = 0.1
+				event_target:indochina = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:indochina }
+		CAM = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7017 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -4298,31 +3994,9 @@ country_event = { #Fate of Cambodia
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-			original_tag = SIA
-			original_tag = BFE
-			original_tag = VIN
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					OR = {
-						original_tag = SIA
-						original_tag = BFE
-						AND = {
-							original_tag = VIN
-							OR = {
-								has_government = jc
-								has_government = ni
-							}
-						}
-					}
-				}
-				factor = 100
-			}
 		}
 		every_owned_state = {
-			limit = { is_core_of = CAM }
+			limit = { is_cambodia = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -4340,21 +4014,34 @@ country_event = { #Fate of Cambodia
 
 country_event = { #Fate of Siam
 	id = annex.7018
-	title = annexation_decision_siam
-	desc = annexation_decision_siam_desc
+	title = annexation_289
+	desc = annexation_289_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 	
 	immediate = {
-		724 = { retain_state = yes }
-		1117 = { retain_state = yes }
-		1120 = { retain_state = yes }
-		1122 = { retain_state = yes }
-		1123 = { retain_state = yes }
-		1124 = { retain_state = yes }
-		1125 = { retain_state = yes }
-		1140 = { retain_state = yes }
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = { is_siam = no }
+					remove_core_of = SIA
+				}
+				else = {
+					add_core_of = SIA
+				}
+				remove_claim_by = SIA
+			}
+			724 = { retain_state = yes }
+			1117 = { retain_state = yes }
+			1120 = { retain_state = yes }
+			1122 = { retain_state = yes }
+			1123 = { retain_state = yes }
+			1124 = { retain_state = yes }
+			1125 = { retain_state = yes }
+			1140 = { retain_state = yes }
+			1142 = { retain_state = yes }
+		}
 	}
 
 	option = { #Release Siam
@@ -4431,6 +4118,7 @@ country_event = { #Fate of Siam
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
+			limit = { is_siam = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -4448,15 +4136,47 @@ country_event = { #Fate of Siam
 
 country_event = { #Fate of Malaysia
 	id = annex.7019
-	title = annexation_decision_malaysia
-	desc = annexation_decision_malaysia_desc
+	title = annexation_1143
+	desc = annexation_1143_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 	
 	immediate = {
-		1125 = { retain_state = yes }
-		1140 = { retain_state = yes }
+		hidden_effect = { 
+			every_state = {
+					if = {
+						limit = { is_malaya = no }
+						remove_core_of = MAL
+					}
+					else = {
+						add_core_of = MAL
+					}
+					remove_claim_by = MAL
+				}
+			1125 = { retain_state = yes }
+			1140 = { retain_state = yes }
+			1142 = { retain_state = yes }
+		}
+		if = {
+			limit = {
+				OR = {
+					original_tag = INS
+					original_tag = SIA
+					original_tag = INS
+					#Indonesian tags soon
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = { SIA = { ROOT_can_grant_land = yes } }
+			SIA = { save_event_target_as = siam add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+		if = {
+			limit = { BFE = { ROOT_can_grant_land = yes } }
+			BFE = { save_event_target_as = british_far_east add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
 	}
 
 	option = { #Release Malaysia
@@ -4464,14 +4184,12 @@ country_event = { #Fate of Malaysia
 		name = annex.7019.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				original_tag = BFE
-			}
 		}
 		ai_chance = {
 			base = 100
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 		}
 
@@ -4502,128 +4220,71 @@ country_event = { #Fate of Malaysia
 			}
 		}
 	}
-	
-	option = { #reform a colonial federation
-		log = "[GetLogInfo]: event annex.7019 option annex.vietnam_colonial_fed"
-		name = annex.vietnam_colonial_fed
+
+	option = { #Leave it to British Far East
+		log = "[GetLogInfo]: event annex.7019 option annex.give_to_bfe"
+		name = annex.give_to_bfe
 		trigger = {
-			AND = {
-				OR = {
-					original_tag = ENG
-					original_tag = FRA
-					original_tag = RUS
-					original_tag = GER
-				}
-				NOT = {
-					country_exists = BFE
-				}
-			}
+			is_subject = no
 		}
 		ai_chance = {
-			base = 50
+			base = 0
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					has_subject = BFE
+				factor = 0
+				NOT = { is_ally_with = event_target:british_far_east }
+				OR = { 
+					is_ally_with = event_target:siam
 				}
-				factor = 100
+			}
+			modifier = {
+				factor = 0.1
+				is_ally_with = event_target:british_far_east
+			}
+			modifier = {
+				factor = 0.1
+				event_target:british_far_east = { is_subject = yes }
 			}
 		}
-		BFE = {
-			transfer_state = 1140
-			transfer_state = 1141
-			transfer_state = 1142
-			transfer_state = 1143
-			transfer_state = 1144
-			transfer_state = 1125
-			transfer_state = 336
-			if = {
-				limit = {
-					original_tag = RUS
-				}
-				RUS = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_RUS
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = GER
-				}
-				GER = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_GER
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = FRA
-				}
-				FRA = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_PB_Satellite_State
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = BFE_FRA
-				}
-			}
-			else_if = {
-				limit = {
-					original_tag = ENG
-				}
-				ENG = {
-					set_autonomy = {
-						target = BFE
-						autonomous_state = autonomy_constituent_dominion
-					}
-				}
-				BFE = {
-					drop_cosmetic_tag = yes
-				}
-			}
-		}
+		set_temp_variable = { tag_to_release = event_target:british_far_east }
+		MAL = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
-	
-	option = { #integrate it to the Indochinese holdings
-		log = "[GetLogInfo]: event annex.7019 option annex.vietnam_integration"
-		name = annex.vietnam_integration
+
+	option = { #Leave it to Siam
+		log = "[GetLogInfo]: event annex.7019 option annex.give_to_siam"
+		name = annex.give_to_siam
 		trigger = {
-			country_exists = BFE
+			is_subject = no
 		}
 		ai_chance = {
-			base = 20
+			base = 0
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:siam }
+				OR = { 
+					is_ally_with = event_target:british_far_east
+				}
+			}
+			modifier = {
+				factor = 0.1
+				is_ally_with = event_target:siam
+			}
+			modifier = {
+				factor = 0.1
+				event_target:siam = { is_subject = yes }
+			}
 		}
-		BFE = {
-			transfer_state = 1140
-			transfer_state = 1141
-			transfer_state = 1142
-			transfer_state = 1143
-			transfer_state = 1144
-			transfer_state = 1125
-			transfer_state = 336
-		}
+		set_temp_variable = { tag_to_release = event_target:siam }
+		MMAL = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
 	}
 	
 	option = { #Give to overlord
@@ -4644,6 +4305,7 @@ country_event = { #Fate of Malaysia
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
+			limit = { is_malaya = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -4661,21 +4323,71 @@ country_event = { #Fate of Malaysia
 
 country_event = { #Fate of Japan
 	id = annex.7020
-	title = annexation_decision_japan
-	desc = annexation_decision_japan_desc
+	title = annexation_282
+	desc = annexation_282_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 	
 	immediate = {
-		536 = { retain_state = yes }
-		1136 = { retain_state = yes }
-		1135 = { retain_state = yes }
-		533 = { retain_state = yes }
-		528 = { retain_state = yes }
-		1132 = { retain_state = yes }
-		530 = { retain_state = yes }
-		529 = { retain_state = yes }
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = {
+						is_japan = yes 
+					}
+					add_core_of = JAP
+				}
+				else = {
+					remove_core_of = JAP
+					remove_claim_by = JAP
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						is_japan_unifier_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			JAP = { 
+				remove_ideas = PB_JAP_Republican_Terror_Legacy
+				remove_ideas = PB_JAP_Sakurakai
+				remove_ideas = PB_JAP_Reactionary_Plot
+			}
+			536 = { retain_state = yes }
+			1136 = { retain_state = yes }
+			annexations_create_japan_event_targets = yes 
+			if = {
+				limit = { annexations_germany_is_independent_ally_or_puppet_of_ROOT = no }
+				if = {
+					limit = {
+						528 = { # South Japan
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:japan }
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:528.owner = { save_event_target_as = south_japan add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+				if = {
+					limit = {
+						1135 = { # North Japan
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:japan }
+								NOT = { tag = event_target:south_japan }
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:1135.owner = { save_event_target_as = north_japan add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+			}
+		}
 	}
 
 	option = { #Release Japanese Empire
@@ -4689,23 +4401,6 @@ country_event = { #Fate of Japan
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 20
-				ROOT = {
-					has_government = rc
-				}
-			}
-			modifier = {
-				factor = 10
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
 			}
 		}
 
@@ -4735,143 +4430,124 @@ country_event = { #Fate of Japan
 				set_cosmetic_tag = JAP_Occupied_Republic
 			}
 		}
-		
-		remove_ideas = PB_JAP_Republican_Terror_Legacy
-		remove_ideas = PB_JAP_Sakurakai
-		remove_ideas = PB_JAP_Reactionary_Plot
 	}
-	
-	option = { #Release Japanese Shogunate
-		log = "[GetLogInfo]: event annex.7020 option annex.7020.b"
-		name = annex.7020.b
+	option = { #Give to Japan Tag 1
+		log = "[GetLogInfo]: event annexation_events.7020 option annexation_events.asia.give_to_japan"
+		name = annexation_events.asia.give_to_japan
 		trigger = {
-			is_subject = no
-			ROOT = {
+			has_event_target = japan
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:japan }
 				OR = {
-					has_government = ni
-					has_government = rc
+					is_ally_with = event_target:north_japan
+					is_ally_with = event_target:south_japan
 				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:japan = { is_subject = yes }
 			}
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
+		set_temp_variable = { tag_to_release = event_target:japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
 			}
-			modifier = {
-				factor = 60
-				ROOT = {
-					has_government = rc
-				}
-			}
-			modifier = {
-				factor = 10
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
-			}
+			transfer_state_and_notify = yes
 		}
+	}
 
-		set_temp_variable = { tag_to_release = JAP }
-		release_targeted_tag = yes
-		
-		JAP = {
-			drop_cosmetic_tag = yes
-			set_cosmetic_tag = JAP_Shogunate
-		}
-		
-		remove_ideas = PB_JAP_Republican_Terror_Legacy
-		remove_ideas = PB_JAP_Sakurakai
-		remove_ideas = PB_JAP_Reactionary_Plot
-	}
-	
-	option = { #Civilize Japan
-		log = "[GetLogInfo]: event annex.7020 option annex.japanese_colonial"
-		name = annex.japanese_colonial
+	option = { #Give to Japan tag 3 (North)
+		log = "[GetLogInfo]: event annexation_events.7020 option annexation_events.7020.b"
+		name = annexation_events.7020.b
 		trigger = {
-			OR = {
-				original_tag = RUS
-				original_tag = ENG
-				original_tag = GER
-			}
+			has_event_target = north_japan
 		}
 		ai_chance = {
-			base = 0
+			base = 75
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 90
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:north_japan }
+				OR = {
+					is_ally_with = event_target:japan
+					is_ally_with = event_target:south_japan
 				}
 			}
 			modifier = {
-				factor = 70
-				ROOT = {
-					tag = ENG
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
+				factor = 0.1
+				event_target:north_japan = { is_subject = yes }
 			}
 		}
-		
-		set_temp_variable = { tag_to_release = JAP }
-		release_targeted_tag = yes
-		if = {
+		set_temp_variable = { tag_to_release = event_target:north_japan }
+		every_owned_state = {
 			limit = {
-				ROOT = {
-					tag = RUS
-				}
+				is_japan = yes
+				is_valid_annexation_state = yes
 			}
-			JAP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JAP_RUS_Colonial
-			}
+			transfer_state_and_notify = yes
 		}
-		else_if = {
-			limit = {
-				ROOT = {
-					tag = ENG
-				}
-			}
-			JAP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JAP_ENG_Colonial
-			}
-		}
-		else_if = {
-			limit = {
-				ROOT = {
-					tag = GER
-				}
-			}
-			JAP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JAP_GER_Colonial
-			}
-		}
-		
-		remove_ideas = PB_JAP_Republican_Terror_Legacy
-		remove_ideas = PB_JAP_Sakurakai
-		remove_ideas = PB_JAP_Reactionary_Plot
 	}
-	
+
+	option = { #Give to Japan tag 2 (South)
+		log = "[GetLogInfo]: event annexation_events.7020 option annexation_events.7020.c"
+		name = annexation_events.7020.c
+		trigger = {
+			has_event_target = south_japan
+		}
+		ai_chance = {
+			base = 75
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:south_japan }
+				OR = {
+					is_ally_with = event_target:japan
+					is_ally_with = event_target:north_japan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:south_japan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:south_japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7020 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -4889,14 +4565,10 @@ country_event = { #Fate of Japan
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-		}
 		every_owned_state = {
+			limit = {
+				is_japan = yes
+			}
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -4914,15 +4586,70 @@ country_event = { #Fate of Japan
 
 country_event = { #Fate of North Japan
 	id = annex.7021
-	title = annexation_decision_north_japan
+	title = annexation_1135_japan
 	desc = annexation_decision_north_japan_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-
-	option = { #leave it into Japan proper
+	immediate = { 
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = {
+						is_japan = yes 
+					}
+					add_core_of = NJP
+				}
+				else = {
+					remove_core_of = NJP
+					remove_claim_by = NJP
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						is_japan_unifier_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			536 = { retain_state = yes }
+			1136 = { retain_state = yes }
+			annexations_create_japan_event_targets = yes 
+			if = {
+				limit = { annexations_germany_is_independent_ally_or_puppet_of_ROOT = no }
+				if = {
+					limit = {
+						528 = { # South Japan
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:japan }
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:528.owner = { save_event_target_as = south_japan add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+				if = {
+					limit = {
+						282 = { # Middle Japan
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:japan }
+								NOT = { tag = event_target:south_japan }
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:282.owner = { save_event_target_as = middle_japan add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+			}
+		}
+	}
+	
+	option = { #Release Japanese Empire
 		log = "[GetLogInfo]: event annex.7021 option annex.7021.a"
-		name = annex.7021.a
+		name = annex.7020.a
 		trigger = {
 			is_subject = no
 		}
@@ -4932,81 +4659,20 @@ country_event = { #Fate of North Japan
 				factor = 0
 				annexations_can_annex = yes
 			}
-			modifier = {
-				factor = 10
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
-			}
 		}
-		JAP = {
-			#transfer_state = 536
-			#transfer_state = 1136
-			transfer_state = 1135
-		}
-	}
-	
-	option = { #Release North Japan
-		log = "[GetLogInfo]: event annex.7021 option annex.7021.b"
-		name = annex.7021.b
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
-			}
-		}
-		
-		NJP = {
-			#transfer_state = 536
-			#transfer_state = 1136
-			transfer_state = 1135
-		}
-		
+
+		set_temp_variable = { tag_to_release = NJP }
+		release_targeted_tag = yes
+
 		if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						tag = RUS
-					}
 				}
 			}
 			NJP = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = NJP_Occupied_Monarchy
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					tag = RUS
-				}
-			}
-			NJP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = NJP_RUS_Occupied_Monarchy
 			}
 		}
 
@@ -5021,10 +4687,125 @@ country_event = { #Fate of North Japan
 				set_cosmetic_tag = NJP_Occupied_Republic
 			}
 		}
-		set_temp_variable = { tag_to_release = NJP }
-		release_targeted_tag = yes
 	}
 	
+	option = { #Give to Japan Tag 1
+		log = "[GetLogInfo]: event annexation_events.7021 option annexation_events.asia.give_to_japan"
+		name = annexation_events.asia.give_to_japan
+		trigger = {
+			has_event_target = japan
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:japan }
+				OR = {
+					is_ally_with = event_target:middle_japan
+					is_ally_with = event_target:south_japan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:japan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to Japan tag 2 (Middle)
+		log = "[GetLogInfo]: event annexation_events.7021 option annexation_events.7021.b"
+		name = annexation_events.7021.b
+		trigger = {
+			has_event_target = middle_japan
+		}
+		ai_chance = {
+			base = 75
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:middle_japan }
+				OR = {
+					is_ally_with = event_target:japan
+					is_ally_with = event_target:south_japan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:middle_japan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:middle_japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to Japan tag 3 (South)
+		log = "[GetLogInfo]: event annexation_events.7021 option annexation_events.7021.c"
+		name = annexation_events.7021.c
+		trigger = {
+			has_event_target = south_japan
+		}
+		ai_chance = {
+			base = 75
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:south_japan }
+				OR = {
+					is_ally_with = event_target:japan
+					is_ally_with = event_target:middle_japan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:south_japan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:south_japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7021 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -5042,31 +4823,11 @@ country_event = { #Fate of North Japan
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 20
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
-			}
-		}
 		every_owned_state = {
+			limit = {
+				is_japan = yes
+			}
 			add_claim_of_ROOT = yes
-		}
-		ROOT = {
-			#transfer_state = 536
-			#transfer_state = 1136
-			transfer_state = 1135
 		}
 	}
 
@@ -5083,13 +4844,69 @@ country_event = { #Fate of North Japan
 
 country_event = { #Fate of South Japan
 	id = annex.7022
-	title = annexation_decision_south_japan
-	desc = annexation_decision_south_japan_desc
+	title = annexation_529
+	desc = annexation_529_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 
-	option = { #leave it into Japan proper
+	immediate = {
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = {
+						is_japan = yes 
+					}
+					add_core_of = SJP
+				}
+				else = {
+					remove_core_of = SJP
+					remove_claim_by = SJP
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						is_japan_unifier_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			536 = { retain_state = yes }
+			1136 = { retain_state = yes }
+			annexations_create_japan_event_targets = yes 
+			if = {
+				limit = { annexations_germany_is_independent_ally_or_puppet_of_ROOT = no }
+				if = {
+					limit = {
+						1134 = { # North Japan
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:japan }
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:1134.owner = { save_event_target_as = north_japan add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+				if = {
+					limit = {
+						282 = { # Middle Japan
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:japan }
+								NOT = { tag = event_target:north_japan }
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:282.owner = { save_event_target_as = middle_japan add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+			}
+		}
+	}
+
+		option = { #Release Japanese Empire
 		log = "[GetLogInfo]: event annex.7022 option annex.7022.a"
 		name = annex.7022.a
 		trigger = {
@@ -5101,82 +4918,20 @@ country_event = { #Fate of South Japan
 				factor = 0
 				annexations_can_annex = yes
 			}
-			modifier = {
-				factor = 50
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
-			}
 		}
-		JAP = {
-			transfer_state = 528
-			transfer_state = 1132
-			transfer_state = 530
-			transfer_state = 529
-		}
-	}
-	
-	option = { #Release South Japan
-		log = "[GetLogInfo]: event annex.7022 option annex.7022.b"
-		name = annex.7022.b
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 50
-				ROOT = {
-					tag = RUS
-					OR = {
-						has_government = ni
-						has_government = ds
-						has_government = rc
-					}
-				}
-			}
-		}
-		SJP = {
-			transfer_state = 528
-			transfer_state = 1132
-			transfer_state = 530
-			transfer_state = 529
-		}
-		
+
+		set_temp_variable = { tag_to_release = SJP }
+		release_targeted_tag = yes
+
 		if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						tag = RUS
-					}
 				}
 			}
 			SJP = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SJP_Occupied_Monarchy
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					tag = RUS
-				}
-			}
-			SJP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = SJP_RUS_Occupied_Monarchy
 			}
 		}
 
@@ -5191,10 +4946,125 @@ country_event = { #Fate of South Japan
 				set_cosmetic_tag = SJP_Occupied_Republic
 			}
 		}
-		set_temp_variable = { tag_to_release = SJP }
-		release_targeted_tag = yes
 	}
 	
+	option = { #Give to Japan Tag 1
+		log = "[GetLogInfo]: event annexation_events.7022 option annexation_events.asia.give_to_japan"
+		name = annexation_events.asia.give_to_japan
+		trigger = {
+			has_event_target = japan
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:japan }
+				OR = {
+					is_ally_with = event_target:middle_japan
+					is_ally_with = event_target:north_japan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:japan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to Japan tag 2 (Middle)
+		log = "[GetLogInfo]: event annexation_events.7022 option annexation_events.7021.b"
+		name = annexation_events.7022.b
+		trigger = {
+			has_event_target = middle_japan
+		}
+		ai_chance = {
+			base = 75
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:middle_japan }
+				OR = {
+					is_ally_with = event_target:japan
+					is_ally_with = event_target:north_japan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:middle_japan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:middle_japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to Japan tag 3 (North)
+		log = "[GetLogInfo]: event annexation_events.7021 option annexation_events.7021.c"
+		name = annexation_events.7022.c
+		trigger = {
+			has_event_target = north_japan
+		}
+		ai_chance = {
+			base = 75
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_japan = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:north_japan }
+				OR = {
+					is_ally_with = event_target:japan
+					is_ally_with = event_target:middle_japan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:north_japan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:north_japan }
+		every_owned_state = {
+			limit = {
+				is_japan = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7022 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -5212,21 +5082,11 @@ country_event = { #Fate of South Japan
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-		}
 		every_owned_state = {
+			limit = {
+				is_japan = yes
+			}
 			add_claim_of_ROOT = yes
-		}
-		ROOT = {
-			transfer_state = 528
-			transfer_state = 1132
-			transfer_state = 530
-			transfer_state = 529
 		}
 	}
 
@@ -7929,8 +7789,8 @@ country_event = { #Fate of Eastern Papua
 
 country_event = { #Fate of Meranti Islands
 	id = annex.7049
-	title = annexation_decision_1344
-	desc = annexation_decision_1344_desc
+	title = annexation_1344
+	desc = annexation_1344_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
@@ -7958,6 +7818,7 @@ country_event = { #Fate of Meranti Islands
                 1143 = { # Selangor-Negeri
                     owner = {
                         ROOT_can_grant_land = yes
+						NOT = { tag = event_target:sumatra }
                     }
                 }
             }
@@ -7981,7 +7842,6 @@ country_event = { #Fate of Meranti Islands
                 factor = 0
                 NOT = { is_ally_with = event_target:sumatra }
                 is_ally_with = event_target:malaysia
-                #annexations_AI_will_consider_returning_colonies = yes
             }
 			modifier = {
 				factor = 2
@@ -8050,8 +7910,8 @@ country_event = { #Fate of Meranti Islands
 
 country_event = { #Fate of Riau Islands
 	id = annex.7050
-	title = annexation_decision_1344
-	desc = annexation_decision_1344_desc
+	title = annexation_1344
+	desc = annexation_1344_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
@@ -8059,11 +7919,14 @@ country_event = { #Fate of Riau Islands
 	immediate = {
 		if = {
             limit = {
-                OR = {
-                    original_tag = DEL
-					original_tag = HAR
-					original_tag = ACE
-                }
+				OR = { 
+					any_state_of = {
+						target = { 336 333 916 }
+						is_claim_or_core_of_ROOT = yes
+					}
+					tag = INS
+					tag = BFE
+				}
             }
             save_event_target_as = can_annex
         }
@@ -8080,14 +7943,14 @@ country_event = { #Fate of Riau Islands
         }
         if = {
             limit = {
-                1143 = { # Selangor-Negeri
-                    annexations_state_owner_is_valid_grant_target = yes
+                336 = { # Selangor-Negeri
                     owner = {
                         ROOT_can_grant_land = yes
+						NOT = { tag = event_target:sarawak }
                     }
                 }
             }
-            var:1143.owner = { save_event_target_as = malaysia }
+            var:336.owner = { save_event_target_as = malaysia }
         }
 	}
 
@@ -14827,9 +14690,48 @@ country_event = { # Fate of Burma
 	is_triggered_only = yes
 	
 	immediate = {
-		1114 = { retain_state = yes }
-		1115 = { retain_state = yes }
-		1116 = { retain_state = yes }
+		hidden_effect = {
+			if = {
+				limit = { NOT = { country_exists = BUR } }
+				every_state = {
+					limit = { is_burma = no }
+					remove_core_of = BUR
+					remove_claim_by = BUR
+				}
+			}
+			if = {
+				limit = {
+					#is_indian_unifier_tag = yes
+					any_state_of = {
+						target = { 432 1109 } #Assam, Manipur
+						is_claim_or_core_of_ROOT = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					var:1109.owner = { #Manipur
+						#is_indian_unifier_tag = yes
+						ROOT_can_grant_land = yes
+					}
+				}
+				var:1109.owner = { save_event_target_as = india add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			else_if = {
+				limit = {
+					var:432.owner = { #Assam
+						#is_indian_unifier_tag = yes
+						ROOT_can_grant_land = yes
+					}
+				}
+				var:432.owner = { save_event_target_as = india add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			1124 = { retain_state = yes } #Tenasserim
+			1123 = { retain_state = yes } #Moulmein
+			1115 = { retain_state = yes } #South Shan
+			1116 = { retain_state = yes } #North Shan
+		}
 	}
 	
 	option = { #Release Burma
@@ -14874,33 +14776,31 @@ country_event = { # Fate of Burma
 		}
 	}
 	
-	option = { #Expand our colonial asset
+	option = { #Give it to India
 		log = "[GetLogInfo]: event annex.7088 option annex.7088.b"
 		name = annex.7088.b
 		trigger = {
-			is_subject = no
-			ROOT = {
-				OR = {
-					tag = ENG
-					tag = RUS
-					tag = FRA
-					tag = GER
-				}
-				has_subject = BEN
-			}
+			has_event_target = india
 		}
 		ai_chance = {
-			base = 80
+			base = 40
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				annexations_can_release_any_india = yes
+				is_major = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
+			}
 		}
-		
-		set_temp_variable = { tag_to_release = BEN }
+		set_temp_variable = { tag_to_release = event_target:india }
 		BUR = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
-		
 	}
 
 	option = { #Give to overlord
@@ -14920,16 +14820,7 @@ country_event = { # Fate of Burma
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		BUR = { add_claim_of_ROOT_on_valid_cores = yes }
 	}
 
 	option = { # Cancel
@@ -15055,75 +14946,96 @@ country_event = { # Fate of Purnia
 
 country_event = { # Fate of Arunachal
 	id = annex.7090
-	title = annexation_decision_arunachal
-	desc = annexation_decision_arunachal_desc
+	title = annexation_434
+	desc = annexation_434_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 	
-	option = { #Leave it to the Bengalese administration
+	immediate = { 
+		hidden_effect = {
+			if = {
+				limit = {
+					any_state_of = {
+						target = { 432 601 }
+						is_claim_or_core_of_ROOT = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					432 = { #Assam
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:432.owner = { save_event_target_as = india add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					601 = { #Chamdo
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:601.owner = { save_event_target_as = tibet add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+	option = { #Leave it to India
 		log = "[GetLogInfo]: event annex.7090 option annex.7090.a"
 		name = annex.7090.a
 		trigger = {
-			is_subject = no
-			BEN = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = NEP
-						tag = ROC
-						tag = CHI
-					}
-				}
-			}
+			has_event_target = india
 		}
 		ai_chance = {
-			base = 100
+			base = 50
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				is_ally_with = event_target:tibet
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
+			}
 		}
-
-		BEN = {
-			transfer_state = 434
-		}
-		434 = { add_claim_by = BEN }
+		set_temp_variable = { tag_to_release = event_target:india }
+		858 = { transfer_state_and_notify = yes } #Tawang
 	}
 	
-	option = { #Give it to Tibet
-		log = "[GetLogInfo]: event annex.7090 option annex.7090.b"
+	option = { #Give to Tibet
+		log = "[GetLogInfo]: event annexation_events.7090 option annex.7090.b"
 		name = annex.7090.b
 		trigger = {
-			is_subject = no
-			TIB = {
-				exists = yes
-				owns_state = 601
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = NEP
-						tag = ROC
-						tag = CHI
-					}
-				}
-			}
+			has_event_target = tibet
 		}
 		ai_chance = {
-			base = 60
+			base = 50
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tibet }
+				is_ally_with = event_target:india
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tibet = { is_subject = yes }
+			}
 		}
-		
-		TIB = {
-			transfer_state = 434
-		}
-		434 = { add_claim_by = TIB }
+		set_temp_variable = { tag_to_release = event_target:tibet }
+		858 = { transfer_state_and_notify = yes } #Tawang
 	}
 	
 	option = { #Give it to China
@@ -15286,54 +15198,48 @@ country_event = { # Fate of South Shan
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-	
-	option = { #Leave it to Burma
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						640 = { is_claim_or_core_of_ROOT = yes } #Mandalay
+						1121 = { is_claim_or_core_of_ROOT = yes } #Lan Na
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					640 = { #Mandalay
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:640.owner = { save_event_target_as = burma add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					1121 = { #Lan Na
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:burma }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1121.owner = { save_event_target_as = siam add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+	option = { #Leave it to Siam
 		log = "[GetLogInfo]: event annex.7091 option annex.7091.a"
 		name = annex.7091.a
 		trigger = {
-			is_subject = no
-			BUR = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SIA
-						tag = BEN
-						tag = BUR
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		BUR = {
-			transfer_state = 1115
-		}
-		1115 = { add_claim_by = BUR }
-	}
-	
-	option = { #Give it to the Thai State
-		log = "[GetLogInfo]: event annex.7091 option annex.7091.b"
-		name = annex.7091.b
-		trigger = {
-			is_subject = no
-			OR = {
-				SIA = {
-					exists = yes
-				}
-			}
-			ROOT = {
-				NOT = {
-					tag = SIA
-				}
-			}
+			has_event_target = siam
 		}
 		ai_chance = {
 			base = 20
@@ -15342,22 +15248,47 @@ country_event = { # Fate of South Shan
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 100
-				BUR = {
-					exists = no
-				}
-				ROOT = {
-					NOT = {
-						has_subject = BEN
-					}
+				factor = 0
+				NOT = { is_ally_with = event_target:siam }
+				OR = {
+					is_ally_with = event_target:burma
 				}
 			}
+			modifier = {
+				factor = 0.1
+				event_target:siam = { is_subject = yes }
+			}
 		}
-		
-		SIA = {
-			transfer_state = 1115
+		set_temp_variable = { tag_to_release = event_target:siam }
+		1115 = { transfer_state_and_notify = yes } #Southern Shan
+	}
+	
+	option = { #Give it to the Thai State
+		log = "[GetLogInfo]: event annex.7091 option annex.7091.b"
+		name = annex.7091.b
+		trigger = {
+			has_event_target = burma
 		}
-		1115 = { add_claim_by = SIA }
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:burma }
+				OR = {
+					is_ally_with = event_target:siam
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:burma = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:burma }
+		1115 = { transfer_state_and_notify = yes } #Southern Shan
 	}
 
 	option = { #Give to overlord
@@ -15367,7 +15298,7 @@ country_event = { # Fate of South Shan
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1115 = { transfer_if_owned = yes }
+		1115 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -15376,26 +15307,7 @@ country_event = { # Fate of South Shan
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SIA
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = BUR
-				}
-			}
-		}
-		every_owned_state = {
+		1115 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -15418,75 +15330,100 @@ country_event = { # Fate of North Shan
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-	
+	immediate = { 
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						640 = { is_claim_or_core_of_ROOT = yes } #Mandalay
+						AND = {
+							1121 = { is_claim_or_core_of_ROOT = yes } #Lan Na
+							owns_state = 1115 #Lower Shan
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					640 = { #Mandalay
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:640.owner = { save_event_target_as = burma add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					1121 = { #Lan Na
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:burma }
+							1115 = { annexations_required_state_is_owned_by_either_side = yes } #South Shan
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1121.owner = { save_event_target_as = siam add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
 	option = { #Leave it to Burma
 		log = "[GetLogInfo]: event annex.7092 option annex.7092.a"
 		name = annex.7092.a
 		trigger = {
-			is_subject = no
-			BUR = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SIA
-						tag = BEN
-						tag = BUR
-					}
-				}
-			}
+			has_event_target = burma
 		}
 		ai_chance = {
-			base = 100
+			base = 20
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:burma }
+				OR = {
+					is_ally_with = event_target:siam
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:burma = { is_subject = yes }
+			}
 		}
-
-		BUR = {
-			transfer_state = 1116
-		}
-		1116 = { add_claim_by = BUR }
+		set_temp_variable = { tag_to_release = event_target:burma }
+		1116 = { transfer_state_and_notify = yes } #Southern Shan
 	}
 	
 	option = { #Give it to the Thai State
 		log = "[GetLogInfo]: event annex.7092 option annex.7092.b"
 		name = annex.7092.b
 		trigger = {
-			is_subject = no
-			SIA = {
-				exists = yes
-				owns_state = 1115
-			}
-			ROOT = {
-				NOT = {
-					tag = SIA
-				}
-			}
+			has_event_target = siam
 		}
 		ai_chance = {
-			base = 0
+			base = 20
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 50
-				BUR = {
-					exists = no
-				}
-				BEN = {
-					exists = no
+				factor = 0
+				NOT = { is_ally_with = event_target:siam }
+				OR = {
+					is_ally_with = event_target:burma
 				}
 			}
+			modifier = {
+				factor = 0.1
+				event_target:siam = { is_subject = yes }
+			}
 		}
-		
-		SIA = {
-			transfer_state = 1116
-		}
-		1116 = { add_claim_by = SIA }
+		set_temp_variable = { tag_to_release = event_target:siam }
+		1116 = { transfer_state_and_notify = yes } #Southern Shan}
 	}
 
 	option = { #Give to overlord
@@ -15496,7 +15433,7 @@ country_event = { # Fate of North Shan
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1116 = { transfer_if_owned = yes }
+		1116 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -15505,26 +15442,7 @@ country_event = { # Fate of North Shan
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SIA
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = BUR
-				}
-			}
-		}
-		every_owned_state = {
+		1116 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -15542,122 +15460,99 @@ country_event = { # Fate of North Shan
 
 country_event = { # Fate of Mon
 	id = annex.7093
-	title = annexation_decision_mon
-	desc = annexation_decision_mon_desc
+	title = annexation_1123
+	desc = annexation_1123_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-	
+	immediate = { 
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						288 = { is_claim_or_core_of_ROOT = yes } #Rangoon
+						289 = { is_claim_or_core_of_ROOT = yes } #Siam
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					288 = { #Rangoon
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:288.owner = { save_event_target_as = burma add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					289 = { #Siam
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:burma }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:289.owner = { save_event_target_as = siam add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
 	option = { #Leave it to Burma
 		log = "[GetLogInfo]: event annex.7093 option annex.7093.a"
 		name = annex.7093.a
 		trigger = {
-			is_subject = no
-			BUR = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SIA
-						tag = BEN
-						tag = BUR
-					}
-				}
-			}
+			has_event_target = burma
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
-		}
-
-		BUR = {
-			transfer_state = 1123
-			transfer_state = 1124
-		}
-		1123 = { add_claim_by = BUR }
-		1124 = { add_claim_by = BUR }
-	}
-	
-	option = { #Expand our colonial asset
-		log = "[GetLogInfo]: event annex.7093 option annex.7093.b"
-		name = annex.7093.b
-		trigger = {
-			is_subject = no
-			BUR = {
-				exists = no
-			}
-			BEN = {
-				exists = yes
-			}
-			ROOT = {
-				has_subject = BEN
-			}
-			ROOT = {
-				NOT = {
-					tag = BEN
-					tag = SIA
-				}
-			}
-		}
-		ai_chance = {
-			base = 80
 			modifier = {
 				factor = 0
-				annexations_can_annex = yes
+				NOT = { is_ally_with = event_target:burma }
+				is_ally_with = event_target:siam
+			}
+			modifier = {
+				factor = 0.1
+				event_target:burma = { is_subject = yes }
 			}
 		}
-		
-		BEN = {
-			transfer_state = 1123
-			transfer_state = 1124
-		}
-		1123 = { add_claim_by = BUR }
-		1124 = { add_claim_by = BUR }
+		set_temp_variable = { tag_to_release = event_target:burma }
+		1123 = { transfer_state_and_notify = yes } #Mon
+		1124 = { transfer_if_owned = yes } #Tenasserim
 	}
 	
 	option = { #Give it to the Thai State
-		log = "[GetLogInfo]: event annex.7093 option annex.7093.c"
-		name = annex.7093.c
+		log = "[GetLogInfo]: event annex.7093 option annex.7093.b"
+		name = annex.7093.b
 		trigger = {
-			is_subject = no
-			OR = {
-				SIA = {
-					exists = yes
-				}
-			}
-			ROOT = {
-				NOT = {
-					tag = SIA
-				}
-			}
+			has_event_target = siam
 		}
 		ai_chance = {
-			base = 0
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 50
-				BUR = {
-					exists = no
-				}
-				BEN = {
-					exists = no
-				}
+				factor = 0
+				NOT = { is_ally_with = event_target:siam }
+				is_ally_with = event_target:burma
+			}
+			modifier = {
+				factor = 0.1
+				event_target:siam = { is_subject = yes }
 			}
 		}
-		
-		SIA = {
-			transfer_state = 1123
-			transfer_state = 1124
-		}
-		1123 = { add_claim_by = SIA }
-		1124 = { add_claim_by = SIA }
+		set_temp_variable = { tag_to_release = event_target:siam }
+		1123 = { transfer_state_and_notify = yes } #Mon
+		1124 = { transfer_if_owned = yes } #Tenasserim
 	}
 
 	option = { #Give to overlord
@@ -15677,28 +15572,8 @@ country_event = { # Fate of Mon
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SIA
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = BUR
-				}
-			}
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		1123 = { add_claim_of_ROOT = yes }
+		1124 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { # Cancel
@@ -15719,71 +15594,93 @@ country_event = { # Fate of Tambralinga
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-	
+	immediate = { 
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						288 = { is_claim_or_core_of_ROOT = yes } #Rangoon
+						289 = { is_claim_or_core_of_ROOT = yes } #Siam
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					288 = { #Rangoon
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = RAJ
+						}
+					}
+				}
+				var:288.owner = { save_event_target_as = burma add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					289 = { #Siam
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:burma }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:289.owner = { save_event_target_as = siam add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
 	option = { #Leave it to the Thai State
 		log = "[GetLogInfo]: event annex.7094 option annex.7094.a"
 		name = annex.7094.a
 		trigger = {
-			is_subject = no
-			SIA = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SIA
-						tag = BEN
-					}
-				}
-			}
+			has_event_target = siam
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:siam }
+				is_ally_with = event_target:burma
+			}
+			modifier = {
+				factor = 0.1
+				event_target:siam = { is_subject = yes }
+			}
 		}
-
-		SIA = {
-			transfer_state = 724
-		}
-		724 = { add_claim_by = SIA }
+		set_temp_variable = { tag_to_release = event_target:siam }
+		724 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Expand our colonial asset
 		log = "[GetLogInfo]: event annex.7094 option annex.7094.b"
 		name = annex.7094.b
 		trigger = {
-			is_subject = no
-			BUR = {
-				exists = no
-			}
-			BEN = {
-				exists = yes
-			}
-			ROOT = {
-				has_subject = BEN
-			}
-			ROOT = {
-				NOT = {
-					tag = BEN
-					tag = SIA
-				}
-			}
+			has_event_target = burma
 		}
 		ai_chance = {
-			base = 20
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:burma }
+				is_ally_with = event_target:siam
+			}
+			modifier = {
+				factor = 0.1
+				event_target:burma = { is_subject = yes }
+			}
 		}
-		
-		BEN = {
-			transfer_state = 724
-		}
-		724 = { add_claim_by = BEN }
+		set_temp_variable = { tag_to_release = event_target:burma }
+		724 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Give to overlord
@@ -15793,7 +15690,7 @@ country_event = { # Fate of Tambralinga
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		724 = { transfer_if_owned = yes }
+		724 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -15802,20 +15699,7 @@ country_event = { # Fate of Tambralinga
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SIA
-				}
-			}
-		}
-		every_owned_state = {
+		724 = {
 			add_claim_of_ROOT = yes
 		}
 	}
