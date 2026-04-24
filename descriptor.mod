@@ -61,4 +61,4 @@ tags={
 }
 picture="Pax_Brit.png"
 version="1.4_dev_build"
-supported_version="1.17.*"
+supported_version="1.18.*"
