@@ -6619,7 +6619,21 @@ country_event = { #Fate of Rhineland
 			has_event_target = germany
 			is_subject = no
 		}
-		ai_chance = { base = 0 }
+		ai_chance = { 
+			base = 0 
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+				OR = {
+					is_ally_with = event_target:westphalia
+					is_ally_with = event_target:nassau
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
 		42 = { add_claim_of_ROOT = yes } #Moselland
 		909 = { add_claim_of_ROOT = yes } #West Rhineland
 		1183 = { add_claim_of_ROOT = yes } #Palatinate
@@ -6637,7 +6651,21 @@ country_event = { #Fate of Rhineland
 			has_event_target = nassau
 			is_subject = no
 		}
-		ai_chance = { base = 0 }
+		ai_chance = { 
+			base = 0 
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:nassau }
+				OR = {
+					is_ally_with = event_target:germany
+					is_ally_with = event_target:westphalia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:nassau = { is_subject = yes }
+			}
+		}
 		42 = { add_claim_of_ROOT = yes } #Moselland
 		909 = { add_claim_of_ROOT = yes } #West Rhineland
 		1183 = { add_claim_of_ROOT = yes } #Palatinate
@@ -6654,7 +6682,21 @@ country_event = { #Fate of Rhineland
 			has_event_target = westphalia
 			is_subject = no
 		}
-		ai_chance = { base = 0 }
+		ai_chance = { 
+			base = 0 
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:westphalia }
+				OR = {
+					is_ally_with = event_target:germany
+					is_ally_with = event_target:nassau
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:westphalia = { is_subject = yes }
+			}
+		}
 		42 = { add_claim_of_ROOT = yes } #Moselland
 		909 = { add_claim_of_ROOT = yes } #West Rhineland
 		1183 = { add_claim_of_ROOT = yes } #Palatinate
@@ -8654,7 +8696,7 @@ country_event = { #Fate of North Sudetenland
 			has_event_target = germany
 		}
 		ai_chance = {
-			base = 50
+			base = 30
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
@@ -8687,7 +8729,7 @@ country_event = { #Fate of North Sudetenland
 		}
 
 		ai_chance = {
-			base = 50
+			base = 70
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
@@ -11229,14 +11271,14 @@ country_event = { #Fate of Bosnia
 			}
 			if = {
 				limit = {
-					105 = { #Crna Gora
+					794 = { #Lika
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
 						}
 					}
 				}
-				var:105.owner = { save_event_target_as = crna_gora }
+				var:794.owner = { save_event_target_as = lika }
 			}
 		}
 	}
@@ -11246,10 +11288,6 @@ country_event = { #Fate of Bosnia
 		name = annex.1074.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				original_tag = SER
-				original_tag = CRO
-			}
 		}
 		ai_chance = {
 			base = 100
@@ -11282,7 +11320,6 @@ country_event = { #Fate of Bosnia
 		log = "[GetLogInfo]: event annex.1074 option annex.1074.b"
 		name = annex.1074.b
 		trigger = {
-			is_subject = no
 			has_event_target = belgrade
 		}
 
@@ -11296,27 +11333,27 @@ country_event = { #Fate of Bosnia
 		log = "[GetLogInfo]: event annex.1074 option annex.1074.c"
 		name = annex.1074.c
 		trigger = {
-			is_subject = no
 			has_event_target = posavina
 		}
 
 		ai_chance = { base = 100 }
 
 		set_temp_variable = { tag_to_release = event_target:posavina }
+		1028 = { clear_retain_state = yes } #Banja Luka
 		104 = { transfer_if_owned = yes } #Bosnia
 	}
 	
-	option = { #Give the land to Crna Gora
+	option = { #Give the land to Lika
 		log = "[GetLogInfo]: event annex.1074 option annex.1074.d"
 		name = annex.1074.d
 		trigger = {
-			is_subject = no
-			has_event_target = crna_gora
+			has_event_target = lika
 		}
 
 		ai_chance = { base = 100 }
 
-		set_temp_variable = { tag_to_release = event_target:crna_gora }
+		set_temp_variable = { tag_to_release = event_target:lika }
+		1028 = { clear_retain_state = yes } #Banja Luka
 		104 = { transfer_if_owned = yes } #Bosnia
 	}
 
@@ -11997,18 +12034,31 @@ country_event = { #Fate of Hungary
 	is_triggered_only = yes
 
 	immediate = {
-		45 = { retain_state = yes }
-		764 = { retain_state = yes }
-		82 = { retain_state = yes }
-		83 = { retain_state = yes }
-		76 = { retain_state = yes }
-		1238 = { retain_state = yes }
-		1035 = { retain_state = yes }
-		1034 = { retain_state = yes }
-		1033 = { retain_state = yes }
-		84 = { retain_state = yes }
-		664 = { retain_state = yes }
-		73 = { retain_state = yes }
+		hidden_effect = { 
+			every_owned_state = {
+				limit = {
+					is_hungary = yes
+				}
+				add_core_of = HUN
+				else = { 
+					remove_core_of = HUN
+					remove_claim_by = GER
+				}
+			}
+			45 = { retain_state = yes }
+			764 = { retain_state = yes }
+			82 = { retain_state = yes }
+			83 = { retain_state = yes }
+			76 = { retain_state = yes }
+			1238 = { retain_state = yes }
+			1035 = { retain_state = yes }
+			1034 = { retain_state = yes }
+			1033 = { retain_state = yes }
+			84 = { retain_state = yes }
+			664 = { retain_state = yes }
+			73 = { retain_state = yes }
+			1241 = { retain_state = yes }
+		}
 	}
 
 	option = { #Release Hungary
@@ -18937,13 +18987,21 @@ country_event = { #Fate of Iceland
 			has_event_target = norway
 	    }
 		ai_chance = {
-			base = 50
+			base = 70
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:norway }
+				is_ally_with = event_target:denmark
+			}
+			modifier = {
+				factor = 0.1
+				event_target:norway = { is_subject = yes }
+			}
 		}
-
 		set_temp_variable = { tag_to_release = event_target:norway }
 		100 = { transfer_state_and_notify = yes } #Iceland
 	}
@@ -18954,11 +19012,21 @@ country_event = { #Fate of Iceland
 		trigger = {
 			has_event_target = denmark
 	    }
+
 		ai_chance = {
-			base = 50
+			base = 70
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:denmark }
+				is_ally_with = event_target:norway
+			}
+			modifier = {
+				factor = 0.1
+				event_target:denmark = { is_subject = yes }
 			}
 		}
 
@@ -25809,7 +25877,6 @@ country_event = { #Fate of East Transylvania/Hunyad
 		log = "[GetLogInfo]: event annex.1186 option annex.1186.b"
 		name = annex.1186.b
 		trigger = {
-			is_subject = no
 			has_event_target = alfold
 		}
 		ai_chance = {
@@ -25833,7 +25900,6 @@ country_event = { #Fate of East Transylvania/Hunyad
 		log = "[GetLogInfo]: event annex.1186 option annex.1186.c"
 		name = annex.1186.c
 		trigger = {
-			is_subject = no
 			has_event_target = ploiesti
 		}
 		ai_chance = {
@@ -25857,7 +25923,6 @@ country_event = { #Fate of East Transylvania/Hunyad
 		log = "[GetLogInfo]: event annex.1186 option annex.1186.d"
 		name = annex.1186.d
 		trigger = {
-			is_subject = no
 			has_event_target = iasi
 		}
 		ai_chance = {
