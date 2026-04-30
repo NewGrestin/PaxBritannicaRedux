@@ -3847,3 +3847,107 @@ country_event = { # Fate of Javari
 		recheck_annexations = yes
 	}
 }
+
+country_event = { #Fate of Cuba
+	id = annex.3032
+	title = annexation_315
+	desc = annexation_315_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { ATC = { ROOT_can_grant_land = yes } }
+				ATC = {
+					save_event_target_as = antilles
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+		}
+	}	
+
+	option = { #Release Cuba Whole
+		log = "[GetLogInfo]: event annex.3032 option annex.3032.a"
+		name = annex.3032.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = CUB }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					tag = AME
+				}
+			}
+			CUB = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = CUB_AME
+			}
+		}
+	}
+	
+	option = { #Give to Antilles Confed
+		log = "[GetLogInfo]: event annex.3032 option annex.3032.b"
+		name = annex.3032.b
+		trigger = {
+			has_event_target = antilles
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = ATC }
+		315 = {
+			add_core_of = ATC
+			transfer_state_and_notify = yes 
+		} 
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3032 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		CUB = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #integration
+		log = "[GetLogInfo]: event annex.3032 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		315 = { #Cuba
+			add_claim_of_ROOT = yes
+			add_resistance = 35
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3032 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
