@@ -8,48 +8,54 @@ country_event = { #Fate of Mongolia
 	is_triggered_only = yes
 	
 	immediate = {
-		297 = { retain_state = yes }
-		1137 = { retain_state = yes }
+		hidden_effect = {
+			determine_chinese_ally = yes
+			every_state = {
+				if = {
+					limit = { is_mongolia = no }
+					remove_core_of = MON
+				}
+				else = {
+					add_core_of = MON
+				}
+				remove_claim_by = MON
+			}
+			if = {
+				limit = {
+					OR = {
+						is_chinese_tag = yes
+						tag = RUS
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			621 = { retain_state = yes } # IDFK
+			611 = { retain_state = yes } # IDFK 
+			612 = { retain_state = yes } # IDFK
+			329 = { retain_state = yes } #Tuva
+			1137 = { retain_state = yes } #Altai-Gobi
+		}
 	}
 
 	option = { #Release Mongolia
-		log = "[GetLogInfo]: event annex.7000 option annex.7000.a"
-		name = annex.7000.a
+		log = "[GetLogInfo]: event annexation_events.7000 option annexation_events.3013.a"
+		name = annexation_events.3013.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				ROOT = {
-					original_tag = GAN
-				}
-			}
 		}
 		ai_chance = {
-			base = 100
+			base = 80
 			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 50
-			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-				}
-				factor = 50
+				factor = 0
+				annexations_can_annex = yes
 			}
 		}
-
 		set_temp_variable = { tag_to_release = MON }
 		release_targeted_tag = yes
-
 		if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = RUS
-					}
 				}
 			}
 			MON = {
@@ -57,28 +63,11 @@ country_event = { #Fate of Mongolia
 				set_cosmetic_tag = MON_Occupied_Monarchy
 			}
 		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = RUS
-				}
-			}
-			MON = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = MON_RUS_Occupied_Monarchy
-			}
-		}
-
-
-		if = {
+		
+		else_if = {
 			limit = {
 				ROOT = {
 					has_republican_government = yes
-					NOT = {
-						original_tag = ROC
-					}
 				}
 			}
 			MON = {
@@ -86,103 +75,43 @@ country_event = { #Fate of Mongolia
 				set_cosmetic_tag = MON_Occupied_Republic
 			}
 		}
-		
-		if = {
+	}
+
+	option = { #Give to China
+		log = "[GetLogInfo]: event annexation_events.7000 option annexation_events.china.give_to_china"
+		name = annexation_events.china.give_to_china
+		trigger = {
+			has_event_target = china
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:china }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:china = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:china }
+		every_owned_state = {
 			limit = {
-				ROOT = {
-					has_republican_government = yes
-					original_tag = ROC
+				OR = {
+					region = 152 #Outer Mongolia
+					region = 244 #Inner Mongolia
 				}
+				is_valid_annexation_state = yes
 			}
-			MON = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = MON_ROC_Occupied_Republic
-			}
+			transfer_state_and_notify = yes
 		}
 	}
-	
-	option = { #give to Republic of China
-		log = "[GetLogInfo]: event annex.7000 option annex.give_to_republic_of_china"
-		name = annex.give_to_republic_of_china
-		trigger = {
-			ROC = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						has_monarchist_government = yes
-						tag = ROC
-						tag = CHI
-					}
-				}
-			}
-			NOT = {
-				ROOT = {
-					tag = GAN
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		ROC = {
-			transfer_state = 330
-			transfer_state = 321
-			transfer_state = 1138
-			transfer_state = 1139
-		}
-		330 = { add_claim_by = ROC }
-		321 = { add_claim_by = ROC }
-		1138 = { add_claim_by = ROC }
-		1139 = { add_claim_by = ROC }
-	}
-	
-	option = { #give to Taiping
-		log = "[GetLogInfo]: event annex.7000 option annex.give_to_china"
-		name = annex.give_to_china
-		trigger = {
-			CHI = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						has_republican_government = yes
-						tag = ROC
-						tag = CHI
-					}
-				}
-			}
-			NOT = {
-				ROOT = {
-					tag = GAN
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		CHI = {
-			transfer_state = 330
-			transfer_state = 321
-			transfer_state = 1138
-			transfer_state = 1139
-		}
-		330 = { add_claim_by = CHI }
-		321 = { add_claim_by = CHI }
-		1138 = { add_claim_by = CHI }
-		1139 = { add_claim_by = CHI }
-	}
-	
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7000 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -190,8 +119,10 @@ country_event = { #Fate of Mongolia
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		MON = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = { is_mongolia = yes }
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -199,34 +130,9 @@ country_event = { #Fate of Mongolia
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-			original_tag = CHI
-			original_tag = ROC
-			original_tag = RUS
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 60
-			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-				}
-				factor = 30
-			}
-			modifier = {
-				ROOT = {
-					original_tag = GAN
-				}
-				factor = 100
-			}
 		}
 		every_owned_state = {
-			limit = { is_core_of = MON }
+			limit = { is_mongolia = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -243,196 +149,13 @@ country_event = { #Fate of Mongolia
 	}
 }
 
-country_event = { #Fate of Gansu
+country_event = { #Fate of Gansu #NOT USED
 	id = annex.7001
 	title = annexation_decision_gansu
 	desc = annexation_decision_gansu_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-
-	option = { #Give to Mongolia
-		log = "[GetLogInfo]: event annex.7001 option annex.7001.a"
-		name = annex.7001.a
-		trigger = {
-			is_subject = no
-			MON = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					original_tag = MON
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 0
-			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-					original_tag = MAN
-				}
-				MON = {
-					is_subject_of = RUS
-				}
-				factor = 100
-			}
-		}
-
-		MON = {
-			transfer_state = 1137
-			transfer_state = 297
-		}
-	}
-	
-	option = { #give to Republic of China
-		log = "[GetLogInfo]: event annex.7000 option annex.give_to_republic_of_china"
-		name = annex.give_to_republic_of_china
-		trigger = {
-			ROC = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						has_monarchist_government = yes
-						original_tag = ROC
-						original_tag = CHI
-					}
-				}
-			}
-			NOT = {
-				ROOT = {
-					original_tag = MON
-				}
-			}
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		ROC = {
-			transfer_state = 1137
-			transfer_state = 297
-		}
-		1137 = { add_claim_by = ROC }
-		297 = { add_claim_by = ROC }
-	}
-	
-	option = { #give to Taiping
-		log = "[GetLogInfo]: event annex.7000 option annex.give_to_china"
-		name = annex.give_to_china
-		trigger = {
-			CHI = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						has_republican_government = yes
-						original_tag = ROC
-						original_tag = CHI
-					}
-				}
-			}
-			NOT = {
-				ROOT = {
-					original_tag = MON
-				}
-			}
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		CHI = {
-			transfer_state = 1137
-			transfer_state = 297
-		}
-		1137 = { add_claim_by = CHI }
-		297 = { add_claim_by = CHI }
-	}
-	
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.7001 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		1137 = { transfer_if_owned = yes }
-		297 = { transfer_if_owned = yes }
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.7001 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-			original_tag = CHI
-			original_tag = ROC
-			original_tag = RUS
-			original_tag = MON
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 100
-			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-					original_tag = MAN
-				}
-				MON = {
-					is_subject_of = RUS
-				}
-				factor = 0
-			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-				}
-				RUS = {
-					owns_state = 321
-				}
-				factor = 100
-			}
-			modifier = {
-				ROOT = {
-					original_tag = MON
-				}
-				factor = 100
-			}
-		}
-		every_owned_state = {
-			limit = { is_core_of = GAN }
-			add_claim_of_ROOT = yes
-		}
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.7001 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
 	
 	after = {
 		recheck_annexations = yes
@@ -441,266 +164,191 @@ country_event = { #Fate of Gansu
 
 country_event = { #Fate of Sinkiang
 	id = annex.7002
-	title = annexation_decision_sinkiang
-	desc = annexation_decision_sinkiang_desc
+	title = annexation_617
+	desc = annexation_617_desc
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
 
+	immediate = { 
+		hidden_effect = { 
+			annexations_reset_central_asian_tags = yes
+			determine_chinese_ally = yes
+			if = {
+				limit = {
+					OR = {
+						is_chinese_tag = yes
+						AND = {
+							is_central_asian_tag = yes
+							589 = { is_claim_or_core_of_ROOT = yes } #Eastern Khazakstan
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					is_chinese_tag = no
+					589 = { #Eastern Khazakstan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							is_central_asian_tag = yes
+						}
+					}
+				}
+				var:589.owner = { save_event_target_as = turkestan add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			1099 = { retain_state = yes } #Aksai Chin
+		}
+	}
+
 	option = { #Release Sinkiang
 		log = "[GetLogInfo]: event annex.7002 option annex.7002.a"
 		name = annex.7002.a
-		trigger = {
+		trigger = { 
 			is_subject = no
-			NOT = {
-				ROOT = {
-					original_tag = ETR
-				}
-			}
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 0
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = ETR }
+		every_state = {
+			limit = {
+				is_sinkiang = yes
+				NOT = { is_core_of = var:tag_to_release }
 			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-				}
-				factor = 50
-			}
+			remove_claim_and_add_core_of_target = yes
 		}
-		
-		619 = { add_core_of = SIK }
-		287 = { add_core_of = SIK }
-		759 = { add_core_of = SIK }
-
-		set_temp_variable = { tag_to_release = SIK }
 		release_targeted_tag = yes
 
 		if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = RUS
-					}
 				}
 			}
-			SIK = {
+			ETR = {
 				drop_cosmetic_tag = yes
-				set_cosmetic_tag = SIK_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = RUS
-				}
-			}
-			SIK = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = SIK_Occupied_Monarchy_RUS
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_republican_government = yes
-					NOT = {
-						original_tag = ROC
-					}
-				}
-			}
-			SIK = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = SIK_Occupied_Republic
+				set_cosmetic_tag = ETR_Occupied_Monarchy
 			}
 		}
 		
-		if = {
+		else_if = {
 			limit = {
 				ROOT = {
 					has_republican_government = yes
-					original_tag = ROC
 				}
 			}
-			SIK = {
+			ETR = {
 				drop_cosmetic_tag = yes
-				set_cosmetic_tag = SIK_Occupied_Republic_ROC
+				set_cosmetic_tag = ETR_Occupied_Republic
 			}
 		}
 	}
 	
-	option = { #give to Republic of China
-		log = "[GetLogInfo]: event annex.7002 option annex.give_to_republic_of_china"
-		name = annex.give_to_republic_of_china
+	option = { #liberate united Central Asia
+		log = "[GetLogInfo]: event annexation_events.7002 option annexation_events.asia.release_united_central_asia"
+		name = annexation_events.asia.release_united_central_asia
 		trigger = {
-			ROC = {
-				exists = yes
-				OR = {
-					owns_state = 760
-					owns_state = 759
-					owns_state = 287
-					owns_state = 619
-				}
-			}
-			ROOT = {
-				NOT = {
-					original_tag = ROC
-					original_tag = CHI
-					original_tag = ETR
-				}
-			}
+			NOT = { country_exists = event_target:united_central_asia }
+			is_central_asian_tag = no
+			is_chinese_tag = no
+			is_subject = no
 		}
 		ai_chance = {
-			base = 30
+			base = 20
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				has_event_target = china
+				OR = {
+					event_target:china = { is_russian_tag = no }
+				}
+				OR = {
+					is_major = no
+					is_ally_with = event_target:china
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = turkestan
+				OR = {
+					event_target:turkestan = { is_russian_tag = no }
+				}
+				OR = {
+					is_major = no
+					is_ally_with = event_target:turkestan
+				}
+			}
 		}
-		ROC = {
-			transfer_state = 617
-			transfer_state = 618
-			transfer_state = 1397
-			transfer_state = 619
-			transfer_state = 287
-			transfer_state = 759
-			#
-			transfer_state = 586
-			transfer_state = 589
-			transfer_state = 1396
-			transfer_state = 654
-		}
-		617 = { add_claim_by = ROC }
-		618 = { add_claim_by = ROC }
-		1397 = { add_claim_by = ROC }
-		619 = { add_claim_by = ROC }
-		287 = { add_claim_by = ROC }
-		759 = { add_claim_by = ROC }
-		#
-		586 = { add_claim_by = ROC }
-		589 = { add_claim_by = ROC }
-		1396 = { add_claim_by = ROC }
-		654 = { add_claim_by = ROC }
+		set_temp_variable = { tag_to_release = SIK }
+		annexations_release_united_central_asia = yes
 	}
 	
-	option = { #give to Taiping
-		log = "[GetLogInfo]: event annex.7002 option annex.give_to_china"
-		name = annex.give_to_china
+	option = { #Give it to Turkestan
+		log = "[GetLogInfo]: event annexation_events.7002 option annexation_events.asia.give_to_turkestan"
+		name = annexation_events.asia.give_to_turkestan
 		trigger = {
-			CHI = {
-				exists = yes
-				OR = {
-					owns_state = 760
-					owns_state = 759
-					owns_state = 287
-					owns_state = 619
-				}
-			}
-			ROOT = {
-				NOT = {
-					original_tag = ROC
-					original_tag = CHI
-					original_tag = ETR
-				}
-			}
+			has_event_target = turkestan
 		}
 		ai_chance = {
-			base = 10
+			base = 40
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:turkestan }
+				is_ally_with = event_target:china
+			}
+			modifier = {
+				factor = 0.1
+				event_target:turkestan = { is_subject = yes }
+			}
 		}
-		CHI = {
-			transfer_state = 617
-			transfer_state = 618
-			transfer_state = 1397
-			transfer_state = 619
-			transfer_state = 287
-			transfer_state = 759
-			#
-			transfer_state = 586
-			transfer_state = 589
-			transfer_state = 1396
-			transfer_state = 654
+		set_temp_variable = { tag_to_release = event_target:turkestan }
+		every_owned_state = {
+			limit = {
+				is_sinkiang = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
-		617 = { add_claim_by = CHI }
-		618 = { add_claim_by = CHI }
-		1397 = { add_claim_by = CHI }
-		619 = { add_claim_by = CHI }
-		287 = { add_claim_by = CHI }
-		759 = { add_claim_by = CHI }
-		#
-		586 = { add_claim_by = CHI }
-		589 = { add_claim_by = CHI }
-		1396 = { add_claim_by = CHI }
-		654 = { add_claim_by = CHI }
 	}
-	
-	option = { #give to Russia
-		log = "[GetLogInfo]: event annex.7002 option annex.give_to_russia"
-		name = annex.give_to_china
+
+	option = { #Give it to China
+		log = "[GetLogInfo]: event annexation_events.7002 option annexation_events.china.give_to_china"
+		name = annexation_events.china.give_to_china
 		trigger = {
-			RUS = {
-				exists = yes
-				OR = {
-					owns_state = 760
-					owns_state = 759
-					owns_state = 287
-					owns_state = 619
-				}
-			}
-			ROOT = {
-				NOT = {
-					original_tag = ROC
-					original_tag = CHI
-					original_tag = RUS
-					original_tag = ETR
-					original_tag = ENG
-				}
-			}
+			has_event_target = china
 		}
 		ai_chance = {
-			base = 10
+			base = 40
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:china }
+				is_ally_with = event_target:turkestan
+			}
+			modifier = {
+				factor = 0.1
+				event_target:china = { is_subject = yes }
+			}
 		}
-		RUS = {
-			transfer_state = 617
-			transfer_state = 618
-			transfer_state = 1397
-			transfer_state = 619
-			transfer_state = 287
-			transfer_state = 759
-			#
-			transfer_state = 586
-			transfer_state = 589
-			transfer_state = 1396
-			transfer_state = 654
+		set_temp_variable = { tag_to_release = event_target:china }
+		every_owned_state = {
+			limit = {
+				is_sinkiang = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
-		617 = { add_claim_by = RUS }
-		618 = { add_claim_by = RUS }
-		1397 = { add_claim_by = RUS }
-		619 = { add_claim_by = RUS }
-		287 = { add_claim_by = RUS }
-		759 = { add_claim_by = RUS }
-		#
-		586 = { add_claim_by = RUS }
-		589 = { add_claim_by = RUS }
-		1396 = { add_claim_by = RUS }
-		654 = { add_claim_by = RUS }
 	}
 	
 	option = { #Give to overlord
@@ -710,8 +358,10 @@ country_event = { #Fate of Sinkiang
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		SIK = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = { is_sinkiang = yes }
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -719,35 +369,9 @@ country_event = { #Fate of Sinkiang
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-			original_tag = CHI
-			original_tag = ROC
-			original_tag = RUS
-			original_tag = ETR
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 100
-			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-				}
-				factor = 50
-			}
-			modifier = {
-				ROOT = {
-					original_tag = ETR
-				}
-				factor = 100
-			}
 		}
 		every_owned_state = {
-			limit = { is_core_of = SIK }
+			limit = { is_sinkiang = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -876,145 +500,6 @@ country_event = { #Fate of East Turkestan / UNUSED
 		recheck_annexations = yes
 	}
 	
-	option = { #give to Republic of China
-		log = "[GetLogInfo]: event annex.7003 option annex.give_to_republic_of_china"
-		name = annex.give_to_republic_of_china
-		trigger = {
-			ROC = {
-				exists = yes
-				OR = {
-					owns_state = 732
-					owns_state = 586
-					owns_state = 617
-					owns_state = 287
-				}
-			}
-			ROOT = {
-				NOT = {
-					tag = ROC
-					tag = CHI
-					tag = SIK
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		ROC = {
-			transfer_state = 617
-			transfer_state = 618
-			transfer_state = 1397
-			transfer_state = 619
-			transfer_state = 287
-			transfer_state = 759
-		}
-		617 = { add_claim_by = ROC }
-		618 = { add_claim_by = ROC }
-		1397 = { add_claim_by = ROC }
-		619 = { add_claim_by = ROC }
-		287 = { add_claim_by = ROC }
-		759 = { add_claim_by = ROC }
-		
-		recheck_annexations = yes
-	}
-	
-	option = { #give to Taiping
-		log = "[GetLogInfo]: event annex.7003 option annex.give_to_china"
-		name = annex.give_to_china
-		trigger = {
-			CHI = {
-				exists = yes
-				OR = {
-					owns_state = 732
-					owns_state = 586
-					owns_state = 617
-					owns_state = 287
-				}
-			}
-			ROOT = {
-				NOT = {
-					tag = ROC
-					tag = CHI
-					tag = SIK
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		CHI = {
-			transfer_state = 617
-			transfer_state = 618
-			transfer_state = 1397
-			transfer_state = 619
-			transfer_state = 287
-			transfer_state = 759
-		}
-		617 = { add_claim_by = CHI }
-		618 = { add_claim_by = CHI }
-		1397 = { add_claim_by = CHI }
-		619 = { add_claim_by = CHI }
-		287 = { add_claim_by = CHI }
-		759 = { add_claim_by = CHI }
-		
-		recheck_annexations = yes
-	}
-	
-	option = { #give to Russia
-		log = "[GetLogInfo]: event annex.7003 option annex.give_to_russia"
-		name = annex.give_to_china
-		trigger = {
-			RUS = {
-				exists = yes
-				OR = {
-					owns_state = 732
-					owns_state = 586
-					owns_state = 617
-					owns_state = 287
-				}
-			}
-			ROOT = {
-				NOT = {
-					tag = ROC
-					tag = CHI
-					tag = RUS
-					tag = SIK
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		RUS = {
-			transfer_state = 617
-			transfer_state = 618
-			transfer_state = 1397
-			transfer_state = 619
-			transfer_state = 287
-			transfer_state = 759
-		}
-		617 = { add_claim_by = RUS }
-		618 = { add_claim_by = RUS }
-		1397 = { add_claim_by = RUS }
-		619 = { add_claim_by = RUS }
-		287 = { add_claim_by = RUS }
-		759 = { add_claim_by = RUS }
-		
-		recheck_annexations = yes
-	}
-	
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7003 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -1075,34 +560,44 @@ country_event = { #Fate of Kumul
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	
+	immediate =  {
+		hidden_effect = {
+			determine_chinese_ally = yes
+			if = {
+				limit = {
+					OR = {
+						is_chinese_tag = yes
+						AND = {
+							is_central_asian_tag = yes
+							617 = { is_claim_or_core_of_ROOT = yes } #Urumqi
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					617 = { #Urumqi
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:china }
+						}
+					}
+				}
+				var:617.owner = { save_event_target_as = sinkiang add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
 
 	option = { #Release Kumul
 		log = "[GetLogInfo]: event annex.7004 option annex.7004.a"
 		name = annex.7004.a
-		trigger = {
+		trigger = { 
 			is_subject = no
-			NOT = {
-				original_tag = ROC
-				original_tag = CHI
-			}
 		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 0
-			}
-			modifier = {
-				ROOT = {
-					original_tag = RUS
-				}
-				factor = 10
-			}
-		}
-
+		ai_chance = { base = 0 }
 		set_temp_variable = { tag_to_release = KUM }
 		release_targeted_tag = yes
 
@@ -1117,8 +612,8 @@ country_event = { #Fate of Kumul
 				set_cosmetic_tag = KUM_Occupied_Monarchy
 			}
 		}
-
-		if = {
+		
+		else_if = {
 			limit = {
 				ROOT = {
 					has_republican_government = yes
@@ -1130,117 +625,57 @@ country_event = { #Fate of Kumul
 			}
 		}
 	}
-	
-	option = { #give to Republic of China
-		log = "[GetLogInfo]: event annex.7004 option annex.give_to_republic_of_china"
-		name = annex.give_to_republic_of_china
+
+	option = { #Give it to China
+		log = "[GetLogInfo]: event annexation_events.7004 option annexation_events.china.give_to_china"
+		name = annexation_events.china.give_to_china
 		trigger = {
-			ROC = {
-				exists = yes
-				OR = {
-					owns_state = 756
-					owns_state = 759
-					owns_state = 617
-					owns_state = 618
-					owns_state = 1137
-				}
-			}
-			ROOT = {
-				NOT = {
-					has_republican_government = yes
-					tag = ROC
-					tag = CHI
-				}
-			}
+			has_event_target = china
 		}
 		ai_chance = {
-			base = 10
+			base = 40
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:china }
+				is_ally_with = event_target:sinkiang
+			}
+			modifier = {
+				factor = 0.1
+				event_target:china = { is_subject = yes }
+			}
 		}
-		ROC = {
-			transfer_state = 760
-		}
-		760 = { add_claim_by = ROC }
+		set_temp_variable = { tag_to_release = event_target:china }
+		760 = { transfer_state_and_notify = yes }
 	}
-	
-	option = { #give to Taiping
-		log = "[GetLogInfo]: event annex.7004 option annex.give_to_china"
-		name = annex.give_to_china
+
+	option = { #Give it to Sinkiang
+		log = "[GetLogInfo]: event annex.7004 option annex.7004.b"
+		name = annex.7004.b
 		trigger = {
-			CHI = {
-				exists = yes
-				OR = {
-					owns_state = 756
-					owns_state = 759
-					owns_state = 617
-					owns_state = 618
-					owns_state = 1137
-				}
-			}
-			ROOT = {
-				NOT = {
-					has_monarchist_government = yes
-					tag = ROC
-					tag = CHI
-				}
-			}
+			has_event_target = sinkiang
 		}
 		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		CHI = {
-			transfer_state = 760
-		}
-		760 = { add_claim_by = CHI }
-	}
-	
-	option = { #give to Sinkiang
-		log = "[GetLogInfo]: event annex.7004 option annex.give_to_sinkiang"
-		name = annex.give_to_sinkiang
-		trigger = {
-			SIK = {
-				exists = yes
-				OR = {
-					owns_state = 756
-					owns_state = 759
-					owns_state = 617
-					owns_state = 618
-					owns_state = 1137
-				}
-			}
-			ROOT = {
-				NOT = {
-					tag = ROC
-					tag = CHI
-					tag = ENG
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
+			base = 40
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 100
-				ROOT = {
-					original_tag = RUS
-					has_subject = SIK
-				}
+				factor = 0
+				NOT = { is_ally_with = event_target:sinkiang }
+				is_ally_with = event_target:china
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sinkiang = { is_subject = yes }
 			}
 		}
-		SIK = {
-			transfer_state = 760
-		}
-		760 = { add_claim_by = SIK }
+		set_temp_variable = { tag_to_release = event_target:sinkiang }
+		760 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -1250,7 +685,7 @@ country_event = { #Fate of Kumul
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		KUM = { set_transfer_target_cores = yes }
+		760 = { transfer_state_and_notify = yes }
 		transfer_targeted_territory = yes
 	}
 
@@ -1259,25 +694,8 @@ country_event = { #Fate of Kumul
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-			original_tag = CHI
-			original_tag = ROC
-			original_tag = SIK
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					tag = CHI
-					tag = ROC
-					tag = SIK
-				}
-				factor = 100
-			}
-		}
-		every_owned_state = {
-			limit = { is_core_of = KUM }
-			add_claim_of_ROOT = yes
-		}
+		760 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -1300,41 +718,52 @@ country_event = { #Fate of Xibei San Man
 	is_triggered_only = yes
 	
 	immediate = {
-		604 = { retain_state = yes }
-		755 = { retain_state = yes }
+		hidden_effect = { 
+			604 = { retain_state = yes }
+			755 = { retain_state = yes }
+			determine_chinese_ally = yes
+			if = {
+				limit = {
+					OR = {
+						is_chinese_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					759 = { #Kunlun
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:china}
+						}
+					}
+				}
+				var:759.owner = { save_event_target_as = sinkiang add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
 	}
 
-	option = { #Release Xibei San Man
+	option = { #Release Xibei San Ma
 		log = "[GetLogInfo]: event annex.7005 option annex.7005.a"
 		name = annex.7005.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				original_tag = CHI
-				original_tag = ROC
-			}
 		}
 		ai_chance = {
-			base = 100
+			base = 80
 			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
 				factor = 0
+				annexations_can_annex = yes
 			}
 		}
-
 		set_temp_variable = { tag_to_release = XSM }
 		release_targeted_tag = yes
-
 		if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = RUS
-					}
 				}
 			}
 			XSM = {
@@ -1342,21 +771,8 @@ country_event = { #Fate of Xibei San Man
 				set_cosmetic_tag = XSM_Occupied_Monarchy
 			}
 		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = RUS
-				}
-			}
-			XSM = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = XSM_RUS_Occupied_Monarchy
-			}
-		}
-
-		if = {
+		
+		else_if = {
 			limit = {
 				ROOT = {
 					has_republican_government = yes
@@ -1368,127 +784,68 @@ country_event = { #Fate of Xibei San Man
 			}
 		}
 	}
-	
-	option = { #give to Republic of China
-		log = "[GetLogInfo]: event annex.7005 option annex.give_to_republic_of_china"
-		name = annex.give_to_republic_of_china
+
+	option = { #Give it to China
+		log = "[GetLogInfo]: event annexation_events.7005 option annexation_events.china.give_to_china"
+		name = annexation_events.china.give_to_china
 		trigger = {
-			ROC = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = ROC
-					original_tag = CHI
-				}
-			}
+			has_event_target = china
 		}
 		ai_chance = {
-			base = 10
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
-		}
-		ROC = {
-			transfer_state = 283
-			transfer_state = 753
-			transfer_state = 754
-			transfer_state = 756
-			transfer_state = 616
-		}
-		283 = { add_claim_by = ROC }
-		753 = { add_claim_by = ROC }
-		754 = { add_claim_by = ROC }
-		756 = { add_claim_by = ROC }
-		616 = { add_claim_by = ROC }
-	}
-	
-	option = { #give to Taiping
-		log = "[GetLogInfo]: event annex.7005 option annex.give_to_china"
-		name = annex.give_to_china
-		trigger = {
-			CHI = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					has_republican_government = yes
-					original_tag = ROC
-					original_tag = CHI
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
 			modifier = {
 				factor = 0
+				NOT = { is_ally_with = event_target:china }
+				is_ally_with = event_target:sinkiang
 			}
-		}
-		CHI = {
-			transfer_state = 283
-			transfer_state = 753
-			transfer_state = 754
-			transfer_state = 756
-			transfer_state = 616
-		}
-		283 = { add_claim_by = CHI }
-		753 = { add_claim_by = CHI }
-		754 = { add_claim_by = CHI }
-		756 = { add_claim_by = CHI }
-		616 = { add_claim_by = CHI }
-	}
-	
-	option = { #give to Russian Sinkiang
-		log = "[GetLogInfo]: event annex.7005 option annex.give_to_sinkiang"
-		name = annex.give_to_sinkiang
-		trigger = {
-			SIK = {
-				AND = {
-					exists = yes
-					is_subject_of = RUS
-				}
-			}
-			NOT = {
-				ROOT = {
-					original_tag = ETR
-					original_tag = SIK
-					original_tag = CHI
-					original_tag = ROC
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
 			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 0
+				factor = 0.1
+				event_target:china = { is_subject = yes }
 			}
 		}
-		if = {
+		set_temp_variable = { tag_to_release = event_target:china }
+		every_owned_state = {
 			limit = {
-				SIK = {
-					AND = {
-						exists = yes
-						is_subject_of = RUS
-					}
-				}
+				is_xibei_san_ma = yes
+				is_valid_annexation_state = yes
 			}
-			SIK = {
-				transfer_state = 283
-				transfer_state = 753
-				transfer_state = 754
-				transfer_state = 756
-				transfer_state = 616
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give it to Sinkiang
+		log = "[GetLogInfo]: event annex.7005 option annex.7005.b"
+		name = annex.7005.b
+		trigger = {
+			has_event_target = sinkiang
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
 			}
-			283 = { add_claim_by = SIK }
-			753 = { add_claim_by = SIK }
-			754 = { add_claim_by = SIK }
-			756 = { add_claim_by = SIK }
-			616 = { add_claim_by = SIK }
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:sinkiang }
+				is_ally_with = event_target:china
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sinkiang = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:sinkiang }
+		every_owned_state = {
+			limit = {
+				is_xibei_san_ma = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 	}
 	
@@ -1499,8 +856,10 @@ country_event = { #Fate of Xibei San Man
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		XSM = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = { is_xibei_san_ma = yes }
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -1508,23 +867,9 @@ country_event = { #Fate of Xibei San Man
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-			original_tag = CHI
-			original_tag = ROC
-			original_tag = SIK
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					tag = CHI
-					tag = ROC
-					tag = SIK
-				}
-				factor = 100
-			}
 		}
 		every_owned_state = {
-			limit = { is_core_of = XSM }
+			limit = { is_xibei_san_ma = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -1549,8 +894,31 @@ country_event = { #Fate of Tibet
 	is_triggered_only = yes
 	
 	immediate = {
-		601 = { retain_state = yes }
-		752 = { retain_state = yes }
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = { is_tibet = no }
+					remove_core_of = TIB
+				}
+				else = {
+					add_core_of = TIB
+				}
+				remove_claim_by = TIB
+			}
+			determine_chinese_ally = yes
+			if = {
+				limit = {
+					OR = {
+						is_chinese_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			601 = { retain_state = yes }
+			752 = { retain_state = yes }
+			434 = { retain_state = yes }
+			604 = { retain_state = yes }
+		}
 	}
 
 	option = { #Release Tibet
@@ -1577,10 +945,6 @@ country_event = { #Fate of Tibet
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = RUS
-						original_tag = ENG
-					}
 				}
 			}
 			TIB = {
@@ -1592,36 +956,7 @@ country_event = { #Fate of Tibet
 		if = {
 			limit = {
 				ROOT = {
-					has_monarchist_government = yes
-					original_tag = RUS
-				}
-			}
-			TIB = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = TIB_RUS_Occupied_Monarchy
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = ENG
-				}
-			}
-			TIB = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = TIB_ENG_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
 					has_republican_government = yes
-					NOT = {
-						original_tag = ROC
-					}
 				}
 			}
 			TIB = {
@@ -1629,91 +964,37 @@ country_event = { #Fate of Tibet
 				set_cosmetic_tag = TIB_Occupied_Republic
 			}
 		}
-		
-		if = {
+	}
+	
+	option = { #Give it to China
+		log = "[GetLogInfo]: event annexation_events.7006 option annexation_events.china.give_to_china"
+		name = annexation_events.china.give_to_china
+		trigger = {
+			has_event_target = china
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:china
+			}
+			modifier = {
+				factor = 0.1
+				event_target:china = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:china }
+		every_owned_state = {
 			limit = {
-				ROOT = {
-					has_republican_government = yes
-					original_tag = ROC
-				}
+				is_tibet = yes
+				is_valid_annexation_state = yes
 			}
-			TIB = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = TIB_ROC_Occupied_Republic
-			}
+			transfer_state_and_notify = yes
 		}
-	}
-	
-	option = { #give to Republic of China
-		log = "[GetLogInfo]: event annex.7006 option annex.give_to_republic_of_china"
-		name = annex.give_to_republic_of_china
-		trigger = {
-			ROC = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = CHI
-					original_tag = ROC
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		ROC = {
-			transfer_state = 758
-			transfer_state = 322
-			transfer_state = 757
-			transfer_state = 601
-			transfer_state = 752
-		}
-		758 = { add_claim_by = ROC }
-		322 = { add_claim_by = ROC }
-		757 = { add_claim_by = ROC }
-		601 = { add_claim_by = ROC }
-		752 = { add_claim_by = ROC }
-	}
-	
-	option = { #give to Taiping
-		log = "[GetLogInfo]: event annex.7006 option annex.give_to_china"
-		name = annex.give_to_china
-		trigger = {
-			CHI = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					has_republican_government = yes
-					original_tag = CHI
-					original_tag = ROC
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		CHI = {
-			transfer_state = 758
-			transfer_state = 322
-			transfer_state = 757
-			transfer_state = 601
-			transfer_state = 752
-		}
-		758 = { add_claim_by = CHI }
-		322 = { add_claim_by = CHI }
-		757 = { add_claim_by = CHI }
-		601 = { add_claim_by = CHI }
-		752 = { add_claim_by = CHI }
 	}
 	
 	option = { #Give to overlord
@@ -1723,8 +1004,10 @@ country_event = { #Fate of Tibet
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		TIB = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = { is_tibet = yes }
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -1732,18 +1015,6 @@ country_event = { #Fate of Tibet
 		name = annex.integration
 		trigger = {
 			annexations_can_annex = yes
-			original_tag = CHI
-			original_tag = ROC
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					original_tag = CHI
-					original_tag = ROC
-				}
-				factor = 90
-			}
 		}
 		every_owned_state = {
 			limit = { is_core_of = TIB }
