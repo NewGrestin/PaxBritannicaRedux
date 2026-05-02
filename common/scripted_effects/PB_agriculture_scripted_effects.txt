@@ -5,14 +5,18 @@ PB_calculate_grain_fulfillment = {
 	set_variable = { PB_agriculture_per_pop_military = PB_agriculture_per_pop }
 	set_variable = { PB_agriculture_per_pop_military_raw = PB_agriculture_per_pop_raw }
 
-	multiply_variable = { PB_agriculture_per_pop_military = 5 }
-	multiply_variable = { PB_agriculture_per_pop_military_raw = 5 }
+	multiply_variable = { PB_agriculture_per_pop_military = 10 }
+	multiply_variable = { PB_agriculture_per_pop_military_raw = 10 }
 
 	## Modifiers calculation
 	# Modified consumption = base * (1 + consumption factor) - Military
 	set_temp_variable = { mil_modifier_calc = 1 }
+	add_to_temp_variable = { mil_modifier_calc = modifier@food_consumption_factor }
 	add_to_temp_variable = { mil_modifier_calc = modifier@food_consumption_factor_military }
 	multiply_variable = { PB_agriculture_per_pop_military = mil_modifier_calc }
+
+	set_variable = { PB_food_consumption_military_total = mil_modifier_calc }
+	subtract_from_variable = { PB_food_consumption_military_total = 1 }
 
 	# RAW military consumption (NO modifiers)
 	# (intentionally unchanged base * 5 already applied above)
@@ -21,7 +25,11 @@ PB_calculate_grain_fulfillment = {
 	# Modified consumption = base * (1 + consumption factor) - Civilian
 	set_temp_variable = { pop_modifier_calc = 1 }
 	add_to_temp_variable = { pop_modifier_calc = modifier@food_consumption_factor }
+	add_to_temp_variable = { pop_modifier_calc = modifier@food_consumption_factor_civilian }
 	multiply_variable = { PB_agriculture_per_pop = pop_modifier_calc }
+
+	set_variable = { PB_food_consumption_civilian_total = pop_modifier_calc }
+	subtract_from_variable = { PB_food_consumption_civilian_total = 1 }
 
 	# RAW civilian consumption already in PB_agriculture_per_pop_raw (no modifiers applied)
 
@@ -70,7 +78,6 @@ PB_calculate_grain_fulfillment = {
 	# Subtract grain stockpile by amount of demand
 	set_variable = { PB_agriculture_demand_rounded = PB_agriculture_demand }
 	round_variable = PB_agriculture_demand_rounded
-	force_update_dynamic_modifier = yes
 
 
 	set_variable = { PB_grain_true = resource@grain }
@@ -152,10 +159,10 @@ PB_calculate_grain_fulfillment = {
 	}
 
 
-	log = "[THIS.GetTag] - PB_grain_true: [?PB_grain_true]"
-	log = "[THIS.GetTag] - PB_agriculture_demand: [?PB_agriculture_demand]"
-	log = "[THIS.GetTag] - PB_agriculture_demand_raw: [?PB_agriculture_demand_raw]"
-	log = "[THIS.GetTag] - PB_agriculture_fulfillment: [?PB_agriculture_fulfillment]"
+	#log = "[THIS.GetTag] - PB_grain_true: [?PB_grain_true]"
+	#log = "[THIS.GetTag] - PB_agriculture_demand: [?PB_agriculture_demand]"
+	#log = "[THIS.GetTag] - PB_agriculture_demand_raw: [?PB_agriculture_demand_raw]"
+	#log = "[THIS.GetTag] - PB_agriculture_fulfillment: [?PB_agriculture_fulfillment]"
 }
 
 PB_clear_food_modifiers = {
@@ -176,8 +183,6 @@ PB_evaluate_food_modifiers = {
 	set_variable = { PB_agriculture_dynmod_5_10_20_neg = temp_agriculture_dynmod_5_10_20_neg }
 	set_variable = { PB_agriculture_dynmod_0_10_30 = temp_agriculture_dynmod_0_10_30 }
 	set_variable = { PB_agriculture_dynmod_0_10_30_neg = temp_agriculture_dynmod_0_10_30_neg }
-	
-	force_update_dynamic_modifier = yes
 }
 
 # Scoped to the country that has intel on PREV
