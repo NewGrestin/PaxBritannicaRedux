@@ -615,6 +615,81 @@ annexations_create_german_event_targets = {
 		}
 	}
 }
+
+annexations_create_japan_event_targets = {
+	if = {
+		limit = {
+			is_japan_unifier_tag = no
+			is_subject = no
+		}
+		random_other_country = {
+			limit = {
+				is_japan_unifier_tag = yes
+				is_ally_with = ROOT
+			}
+			save_event_target_as = japan
+			add_to_array = { ROOT.potential_grant_targets = THIS }
+		}
+		if = {
+			limit = { NOT = { has_event_target = japan } }
+			random_other_country = {
+				limit = {
+					is_japan_unifier_tag = yes
+					ROOT_can_grant_land = yes
+				}
+				save_event_target_as = japan
+				add_to_array = { ROOT.potential_grant_targets = THIS }
+			}
+		}
+	}
+}
+
+annexations_create_india_event_targets = {
+	if = {
+		limit = {
+			is_india_unifier_tag = no
+			is_subject = no
+		}
+		random_other_country = {
+			limit = {
+				is_india_unifier_tag = yes
+				is_ally_with = ROOT
+			}
+			save_event_target_as = india
+			add_to_array = { ROOT.potential_grant_targets = THIS }
+		}
+		random_other_country = {
+			limit = {
+				is_india_unifier_tag = yes
+				is_ally_with = ROOT
+				NOT = { tag = event_target:india}
+			}
+			save_event_target_as = india_two
+			add_to_array = { ROOT.potential_grant_targets = THIS }
+		}
+		random_other_country = {
+			limit = {
+				is_india_unifier_tag = yes
+				is_ally_with = ROOT
+				NOT = { tag = event_target:india}
+				NOT = { tag = event_target:india_two}
+			}
+			save_event_target_as = india_three
+			add_to_array = { ROOT.potential_grant_targets = THIS }
+		}
+		if = {
+			limit = { NOT = { has_event_target = india } }
+			random_other_country = {
+				limit = {
+					is_india_unifier_tag = yes
+					ROOT_can_grant_land = yes
+				}
+				save_event_target_as = india
+				add_to_array = { ROOT.potential_grant_targets = THIS }
+			}
+		}
+	}
+}
 annexations_release_MGE_germany = { 
 	every_owned_state = {
 		limit = { 
@@ -974,6 +1049,202 @@ annexations_reset_central_american_tags = {
 		limit = { NOT = { country_exists = CRS } }
 		CRS = {
 			clear_cores_of_tag_if_possible = yes
+		}
+	}
+}
+
+annexations_release_BAF_colony = { 
+	generate_new_west_african_puppet = yes
+	every_state = {
+		limit = {
+			OR = { 
+				is_west_africa = yes
+			}
+		}
+		add_core_of = var:tag_to_release
+	}
+	#every_subject_country = {
+		#limit = {
+			#is_germany_or_splinter_tag = yes
+			#is_german_unifier_tag = no
+			#is_ai = yes
+		#}
+		#annex_splinter_tag = yes
+	#}
+}
+
+generate_new_west_african_puppet = { 
+	set_temp_variable = { target = WAF }
+	create_dynamic_country = {
+		original_tag = WAF
+		set_temp_variable = { tag_to_release = THIS }
+		ROOT = {
+			every_owned_state = {
+				limit = { is_core_of = WAF }
+				transfer_state_without_overriding_occupation = yes
+			}
+		}
+		hidden_effect = {
+			set_cosmetic_tag = WAF_Regional
+		}
+	}
+	release_targeted_tag = yes
+}
+
+annexations_reset_central_asian_tags = {
+	if = {
+		limit = { NOT = { country_exists = KAZ } }
+		KAZ = { drop_cosmetic_tag = yes }
+		every_state = {
+			if = {
+				limit = { is_alash = no }
+				remove_core_of = KAZ
+			}
+			else = {
+				add_core_of = KAZ
+			}
+			remove_claim_by = KAZ
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = UZB } }
+		UZB = { drop_cosmetic_tag = yes }
+		every_state = {
+			if = {
+				limit = { is_uzbekistan = no }
+				remove_core_of = UZB
+			}
+			else = {
+				add_core_of = UZB
+			}
+			remove_claim_by = UZB
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = KUM } }
+		KUM = { drop_cosmetic_tag = yes }
+		every_state = {
+			if = {
+				limit = { is_kumul = no }
+				remove_core_of = KUM
+			}
+			else = {
+				add_core_of = KUM
+			}
+			remove_claim_by = KUM
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = BUK } }
+		BUK = { drop_cosmetic_tag = yes }
+		every_state = {
+			if = {
+				limit = { is_bukhara = no }
+				remove_core_of = BUK
+			}
+			else = {
+				add_core_of = BUK
+			}
+			remove_claim_by = BUK
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = KOK } }
+		KOK = { drop_cosmetic_tag = yes }
+		every_state = {
+			if = {
+				limit = { is_turkmenistan = no }
+				remove_core_of = KOK
+			}
+			else = {
+				add_core_of = KOK
+			}
+			remove_claim_by = KOK
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = ETR } }
+		ETR = { drop_cosmetic_tag = yes }
+		every_state = {
+			if = {
+				limit = { is_sinkiang = no }
+				remove_core_of = SIK
+			}
+			else = {
+				add_core_of = ETR
+			}
+			remove_claim_by = ETR
+		}
+	}
+}
+
+annexations_release_united_central_asia = {
+	every_state = {
+		limit = {
+			is_central_asia = yes
+			NOT = { is_core_of = var:tag_to_release }
+		}
+		add_claim_by = var:tag_to_release
+	}
+	release_targeted_tag_with_claims = yes
+	var:tag_to_release = {
+		save_global_event_target_as = united_central_asia
+		#set_cosmetic_tag = CA_united
+	}
+}
+
+determine_chinese_ally = { 
+	hidden_effect = {
+		if = {
+			limit = {
+				is_subject = no
+				is_chinese_tag = no
+			}
+			if = {
+				limit = { any_subject_country = { is_chinese_tag = yes } }
+				random_subject_country = {
+					limit = { is_chinese_tag = yes }
+					save_event_target_as = china
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			else_if = {
+				limit = { any_allied_country = { is_chinese_tag = yes } }
+				random_other_country = {
+					limit = {
+						is_in_faction_with = PREV
+						is_chinese_tag = yes
+					}
+					save_event_target_as = china
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			else = {
+				if = {
+					limit = { 
+						OR = { 
+							has_government = ds
+							has_government = rc
+							has_government = ni
+							has_government = lb
+							has_government = cn
+						}
+					}
+					if = {
+						limit = {  CHI = { ROOT_can_grant_land = yes }	}
+						CHI = { 
+							save_event_target_as = china
+							add_to_array = { ROOT.potential_grant_targets = THIS }
+						}
+					}
+					else = { 
+						ROC = { 
+							save_event_target_as = china
+							add_to_array = { ROOT.potential_grant_targets = THIS }
+						}
+					}
+				}
+			}
 		}
 	}
 }

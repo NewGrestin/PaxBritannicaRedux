@@ -14,8 +14,32 @@ country_event = { #Fate of Morocco
 	is_triggered_only = yes
 
 	immediate = {
-		807 = { retain_state = yes } #Reguibat
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = {
+						is_morocco = yes 
+					}
+					add_core_of = MOR
+				}
+				else = {
+					remove_core_of = MOR
+					remove_claim_by = MOR
+				}
+			}
+			1492 = { retain_state = yes } #Reguibat
+			807 = { retain_state = yes } #Ibar Idjit
+		}
 	}
+
+	#option = { #Establish West African Colonial State
+	#	log = "[GetLogInfo]: event annex.4000 option annex.establish_colony"
+	#	name = annex.establish_colony
+	#	trigger = {
+	#		annexations_can_establish_african_colony = yes
+	#	}
+	#	annexations_release_BAF_colony = yes
+	#}
 	
 	option = { #Release Morocco Whole
 		log = "[GetLogInfo]: event annex.4000 option annex.4000.a"
@@ -38,7 +62,14 @@ country_event = { #Fate of Morocco
 		}
 		release_targeted_tag = yes
 
-		if = {
+
+		if = { 
+			limit = { has_custom_puppet_MOR = yes }
+			setup_custom_puppet_MOR = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+
+		else_if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
@@ -49,8 +80,8 @@ country_event = { #Fate of Morocco
 				set_cosmetic_tag = MOR_Occupied_Monarchy
 			}
 		}
-
-		if = {
+		
+		else_if = {
 			limit = {
 				ROOT = {
 					has_republican_government = yes
@@ -61,17 +92,33 @@ country_event = { #Fate of Morocco
 				set_cosmetic_tag = MOR_Occupied_Republic
 			}
 		}
+	}
 
-		if = {
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4000 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
 			limit = {
-				ROOT = {
-					tag = SPR
-				}
+				is_morocco = yes
+				is_valid_annexation_state = yes
 			}
-			MOR = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = MOR_SPR_Custody
-			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4000 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_state = {
+			limit = { is_morocco = yes }
+			add_claim_of_ROOT = yes
 		}
 	}
 
@@ -243,9 +290,18 @@ country_event = { #Fate of Carnegia
 			limit = { country_exists = WAF }
 			custom_effect_tooltip = WAF_puppet_tooltip
 		}
-		else = {
-			set_temp_variable = { tag_to_release = WAF }
-			release_targeted_tag = yes
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			WAF = {
+				set_cosmetic_tag = WAF_Occupied_Monarchy
+			}
+		}
+
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			WAF = {
+				set_cosmetic_tag = WAF_Republic
+			}
 		}
 		recheck_annexations = yes
 	}
@@ -673,6 +729,13 @@ country_event = { #Fate of Algeria
 			limit = { ROOT = { has_monarchist_government = yes } }
 			ALG = {
 				set_cosmetic_tag = ALG_Occupied_Monarchy
+			}
+		}
+
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ALG = {
+				set_cosmetic_tag = ALG_Occupied_Republic
 			}
 		}
 	}
@@ -6466,48 +6529,6 @@ country_event = { #Fate of Luanda
     }
 }
 
-country_event = { #Fate of Namibia
-	id = annex.4065
-	title = annexation_namibia
-	desc = annexation_namibia_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-	
-	option = { #Release Namibia whole
-		log = "[GetLogInfo]: event annex.4065 option annex.4065.a"
-		name = annex.4065.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		if = {
-			limit = { country_exists = NMB }
-			custom_effect_tooltip = NMB_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = NMB }
-			release_targeted_tag = yes
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.4065 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
-    }
-}
-
 country_event = { #Fate of Namibe
 	id = annex.4066
 	title = annexation_namibe
@@ -7806,6 +7827,3647 @@ country_event = { #Fate of Darfur
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.4084 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Kaapstadt/South Africa
+	id = annex.4085
+	title = annexation_856
+	desc = annexation_856_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = HOL
+					original_tag = SWA
+					original_tag = BOT
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Bloemfontain owner
+		if = {
+			limit = {
+				858 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+					OR = {
+						is_owned_by = SWA
+						is_owned_by = BOT
+					}
+				}
+			}
+			var:858.owner = { save_event_target_as = bloemfontain }
+		}
+		
+		# Bechuanaland owner
+		if = {
+			limit = {
+				1318 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1318.owner = { save_event_target_as = bechuanaland }
+		}
+	}
+	
+	option = { #Release an autonomous South Africa
+		log = "[GetLogInfo]: event annex.4085 option annex.4085.a"
+		name = annex.4085.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = HOL
+					original_tag = SDW
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 30
+				original_tag = GER
+			}
+		}
+
+		set_temp_variable = { tag_to_release = PRE }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			PRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PRE_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			PRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PRE_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Install a colonial administration in South Africa
+		log = "[GetLogInfo]: event annex.4085 option annex.4085.b"
+		name = annex.4085.b
+		trigger = {
+			is_subject = no
+			ROOT = {
+				OR = {
+					is_on_continent = europe
+					original_tag = RUS
+					original_tag = SDW
+					original_tag = DAF
+				}
+			}
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 50
+				original_tag = ENG
+			}
+			modifier = {
+				factor = 60
+				original_tag = GER
+			}
+			modifier = {
+				factor = 100
+				original_tag = SDW
+			}
+			modifier = {
+				factor = 100
+				original_tag = DAF
+			}
+			modifier = {
+				factor = 100
+				original_tag = HOL
+			}
+		}
+
+		set_temp_variable = { tag_to_release = PRE }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					original_tag = ENG
+				}
+			}
+			PRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PRE_ENG_Colonial
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					original_tag = GER
+					original_tag = SDW
+					original_tag = DAF
+				}
+			}
+			PRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = PRE_GER_Colonial
+			}
+		}
+		
+		if = {
+			limit = {
+				ROOT = {
+					original_tag = HOL
+				}
+			}
+			PRE = {
+				drop_cosmetic_tag = yes
+			}
+		}
+	}
+	
+	option = { #Transfer it to Bloemfontain
+		log = "[GetLogInfo]: event annex.4085 option annex.4085.c"
+		name = annex.4085.c
+		trigger = {
+			is_subject = no
+			has_event_target = bloemfontain
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 40
+				ROOT = {
+					original_tag = ENG
+					is_ally_with = SWA
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bloemfontain }
+         every_owned_state = {
+			limit = {
+				is_south_africa = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Bechuanaland
+		log = "[GetLogInfo]: event annex.4085 option annex.4085.e"
+		name = annex.4085.e
+		trigger = {
+			is_subject = no
+			has_event_target = bechuanaland
+		}
+		
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bechuanaland }
+        every_owned_state = {
+			limit = {
+				is_south_africa = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4085 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        every_owned_state = {
+			limit = {
+				is_south_africa = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4085 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_south_africa = yes
+			}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4085 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Natal
+	id = annex.4086
+	title = annexation_719
+	desc = annexation_719_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					859 = { is_claim_or_core_of_ROOT = yes } # Swaziland
+					1315 = { is_claim_or_core_of_ROOT = yes } # Basutoland
+					1317 = { is_claim_or_core_of_ROOT = yes } # Transkei
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Swaziland owner
+		if = {
+			limit = {
+				859 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:859.owner = { save_event_target_as = swaziland }
+		}
+		
+		# Basutoland owner
+		if = {
+			limit = {
+				1315 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1315.owner = { save_event_target_as = basutoland }
+		}
+		
+		# Transkei owner
+		if = {
+			limit = {
+				1317 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1317.owner = { save_event_target_as = transkei }
+		}
+	}
+	
+	option = { #Transfer it to Swaziland
+		log = "[GetLogInfo]: event annex.4086 option annex.4086.a"
+		name = annex.4086.a
+		trigger = {
+			is_subject = no
+			has_event_target = swaziland
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 80
+				SWA = {
+					exists = yes
+				}
+				ROOT = {
+					is_ally_with = SWA
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:swaziland }
+        719 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Basutoland
+		log = "[GetLogInfo]: event annex.4086 option annex.4086.b"
+		name = annex.4086.b
+		trigger = {
+			is_subject = no
+			has_event_target = basutoland
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:basutoland }
+        719 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Transkei
+		log = "[GetLogInfo]: event annex.4086 option annex.4086.c"
+		name = annex.4086.c
+		trigger = {
+			is_subject = no
+			has_event_target = transkei
+		}
+		
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:transkei }
+        719 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4086 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        719 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4086 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		719 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4086 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Bloemfontain/Orange
+	id = annex.4087
+	title = annexation_858
+	desc = annexation_858_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					859 = { is_claim_or_core_of_ROOT = yes } # Swaziland
+					1318 = { is_claim_or_core_of_ROOT = yes } # Bechuanaland
+					1317 = { is_claim_or_core_of_ROOT = yes } # Transkei
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Swaziland owner
+		if = {
+			limit = {
+				859 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:859.owner = { save_event_target_as = swaziland }
+		}
+		
+		# Bechuanaland owner
+		if = {
+			limit = {
+				1318 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1318.owner = { save_event_target_as = bechuanaland }
+		}
+		
+		# Transkei owner
+		if = {
+			limit = {
+				1317 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1317.owner = { save_event_target_as = transkei }
+		}
+	}
+	
+	option = { #Release Orange
+		log = "[GetLogInfo]: event annex.4087 option annex.4087.a"
+		name = annex.4087.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = HOL
+					original_tag = PRE
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 30
+				original_tag = GER
+			}
+		}
+
+		set_temp_variable = { tag_to_release = ORJ }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			ORJ = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ORJ_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			ORJ = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ORJ_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to Swaziland
+		log = "[GetLogInfo]: event annex.4087 option annex.4087.b"
+		name = annex.4087.b
+		trigger = {
+			is_subject = no
+			has_event_target = swaziland
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 80
+				SWA = {
+					exists = yes
+				}
+				ROOT = {
+					is_ally_with = SWA
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:swaziland }
+        every_owned_state = {
+			limit = {
+				is_orange = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Bechuanaland
+		log = "[GetLogInfo]: event annex.4087 option annex.4087.c"
+		name = annex.4087.c
+		trigger = {
+			is_subject = no
+			has_event_target = bechuanaland
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bechuanaland }
+        every_owned_state = {
+			limit = {
+				is_orange = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Transkei
+		log = "[GetLogInfo]: event annex.4087 option annex.4087.e"
+		name = annex.4087.e
+		trigger = {
+			is_subject = no
+			has_event_target = transkei
+		}
+		
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:transkei }
+        every_owned_state = {
+			limit = {
+				is_orange = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4087 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        every_owned_state = {
+			limit = {
+				is_orange = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4087 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_orange = yes
+				is_allowed_annexation_state = yes
+			}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4087 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Bechuanaland
+	id = annex.4088
+	title = annexation_1318
+	desc = annexation_1318_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		1571 = { retain_state = yes } #Stellaland
+		if = {
+			limit = {
+				OR = {
+					1564 = { is_claim_or_core_of_ROOT = yes } # Namaland
+					1569 = { is_claim_or_core_of_ROOT = yes } # Central Kaap
+					original_tag = PRE
+					original_tag = SDW
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Namaland owner
+		if = {
+			limit = {
+				1564 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1564.owner = { save_event_target_as = namaland }
+		}
+		
+		# Central Kaap owner
+		if = {
+			limit = {
+				1569 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1569.owner = { save_event_target_as = centralkaap }
+		}
+	}
+	
+	option = { #Release Bechuanaland
+		log = "[GetLogInfo]: event annex.4088 option annex.4088.a"
+		name = annex.4088.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = SDW
+				}
+			}
+		}
+		ai_chance = {
+			base = 90
+			modifier = {
+				factor = 30
+				OR = {
+					original_tag = GER
+					original_tag = PRE
+				}
+			}
+			modifier = {
+				factor = 100
+				OR = {
+					original_tag = SWA
+					has_monarchist_government = yes
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = BOT }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+					NOT = {
+						tag = SWA
+					}
+				}
+			}
+			BOT = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BOT_Occupied_Monarchy
+			}
+		}
+		
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+					tag = SWA
+				}
+			}
+			BOT = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BOT_SWA_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			BOT = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BOT_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to Namaland
+		log = "[GetLogInfo]: event annex.4088 option annex.4088.b"
+		name = annex.4088.b
+		trigger = {
+			is_subject = no
+			has_event_target = namaland
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 80
+				SDW = {
+					exists = yes
+				}
+				ROOT = {
+					OR = {
+						is_ally_with = SDW
+						has_subject = SDW
+					}
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:namaland }
+        every_owned_state = {
+			limit = {
+				is_bechuanaland = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Central Kaap
+		log = "[GetLogInfo]: event annex.4088 option annex.4088.c"
+		name = annex.4088.c
+		trigger = {
+			is_subject = no
+			has_event_target = centralkaap
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 90
+				PRE = {
+					exists = yes
+				}
+				ROOT = {
+					OR = {
+						is_ally_with = PRE
+						has_subject = PRE
+					}
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:centralkaap }
+        every_owned_state = {
+			limit = {
+				is_bechuanaland = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4088 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        every_owned_state = {
+			limit = {
+				is_bechuanaland = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4088 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_bechuanaland = yes
+				is_allowed_annexation_state = yes
+			}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4088 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Stallaland
+	id = annex.4089
+	title = annexation_1571
+	desc = annexation_1571_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					275 = { is_claim_or_core_of_ROOT = yes } # Transvaal
+					858 = { is_claim_or_core_of_ROOT = yes } # Bloemfontain
+					1318 = { is_claim_or_core_of_ROOT = yes } # Bechuanaland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Transvaal owner
+		if = {
+			limit = {
+				275 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:275.owner = { save_event_target_as = transvaal }
+		}
+		
+		# Bloemfontain owner
+		if = {
+			limit = {
+				858 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:858.owner = { save_event_target_as = bloemfontain }
+		}
+		
+		# Bechuanaland owner
+		if = {
+			limit = {
+				1318 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1318.owner = { save_event_target_as = bechuanaland }
+		}
+	}
+	
+	option = { #Transfer it to Transvaal
+		log = "[GetLogInfo]: event annex.4089 option annex.4089.a"
+		name = annex.4089.a
+		trigger = {
+			is_subject = no
+			has_event_target = transvaal
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					NOT = { is_ally_with = event_target:bloemfontain }
+					NOT = { is_ally_with = event_target:bechuanaland }
+				}
+				is_ally_with = event_target:transvaal
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:transvaal }
+				OR = {
+					is_ally_with = event_target:bloemfontain
+					is_ally_with = event_target:bechuanaland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:transvaal }
+        1571 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Bloemfontain
+		log = "[GetLogInfo]: event annex.4089 option annex.4089.b"
+		name = annex.4089.b
+		trigger = {
+			is_subject = no
+			has_event_target = bloemfontain
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					NOT = { is_ally_with = event_target:transvaal }
+					NOT = { is_ally_with = event_target:bechuanaland }
+				}
+				is_ally_with = event_target:bloemfontain
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bloemfontain }
+				OR = {
+					is_ally_with = event_target:transvaal
+					is_ally_with = event_target:bechuanaland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bloemfontain }
+        1571 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Bechuanaland
+		log = "[GetLogInfo]: event annex.4089 option annex.4089.c"
+		name = annex.4089.c
+		trigger = {
+			is_subject = no
+			has_event_target = bechuanaland
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:transvaal }
+					NOT = { is_ally_with = event_target:bloemfontain }
+				}
+				is_ally_with = event_target:bechuanaland
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:bechuanaland }
+				OR = {
+					is_ally_with = event_target:transvaal
+					is_ally_with = event_target:bloemfontain
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bechuanaland }
+        1571 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4089 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1571 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4089 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1571 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4089 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Swaziland
+	id = annex.4090
+	title = annexation_859
+	desc = annexation_859_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		1316 = { retain_state = yes } #Zululand
+		if = {
+			limit = {
+				OR = {
+					original_tag = PRE
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Winburg owner
+		if = {
+			limit = {
+				1570 = {
+					is_owned_by = PRE
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1570.owner = { save_event_target_as = winburg }
+		}
+	}
+	
+	option = { #Release Swaziland
+		log = "[GetLogInfo]: event annex.4090 option annex.4090.a"
+		name = annex.4090.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = PRE
+				}
+			}
+		}
+		ai_chance = {
+			base = 90
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = SWA }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			SWA = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SWA_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			SWA = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SWA_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to Winburg
+		log = "[GetLogInfo]: event annex.4090 option annex.4090.b"
+		name = annex.4090.b
+		trigger = {
+			is_subject = no
+			has_event_target = winburg
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 60
+				PRE = {
+					exists = yes
+				}
+				ROOT = {
+					OR = {
+						is_ally_with = PRE
+						has_subject = PRE
+					}
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:winburg }
+        every_owned_state = {
+			limit = {
+				is_swaziland = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4090 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        every_owned_state = {
+			limit = {
+				is_swaziland = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4090 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_swaziland = yes
+			}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4090 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Zululand
+	id = annex.4091
+	title = annexation_1316
+	desc = annexation_1316_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					719 = { is_claim_or_core_of_ROOT = yes } # Natal
+					859 = { is_claim_or_core_of_ROOT = yes } # Swaziland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Natal owner
+		if = {
+			limit = {
+				719 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:719.owner = { save_event_target_as = natal }
+		}
+		
+		# Swaziland owner
+		if = {
+			limit = {
+				859 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:859.owner = { save_event_target_as = swaziland }
+		}
+	}
+	
+	option = { #Transfer it to Natal
+		log = "[GetLogInfo]: event annex.4091 option annex.4091.a"
+		name = annex.4091.a
+		trigger = {
+			is_subject = no
+			has_event_target = natal
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					NOT = { is_ally_with = event_target:swaziland }
+				}
+				is_ally_with = event_target:natal
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:natal }
+				OR = {
+					is_ally_with = event_target:swaziland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:natal }
+        1316 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Swaziland
+		log = "[GetLogInfo]: event annex.4091 option annex.4091.b"
+		name = annex.4091.b
+		trigger = {
+			is_subject = no
+			has_event_target = swaziland
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:natal }
+				}
+				is_ally_with = event_target:swaziland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:swaziland }
+				OR = {
+					is_ally_with = event_target:natal
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:swaziland }
+        1316 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4091 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1316 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4091 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1316 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4091 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Gazaland
+	id = annex.4092
+	title = annexation_879
+	desc = annexation_879_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					1326 = { is_claim_or_core_of_ROOT = yes } # Sofala
+					859 = { is_claim_or_core_of_ROOT = yes } # Swaziland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Sofala owner
+		if = {
+			limit = {
+				1326 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1326.owner = { save_event_target_as = sofala }
+		}
+		
+		# Swaziland owner
+		if = {
+			limit = {
+				859 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:859.owner = { save_event_target_as = swaziland }
+		}
+	}
+	
+	option = { #Transfer it to Sofala
+		log = "[GetLogInfo]: event annex.4092 option annex.4092.a"
+		name = annex.4092.a
+		trigger = {
+			is_subject = no
+			has_event_target = sofala
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					NOT = { is_ally_with = event_target:swaziland }
+				}
+				is_ally_with = event_target:sofala
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:sofala }
+				OR = {
+					is_ally_with = event_target:swaziland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:sofala }
+        879 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Swaziland
+		log = "[GetLogInfo]: event annex.4092 option annex.4092.b"
+		name = annex.4092.b
+		trigger = {
+			is_subject = no
+			has_event_target = swaziland
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:sofala }
+				}
+				is_ally_with = event_target:swaziland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:swaziland }
+				OR = {
+					is_ally_with = event_target:sofala
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:swaziland }
+        879 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4092 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        879 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4092 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		879 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4092 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Mozambique
+	id = annex.4093
+	title = annexation_1326
+	desc = annexation_1326_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		770 = { retain_state = yes } #Nyasa
+		879 = { retain_state = yes } #Gazaland
+		if = {
+			limit = {
+				OR = {
+					original_tag = PEF
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Release Mozambique
+		log = "[GetLogInfo]: event annex.4093 option annex.4093.a"
+		name = annex.4093.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = PEF
+				}
+			}
+		}
+		ai_chance = {
+			base = 90
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = MZB }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			MZB = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MZB_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			MZB = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MZB_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to the Portuguese Exiles
+		log = "[GetLogInfo]: event annex.4093 option annex.4093.b"
+		name = annex.4093.b
+		trigger = {
+			is_subject = no
+			PEF = {
+				exists = yes
+			}
+			ROOT = {
+				NOT = {
+					original_tag = PEF
+				}
+				OR = {
+					is_ally_with = PEF
+					has_subject = PEF
+				}
+			}
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = PEF }
+        every_owned_state = {
+			limit = {
+				is_mozambique = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4093 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        every_owned_state = {
+			limit = {
+				is_mozambique = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4093 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_mozambique = yes
+			}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4093 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Nyasa
+	id = annex.4094
+	title = annexation_770
+	desc = annexation_770_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = MZB
+					1326 = { is_claim_or_core_of_ROOT = yes } # Sofala
+					1328 = { is_claim_or_core_of_ROOT = yes } # Beitland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Sofala owner
+		if = {
+			limit = {
+				1326 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1326.owner = { save_event_target_as = sofala }
+		}
+		
+		# Beitland owner
+		if = {
+			limit = {
+				1328 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1328.owner = { save_event_target_as = beitland }
+		}
+	}
+	
+	option = { #Release Nyasaland
+		log = "[GetLogInfo]: event annex.4094 option annex.4094.a"
+		name = annex.4094.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = MZB
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = MLW }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			MLW = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MLW_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			MLW = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MLW_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to Sofala
+		log = "[GetLogInfo]: event annex.4094 option annex.4094.b"
+		name = annex.4094.b
+		trigger = {
+			is_subject = no
+			has_event_target = sofala
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:beitland }
+				}
+				is_ally_with = event_target:sofala
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:sofala }
+				OR = {
+					is_ally_with = event_target:beitland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:sofala }
+        770 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Beitland
+		log = "[GetLogInfo]: event annex.4094 option annex.4094.c"
+		name = annex.4094.c
+		trigger = {
+			is_subject = no
+			has_event_target = beitland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:sofala }
+				}
+				is_ally_with = event_target:beitland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:beitland }
+				OR = {
+					is_ally_with = event_target:sofala
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:beitland }
+        770 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4094 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        770 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4094 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		770 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4094 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Khomas/Namibia
+	id = annex.4095
+	title = annexation_1567
+	desc = annexation_1567_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		1319 = { retain_state = yes } #Kalahari
+		542 = { retain_state = yes } #Tswanaland
+		1566 = { retain_state = yes } #Okavango
+		1561 = { retain_state = yes } #Kwando
+		540 = { retain_state = yes } #Namibe
+		if = {
+			limit = {
+				OR = {
+					original_tag = SDW
+					original_tag = PRE
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Release Namibia
+		log = "[GetLogInfo]: event annex.4095 option annex.4095.a"
+		name = annex.4095.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = SDW
+				}
+			}
+		}
+		ai_chance = {
+			base = 90
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = NMB }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			NMB = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = NMB_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			NMB = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = NMB_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4095 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        every_owned_state = {
+			limit = {
+				is_namibia = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4095 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_namibia = yes
+			}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4095 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Kalahari
+	id = annex.4096
+	title = annexation_1319
+	desc = annexation_1319_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = SDW
+					original_tag = NMB
+					1564 = { is_claim_or_core_of_ROOT = yes } # Namaland
+					1318 = { is_claim_or_core_of_ROOT = yes } # Bechuanaland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Namaland owner
+		if = {
+			limit = {
+				1564 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1564.owner = { save_event_target_as = namaland }
+		}
+		
+		# Bechuanaland owner
+		if = {
+			limit = {
+				1318 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1318.owner = { save_event_target_as = bechuanaland }
+		}
+	}
+	
+	option = { #Transfer it to Namaland
+		log = "[GetLogInfo]: event annex.4096 option annex.4096.a"
+		name = annex.4096.a
+		trigger = {
+			is_subject = no
+			has_event_target = namaland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:bechuanaland }
+				}
+				is_ally_with = event_target:namaland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:namaland }
+				OR = {
+					is_ally_with = event_target:bechuanaland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:namaland }
+        1319 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Bechuanaland
+		log = "[GetLogInfo]: event annex.4096 option annex.4096.b"
+		name = annex.4096.b
+		trigger = {
+			is_subject = no
+			has_event_target = bechuanaland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:namaland }
+				}
+				is_ally_with = event_target:bechuanaland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bechuanaland }
+				OR = {
+					is_ally_with = event_target:namaland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bechuanaland }
+        1319 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4096 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1319 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4096 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1319 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4096 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Tswanaland
+	id = annex.4097
+	title = annexation_542
+	desc = annexation_542_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = SDW
+					1319 = { is_claim_or_core_of_ROOT = yes } # Kalahari
+					1318 = { is_claim_or_core_of_ROOT = yes } # Bechuanaland
+					275 = { is_claim_or_core_of_ROOT = yes } # Transvaal
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Kalahari owner
+		if = {
+			limit = {
+				1319 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1319.owner = { save_event_target_as = kalahari }
+		}
+		
+		# Bechuanaland owner
+		if = {
+			limit = {
+				1318 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1318.owner = { save_event_target_as = bechuanaland }
+		}
+		
+		# Transvaal owner
+		if = {
+			limit = {
+				275 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:275.owner = { save_event_target_as = transvaal }
+		}
+	}
+	
+	option = { #Transfer it to Kalahari
+		log = "[GetLogInfo]: event annex.4097 option annex.4097.a"
+		name = annex.4097.a
+		trigger = {
+			is_subject = no
+			has_event_target = kalahari
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:bechuanaland }
+					NOT = { is_ally_with = event_target:transvaal }
+				}
+				is_ally_with = event_target:kalahari
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kalahari }
+				OR = {
+					is_ally_with = event_target:bechuanaland
+					is_ally_with = event_target:transvaal
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:kalahari }
+        542 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Bechuanaland
+		log = "[GetLogInfo]: event annex.4097 option annex.4097.b"
+		name = annex.4097.b
+		trigger = {
+			is_subject = no
+			has_event_target = bechuanaland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:kalahari }
+					NOT = { is_ally_with = event_target:transvaal }
+				}
+				is_ally_with = event_target:bechuanaland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bechuanaland }
+				OR = {
+					is_ally_with = event_target:kalahari
+					is_ally_with = event_target:transvaal
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bechuanaland }
+        542 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Transvaal
+		log = "[GetLogInfo]: event annex.4097 option annex.4097.c"
+		name = annex.4097.c
+		trigger = {
+			is_subject = no
+			has_event_target = transvaal
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:kalahari }
+					NOT = { is_ally_with = event_target:bechuanaland }
+				}
+				is_ally_with = event_target:transvaal
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:transvaal }
+				OR = {
+					is_ally_with = event_target:kalahari
+					is_ally_with = event_target:bechuanaland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:transvaal }
+        542 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4097 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        542 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4097 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		542 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4097 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Okavango
+	id = annex.4098
+	title = annexation_1566
+	desc = annexation_1566_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = SDW
+					1320 = { is_claim_or_core_of_ROOT = yes } # Damaraland
+					1319 = { is_claim_or_core_of_ROOT = yes } # Kalahari
+					542 = { is_claim_or_core_of_ROOT = yes } # Tswanaland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Damaraland owner
+		if = {
+			limit = {
+				1320 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1320.owner = { save_event_target_as = damaraland }
+		}
+		
+		# Kalahari owner
+		if = {
+			limit = {
+				1319 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1319.owner = { save_event_target_as = kalahari }
+		}
+		
+		# Tswanaland owner
+		if = {
+			limit = {
+				542 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:542.owner = { save_event_target_as = tswanaland }
+		}
+	}
+	
+	option = { #Transfer it to Damaraland
+		log = "[GetLogInfo]: event annex.4098 option annex.4098.a"
+		name = annex.4098.a
+		trigger = {
+			is_subject = no
+			has_event_target = damaraland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:kalahari }
+					NOT = { is_ally_with = event_target:tswanaland }
+				}
+				is_ally_with = event_target:damaraland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:damaraland }
+				OR = {
+					is_ally_with = event_target:kalahari
+					is_ally_with = event_target:tswanaland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:damaraland }
+        1566 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Kalahari
+		log = "[GetLogInfo]: event annex.4098 option annex.4098.b"
+		name = annex.4098.b
+		trigger = {
+			is_subject = no
+			has_event_target = kalahari
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:damaraland }
+					NOT = { is_ally_with = event_target:tswanaland }
+				}
+				is_ally_with = event_target:kalahari
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kalahari }
+				OR = {
+					is_ally_with = event_target:damaraland
+					is_ally_with = event_target:tswanaland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:kalahari }
+        1566 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Tswanaland
+		log = "[GetLogInfo]: event annex.4098 option annex.4098.c"
+		name = annex.4098.c
+		trigger = {
+			is_subject = no
+			has_event_target = tswanaland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:damaraland }
+					NOT = { is_ally_with = event_target:damaraland }
+				}
+				is_ally_with = event_target:tswanaland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tswanaland }
+				OR = {
+					is_ally_with = event_target:damaraland
+					is_ally_with = event_target:damaraland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:tswanaland }
+        1566 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4098 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1566 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4098 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1566 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4098 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Namibe
+	id = annex.4099
+	title = annexation_540
+	desc = annexation_540_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = SDW
+					original_tag = ANG
+					original_tag = PEF
+					1565 = { is_claim_or_core_of_ROOT = yes } # Bantuland
+					1321 = { is_claim_or_core_of_ROOT = yes } # Kasanje
+					874 = { is_claim_or_core_of_ROOT = yes } # Luanda
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Bantuland owner
+		if = {
+			limit = {
+				1565 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1565.owner = { save_event_target_as = bantuland }
+		}
+		
+		# Kasanje owner
+		if = {
+			limit = {
+				1321 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1321.owner = { save_event_target_as = kasanje }
+		}
+		
+		# Luanda owner
+		if = {
+			limit = {
+				874 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:874.owner = { save_event_target_as = luanda }
+		}
+	}
+	
+	option = { #Transfer it to Bantuland
+		log = "[GetLogInfo]: event annex.4099 option annex.4099.a"
+		name = annex.4099.a
+		trigger = {
+			is_subject = no
+			has_event_target = bantuland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:kasanje }
+					NOT = { is_ally_with = event_target:luanda }
+				}
+				is_ally_with = event_target:bantuland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bantuland }
+				OR = {
+					is_ally_with = event_target:kasanje
+					is_ally_with = event_target:luanda
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:bantuland }
+        540 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Kasanje
+		log = "[GetLogInfo]: event annex.4099 option annex.4099.b"
+		name = annex.4099.b
+		trigger = {
+			is_subject = no
+			has_event_target = kasanje
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:bantuland }
+					NOT = { is_ally_with = event_target:luanda }
+				}
+				is_ally_with = event_target:kasanje
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kasanje }
+				OR = {
+					is_ally_with = event_target:bantuland
+					is_ally_with = event_target:luanda
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:kasanje }
+        540 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Luanda
+		log = "[GetLogInfo]: event annex.4099 option annex.4099.c"
+		name = annex.4099.c
+		trigger = {
+			is_subject = no
+			has_event_target = luanda
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:bantuland }
+					NOT = { is_ally_with = event_target:kasanje }
+				}
+				is_ally_with = event_target:luanda
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:luanda }
+				OR = {
+					is_ally_with = event_target:bantuland
+					is_ally_with = event_target:kasanje
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:luanda }
+        540 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4099 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        540 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4099 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		540 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4099 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Kwando
+	id = annex.4100
+	title = annexation_1561
+	desc = annexation_1561_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = SDW
+					original_tag = ANG
+					original_tag = PEF
+					540 = { is_claim_or_core_of_ROOT = yes } # Namibe
+					1321 = { is_claim_or_core_of_ROOT = yes } # Kasanje
+					868 = { is_claim_or_core_of_ROOT = yes } # Barotseland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Namibe owner
+		if = {
+			limit = {
+				540 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:540.owner = { save_event_target_as = namibe }
+		}
+		
+		# Kasanje owner
+		if = {
+			limit = {
+				1321 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1321.owner = { save_event_target_as = kasanje }
+		}
+		
+		# Barotseland owner
+		if = {
+			limit = {
+				868 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:868.owner = { save_event_target_as = barotseland }
+		}
+	}
+	
+	option = { #Transfer it to Namibe
+		log = "[GetLogInfo]: event annex.4100 option annex.4100.a"
+		name = annex.4100.a
+		trigger = {
+			is_subject = no
+			has_event_target = namibe
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:kasanje }
+					NOT = { is_ally_with = event_target:barotseland }
+				}
+				is_ally_with = event_target:namibe
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:namibe }
+				OR = {
+					is_ally_with = event_target:kasanje
+					is_ally_with = event_target:barotseland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:namibe }
+        1561 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Kasanje
+		log = "[GetLogInfo]: event annex.4100 option annex.4100.b"
+		name = annex.4100.b
+		trigger = {
+			is_subject = no
+			has_event_target = kasanje
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:namibe }
+					NOT = { is_ally_with = event_target:barotseland }
+				}
+				is_ally_with = event_target:kasanje
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kasanje }
+				OR = {
+					is_ally_with = event_target:namibe
+					is_ally_with = event_target:barotseland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:kasanje }
+        1561 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Barotseland
+		log = "[GetLogInfo]: event annex.4100 option annex.4100.c"
+		name = annex.4100.c
+		trigger = {
+			is_subject = no
+			has_event_target = barotseland
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:namibe }
+					NOT = { is_ally_with = event_target:kasanje }
+				}
+				is_ally_with = event_target:barotseland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:barotseland }
+				OR = {
+					is_ally_with = event_target:namibe
+					is_ally_with = event_target:kasanje
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:barotseland }
+        1561 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4100 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1561 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4100 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1561 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4100 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Zimbabwe
+	id = annex.4101
+	title = annexation_545
+	desc = annexation_545_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = MZB
+					original_tag = ZIM
+					1326 = { is_claim_or_core_of_ROOT = yes } # Sofala
+					1324 = { is_claim_or_core_of_ROOT = yes } # Matabeleland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		# Sofala owner
+		if = {
+			limit = {
+				1326 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1326.owner = { save_event_target_as = sofala }
+		}
+		
+		# Matabeleland owner
+		if = {
+			limit = {
+				1324 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1324.owner = { save_event_target_as = matabeleland }
+		}
+	}
+	
+	option = { #Release Capeloland
+		log = "[GetLogInfo]: event annex.4101 option annex.4101.a"
+		name = annex.4101.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = MZB
+					original_tag = ZIM
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = CAP }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			CAP = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = CAP_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			CAP = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = CAP_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to Sofala
+		log = "[GetLogInfo]: event annex.4101 option annex.4101.b"
+		name = annex.4101.b
+		trigger = {
+			is_subject = no
+			has_event_target = sofala
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					NOT = { is_ally_with = event_target:matabeleland }
+				}
+				is_ally_with = event_target:sofala
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:sofala }
+				OR = {
+					is_ally_with = event_target:matabeleland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:sofala }
+        545 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Matabeleland
+		log = "[GetLogInfo]: event annex.4101 option annex.4101.b"
+		name = annex.4101.b
+		trigger = {
+			is_subject = no
+			has_event_target = sofala
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:sofala }
+				}
+				is_ally_with = event_target:matabeleland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:matabeleland }
+				OR = {
+					is_ally_with = event_target:sofala
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:matabeleland }
+        545 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4101 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        545 = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4101 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		545 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4101 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Matabeleland
+	id = annex.4102
+	title = annexation_1324
+	desc = annexation_1324_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = PEF
+					original_tag = BAR
+					868 = { is_claim_or_core_of_ROOT = yes } # Barotseland
+					1325 = { is_claim_or_core_of_ROOT = yes } # Lusaka
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		# Barotseland owner
+		if = {
+			limit = {
+				868 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:868.owner = { save_event_target_as = barotseland }
+		}
+		
+		# Lusaka owner
+		if = {
+			limit = {
+				1325 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1325.owner = { save_event_target_as = lusaka }
+		}
+	}
+	
+	option = { #Release Zimbabwe
+		log = "[GetLogInfo]: event annex.4102 option annex.4102.a"
+		name = annex.4102.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = PEF
+					original_tag = BAR
+				}
+			}
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = ZIM }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			ZIM = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ZIM_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			ZIM = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ZIM_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to Barotseland
+		log = "[GetLogInfo]: event annex.4102 option annex.4102.b"
+		name = annex.4102.b
+		trigger = {
+			is_subject = no
+			has_event_target = barotseland
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					NOT = { is_ally_with = event_target:lusaka }
+				}
+				is_ally_with = event_target:barotseland
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:barotseland }
+				OR = {
+					is_ally_with = event_target:lusaka
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:barotseland }
+        1324 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Lusaka
+		log = "[GetLogInfo]: event annex.4102 option annex.4102.b"
+		name = annex.4102.b
+		trigger = {
+			is_subject = no
+			has_event_target = lusaka
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:barotseland }
+				}
+				is_ally_with = event_target:lusaka
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:lusaka }
+				OR = {
+					is_ally_with = event_target:barotseland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:lusaka }
+        1324 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4102 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1324 = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4102 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1324 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4102 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Lusaka
+	id = annex.4103
+	title = annexation_1325
+	desc = annexation_1325_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = ZAM
+					original_tag = BAR
+					868 = { is_claim_or_core_of_ROOT = yes } # Barotseland
+					1328 = { is_claim_or_core_of_ROOT = yes } # Beitland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		# Barotseland owner
+		if = {
+			limit = {
+				868 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:868.owner = { save_event_target_as = barotseland }
+		}
+		
+		# Beitland owner
+		if = {
+			limit = {
+				1328 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1328.owner = { save_event_target_as = beitland }
+		}
+	}
+	
+	option = { #Release Lusaka/LFS
+		log = "[GetLogInfo]: event annex.4103 option annex.4103.a"
+		name = annex.4103.a
+		trigger = {
+			is_subject = no
+			NOT = {
+				ROOT = {
+					original_tag = ZAM
+					original_tag = BAR
+				}
+			}
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = LFS }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			LFS = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = LFS_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			LFS = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = LFS_Occupied_Republic
+			}
+		}
+	}
+	
+	option = { #Transfer it to Barotseland
+		log = "[GetLogInfo]: event annex.4103 option annex.4103.b"
+		name = annex.4103.b
+		trigger = {
+			is_subject = no
+			has_event_target = barotseland
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					NOT = { is_ally_with = event_target:beitland }
+				}
+				is_ally_with = event_target:barotseland
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:barotseland }
+				OR = {
+					is_ally_with = event_target:beitland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:barotseland }
+        1325 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Transfer it to Beitland
+		log = "[GetLogInfo]: event annex.4103 option annex.4103.b"
+		name = annex.4103.b
+		trigger = {
+			is_subject = no
+			has_event_target = beitland
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				AND = {
+					NOT = { is_ally_with = event_target:barotseland }
+				}
+				is_ally_with = event_target:beitland
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:beitland }
+				OR = {
+					is_ally_with = event_target:barotseland
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:beitland }
+        1325 = {
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4103 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1325 = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4103 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1325 = {
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4103 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
