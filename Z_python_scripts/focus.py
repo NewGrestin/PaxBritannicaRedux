@@ -37,14 +37,20 @@ def normalize(fid):
 
     first = parts[0]
 
-    # TAG case
+    # TAG case (3-letter country tag)
     if len(first) == 3 and first.isupper():
         tag = first
         rest = [p.lower() for p in parts[1:]]
         return "_".join([tag] + rest) if rest else tag
 
     # generic fallback
-    return "generic_" + "_".join([p.lower() for p in parts])
+    cleaned = "_".join(p.lower() for p in parts)
+
+    # IMPORTANT FIX: avoid double "generic_"
+    if fid.startswith("generic_") or cleaned.startswith("generic_"):
+        return "generic_" + cleaned.replace("generic_", "", 1)
+
+    return "generic_" + cleaned
 
 
 # =========================
