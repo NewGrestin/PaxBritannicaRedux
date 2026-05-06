@@ -3138,191 +3138,269 @@ country_event = { #Fate of Tanganyika
 
 country_event = { #Fate of Delgadokap
 	id = annex.4025
-	title = annexation_delgadokap
-	desc = annexation_delgadokap_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-
-	option = { #Give to German East Africa
-		log = "[GetLogInfo]: event annex.4025 option annex.4025.a"
-		name = annex.4025.a
-		trigger = {
-			DEA = {
-            exists = yes
-            owns_state = 869
-			}
-			ROOT = {
-				tag = GER
-			}
-        }
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		DEA = {
-            transfer_state = 1327
-        }
-
-        recheck_annexations = yes
-	}
-
-	option = { #Give to Mozambique Stabilization Territory
-		log = "[GetLogInfo]: event annex.4025 option annex.4025.b"
-		name = annex.4025.b
-		trigger = {
-			MZB = {
-            exists = yes
-			owns_state = 544
-			}
-			ROOT = {
-				tag = ENG
-			}
-        }
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		MZB = {
-            transfer_state = 1327
-        }
-
-        recheck_annexations = yes
-	}
-
-	option = { #Give to Tanganyika
-		log = "[GetLogInfo]: event annex.4025 option annex.4025.c"
-		name = annex.4025.c
-		trigger = {
-			TGY = {
-            exists = yes
-			owns_state = 546
-			}
-        }
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		TGY = {
-            transfer_state = 1327
-        }
-
-        recheck_annexations = yes
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.4025 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		recheck_annexations = yes
-    }
-}
-
-country_event = { #Fate of Zanzibar
-	id = annex.4026
-	title = annexation_zanzibar
-	desc = annexation_zanzibar_desc
+	title = annexation_1327
+	desc = annexation_1327_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 	
-	option = { #Release Zanzibar whole
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = DEA
+					tag = TGY
+					tag = MZB
+					544 = { is_claim_or_core_of_ROOT = yes } # Mozambique
+					546 = { is_claim_or_core_of_ROOT = yes } # Ruvuma
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Mozambique
+		if = {
+			limit = {
+				544 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:544.owner = { save_event_target_as = mozambique }
+		}
+		
+		# Ruvuma
+		if = {
+			limit = {
+				546 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:546.owner = { save_event_target_as = ruvuma }
+		}
+	}
+	
+	option = { #Transfer it to Mozambique
+		log = "[GetLogInfo]: event annex.4111 option annex.4111.a"
+		name = annex.4111.a
+		trigger = {
+			is_subject = no
+			has_event_target = mozambique
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:mozambique
+				NOT = { is_ally_with = event_target:ruvuma }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:mozambique }
+				is_ally_with = event_target:ruvuma
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:mozambique }
+        1327 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Transfer it to Ruvuma
+		log = "[GetLogInfo]: event annex.4111 option annex.4111.b"
+		name = annex.4111.b
+		trigger = {
+			is_subject = no
+			has_event_target = ruvuma
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:ruvuma
+				NOT = { is_ally_with = event_target:mozambique }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:ruvuma }
+				is_ally_with = event_target:mozambique
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:ruvuma }
+        1327 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4111 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1327 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4111 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1327 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4111 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Zanzibar
+	id = annex.4026
+	title = annexation_1306
+	desc = annexation_1306_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = OMA
+					tag = TGY
+					tag = DEA
+					1558 = { is_claim_or_core_of_ROOT = yes } # Tanganyika
+					294 = { is_claim_or_core_of_ROOT = yes } # Masqat
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Tanganyika
+		if = {
+			limit = {
+				1558 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1558.owner = { save_event_target_as = tanganyika }
+		}
+		
+		# Masqat
+		if = {
+			limit = {
+				294 = {
+					owner = {
+						ROOT_can_grant_land = yes
+						tag = OMA
+					}
+				}
+			}
+			var:294.owner = { save_event_target_as = masqat }
+		}
+	}
+	
+	option = { #Release Zanzibar
 		log = "[GetLogInfo]: event annex.4026 option annex.4026.a"
 		name = annex.4026.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = ZAN }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			ZAN = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ZAN_Occupied_Monarchy
 			}
 		}
 
 		if = {
-			limit = { country_exists = ZAN }
-			custom_effect_tooltip = ZAN_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = ZAN }
-			release_targeted_tag = yes
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Give to German East Africa
-		log = "[GetLogInfo]: event annex.4026 option annex.4026.b"
-		name = annex.4026.b
-		trigger = {
-			DEA = {
-            exists = yes
-			owns_state = 869
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
 			}
-			ROOT = {
-				tag = GER
-			}
-        }
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
+			ZAN = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ZAN_Occupied_Republic
 			}
 		}
-
-		DEA = {
-            transfer_state = 1306
-        }
-
-        recheck_annexations = yes
 	}
 
 	option = { #Give to Tanganyika
-		log = "[GetLogInfo]: event annex.4026 option annex.4026.c"
-		name = annex.4026.c
+		log = "[GetLogInfo]: event annex.4026 option annex.4026.b"
+		name = annex.4026.b
 		trigger = {
-			TGY = {
-            exists = yes
-			owns_state = 870
-			}
+			is_subject = no
+			has_event_target = tanganyika
         }
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 100
+				is_ally_with = event_target:tanganyika
+				NOT = { is_ally_with = event_target:masqat }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:tanganyika }
+				is_ally_with = event_target:masqat
+			}
 		}
 
-		TGY = {
-            transfer_state = 1306
-        }
-
-        recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:tanganyika }
+        1306 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Give to Oman
-		log = "[GetLogInfo]: event annex.4026 option annex.4026.d"
-		name = annex.4026.d
+	option = { #Give to Masqat
+		log = "[GetLogInfo]: event annex.4026 option annex.4026.c"
+		name = annex.4026.c
 		trigger = {
-			OMA = {
-            exists = yes
-			}
+			is_subject = no
+			has_event_target = masqat
         }
 		ai_chance = {
 			base = 10
@@ -3330,21 +3408,55 @@ country_event = { #Fate of Zanzibar
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 70
+				is_ally_with = event_target:masqat
+				NOT = { is_ally_with = event_target:tanganyika }
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:masqat }
+				is_ally_with = event_target:tanganyika
+			}
 		}
 
-		OMA = {
-            transfer_state = 1306
-        }
+		set_temp_variable = { tag_to_release = event_target:masqat }
+        1306 = { transfer_state_and_notify = yes }
+	}
 
-        recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4026 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1306 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4026 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1306 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.4026 option annex.cancel"
+		log = "[GetLogInfo]: event annex.4115 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
-    }
+	}
 }
 
 country_event = { #Fate of Kilwa
@@ -7624,46 +7736,113 @@ country_event = { #Fate of the Nyasa
     }
 }
 
-country_event = { #Fate of Madagascar
+country_event = { #Fate of Tananariva/Madagascar
 	id = annex.4083
-	title = annexation_madagascar
-	desc = annexation_madagascar_desc
+	title = annexation_543
+	desc = annexation_543_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 	
-	option = { #Release Madagascar whole
+	immediate = {
+		708 = { retain_state = yes } #Comoros Islands
+		if = {
+			limit = {
+				OR = {
+					tag = FRA
+					tag = ENG
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
+	
+	option = { #Release Madagascar
 		log = "[GetLogInfo]: event annex.4083 option annex.4083.a"
 		name = annex.4083.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 90
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 		}
+		
+		set_temp_variable = { tag_to_release = MAD }
+		release_targeted_tag = yes
 
 		if = {
-			limit = { country_exists = MAD }
-			custom_effect_tooltip = MAD_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = MAD }
-			release_targeted_tag = yes
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			MAD = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MAD_Occupied_Monarchy
+			}
 		}
 
-		recheck_annexations = yes
+		if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			MAD = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MAD_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4083 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        every_owned_state = {
+			limit = {
+				is_madagascar = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4083 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_madagascar = yes
+			}
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.4083 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
-    }
+	}
 }
 
 country_event = { #Fate of Darfur
@@ -8047,7 +8226,7 @@ country_event = { #Fate of Kaapstadt/South Africa
 		}
 
 		set_temp_variable = { tag_to_release = event_target:bloemfontain }
-         every_owned_state = {
+        every_owned_state = {
 			limit = {
 				is_south_africa = yes
 				is_allowed_annexation_state = yes
@@ -12964,6 +13143,534 @@ country_event = { #Fate of Kasanje
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.4111 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Lindi
+	id = annex.4112
+	title = annexation_1557
+	desc = annexation_1557_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = DEA
+					tag = TGY
+					tag = ZAN
+					546 = { is_claim_or_core_of_ROOT = yes } # Ruvuma
+					869 = { is_claim_or_core_of_ROOT = yes } # Kilwa
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Ruvuma
+		if = {
+			limit = {
+				546 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:546.owner = { save_event_target_as = ruvuma }
+		}
+		
+		# Kilwa
+		if = {
+			limit = {
+				869 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:869.owner = { save_event_target_as = kilwa }
+		}
+	}
+	
+	option = { #Transfer it to Ruvuma
+		log = "[GetLogInfo]: event annex.4112 option annex.4112.a"
+		name = annex.4112.a
+		trigger = {
+			is_subject = no
+			has_event_target = ruvuma
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:ruvuma
+				NOT = { is_ally_with = event_target:kilwa }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:ruvuma }
+				is_ally_with = event_target:kilwa
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:ruvuma }
+        1557 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Transfer it to Kilwa
+		log = "[GetLogInfo]: event annex.4112 option annex.4112.b"
+		name = annex.4112.b
+		trigger = {
+			is_subject = no
+			has_event_target = kilwa
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:kilwa
+				NOT = { is_ally_with = event_target:ruvuma }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:kilwa }
+				is_ally_with = event_target:ruvuma
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:kilwa }
+        1557 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4112 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1557 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4112 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1557 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4112 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Buzinja
+	id = annex.4113
+	title = annexation_1537
+	desc = annexation_1537_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = DEA
+					tag = TGY
+					tag = BEF
+					tag = RWA
+					768 = { is_claim_or_core_of_ROOT = yes } # Rwanda
+					866 = { is_claim_or_core_of_ROOT = yes } # Buganda
+					1558 = { is_claim_or_core_of_ROOT = yes } # Tanganyika
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Rwanda
+		if = {
+			limit = {
+				768 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:768.owner = { save_event_target_as = rwanda }
+		}
+		
+		# Buganda
+		if = {
+			limit = {
+				866 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:866.owner = { save_event_target_as = buganda }
+		}
+		
+		# Tanganyika
+		if = {
+			limit = {
+				1558 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1558.owner = { save_event_target_as = tanganyika }
+		}
+	}
+	
+	option = { #Transfer it to Rwanda
+		log = "[GetLogInfo]: event annex.4113 option annex.4113.a"
+		name = annex.4113.a
+		trigger = {
+			is_subject = no
+			has_event_target = rwanda
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:rwanda
+				NOT = { is_ally_with = event_target:buganda }
+				NOT = { is_ally_with = event_target:tanganyika }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:rwanda }
+				OR = {
+					is_ally_with = event_target:buganda
+					is_ally_with = event_target:tanganyika
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:rwanda }
+        1537 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Transfer it to Buganda
+		log = "[GetLogInfo]: event annex.4113 option annex.4113.b"
+		name = annex.4113.b
+		trigger = {
+			is_subject = no
+			has_event_target = buganda
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:buganda
+				NOT = { is_ally_with = event_target:rwanda }
+				NOT = { is_ally_with = event_target:tanganyika }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:buganda }
+				OR = {
+					is_ally_with = event_target:rwanda
+					is_ally_with = event_target:tanganyika
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:buganda }
+        1537 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Transfer it to Tanganyika
+		log = "[GetLogInfo]: event annex.4113 option annex.4113.c"
+		name = annex.4113.c
+		trigger = {
+			is_subject = no
+			has_event_target = tanganyika
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:tanganyika
+				NOT = { is_ally_with = event_target:rwanda }
+				NOT = { is_ally_with = event_target:buganda }
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:tanganyika }
+				OR = {
+					is_ally_with = event_target:rwanda
+					is_ally_with = event_target:buganda
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:tanganyika }
+        1537 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4113 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1537 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4113 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1537 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4113 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Walvis Bay
+	id = annex.4114
+	title = annexation_783
+	desc = annexation_783_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = ENG
+					tag = GER
+					tag = NMB
+					1567 = { is_claim_or_core_of_ROOT = yes } # Khomas
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Khomas
+		if = {
+			limit = {
+				1567 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1567.owner = { save_event_target_as = khomas }
+		}
+	}
+	
+	option = { #Transfer it to Khomas
+		log = "[GetLogInfo]: event annex.4114 option annex.4114.a"
+		name = annex.4114.a
+		trigger = {
+			is_subject = no
+			has_event_target = khomas
+		}
+		ai_chance = {
+			base = 90
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				is_ally_with = event_target:khomas
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:khomas }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:khomas }
+        783 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4114 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        783 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4114 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		783 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4114 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Comoros Islands
+	id = annex.4115
+	title = annexation_708
+	desc = annexation_708_desc
+	picture = GFX_report_PB_Peace_Deals_Africa
+
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = ENG
+					tag = GER
+					tag = FRA
+					tag = MAD
+					543 = { is_claim_or_core_of_ROOT = yes } # Tananariva
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# Tananariva
+		if = {
+			limit = {
+				543 = {
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:543.owner = { save_event_target_as = tananariva }
+		}
+	}
+	
+	option = { #Transfer it to Tananariva
+		log = "[GetLogInfo]: event annex.4115 option annex.4115.a"
+		name = annex.4115.a
+		trigger = {
+			is_subject = no
+			has_event_target = tananariva
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 90
+				is_ally_with = event_target:tananariva
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:tananariva }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:tananariva }
+        708 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4115 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        708 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4115 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		708 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4115 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
