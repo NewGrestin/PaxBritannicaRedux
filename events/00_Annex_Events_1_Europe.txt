@@ -521,6 +521,14 @@ country_event = { #Fate of Brittany
 	is_triggered_only = yes
 
 	immediate = {
+		if = { 
+			limit = { 
+				OR = { 
+					tag = FRA
+				}
+			}
+			save_event_target_as = can_annex
+		}
 		if = {
 			limit = {
 				FRA = {
@@ -2585,15 +2593,16 @@ country_event = { #Fate of Catalonia
 		ai_chance = { base = 0 }
 		set_temp_variable = { tag_to_release = CAT }
 		release_targeted_tag = yes
+		if = { 
+			limit = { has_custom_puppet_CAT = yes }
+			setup_custom_puppet_CAT = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
 
-		if = {
+		else_if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = ENG
-						original_tag = GER
-					}
 				}
 			}
 			CAT = {
@@ -2601,15 +2610,10 @@ country_event = { #Fate of Catalonia
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = {
 				ROOT = {
 					has_republican_government = yes
-					NOT = {
-						OR = {
-							original_tag = FRA
-						}
-					}
 				}
 			}
 			CAT = {
@@ -2640,14 +2644,16 @@ country_event = { #Fate of Catalonia
 			remove_claim_and_add_core_of_target = yes 
 		}
 
+		if = { 
+			limit = { has_custom_puppet_CAT = yes }
+			setup_custom_puppet_CAT = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+
 		if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = ENG
-						original_tag = GER
-					}
 				}
 			}
 			CAT = {
@@ -2659,11 +2665,6 @@ country_event = { #Fate of Catalonia
 			limit = {
 				ROOT = {
 					has_republican_government = yes
-					NOT = {
-						OR = {
-							original_tag = FRA
-						}
-					}
 				}
 			}
 			CAT = {
@@ -5914,11 +5915,6 @@ country_event = { #Fate of Hesse
 			}
 		}
 		annexations_release_MGE_germany = yes
-		if = { 
-			limit = { has_custom_puppet_GER = yes }
-			setup_custom_puppet_GER = yes
-			custom_effect_tooltip = has_custom_puppet
-		}
 	}
 
 	option = { #Release the Kingdom of Hesse
@@ -7602,15 +7598,20 @@ country_event = { #Fate of Brandenburg-Prussia
 
 		set_temp_variable = { tag_to_release = BRN }
 		release_targeted_tag = yes
+		if = { 
+			limit = { has_custom_puppet_BRN = yes }
+			setup_custom_puppet_BRN = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			BRN = {
 				drop_cosmetic_tag = yes
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			BRN = {
 				set_cosmetic_tag = BRN_Occupied_Republic
@@ -7773,6 +7774,12 @@ country_event = { #Fate of Czechia
 		set_temp_variable = { tag_to_release = CZE }
 		release_targeted_tag = yes
 
+		if = { 
+			limit = { has_custom_puppet_CZE = yes }
+			setup_custom_puppet_CZE = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+
 		if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			CZE = {
@@ -7876,21 +7883,17 @@ country_event = { #Fate of Slovenia/Krain
 	is_triggered_only = yes
 
 	immediate = {
+		annexations_reset_yugoslavian_cores_claims = yes
 		if = {
 			limit = {
 				OR = {
 					original_tag = AUS
 					original_tag = PRS
 					is_german_tag = yes
-					1188 = { is_claim_or_core_of_ROOT = yes } #Carinthia
 					AND = {
 						109 = { is_claim_or_core_of_ROOT = yes } #Croatia
 						original_tag = SER
-						OR = {
-							has_cosmetic_tag = SER_Yugoslav_Empire
-							has_cosmetic_tag = SER_Yugoslav_Republic
-							has_cosmetic_tag = SER_Yugoslav_Federation
-						}
+						tag_is_yugoslavia = yes 
 					}
 				}
 			}
@@ -7902,8 +7905,6 @@ country_event = { #Fate of Slovenia/Krain
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
-						is_subject = no
-						original_tag = GER
 					}
 				}
 			}
@@ -7915,6 +7916,7 @@ country_event = { #Fate of Slovenia/Krain
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:germany }
 					}
 				}
 			}
@@ -7926,6 +7928,16 @@ country_event = { #Fate of Slovenia/Krain
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
+						original_tag = SER
+						1188 = { is_claim_or_core_of_PREV = yes } #Carinthia
+						OR = {
+							has_cosmetic_tag = SER_Yugoslav_Empire
+							has_cosmetic_tag = SER_Yugoslav_Republic
+							has_cosmetic_tag = SER_Yugoslav_Federation
+							has_cosmetic_tag = SER_Yugoslav_RUS
+						}
+						NOT = { tag = event_target:carinthia }
+						NOT = { tag = event_target:germany }
 					}
 				}
 			}
@@ -7966,16 +7978,31 @@ country_event = { #Fate of Slovenia/Krain
 
 	option = { #Give it to Germany
 		log = "[GetLogInfo]: event annex.1047 option annex.1047.b"
-		name = annex.europe.give_to_germany
+		name = annex.1047.b
 		trigger = {
 			is_subject = no
 			has_event_target = germany
-			NOT = {
-				has_global_flag = PB_GLOBAL_Germany_is_kil
-			}
 		}
 
-		ai_chance = { base = 0 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+				OR = { 
+					is_ally_with = event_target:croatia
+					is_ally_with = event_target:carinthia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:germany }
 		102 = { transfer_state_and_notify = yes } #Krain
@@ -7989,7 +8016,25 @@ country_event = { #Fate of Slovenia/Krain
 			has_event_target = carinthia
 		}
 
-		ai_chance = { base = 50 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:carinthia }
+				OR = { 
+					is_ally_with = event_target:croatia
+					is_ally_with = event_target:germany
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:carinthia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:carinthia }
 		102 = { transfer_state_and_notify = yes } #Krain
@@ -8004,21 +8049,22 @@ country_event = { #Fate of Slovenia/Krain
 		}
 
 		ai_chance = {
-			base = 0
+			base = 40
 			modifier = {
-				factor = 100
-				original_tag = RUS
-				SER = {
-					AND = {
-						exists = yes
-						OR = {
-							has_cosmetic_tag = SER_Yugoslav_Empire
-							has_cosmetic_tag = SER_Yugoslav_Republic
-							has_cosmetic_tag = SER_Yugoslav_Federation
-						}
-						owns_state = 109
-					}
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:croatia }
+				OR = { 
+					is_ally_with = event_target:carinthia
+					is_ally_with = event_target:germany
 				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:croatia = { is_subject = yes }
 			}
 		}
 
@@ -9376,14 +9422,20 @@ country_event = { #Fate of Holstein
 		set_temp_variable = { tag_to_release = SCH }
 		release_targeted_tag = yes
 
-		if = {
+		if = { 
+			limit = { has_custom_puppet_SCH = yes }
+			setup_custom_puppet_SCH = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SCH = {
 				set_cosmetic_tag = SCH_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			SCH = {
 				set_cosmetic_tag = SCH_Occupied_Republic
@@ -9500,11 +9552,26 @@ country_event = { #Fate of Holstein
 
 country_event = { #Fate of Denmark
 	id = annex.1061
-	title = annexation_denmark
-	desc = annexation_denmark_desc
+	title = annexation_37
+	desc = annexation_37_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+
+	immediate = { 
+		hidden_effect = { 
+			every_owned_state = {
+				limit = {
+					is_denmark = yes
+				}
+				add_core_of = DEN
+				else = { 
+					remove_core_of = DEN
+					remove_claim_by = DEN
+				}
+			}
+		}
+	}
 
 	option = { #Release Denmark
 		log = "[GetLogInfo]: event annex.1061 option annex.1061.a"
@@ -9522,15 +9589,20 @@ country_event = { #Fate of Denmark
 
 		set_temp_variable = { tag_to_release = DEN }
 		release_targeted_tag = yes
+		if = { 
+			limit = { has_custom_puppet_DEN = yes }
+			setup_custom_puppet_DEN = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			DEN = {
 				set_cosmetic_tag = DEN_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			DEN = {
 				set_cosmetic_tag = DEN_Occupied_Republic
@@ -9551,7 +9623,10 @@ country_event = { #Fate of Denmark
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		DEN = { set_transfer_target_cores = yes }
+		every_owned_state = {
+			limit = { is_denmark = yes}
+			transfer_state_and_notify = yes
+		}
 		recheck_annexations = yes
 	}
 
@@ -9561,7 +9636,10 @@ country_event = { #Fate of Denmark
 		trigger = {
 			annexations_can_annex = yes
 		}
-		DEN = { add_claim_of_ROOT_on_valid_cores = yes }
+		every_owned_state = {
+			limit = { is_denmark = yes}
+			add_claim_of_ROOT = yes
+		}
 		recheck_annexations = yes
 	}
 
@@ -9578,23 +9656,35 @@ country_event = { #Fate of Denmark
 
 country_event = { #Fate of Sweden
 	id = annex.1062
-	title = annexation_sweden
-	desc = annexation_sweden_desc
+	title = annexation_141
+	desc = annexation_141_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-		138 = { retain_state = yes } 
-		1011 = { retain_state = yes } 
-		144 = { retain_state = yes } 
-		1363 = { retain_state = yes } 
-		1362 = { retain_state = yes } 
-		1366 = { retain_state = yes } 
-		1020 = { retain_state = yes } 
-		666 = { retain_state = yes } 
-		1019 = { retain_state = yes } 
-		1422 = { retain_state = yes } 
+		hidden_effect = { 
+			every_owned_state = {
+				limit = {
+					is_sweden = yes
+				}
+				add_core_of = SWE
+				else = { 
+					remove_core_of = SWE
+					remove_claim_by = SWE
+				}
+			}
+			138 = { retain_state = yes } 
+			1011 = { retain_state = yes } 
+			144 = { retain_state = yes } 
+			1363 = { retain_state = yes } 
+			1362 = { retain_state = yes } 
+			1366 = { retain_state = yes } 
+			1020 = { retain_state = yes } 
+			666 = { retain_state = yes } 
+			1019 = { retain_state = yes } 
+			1422 = { retain_state = yes } 
+		}
 	}
 
 	option = { #Release Sweden
@@ -9618,30 +9708,25 @@ country_event = { #Fate of Sweden
 		}
 		release_targeted_tag = yes
 
-		if = {
+		if = { 
+			limit = { has_custom_puppet_SWE = yes }
+			setup_custom_puppet_SWE = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SWE = {
 				set_cosmetic_tag = SWE_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			SWE = {
 				set_cosmetic_tag = SWE_Occupied_Republic
 			}
 		}
-
-		if = {
-			limit = { 
-				ROOT = { 
-					original_tag = FRA
-				}
-			}
-			FRA_SWE_setup_puppet = yes
-		}
-		
-		recheck_annexations = yes
 	}
 
 	option = { #Give to overlord
@@ -9661,10 +9746,10 @@ country_event = { #Fate of Sweden
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
+		every_state = {
+			limit = { is_sweden = yes}
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
@@ -9749,7 +9834,13 @@ country_event = { #Fate of Schleswig
 		set_temp_variable = { tag_to_release = SCH }
 		release_targeted_tag = yes
 
-		if = {
+		if = { 
+			limit = { has_custom_puppet_SCH = yes }
+			setup_custom_puppet_SCH = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SCH = {
 				drop_cosmetic_tag = yes
@@ -9757,7 +9848,7 @@ country_event = { #Fate of Schleswig
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			SCH = {
 				drop_cosmetic_tag = yes
@@ -9854,8 +9945,8 @@ country_event = { #Fate of Schleswig
 
 country_event = { # Fate of Skåne
 	id = annex.1064
-	title = annexation_skane
-	desc = annexation_skane_desc
+	title = annexation_138
+	desc = annexation_138_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -9985,8 +10076,8 @@ country_event = { # Fate of Skåne
 
 country_event = { #Fate of Nordland
 	id = annex.1065
-	title = annexation_nordland
-	desc = annexation_nordland_desc
+	title = annexation_1011
+	desc = annexation_1011_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -10111,8 +10202,8 @@ country_event = { #Fate of Nordland
 
 country_event = { # Fate of Finnmark
 	id = annex.1066
-	title = annexation_finmark
-	desc = annexation_finmark_desc
+	title = annexation_144
+	desc = annexation_144_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -10836,6 +10927,7 @@ country_event = { #Fate of Croatia
 	is_triggered_only = yes
 
 	immediate = {
+		annexations_reset_yugoslavian_cores_claims = yes
 		1235 = { retain_state = yes }
 		hidden_effect = {
 			if = {
@@ -10892,6 +10984,88 @@ country_event = { #Fate of Croatia
 		}
 	}
 
+	option = { #Lay the foundations for a Yugoslav State
+		log = "[GetLogInfo]: event annex.1071 option annex.europe.form_yugoslavia"
+		name = annex.europe.form_yugoslavia
+		trigger = {
+			is_subject = no
+			is_major = yes
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 100
+				original_tag = RUS
+			}
+		}
+
+		set_temp_variable = { tag_to_release = CRO }
+		release_targeted_tag = yes
+
+		1235 = { clear_retain_state = yes }
+
+		45 = { retain_state = yes }
+		764 = { retain_state = yes }
+
+		every_state = {
+			limit = { is_yugoslavia = yes }
+			add_claim_of_target = yes
+		}
+		every_owned_state = {
+			limit = {
+				OR = {
+					is_yugoslavia = yes
+				}
+			}
+			transfer_state_without_overriding_occupation = yes
+		}
+		
+		if = { 
+			limit = { has_custom_puppet_YUG = yes }
+			setup_custom_puppet_YUG = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			CRO = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SER_Yugoslav_Empire
+			}
+		}
+
+		else_if = {
+			limit = {
+				ROOT = {
+					AND = {
+						has_republican_government = yes 
+						NOT = {
+							has_government = jc
+						}
+					} 
+				}
+			}
+			CRO = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SER_Yugoslav_Federation
+			}
+		}
+		
+		else_if = {
+			limit = {
+				ROOT = {
+					AND = {
+						has_republican_government = yes
+						has_government = jc
+					}
+				}
+			}
+			CRO = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SER_Yugoslav_Republic
+			}
+		}
+	}
+
 	option = { #Transfer it to the Dinarics
 		log = "[GetLogInfo]: event annex.1071 option annex.1071.b"
 		name = annex.1071.b
@@ -10927,11 +11101,7 @@ country_event = { #Fate of Croatia
 			is_subject = no
 			SER = {
 				exists = yes
-				OR = {
-					has_cosmetic_tag = SER_Yugoslav_Empire
-					has_cosmetic_tag = SER_Yugoslav_Republic
-					has_cosmetic_tag = SER_Yugoslav_Federation
-				}
+				tag_is_yugoslavia = yes 
 			}
 		}
 		ai_chance = {
@@ -11158,6 +11328,7 @@ country_event = { #Fate of Serbia
 	is_triggered_only = yes
 
 	immediate = {
+		annexations_reset_yugoslavian_cores_claims = yes
 		1028 = { retain_state = yes }
 		104 = { retain_state = yes }
 		1027 = { retain_state = yes }
@@ -11199,8 +11370,8 @@ country_event = { #Fate of Serbia
 	}
 	
 	option = { #Lay the foundations for a Yugoslav State
-		log = "[GetLogInfo]: event annex.1073 option annex.1073.b"
-		name = annex.1073.b
+		log = "[GetLogInfo]: event annex.1073 option annex.europe.form_yugoslavia"
+		name = annex.europe.form_yugoslavia
 		trigger = {
 			is_subject = no
 			is_major = yes
@@ -11215,8 +11386,36 @@ country_event = { #Fate of Serbia
 
 		set_temp_variable = { tag_to_release = SER }
 		release_targeted_tag = yes
+		45 = { retain_state = yes }
+		764 = { retain_state = yes }
+		
+		1028 = { clear_retain_state = yes }
+		104 = { clear_retain_state = yes }
+		1027 = { clear_retain_state = yes }
+		105 = { clear_retain_state = yes }
+		1242 = { clear_retain_state = yes }
 
-		if = {
+		every_state = {
+			limit = { is_yugoslavia = yes }
+			add_claim_of_target = yes
+		}
+		every_owned_state = {
+			limit = {
+				OR = {
+					is_yugoslavia = yes
+				}
+				is_valid_annexation_state = yes
+			}
+			transfer_state_without_overriding_occupation = yes
+		}
+
+		if = { 
+			limit = { has_custom_puppet_YUG = yes }
+			setup_custom_puppet_YUG = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SER = {
 				drop_cosmetic_tag = yes
@@ -11224,7 +11423,7 @@ country_event = { #Fate of Serbia
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = {
 				ROOT = {
 					AND = {
@@ -11241,7 +11440,7 @@ country_event = { #Fate of Serbia
 			}
 		}
 		
-		if = {
+		else_if = {
 			limit = {
 				ROOT = {
 					AND = {
@@ -11254,16 +11453,6 @@ country_event = { #Fate of Serbia
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SER_Yugoslav_Republic
 			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					owns_state = 104 #Bosnia
-				}
-			}
-			set_temp_variable = { tag_to_release = SER }
-			104 = { transfer_state_and_notify = yes } #Bosnia
 		}
 	}
 
@@ -11317,6 +11506,7 @@ country_event = { #Fate of Bosnia
 	is_triggered_only = yes
 
 	immediate = {
+		annexations_reset_yugoslavian_cores_claims = yes
 		1028 = { retain_state = yes }
 		1027 = { retain_state = yes }
 		hidden_effect = {
@@ -12127,7 +12317,7 @@ country_event = { #Fate of Hungary
 				}
 				else = { 
 					remove_core_of = HUN
-					remove_claim_by = GER
+					remove_claim_by = HUN
 				}
 			}
 			45 = { retain_state = yes }
@@ -12167,7 +12357,7 @@ country_event = { #Fate of Hungary
 			custom_effect_tooltip = has_custom_puppet
 		}
 
-		if = {
+		else_if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
@@ -12181,7 +12371,7 @@ country_event = { #Fate of Hungary
 				set_cosmetic_tag = HUN_Occupied_Monarchy
 			}
 		}
-		if = {
+		else_if = {
 			limit = {
 				ROOT = { 
 					has_republican_government = yes 
@@ -12864,39 +13054,22 @@ country_event = { #Fate of Slovakia
 
 		set_temp_variable = { tag_to_release = SLO }
 		release_targeted_tag = yes
+		if = { 
+			limit = { has_custom_puppet_SLO = yes }
+			setup_custom_puppet_SLO = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
 
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					NOT = {
-						original_tag = GER
-					}
-				}
-			}
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
 			SLO = {
-				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SLO_Occupied_Monarchy
 			}
 		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					original_tag = GER
-				}
-			}
-			SLO = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = SLO_Occupied_Monarchy_Krauts
-			}
-		}
 		
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			SLO = {
-				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SLO_Occupied_Republic
 			}
 		}
@@ -13007,7 +13180,13 @@ country_event = { #Fate of Wallachia
 		set_temp_variable = { tag_to_release = ROM }
 		release_targeted_tag = yes
 
-		if = {
+		if = { 
+			limit = { has_custom_puppet_ROM = yes }
+			setup_custom_puppet_ROM = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			ROM = {
 				drop_cosmetic_tag = yes
@@ -13016,7 +13195,7 @@ country_event = { #Fate of Wallachia
 		}
 
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			ROM = {
 				drop_cosmetic_tag = yes
@@ -13332,7 +13511,13 @@ country_event = { #Fate of Bulgaria
 		set_temp_variable = { tag_to_release = BUL }
 		release_targeted_tag = yes
 
-		if = {
+		if = { 
+			limit = { has_custom_puppet_BUL = yes }
+			setup_custom_puppet_BUL = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			BUL = {
 				drop_cosmetic_tag = yes
@@ -13340,7 +13525,7 @@ country_event = { #Fate of Bulgaria
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			BUL = {
 				drop_cosmetic_tag = yes
@@ -15184,6 +15369,14 @@ country_event = { #Fate of Polish Galicia
 			base = 100
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				OR = { 
+					is_ally_with = event_target:poland
+					is_ally_with = event_target:galicia
+				}
 			}
 		}
 
@@ -15219,7 +15412,7 @@ country_event = { #Fate of Polish Galicia
 			has_event_target = poland
 		}
 		ai_chance = {
-			base = 70
+			base = 20
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
@@ -16446,14 +16639,16 @@ country_event = { #Fate of Prussia
 
 		set_temp_variable = { tag_to_release = PRS }
 		release_targeted_tag = yes
+		if = { 
+			limit = { ROOT = { has_custom_puppet_PRS = yes  } } 
+			setup_custom_puppet_PRS = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
 
-		if = {
+		else_if = {
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					NOT = {
-						original_tag = GER
-					}
 				}
 			}
 			PRS = {
@@ -16462,7 +16657,7 @@ country_event = { #Fate of Prussia
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			PRS = {
 				drop_cosmetic_tag = yes
@@ -20115,19 +20310,62 @@ country_event = { #Fate of Cyprus
 
 country_event = { #Fate of Norrland
 	id = annex.1143
-	title = annexation_norrland
-	desc = annexation_norrland_desc
+	title = annexation_1366
+	desc = annexation_1366_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
 		if = {
-			limit = { SWE = { ROOT_can_grant_land = yes } }
-			SWE = {
-				save_event_target_as = sweden
-				add_to_array = { ROOT.potential_grant_targets = THIS }
+			limit = {
+				OR = {
+					143 = { is_claim_or_core_of_ROOT = yes } #Trondelag
+					AND = { 
+						1019 = { is_claim_or_core_of_ROOT = yes } #Jamtland
+						owns_state = 1366 #Lappland
+					}
+					1366 = { is_claim_or_core_of_ROOT = yes } #Lappland
+				}
 			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				77 = { #trondelag
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:77.owner = { save_event_target_as = trondelag }
+		}
+		if = {
+			limit = {
+				1039 = { #Jamtland
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:trondelag }
+						1366 = { annexations_required_state_is_owned_by_either_side = yes } #Lappland
+					}
+				}
+			}
+			var:1039.owner = { save_event_target_as = jamtland }
+		}
+		if = {
+			limit = {
+				46 = { #Norrland
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						NOT = { tag = event_target:trondelag }
+						NOT = { tag = event_target:jamtland }
+					}
+				}
+			}
+			var:46.owner = { save_event_target_as = norrland }
 		}
 	}
 
@@ -20179,6 +20417,30 @@ country_event = { #Fate of Norrland
 		
 	}
 
+	option = {
+		log = "[GetLogInfo]: event annex.1143 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1366 = { transfer_state_and_notify = yes }
+		1020 = { transfer_state_and_notify = yes }
+		666 = { transfer_state_and_notify = yes }
+	}
+
+	# Annex / integrate
+	option = {
+		log = "[GetLogInfo]: event annex.1143 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1366 = { transfer_state_and_notify = yes }
+		1020 = { add_claim_of_ROOT = yes }
+		666 = { add_claim_of_ROOT = yes }
+	}
+
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1143 option annex.cancel"
 		name = annex.cancel
@@ -20193,8 +20455,8 @@ country_event = { #Fate of Norrland
 
 country_event = { #Fate of Kemi
 	id = annex.1144
-	title = annexation_kemi
-	desc = annexation_kemi_desc
+	title = annexation_1363
+	desc = annexation_1363_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -20322,8 +20584,8 @@ country_event = { #Fate of Kemi
 }
 country_event = { # Fate of Bohuslän
 	id = annex.1145
-	title = annexation_bohuslan
-	desc = annexation_bohuslan_desc
+	title = annexation_1422
+	desc = annexation_1422_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes

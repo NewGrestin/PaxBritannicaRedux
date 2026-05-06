@@ -1,4 +1,62 @@
 PB_Diplomacy_Decisions = {
+	
+	return_cores_to_ally = {
+		icon = generic_agreement
+
+		available = {
+			has_war = no
+			hidden_trigger = {
+				NOT = { has_country_flag = KR_returning_land }
+				can_select_annexation_decision = yes
+			}
+		}
+
+		target_array = faction_members
+		target_array = subjects
+
+		target_trigger = {
+			is_ally_with = FROM
+			any_owned_state = {
+				is_claim_or_core_of_FROM = yes
+				is_claim_or_core_of_ROOT = no
+				NOT = { has_variable = can_integrate_@ROOT }
+				NOT = { has_state_flag = KR_keeping_state@ROOT }
+				NOT = { has_state_flag = annexation_recent_transfer_@ROOT }
+				OR = {
+					is_coastal = yes
+					any_neighbor_state = { is_owned_by = FROM }
+				}
+			}
+		}
+
+		cost = 0
+		fire_only_once = no
+
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				check_variable = { active_annexation_decisions < 1 } #deal with annexations first
+			}
+			modifier = {
+				factor = 0.1
+				FROM = {
+					is_subject = yes
+					NOT = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		complete_effect = {
+			log = "[GetLogRoot][GetLogFrom]: Decision return_cores_to_ally"
+			set_country_flag = KR_returning_land
+			FROM = { save_event_target_as = return_to }
+			country_event = PB_DA_generic.4
+		}
+	}
+	# ABANDON ALL HOPE, ALL YE WHO ENTER 
+
+
 	###################
 	# GERMAN EAST ASIA #
 	###################

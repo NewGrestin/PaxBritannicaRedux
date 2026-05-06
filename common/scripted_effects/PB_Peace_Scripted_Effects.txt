@@ -281,3 +281,245 @@ PB_give_to_indian_unifier = {
 		}
 	}
 }
+
+
+#im not involved with the above
+
+#RUS_set_up_peace_conference_with_lon = {
+#	if = {
+#		limit = {
+#			NOT = { country_exists = RRU }
+#		}
+#		set_global_flag = RUS_peace_refused_by_player
+#	}
+#	else = {
+#		RUS = {
+#			##Set up contested states to be part of the peace conference
+#			every_owned_state = {
+#				if = { 
+#					limit = {
+#						NOT = { has_state_flag = RSA_claimed_state } ##RSA_counter_claims block third party annexations
+#						OR = {
+#							AND = {
+#								NOT = { check_variable = { annexation_target = 219.id } } ##Moscow
+#								NOT = { check_variable = { annexation_target = 234.id } } ##Ekaterinodar
+#								NOT = { check_variable = { annexation_target = 329.id } } ##Tuva
+#								NOT = { check_variable = { annexation_target = 570.id } } ##Novosibirsk
+#								NOT = { check_variable = { annexation_target = 583.id } } ##Petropavlovsk
+#								NOT = { check_variable = { annexation_target = 408.id } } ##Vladivostok
+#								NOT = { check_variable = { annexation_target = 405.id } } ##Bukhara
+#								NOT = { check_variable = { annexation_target = 407.id } } ##Tashkent
+#								NOT = { check_variable = { annexation_target = 232.id } } ##Dagestan
+#							}
+#							any_country_with_core = {
+#								has_war_with = RUS
+#								is_russian_tag = no
+#							}
+#							any_of_scopes = {
+#								array = RUS.enemies
+#								is_russian_tag = no
+#								OR = {
+#									PREV = { is_claimed_by = PREV }
+#									PREV = { has_variable = priority_zone_@PREV }
+#								}
+#							}
+#						}
+#					}
+#					set_state_flag = RUS_to_peace_conference
+#				}
+#				else = { 
+#					set_state_flag = RSA_claimed_state
+#				}
+#			}
+#			if = {
+#				limit = {
+#					OR = {
+#						has_war_with = KAZ
+#						has_war_with = KOK
+#						has_war_with = BUK
+#						has_war_with = TUR
+#						has_war_with = UZB
+#						has_war_with = TUR
+#						has_war_with = PER
+#						has_war_with = AFG
+#						has_war_with = RAJ
+#						has_war_with = var:indian_tags_array
+#						has_war_with = XSM
+#						584 = { ##Karakum
+#							any_neighbor_state = {
+#								controller = {
+#									has_war_with = RUS
+#									is_russian_tag = no
+#								}
+#							}
+#						}
+#					}
+#				}
+#				every_owned_state = {
+#					limit = { is_central_asia = yes }
+#					set_state_flag = RUS_to_peace_conference
+#				}
+#			}
+#		}
+#
+#		### handle Central Asia
+#		RUS = {
+#			if = {
+#				limit = {
+#					KAZ = {
+#						exists = no
+#						meta_trigger = {
+#							text = {
+#								[ORIGINAL_CAPITAL] = {
+#									is_owned_by = RUS
+#									NOT = { has_state_flag = RUS_to_peace_conference }
+#								}
+#							}
+#							ORIGINAL_CAPITAL = "[THIS.OriginalCapital.GetId]"
+#						}
+#					}
+#				}
+#				release_on_controlled = KAZ
+#			}
+#			if = {
+#				limit = {
+#					UZB = {
+#						exists = no
+#						meta_trigger = {
+#							text = {
+#								[ORIGINAL_CAPITAL] = {
+#									is_owned_by = RUS
+#									NOT = { has_state_flag = RUS_to_peace_conference }
+#								}
+#							}
+#							ORIGINAL_CAPITAL = "[THIS.OriginalCapital.GetId]"
+#						}
+#					}
+#				}
+#				release_on_controlled = UZB
+#			}
+#			if = {
+#				limit = {
+#					BUK = {
+#						exists = no
+#						meta_trigger = {
+#							text = {
+#								[ORIGINAL_CAPITAL] = {
+#									is_owned_by = RUS
+#									NOT = { has_state_flag = RUS_to_peace_conference }
+#								}
+#							}
+#							ORIGINAL_CAPITAL = "[THIS.OriginalCapital.GetId]"
+#						}
+#					}
+#				}
+#				release_on_controlled = BUK
+#			}
+#			if = {
+#				limit = {
+#					KOK = {
+#						exists = no
+#						meta_trigger = {
+#							text = {
+#								[ORIGINAL_CAPITAL] = {
+#									is_owned_by = RUS
+#									NOT = { has_state_flag = RUS_to_peace_conference }
+#								}
+#							}
+#							ORIGINAL_CAPITAL = "[THIS.OriginalCapital.GetId]"
+#						}
+#					}
+#				}
+#				release_on_controlled = KOK
+#			}
+#		}
+#
+#		### handle RSA
+#		if = {
+#			limit = { NOT = { country_exists = RRU } }
+#			set_temp_variable = { RUS_set_up_defeated_russia = 1 }
+#		}
+#		RUS = {
+#			delete_unit = { disband = yes }
+#			set_temp_variable = { target = RRU }
+#			every_owned_state = {
+#				limit = { NOT = { has_state_flag = RUS_to_peace_conference } }
+#				add_core_of = var:target
+#				remove_claim_by = var:target
+#				transfer_state_during_war = yes
+#			}
+#			RRU = { ##add states owned by RSA but claimed by Oststaaten back to the peace conference
+#				set_temp_variable = { target = RUS }
+#				every_owned_state = {
+#					limit = {
+#						OR = {
+#							is_claimed_by = BAL
+#							is_claimed_by = BLR
+#							is_claimed_by = UKR
+#							has_variable = priority_zone_@BAL
+#							has_variable = priority_zone_@BLR
+#							has_variable = priority_zone_@UKR
+#						}
+#						NOT = { has_state_flag = RSA_claimed_state } ##RSA_counter_claims block third party annexations
+#					}
+#					transfer_state_during_war = yes
+#				}
+#			}
+#			if = {
+#				limit = { NOT = { country_exists = FER } }
+#				if = {
+#					limit = { RRU = { is_ai = yes } }
+#					send_equipment_fraction = { target = RRU value = 0.8 }
+#				}
+#				else = {
+#					send_equipment_fraction = { target = RRU value = 0.3 }
+#				}
+#			}
+#			else_if = {
+#				limit = { RRU = { is_ai = yes } }
+#				send_equipment_fraction = { target = RRU value = 0.6 }
+#			}
+#			else = {
+#				send_equipment_fraction = { target = RRU value = 0.2 }
+#			}
+#			transfer_navy = { target = RRU }
+#		}
+#		if = {
+#			limit = { has_variable = RUS_set_up_defeated_russia }
+#			RUS = {
+#				RRU = { transfer_technology_without_doctrines = yes }
+#			}
+#			RRU = {
+#				##RUS_setup_demrus_postwar = yes
+#			}
+#		}
+#		##if = {
+#		##	limit = { RUS = { has_idea = RUS_patriotic_war_3 } }
+#		##	set_global_flag = TEMPORARY_DISABLED_FACTION_POPUP
+#		##	add_to_faction = RSA
+#		##}
+#		else = {
+#			RRU = {
+#				every_other_country = {
+#					limit = { is_ally_with = IMP }
+#					diplomatic_relation = {
+#						country = PREV
+#						relation = military_access
+#					}
+#					diplomatic_relation = {
+#						country = PREV
+#						relation = non_aggression_pact
+#					}
+#					set_truce = { target = PREV days = 365 }
+#				}
+#			}
+#		}
+#
+#
+#		### cleanup
+#		every_state = {
+#			clr_state_flag = RUS_to_peace_conference
+#			clr_state_flag = RSA_claimed_state
+#		}
+#	}
+#}

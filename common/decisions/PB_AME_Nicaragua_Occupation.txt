@@ -10,11 +10,11 @@ PB_AME_Nicaragua_Occupation = {
 				} 
 			}
 		}
-
+		fire_only_once = yes
 		activation = {                         
 			NIC = {
 				ds < 0.1	
-
+				ni > party_popularity@jc
 				NOT = {
 					OR = {
 					has_country_flag = NIC_Independence_War
@@ -45,11 +45,68 @@ PB_AME_Nicaragua_Occupation = {
 		}
 
 		days_mission_timeout = 25
+		
+		timeout_effect = {
+			country_event = {
+				id = Unicom_Nicaragua.8
+			}
+			set_global_flag = AME_completed_nicaragua_decision
+		}
+	}
 
+	AME_imminent_Cuzcatlan_invasion = {
+		icon = generic_tank
+
+		available = {
+			NOT = {
+				NIC = {
+					ds < 0.1
+				} 
+			}
+		}
+		fire_only_once = yes
+
+		activation = {                         
+			NIC = {
+				ds < 0.1	
+				jc > party_popularity@ni
+				NOT = {
+					OR = {
+					has_country_flag = NIC_Independence_War
+					has_country_flag = PB_NIC_Re_Occupied
+				    }
+				}			
+			}         
+		}
+
+		cancel_trigger = {
+			NIC = {
+				OR = {
+					ds > 0.1
+					has_idea = PB_AME_Nicaraguan_American_Rule_Consolidated_idea
+					has_country_flag = NIC_Independence_War
+				} 
+			}
+		}
+
+		selectable_mission = no
+
+		is_good = no
+
+		#cost = 0
+
+		ai_will_do = {
+			factor = 10
+		}
+
+		days_mission_timeout = 25
+		war_with_on_timeout = HON
+		
 		timeout_effect = {
 			country_event = {
 				id = Unicom_Nicaragua.7
 			}
+			set_global_flag = AME_completed_nicaragua_decision
 		}
 	}
 
@@ -68,7 +125,8 @@ PB_AME_Nicaragua_Occupation = {
 			}
 		}
 
-		activation = {                         
+		activation = {       
+			NOT = { has_country_flag = NIC_No_More_Revolutions }                  
 			NIC = {
 				has_autonomy_state = autonomy_banana_republic
 				is_subject_of = AME
@@ -83,6 +141,7 @@ PB_AME_Nicaragua_Occupation = {
 		cancel_trigger = {
 			NIC = {
 				OR = {
+					ds < 0.1
 					has_idea = PB_AME_Zeledonists_Defeated_idea
 					NOT = {
 						is_subject_of = AME
@@ -90,7 +149,9 @@ PB_AME_Nicaragua_Occupation = {
 				}
 			}
 		}
-
+		cancel_effect = { 
+			set_country_flag = NIC_No_More_Revolutions
+		}
 		selectable_mission = no
 
 		is_good = no
@@ -106,8 +167,8 @@ PB_AME_Nicaragua_Occupation = {
 		timeout_effect = {
 			NIC = {
 				add_popularity = {
-					ideology = lb
-					popularity = 0.03
+					ideology = jc
+					popularity = 0.05
 				}
 
 				random_owned_state = {
@@ -141,7 +202,8 @@ PB_AME_Nicaragua_Occupation = {
 			}
 		}
 
-		activation = {                         
+		activation = {          
+			NOT = { has_country_flag = NIC_No_More_Revolutions }                  
 			NIC = {
 				is_subject_of = AME
 				has_autonomy_state = autonomy_banana_republic
@@ -156,12 +218,16 @@ PB_AME_Nicaragua_Occupation = {
 		cancel_trigger = {
 			NIC = {
 				OR = {
+					ds < 0.1
 					has_idea = PB_AME_Federalists_Defeated_idea
 					NOT = {
 						is_subject_of = AME
 					}
 				}
 			}
+		}
+		cancel_effect = { 
+			set_country_flag = NIC_No_More_Revolutions
 		}
 
 		selectable_mission = no
@@ -179,8 +245,8 @@ PB_AME_Nicaragua_Occupation = {
 		timeout_effect = {
 			NIC = {
 				add_popularity = {
-					ideology = rc
-					popularity = 0.03
+					ideology = ni
+					popularity = 0.05
 				}
 
 				random_owned_state = {
@@ -213,8 +279,8 @@ PB_AME_Nicaragua_Occupation = {
 			OR = {
 				NIC = {
 					is_subject_of = AME
-					lb < 0.2
-					rc < 0.2
+					jc < 0.15
+					ni < 0.15
 				}  
 
 				hidden_trigger = {		
@@ -229,7 +295,17 @@ PB_AME_Nicaragua_Occupation = {
 		days_remove = 14
 		days_re_enable = 30
 
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
 		remove_effect = {
+			set_global_flag = AME_completed_nicaragua_decision
 			if = {
 				limit = {
 					NIC = {
@@ -289,7 +365,18 @@ PB_AME_Nicaragua_Occupation = {
 	PB_The_Command_of_Pacification_NIC = {
 
 		icon = GFX_decision_generic_intelligence_operation
-		
+
+		allowed = { tag = AME }
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
 		custom_cost_trigger = {
 			AND = {
 				command_power > 49
@@ -334,6 +421,15 @@ PB_AME_Nicaragua_Occupation = {
 			}   
 		}
 
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
 		days_remove = 14
 		days_re_enable = 30
 
@@ -363,6 +459,15 @@ PB_AME_Nicaragua_Occupation = {
 			NIC = {
 				is_subject_of = AME
 			}   
+		}
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
 		}
 
 		days_remove = 30
@@ -398,18 +503,27 @@ PB_AME_Nicaragua_Occupation = {
 			}   
 		}
 
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
 		days_remove = 30
 		days_re_enable = 14
 
 		complete_effect = {
 			NIC = {
 				add_popularity = {
-					ideology = lb
+					ideology = jc
 					popularity = -0.05
 				}
 
 				add_popularity = {
-					ideology = rc
+					ideology = ni
 					popularity = -0.05
 				}
 
@@ -421,10 +535,10 @@ PB_AME_Nicaragua_Occupation = {
 			NIC = {
 				add_popularity = {
 					ideology = ds
-					popularity = -0.02
+					popularity = -0.04
 				}
 
-				add_stability = -0.02
+				add_stability = -0.04
 			}
 		}
 	}
@@ -449,6 +563,15 @@ PB_AME_Nicaragua_Occupation = {
 			}
 		}
 
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
 		days_remove = 40
 		days_re_enable = 14
 
@@ -469,6 +592,335 @@ PB_AME_Nicaragua_Occupation = {
 			}
 		}
 	}
+	PB_NIC_Debug_Collapse = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 0
+		}	
+		fire_only_once = yes
+
+		visible = {
+			is_debug = yes
+		}
+
+		complete_effect = { 
+			NIC = { 
+				add_popularity = {
+					ideology = ds
+					popularity = -0.9
+				}
+			}
+		}
+	}
+
+	PB_NIC_Debug_NI = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 0
+		}	
+		visible = {
+			is_debug = yes
+		}
+
+		complete_effect = { 
+			NIC = { 
+				add_popularity = {
+					ideology = ni
+					popularity = 0.9
+				}
+			}
+		}
+	}
+
+	PB_NIC_Debug_JC = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 0
+		}	
+		visible = {
+			is_debug = yes
+		}
+
+		complete_effect = { 
+			NIC = { 
+				add_popularity = {
+					ideology = jc
+					popularity = 0.9
+				}
+			}
+		}
+	}
+
+	PB_Request_British_Takeover = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		
+		cost = 50
+
+		ai_will_do = {
+			factor = 0
+		}	
+		fire_only_once = yes
+
+		available = {
+			NIC = {
+				is_subject_of = AME
+			}   
+			NOT = { 
+				has_global_flag = NIC_passed_to_ENG_refused
+			}
+		}
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
+		targets = { ENG }
+
+		days_remove = 40
+		complete_effect = { 
+			country_event = { id = Unicom_Nicaragua.21 days = 2}
+		}
+		remove_effect = {
+			custom_effect_tooltip = PB_Request_British_Takeover_TT
+			add_power_balance_value = {
+				id = EMG_AME_power_balance
+				value = 0.05
+			}
+		}
+	}
+
+	PB_Request_American_Takeover = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		allowed = { tag = ENG }
+		cost = 50
+
+		ai_will_do = {
+			factor = 0
+		}	
+		fire_only_once = yes
+
+		available = {
+			NIC = {
+				is_subject_of = AME
+			}   
+		}
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
+		targets = { AME }
+
+		days_remove = 40
+		remove_effect = {
+			clr_global_flag = NIC_passed_to_ENG
+		}
+	}
+
+	PB_Cement_English_Control = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		allowed = { tag = ENG }
+		cost = 50
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+		
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				factor = -1000
+				has_game_rule = {
+					rule = PB_IMPERIAL_CIVIL_WAR
+					option = IMPERIAL_CIVIL_WAR_AVOIDED
+				}
+			}
+			modifier = { 
+				factor = 0.1
+			}
+		}	
+		fire_only_once = yes
+
+		modifier = {
+			civilian_factory_use = 2
+			political_power_gain = -0.05
+		}
+
+		available = {
+			NIC = {
+				is_subject_of = AME
+			}   
+			OR = { 
+				AND = { 
+					is_ai = yes
+					ds > 0.6
+				}
+				AND = { 
+					is_ai = no
+					ds > 0.6
+					divisions_in_state = {
+						type = infantry
+						size > 4
+						state = 317
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_Imp_90_Tension_Limit_Under
+				NOT = {
+				check_variable = { global.ENG_Empire_Tension > 89 }
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 317
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+
+		targets = { AME }
+
+		days_remove = 40
+		complete_effect = { 
+			AME = { 
+				country_event = { id = Unicom_Nicaragua.20 days = 3 }
+			}
+		}
+		remove_effect = {
+			add_power_balance_value = {
+				id = EMG_AME_power_balance
+				value = 0.05
+			}
+			PB_ENG_Increase_Imperial_Tension_Small = yes
+			ENG = { 
+				set_autonomy = {
+					target = NIC
+					autonomous_state = autonomy_banana_republic
+					freedom_level = 0.75
+				}
+			}
+			NIC = { 
+				set_cosmetic_tag = NIC_British
+			}
+		}
+	}
+
+	PB_Conduct_Hondouras_Flyover = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		
+		cost = 50
+
+		ai_will_do = {
+			factor = 100
+		}
+		
+		custom_cost_trigger = {
+			AND = {
+				command_power > 9
+			}
+		}
+
+		custom_cost_text = PB_AME_decision_cost_NIC_command_10
+
+		available = {
+			NIC = {
+				is_subject_of = AME
+			}   
+
+			has_equipment = {
+				fighter_equipment_1 > 4
+			}
+		}
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
+		days_remove = 40
+
+		fire_only_once = yes
+		complete_effect = { 
+			hidden_effect = { 
+				add_command_power = -10
+			}
+		}
+		remove_effect = {
+			add_manpower = -25
+
+			send_equipment = {
+				equipment = fighter_equipment_1
+				amount = 5
+				target = NIC
+			}
+			random = { 
+				chance = 50
+				NIC = {
+					add_popularity = {
+						ideology = ds
+						popularity = 0.05
+					}
+				}
+				country_event = { id = Unicom_Nicaragua.19 }
+			}
+			random = { 
+				chance = 50
+				NIC = {
+					add_popularity = {
+						ideology = jc
+						popularity = 0.03
+					}
+				}
+				news_event = { id = PBNews.371 }
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 1213
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
 
 	PB_Increase_Troop_Deployments = {
 
@@ -485,10 +937,19 @@ PB_AME_Nicaragua_Occupation = {
 				is_subject_of = AME
 
 				OR = {
-					lb > 0.4
-					rc > 0.4
+					jc > 0.4
+					ni > 0.4
 				}
 			}   
+		}
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
 		}
 
 		days_remove = 25
@@ -506,12 +967,12 @@ PB_AME_Nicaragua_Occupation = {
 				}
 
 				add_popularity = {
-					ideology = lb
+					ideology = jc
 					popularity = -0.05
 				}
 
 				add_popularity = {
-					ideology = rc
+					ideology = ni
 					popularity = -0.05
 				}
 			}
@@ -533,8 +994,30 @@ PB_AME_Nicaragua_Occupation = {
 			NIC = {
 				is_subject_of = AME
 
-				lb > 0.3
+				jc > 0.3
 			}   
+			divisions_in_state = {
+				type = infantry
+				size > 3
+				state = 317
+			}
+		}
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 317
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
 		}
 
 		days_remove = 25
@@ -551,7 +1034,7 @@ PB_AME_Nicaragua_Occupation = {
 				}
 
 				add_popularity = {
-					ideology = lb
+					ideology = jc
 					popularity = -0.15
 				}
 
@@ -578,8 +1061,30 @@ PB_AME_Nicaragua_Occupation = {
 			NIC = {
 				is_subject_of = AME
 
-				rc > 0.3
+				ni > 0.3
 			}   
+			divisions_in_state = {
+				type = infantry
+				size > 3
+				state = 1214
+			}
+		}
+
+		visible = { 
+			NOT = { 
+				OR = { 
+					has_active_mission = AME_imminent_Cuzcatlan_invasion
+					has_active_mission = AME_Nicaraguan_Government_Collapse
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 1214
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
 		}
 
 		days_remove = 25
@@ -596,7 +1101,7 @@ PB_AME_Nicaragua_Occupation = {
 				}
 
 				add_popularity = {
-					ideology = rc
+					ideology = ni
 					popularity = -0.15
 				}
 
@@ -606,5 +1111,328 @@ PB_AME_Nicaragua_Occupation = {
 			custom_effect_tooltip = AME_NIC_Cripple_Federalists
 			set_country_flag = AME_NIC_Federalists_Crushed
 		}
+	}
+}
+
+PB_AME_Skull_And_Bones = { 
+	AME_Hondouras_war_timer = {
+		icon = generic_tank
+		allowed = { always = no } #Manual
+		available = {
+			HON = { has_capitulated = yes }
+		}
+
+		cancel_trigger = {
+			NOT = { 
+				has_war_with = HON
+			}
+		}
+
+		fire_only_once = yes
+		selectable_mission = no
+
+		is_good = no
+
+		#cost = 0
+
+		ai_will_do = {
+			factor = 10
+		}
+
+		days_mission_timeout = 70
+		
+		timeout_effect = {
+			add_war_support = -0.1
+			news_event = { id = PBNews.373 days = 1 }
+			if = {
+				limit = {
+					has_war_with = HON
+				}
+				HON = { white_peace_with_ROOT = yes }
+			}
+		}
+	}
+	AME_Nicaragua_war_timer = {
+		icon = generic_tank
+		allowed = { always = no } #Manual
+		available = {
+			NIC = { has_capitulated = yes }
+		}
+
+		cancel_trigger = {
+			NOT = { 
+				has_war_with = NIC
+			}
+		}
+
+		fire_only_once = yes
+		selectable_mission = no
+
+		is_good = no
+
+		#cost = 0
+
+		ai_will_do = {
+			factor = 10
+		}
+
+		days_mission_timeout = 70
+		
+		timeout_effect = {
+			add_war_support = -0.1
+			news_event = { id = PBNews.373 days = 1 }
+			if = {
+				limit = {
+					has_war_with = NIC
+				}
+				NIC = { white_peace_with_ROOT = yes }
+			}
+		}
+	}
+	PB_Haitian_Invasion_of_Dominica = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		
+		cost = 50
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			divisions_in_state = {
+				type = infantry
+				size > 4
+				state = 318
+			}
+			COL = {
+			 	controls_state = 319
+				has_war_with = VEN
+			}   
+			HAI = { 
+				OR = { 
+					is_ally_with = AME
+					is_subject_of = AME
+				}
+			}
+		}
+
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+
+		visible = { 
+			COL = { 
+				has_war_with = VEN 
+				has_global_flag = HSP_Succesion_War
+			}
+			HAI = { 
+				OR = { 
+					is_ally_with = AME
+					is_subject_of = AME
+				}
+			}
+		}
+
+		custom_cost_trigger = {
+			AND = {
+				command_power > 49
+			}
+		}
+
+		custom_cost_text = PB_AME_decision_cost_NIC_command
+		
+		targets = { HAI }
+
+		days_remove = 10
+
+		fire_only_once = yes
+		complete_effect = { 
+			hidden_effect = { 
+				add_command_power = -49
+			}
+		}
+
+		cancel_trigger = { 
+			319 = { 
+				NOT = { is_controlled_by = COL }
+			}
+		}
+
+		remove_effect = {
+			319 = { 
+				transfer_state_to = HAI
+			}
+			news_event = { id = PBNews.373 hours = 1 }
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 319
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+	PB_Aid_Dominican_Rebels = {
+
+		icon = GFX_decision_generic_intelligence_operation
+		
+		cost = 50
+
+		ai_will_do = {
+			factor = 100
+		}
+		
+		custom_cost_trigger = {
+			has_equipment = { infantry_equipment > 499 } 
+			command_power > 14
+		}
+
+		custom_cost_text = PB_AME_decision_cost_NIC_command_2000_guns
+
+		available = {
+			COL = {
+			 	controls_state = 319
+				has_war_with = VEN
+			}   
+			NOT = { 
+				HAI = { 
+					OR = { 
+						is_ally_with = AME
+						is_subject_of = AME
+						has_idea = PB_HAI_One_Headed_Hydra
+					}
+				}
+			}
+		}
+
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				has_equipment = { infantry_equipment < 1000 } #dont send more than half your equipment man
+			}
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+
+		visible = { 
+			COL = { 
+				has_war_with = VEN 
+				has_global_flag = HSP_Succesion_War
+			}
+			NOT = { 
+				HAI = { 
+					OR = { 
+						is_ally_with = AME
+						is_subject_of = AME
+						has_idea = PB_HAI_One_Headed_Hydra
+					}
+				}
+			}
+		}
+		
+		targets = { COL }
+
+		days_remove = 10
+
+		fire_only_once = yes
+		complete_effect = { 
+			hidden_effect = { 
+				add_command_power = -49
+				add_equipment_to_stockpile = {
+					type = infantry_equipment
+					amount = -500
+				}
+			}
+		}
+
+		cancel_trigger = { 
+			HAI = { 
+				has_war_with = COL
+			}
+		}
+
+		cancel_effect = { 
+			hidden_effect = { 
+				add_equipment_to_stockpile = {
+					type = infantry_equipment
+					amount = 280
+				}
+			}
+		}
+
+		remove_effect = {
+			news_event = { id = PBNews.375 hours = 1 }
+			VEN = { 
+				set_province_controller = 15743
+				custom_override_tooltip = {
+					tooltip = {
+						localization_key = tooltip_create_division_template
+						NAME = "División de Interamericana"
+						LINE_1 = { localization_key = line_battalion_tt NAME = infantry ICON = GFX_unit_infantry_icon_small COUNT = 6 }
+						LINE_2 = { localization_key = line_battalion_tt NAME = sturmtruppen ICON = GFX_unit_sturmtruppen_icon_small COUNT = 3 }
+						SUPPORT_1 = { localization_key = support_battalion_tt NAME = attack_helicopter_brigade ICON = GFX_unit_attack_helicopter_brigade_icon_small }
+						SUPPORT_2 = { localization_key = support_battalion_tt NAME = engineer ICON = GFX_unit_engineer_icon_small }
+						SUPPORT_3 = { localization_key = support_battalion_tt NAME = artillery ICON = GFX_unit_artillery_icon_small }
+					}
+					if = {
+						limit = { has_template = "División de Interamericana" }
+						delete_unit_template_and_units = { division_template = "División de Interamericana" disband = yes } #no cheating
+					}
+					division_template = {
+						name = "División de Interamericana"
+						regiments = {
+							infantry = { x = 0 y = 0 }
+							infantry = { x = 0 y = 1 }
+							infantry = { x = 0 y = 2 }
+							infantry = { x = 1 y = 0 }
+							infantry = { x = 1 y = 1 }
+							infantry = { x = 1 y = 2 }
+							sturmtruppen = { x = 2 y = 0 }
+							sturmtruppen = { x = 2 y = 1 }
+							sturmtruppen = { x = 2 y = 2 }
+						}
+						support = {
+							attack_helicopter_brigade = { x = 0 y = 0 }
+							engineer = { x = 0 y = 1 }
+							artillery = { x = 0 y = 2 }
+						}
+					}
+				}
+				custom_effect_tooltip = tooltip_white_line
+				319 = {
+					custom_override_tooltip = {
+						tooltip = {
+							localization_key = tooltip_spawn_unit
+							TYPE = "División de Interamericana"
+						}
+						create_unit = {
+							division = "name = \"1. División de Colombiano'\" division_template = \"División de Interamericana\" start_experience_factor = 0.5"
+							owner = VEN
+							count = 2
+							prioritize_location = 15743
+							allow_spawning_on_enemy_provs = yes
+						}
+					}
+				}
+			}
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 319
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+		
 	}
 }

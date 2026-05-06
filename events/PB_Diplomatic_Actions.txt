@@ -56,3 +56,234 @@ country_event = { #FROM REFUSES
 		}
 	}
 }
+
+country_event = {
+	id = PB_DA_generic.4
+	title = PB_DA_generic.4.t
+	desc = PB_DA_generic.4.d
+	picture = GFX_report_event_generic_diplomacy2
+
+	is_triggered_only = yes
+
+	option = {
+		log = "[GetLogInfo]: event PB_DA_generic.4 option PB_DA_generic.4.a"
+		name = PB_DA_generic.4.a #return all land
+		ai_chance = { base = 1 }
+		custom_effect_tooltip = KR_will_return_all
+		hidden_effect = {
+			event_target:return_to = {
+				country_event = PB_DA_generic.5
+			}
+		}
+	}
+	option = {
+		log = "[GetLogInfo]: event PB_DA_generic.4 option PB_DA_generic.4.b"
+		name = PB_DA_generic.4.b #return all land but vital provinces
+		trigger = {
+			any_owned_state = {
+				OR = {
+					is_core_of = event_target:return_to
+					is_claimed_by = event_target:return_to
+				}
+				is_claim_or_core_of_ROOT = no
+				is_important_state = yes
+				NOT = { has_variable = can_integrate_@ROOT }
+				NOT = { has_state_flag = KR_keeping_state@ROOT }
+			}
+		}
+		ai_chance = { base = 100 }
+		custom_effect_tooltip = KR_will_return_rest
+		hidden_effect = {
+			every_owned_state = {
+				limit = {
+					OR = {
+						is_core_of = event_target:return_to
+						is_claimed_by = event_target:return_to
+					}
+					is_claim_or_core_of_ROOT = no
+					is_important_state = yes
+					NOT = { has_state_flag = KR_keeping_state@ROOT }
+				}
+				set_state_flag = KR_keeping_state@ROOT
+			}
+			if = {
+				limit = {
+					any_owned_state = {
+						OR = {
+							is_core_of = event_target:return_to
+							is_claimed_by = event_target:return_to
+						}
+						is_claim_or_core_of_ROOT = no
+						is_important_state = no
+						NOT = { has_variable = can_integrate_@ROOT }
+						NOT = { has_state_flag = KR_keeping_state@ROOT }
+						OR = {
+							is_coastal = yes
+							any_neighbor_state = { is_owned_by = event_target:return_to }
+						}
+					}
+				}
+				event_target:return_to = {
+					country_event = PB_DA_generic.5
+				}
+			}
+		}
+	}
+	option = {
+		log = "[GetLogInfo]: event PB_DA_generic.4 option PB_DA_generic.4.c"
+		name = PB_DA_generic.4.c #return cores only
+		trigger = {
+			is_ai = no
+			any_owned_state = {
+				is_claim_or_core_of_ROOT = no
+				is_important_state = no
+				NOT = { has_variable = can_integrate_@ROOT }
+				NOT = { has_state_flag = KR_keeping_state@ROOT }
+				is_core_of = event_target:return_to
+			}
+			any_owned_state = {
+				is_claim_or_core_of_ROOT = no
+				is_important_state = no
+				NOT = { has_variable = can_integrate_@ROOT }
+				NOT = { has_state_flag = KR_keeping_state@ROOT }
+				NOT = { is_core_of = event_target:return_to }
+				is_claimed_by = event_target:return_to
+			}
+		}
+		custom_effect_tooltip = KR_will_return_cores
+		hidden_effect = {
+			every_owned_state = {
+				limit = {
+					is_claim_or_core_of_ROOT = no
+					NOT = { has_variable = can_integrate_@ROOT }
+					NOT = { has_state_flag = KR_keeping_state@ROOT }
+					NOT = { is_core_of = event_target:return_to }
+					is_claimed_by = event_target:return_to
+				}
+				set_state_flag = KR_keeping_state@ROOT
+			}
+			event_target:return_to = {
+				country_event = PB_DA_generic.5
+			}
+		}
+	}
+	option = {
+		log = "[GetLogInfo]: event PB_DA_generic.4 option PB_DA_generic.4.e"
+		name = PB_DA_generic.4.e #keep it all you pig
+		ai_chance = { base = 0 }
+		custom_effect_tooltip = KR_will_not_return
+		hidden_effect = {
+			every_owned_state = {
+				limit = {
+					OR = {
+						is_core_of = event_target:return_to
+						is_claimed_by = event_target:return_to
+					}
+					is_claim_or_core_of_ROOT = no
+					NOT = { has_variable = can_integrate_@ROOT }
+					NOT = { has_state_flag = KR_keeping_state@ROOT }
+				}
+				set_state_flag = KR_keeping_state@ROOT
+			}
+		}
+	}
+	after = {
+		clr_country_flag = KR_returning_land
+	}
+}
+
+# Cores/claims have been returned by an ally
+country_event = {
+	id = PB_DA_generic.5
+	title = PB_DA_generic.5.t
+	desc = PB_DA_generic.5.d
+	picture = GFX_report_event_generic_diplomacy2
+
+	is_triggered_only = yes
+
+	option = {
+		log = "[GetLogInfo]: event PB_DA_generic.5 option PB_DA_generic.5.a"
+		name = PB_DA_generic.5.a
+		#add_opinion_modifier = {
+		#	target = FROM
+		#	modifier = KR_returned_land
+		#}
+		set_temp_variable = { tag_to_release = ROOT }
+		while_loop_effect = {
+			limit = {
+				FROM = {
+					any_owned_state = {
+						is_claim_or_core_of_ROOT = yes
+						is_claim_or_core_of_FROM = no
+						NOT = { has_variable = can_integrate_@FROM }
+						OR = {
+							is_coastal = yes
+							any_neighbor_state = { is_owned_by = ROOT }
+						}
+						NOT = { has_state_flag = KR_keeping_state@FROM }
+					}
+				}
+			}
+			FROM = {
+				every_owned_state = {
+					limit = {
+						is_claim_or_core_of_ROOT = yes
+						is_claim_or_core_of_FROM = no
+						NOT = { has_variable = can_integrate_@FROM }
+						OR = {
+							is_coastal = yes
+							any_neighbor_state = { is_owned_by = ROOT }
+						}
+						NOT = { has_state_flag = KR_keeping_state@FROM }
+					}
+					transfer_state_without_overriding_occupation = yes
+				}
+			}
+		}
+	}
+}
+
+country_event = { #GER gets event
+	id = PB_DA_generic.6
+	title = PB_DA_generic.6.t
+	desc = PB_DA_generic.6.d
+	picture = GFX_report_event_generic_diplomacy1
+
+	is_triggered_only = yes
+
+	option = { #Yes
+		log = "[GetLogInfo]: event PB_DA_generic.6 option PB_DA_generic.6.a"
+		name = PB_DA_generic.6.a
+		RUS = {
+			every_owned_state = { 
+				limit = { 
+					is_core_of = PREV
+				}
+				set_state_flag = RSA_claimed_state
+			}
+			every_other_country = {
+				limit = {
+					is_in_faction_with = PREV
+					is_central_asian_tag = no
+					has_capitulated = no
+				}
+				if = {
+					limit = { is_subject_of = PREV }
+					#remove_puppet_and_leave_faction = yes
+				}
+				else_if = {
+					limit = { is_subject = no }
+					leave_faction = yes
+				}
+				peace_out_non_neighbours_after_leaving_faction = yes
+			}
+		}
+		#hidden_effect = { RUS_set_up_peace_conference_with_lon = yes }
+		start_peace_conference = {
+			tag = RUS
+			score_factor = 1
+			winner_scope = ALL
+			loser_scope = FACTION
+		}
+	}
+}

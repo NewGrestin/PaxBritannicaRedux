@@ -6140,22 +6140,41 @@ country_event = { #Fate of Philippines
 	is_triggered_only = yes
 
 	immediate = {
-		1148 = { retain_state = yes } #Sabah
-		1414 = { retain_state = yes } #Maguindanao
-		1352 = { retain_state = yes } #Zamboanga
-		1579 = { retain_state = yes } #Sulu
-
-		if = {
-            limit = {
-                OR = {
-                    original_tag = DAS
-                }
-				NOT = {
-					has_completed_focus = DAS_diederichs_plan
+		hidden_effect = { 
+			1148 = { retain_state = yes } #Sabah
+			1414 = { retain_state = yes } #Maguindanao
+			1352 = { retain_state = yes } #Zamboanga
+			1579 = { retain_state = yes } #Sulu
+			every_owned_state = {
+				limit = {
+					is_philippines = yes
 				}
-            }
-            save_event_target_as = can_annex
-        }
+				add_core_of = PHI
+				else = { 
+					remove_core_of = PHI
+					remove_claim_by = PHI
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						original_tag = DAS
+					}
+					NOT = {
+						has_completed_focus = DAS_diederichs_plan
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			PHI = {
+				remove_ideas = { 
+					PB_Idea_PRA_1
+					PB_Idea_PHI_Mexicandive
+					PB_Idea_PHI_FirstBloom
+					PB_Idea_PHI_MasonNation
+				}
+			}
+		}
 	}
 
 	option = { #Release Philippines
@@ -6213,6 +6232,10 @@ country_event = { #Fate of Philippines
 			}
 		}
 
+		1414 = { clear_retain_state = yes } #Maguindanao
+		1352 = { clear_retain_state = yes } #Zamboanga
+		1579 = { clear_retain_state = yes } #Sulu
+
 		set_temp_variable = { tag_to_release = PHI }
 		release_targeted_tag = yes
 
@@ -6239,7 +6262,7 @@ country_event = { #Fate of Philippines
 				set_cosmetic_tag = PHI_Occupied_Republic
 			}
 		}
-		recheck_annexations = yes
+		
 	}
 
 	option = { #Give to overlord
@@ -14678,10 +14701,12 @@ country_event = { # Fate of Burma
 	
 	immediate = {
 		hidden_effect = {
-			if = {
-				limit = { NOT = { country_exists = BUR } }
-				every_state = {
-					limit = { is_burma = no }
+			every_owned_state = {
+				limit = {
+					is_burma = yes
+				}
+				add_core_of = BUR
+				else = { 
 					remove_core_of = BUR
 					remove_claim_by = BUR
 				}
