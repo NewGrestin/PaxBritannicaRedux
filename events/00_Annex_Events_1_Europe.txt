@@ -9608,12 +9608,6 @@ country_event = { #Fate of Denmark
 				set_cosmetic_tag = DEN_Occupied_Republic
 			}
 		}
-
-		if = {
-			limit = { ROOT = { original_tag = FRA } }
-			FRA_DEN_setup_puppet = yes
-		}
-		recheck_annexations = yes
 	}
 
 	option = { #Give to overlord
@@ -9627,7 +9621,6 @@ country_event = { #Fate of Denmark
 			limit = { is_denmark = yes}
 			transfer_state_and_notify = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Integrate
@@ -9636,11 +9629,10 @@ country_event = { #Fate of Denmark
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
+		every_state = {
 			limit = { is_denmark = yes}
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
@@ -12353,10 +12345,9 @@ country_event = { #Fate of Hungary
 		release_targeted_tag = yes
 		if = { 
 			limit = { has_custom_puppet_HUN = yes }
-			setup_custom_puppet_HUN = yes
 			custom_effect_tooltip = has_custom_puppet
+			setup_custom_puppet_HUN = yes
 		}
-
 		else_if = {
 			limit = {
 				ROOT = {
@@ -18804,8 +18795,11 @@ country_event = { #Fate of Azerbijan
 		}
 		ai_chance = {
 			base = 10
+			modifier = { 
+				factor = 0 
+				annexations_can_annex = yes
+			}
 		}
-
 		set_temp_variable = { tag_to_release = AZR }
 		release_targeted_tag = yes
 
@@ -20320,43 +20314,43 @@ country_event = { #Fate of Norrland
 		if = {
 			limit = {
 				OR = {
-					143 = { is_claim_or_core_of_ROOT = yes } #Trondelag
+					1362 = { is_claim_or_core_of_ROOT = yes } #tornea
 					AND = { 
-						1019 = { is_claim_or_core_of_ROOT = yes } #Jamtland
-						owns_state = 1366 #Lappland
+						1011 = { is_claim_or_core_of_ROOT = yes } #Jamtland
+						owns_state = 1019 #Lappland
 					}
-					1366 = { is_claim_or_core_of_ROOT = yes } #Lappland
+					1366 = { is_claim_or_core_of_ROOT = yes } #norrland
 				}
 			}
 			save_event_target_as = can_annex
 		}
 		if = {
 			limit = {
-				77 = { #trondelag
+				1362 = { #tornea
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
 					}
 				}
 			}
-			var:77.owner = { save_event_target_as = trondelag }
+			var:1362.owner = { save_event_target_as = tornea }
 		}
 		if = {
 			limit = {
-				1039 = { #Jamtland
+				1011 = { #Nordland
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
 						NOT = { tag = event_target:trondelag }
-						1366 = { annexations_required_state_is_owned_by_either_side = yes } #Lappland
+						1019 = { annexations_required_state_is_owned_by_either_side = yes } #Jamtland
 					}
 				}
 			}
-			var:1039.owner = { save_event_target_as = jamtland }
+			var:1011.owner = { save_event_target_as = jamtland }
 		}
 		if = {
 			limit = {
-				46 = { #Norrland
+				38 = { #Norrland
 					annexations_state_owner_is_valid_grant_target = yes
 					owner = {
 						ROOT_can_grant_land = yes
@@ -20365,7 +20359,7 @@ country_event = { #Fate of Norrland
 					}
 				}
 			}
-			var:46.owner = { save_event_target_as = norrland }
+			var:38.owner = { save_event_target_as = norrland }
 		}
 	}
 
@@ -20383,38 +20377,107 @@ country_event = { #Fate of Norrland
 		release_targeted_tag = yes
 
 		if = {
-			limit = { country_exists = MEN }
-			custom_effect_tooltip = MEN_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = MEN }
-			release_targeted_tag = yes
-		}
-		
-	}
-
-	option = { #Return to Sweden
-		log = "[GetLogInfo]: event annex.1143 option annex.1143.b"
-		name = annex.1143.b
-		trigger = {
-			has_event_target = sweden
-			SWE = {
-            exists = yes
-		    }   
-	    }
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
+			limit = { ROOT = { has_monarchist_government = yes } }
+			MEN = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MEN_Occupied_Monarchy
 			}
 		}
-		set_temp_variable = { tag_to_release = event_target:sweden }
+	
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			MEN = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = MEN_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Return them to Norrland
+		log = "[GetLogInfo]: event annex.1143 option annex.1143.a"
+		name = annex.1143.b
+		trigger = {
+			is_subject = no
+			has_event_target = norrland
+		}
+		ai_chance = {
+			base = 65
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:norrland }
+				OR = { 
+					is_ally_with = event_target:jamtland
+					is_ally_with = event_target:tornea
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:norrland = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:norrland }
 		1366 = { transfer_if_owned = yes }
 		1020 = { transfer_if_owned = yes }
 		666 = { transfer_if_owned = yes }
-		transfer_targeted_territory = yes
-		
+	}
+
+	option = { #Return them to jamtland
+		log = "[GetLogInfo]: event annex.1143 option annex.1143.b"
+		name = annex.1143.c
+		trigger = {
+			is_subject = no
+			has_event_target = lapland
+		}
+		ai_chance = {
+			base = 65
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:jamtland }
+				OR = { 
+					is_ally_with = event_target:norrland
+					is_ally_with = event_target:tornea
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:jamtland = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:jamtland }
+		1366 = { transfer_if_owned = yes }
+		1020 = { transfer_if_owned = yes }
+		666 = { transfer_if_owned = yes }
+	}
+
+	option = { #Return them to tornea
+		log = "[GetLogInfo]: event annex.1143 option annex.1143.b"
+		name = annex.1143.e
+		trigger = {
+			is_subject = no
+			has_event_target = tornea
+		}
+		ai_chance = {
+			base = 65
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tornea }
+				OR = { 
+					is_ally_with = event_target:jamtland
+					is_ally_with = event_target:norrland
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tornea = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:tornea }
+		1366 = { transfer_if_owned = yes }
+		1020 = { transfer_if_owned = yes }
+		666 = { transfer_if_owned = yes }
 	}
 
 	option = {
@@ -20700,8 +20763,8 @@ country_event = { # Fate of Bohuslän
 
 country_event = { # Fate of Jämtland
 	id = annex.1146
-	title = annexation_jamtland
-	desc = annexation_jamtland_desc
+	title = annexation_1019
+	desc = annexation_1019_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
