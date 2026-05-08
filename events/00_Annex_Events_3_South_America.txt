@@ -2301,10 +2301,10 @@ country_event = { #Fate of New Calhoun
 	}
 }
 
-country_event = { #Fate of Brazil (BALKANIZATION LATER WHEN GRESTIN APPROVES...)
+country_event = { #Fate of Brazil
 	id = annex.3018
-	title = annexation_brazil
-	desc = annexation_brazil_desc
+	title = annexation_500
+	desc = annexation_500_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -2327,16 +2327,63 @@ country_event = { #Fate of Brazil (BALKANIZATION LATER WHEN GRESTIN APPROVES...)
 				annexations_can_annex = yes
 			}
 		}
+		set_temp_variable = { tag_to_release = BRA}
+		release_targeted_tag = yes		
+	}
+	
+	option = { #Balkanize Brazil
+		log = "[GetLogInfo]: event annex.3018 option annex.3018.b"
+		name = annex.3018.b
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_global_flag = balkanize_brazil
+		hidden_effect = {
+			every_state = {
+				limit = {
+					is_core_of = BRA
+					NOT = {
+						state = 500 #Rio
+						state = 983 #Minas Gerais
+						state = 982 #Espirito Santo
+						state = 496 #Diamantina
+					}
+				}
+				remove_core_of = BRA
+			}
+		}
+		set_temp_variable = { tag_to_release = BRA }
+		release_targeted_tag = yes
+	}	
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3018 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		BRA = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
 
-		if = {
-			limit = { country_exists = BRA }
-			custom_effect_tooltip = BRA_puppet_tooltip
+	option = { #integration
+		log = "[GetLogInfo]: event annex.3018 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
 		}
-		else = {
-			set_temp_variable = { tag_to_release = BRA }
-			release_targeted_tag = yes
+		every_owned_state = {
+			limit = { is_core_of = BRA }
+			add_claim_of_ROOT = yes
 		}
-		
 	}
 
 	option = { #Cancel
@@ -2350,7 +2397,6 @@ country_event = { #Fate of Brazil (BALKANIZATION LATER WHEN GRESTIN APPROVES...)
 		recheck_annexations = yes
 	}
 }
-
 country_event = { #Fate of Wallmapu
 	id = annex.3019
 	title = annexation_wallmapu
@@ -4369,9 +4415,11 @@ country_event = { #Fate of West Indies
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
-		set_temp_variable = { tag_to_release = overlord }
-		WIS = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		set_temp_variable = { tag_to_release = overlord }		
+		every_state = {
+			limit = { is_westindies = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { #integration
@@ -4380,9 +4428,9 @@ country_event = { #Fate of West Indies
 		trigger = {
 			annexations_can_annex = yes
 		}
-		689 = { #West Indies
+		every_owned_state = {
+			limit = { is_westindies = yes }
 			add_claim_of_ROOT = yes
-			add_resistance = 35
 		}
 	}
 
@@ -4741,5 +4789,277 @@ country_event = { #Fate of Guiana
 	after = {
 		recheck_annexations = yes
 		}
+	}
+
+country_event = { #Fate of Amazonia
+	id = annex.3038
+	title = annexation_1221
+	desc = annexation_1221_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	option = { #Release Amazon
+		log = "[GetLogInfo]: event annex.3038 option annex.3038.a"
+		name = annex.3038.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = AMZ }
+		every_state = {
+			limit = { is_amazonia = yes}
+			remove_claim_and_add_core_of_target = yes
+			}
+		release_targeted_tag = yes	
+	}
+	option = { #give to Brazil
+		log = "[GetLogInfo]: event annex.3038 option annex.give_to_brazil"
+		name = annex.southamerica.give_to_brazil
+		trigger = {
+			has_event_target = brazil
+			NOT = {
+				has_global_flag = balkanize_brazil
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:brazil = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:brazil }
+		every_state = {
+			limit = { is_amazonia = yes }
+			transfer_if_owned = yes
+		}
+	}	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3038 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }		
+		every_state = {
+			limit = { is_amazonia = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { #integration
+		log = "[GetLogInfo]: event annex.3038 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_amazonia = yes}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3038 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Sao Paulo
+	id = annex.3039
+	title = annexation_501
+	desc = annexation_501_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	option = { #Release Sao Paulo
+		log = "[GetLogInfo]: event annex.3039 option annex.3039.a"
+		name = annex.3039.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = SAO }
+		every_state = {
+			limit = { is_saopaulo = yes}
+			remove_claim_and_add_core_of_target = yes
+			}
+		release_targeted_tag = yes	
+	}
+	option = { #give to Brazil
+		log = "[GetLogInfo]: event annex.3039 option annex.give_to_brazil"
+		name = annex.southamerica.give_to_brazil
+		trigger = {
+			has_event_target = brazil
+			NOT = {
+				has_global_flag = balkanize_brazil
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:brazil = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:brazil }
+		every_state = {
+			limit = { is_saopaulo = yes }
+			transfer_if_owned = yes
+		}
+	}	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3039 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }		
+		every_state = {
+			limit = { is_saopaulo = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { #integration
+		log = "[GetLogInfo]: event annex.3039 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_saopaulo = yes }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3039 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Bahia
+	id = annex.3040
+	title = annexation_499
+	desc = annexation_499_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	option = { #Release Bahia
+		log = "[GetLogInfo]: event annex.3040 option annex.3040.a"
+		name = annex.3040.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = BHA }
+		every_state = {
+			limit = { is_bahia = yes}
+			remove_claim_and_add_core_of_target = yes
+			}
+		release_targeted_tag = yes	
+	}
+	option = { #give to Brazil
+		log = "[GetLogInfo]: event annex.3040 option annex.give_to_brazil"
+		name = annex.southamerica.give_to_brazil
+		trigger = {
+			has_event_target = brazil
+			NOT = {
+				has_global_flag = balkanize_brazil
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:brazil = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:brazil }
+		every_state = {
+			limit = { is_bahia = yes }
+			transfer_if_owned = yes
+		}
+	}	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3040 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }		
+		every_state = {
+			limit = { is_bahia = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { #integration
+		log = "[GetLogInfo]: event annex.3040 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_bahia = yes }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.3040 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
 	}
 }
