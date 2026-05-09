@@ -104,25 +104,30 @@ country_event = { #Fate of Venezuela
 
 country_event = { #Fate of Cayenne
 	id = annex.3001
-	title = annexation_cayenne
-	desc = annexation_cayenne_desc
+	title = annexation_309
+	desc = annexation_309_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 	
 	immediate = {
-	if = {
-		limit = {
-			1217 = { # Essequibo
-				annexations_state_owner_is_valid_grant_target = yes
-				owner = {
-					ROOT_can_grant_land = yes
+		hidden_effect = {
+			if = {
+				limit = { VEN = { ROOT_can_grant_land = yes } }
+				VEN = {
+					save_event_target_as = venezuela
+					add_to_array = { ROOT.potential_grant_targets = THIS }
 				}
 			}
+			if = {
+				limit = { BRA = { ROOT_can_grant_land = yes } }
+				BRA = {
+					save_event_target_as = brazil
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+					}				
+			}
 		}
-		var:1217.owner = { save_event_target_as = venezuela }
 	}
-    }
 
 	option = { #Release Cayenne Whole
 		log = "[GetLogInfo]: event annex.3001 option annex.3001.a"
@@ -144,34 +149,35 @@ country_event = { #Fate of Cayenne
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
 			CAY = {
-				set_cosmetic_tag = CAY_Occupied_Monarchy
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SUR
 			}
-		}
-
 		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			CAY = {
-				set_cosmetic_tag = CAY_Occupied_Republic
+			limit = {
+				OR = {
+				has_country_flag = Tag_in_British_Sphere 
+				has_country_flag = Tag_in_American_Sphere
+				}
 			}
+				CAY = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = CAY
+				}
 		}
 	}
 	
 	option = { #Give it to Venezuela
-		log = "[GetLogInfo]: event annex.3001 option annex.3001.b"
-		name = annex.3001.b
+		log = "[GetLogInfo]: event annex.3001 option annex.3001.southamerica.give_to_venezuela"
+		name = annex.3001.southamerica.give_to_venezuela
 		trigger = {
-			has_event_target = venezuela
+			is_ally_with = event_target:venezuela
 	    }
 		ai_chance = {
 			base = 20
 			modifier = {
-				factor = 0
-				is_major = yes
-				NOT = { is_ally_with = event_target:venezuela }
+				factor = 0.2
+					is_ally_with = event_target:venezuela 
 			}
 			modifier = {
 				factor = 0.1
@@ -182,7 +188,31 @@ country_event = { #Fate of Cayenne
 		CAY = { set_transfer_target_cores = yes }
 		transfer_targeted_territory = yes
 	}
-
+	
+	option = { #Give it to Brazil
+		log = "[GetLogInfo]: event annex.3001 option annex.3001.southamerica.give_to_brazil"
+		name = annex.3001.southamerica.give_to_brazil
+		trigger = {
+			is_ally_with = event_target:brazil
+			NOT = {
+				has_global_flag = balkanize_brazil
+			}
+	    }
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0.2
+					is_ally_with = event_target:brazil 
+			}
+			modifier = {
+				factor = 0.1
+				event_target:brazil = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:brazil }
+		CAY = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
 		option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.3001 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -2397,180 +2427,16 @@ country_event = { #Fate of Brazil
 		recheck_annexations = yes
 	}
 }
-country_event = { #Fate of Wallmapu
-	id = annex.3019
-	title = annexation_wallmapu
-	desc = annexation_wallmapu_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
 
-	is_triggered_only = yes
-
-	immediate = {
-		CHR  = { save_event_target_as = hispania }
-	}
-	
-	option = { #Release Wallmapu
-		log = "[GetLogInfo]: event annex.3019 option annex.3019.a"
-		name = annex.3019.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		if = {
-			limit = { country_exists = MPC }
-			custom_effect_tooltip = MPC_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = MPC }
-			release_targeted_tag = yes
-		}
-		
-	}
-
-	option = { #Transfer it to Hispania
-		log = "[GetLogInfo]: event annex.3019 option annex.3019.b"
-		name = annex.3019.b
-		trigger = {
-			CHR = {
-            exists = yes
-			owns_state = 279
-		    }   
-			ROOT  = {
-				TAG = SPR
-			}
-	    }
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:hispania }
-		997 = { transfer_if_owned = yes }
-		1226 = { transfer_if_owned = yes }
-		1248 = { transfer_if_owned = yes }
-		transfer_targeted_territory = yes
-		
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.3019 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		
-    }
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of New Wales
-	id = annex.3020
-	title = annexation_new_wales
-	desc = annexation_new_wales_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-	
-	option = { #Release New Wales
-		log = "[GetLogInfo]: event annex.3020 option annex.3020.a"
-		name = annex.3020.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		if = {
-			limit = { country_exists = NWL }
-			custom_effect_tooltip = NWL_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = NWL }
-			release_targeted_tag = yes
-		}
-		
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.3020 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }		
-    }
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of New Goonhoun
-	id = annex.3021
-	title = annexation_new_calhoun
-	desc = annexation_new_calhoun_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-	
-	option = { #Release New Goonhoun
-		log = "[GetLogInfo]: event annex.3021 option annex.3021.a"
-		name = annex.3021.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		if = {
-			limit = { country_exists = NCA }
-			custom_effect_tooltip = NCA_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = NCA }
-			release_targeted_tag = yes
-		}
-		
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.3021 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-		
-    }
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Terror Victoria
+country_event = { #Fate of Patagonia
 	id = annex.3022
-	title = annexation_terravictoria
-	desc = annexation_terravictoria_desc
+	title = annexation_512
+	desc = annexation_512_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 	
-	option = { #Release Terror Victoria
+	option = { #Release Patagonia
 		log = "[GetLogInfo]: event annex.3022 option annex.3022.a"
 		name = annex.3022.a
 		trigger = {
@@ -2583,17 +2449,71 @@ country_event = { #Fate of Terror Victoria
 				annexations_can_annex = yes
 			}
 		}
-
 		if = {
-			limit = { country_exists = TVI }
-			custom_effect_tooltip = TVI_puppet_tooltip
+			limit = {
+				ROOT = {
+					has_country_flag = Tag_in_British_Sphere
+				}
+			}
+		set_temp_variable = { tag_to_release = TVI }
+		every_state = {
+			limit = { is_patagonia = yes}
+			remove_claim_and_add_core_of_target = yes
+			}
+		release_targeted_tag = yes				
 		}
-		else = {
-			set_temp_variable = { tag_to_release = TVI }
-			release_targeted_tag = yes
+		else_if = {
+			limit = {
+				has_country_flag = Tag_in_New_Granada_Sphere
+			}
+		set_temp_variable = { tag_to_release = RLP }
+		every_state = {
+			limit = { is_patagonia = yes}
+			remove_claim_by = CHR
+			remove_claim_and_add_core_of_target = yes
+			}
+		release_targeted_tag = yes				
+		}
+		else_if = {
+			NOT = {
+				OR = {
+				has_country_flag = Tag_in_British_Sphere
+				has_country_flag = Tag_in_New_Granada_Sphere
+				}
+			}
+		set_temp_variable = { tag_to_release = MPC }
+		every_state = {
+			limit = { is_patagonia = yes}
+			remove_claim_and_add_core_of_target = yes
+			}
+		release_targeted_tag = yes	
+		1368 = { add_claim_of_target = yes } # Chiloe Island
+		299 = {add_claim_of_target = yes } # Falklands Island		
 		}
 	}
-
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.3022 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }		
+		every_state = {
+			limit = { is_patagonia = yes }
+			transfer_if_owned = yes
+		}
+	}	
+	option = { #integration
+		log = "[GetLogInfo]: event annex.3022 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_patagonia = yes}
+			add_claim_of_ROOT = yes
+		}
+	}
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.3022 option annex.cancel"
 		name = annex.cancel
