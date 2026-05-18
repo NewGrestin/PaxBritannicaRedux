@@ -23,12 +23,87 @@ scripted_gui = {
 	}
 
 	PB_options_button_gui = {
-		window_name = "PB_options_topbar_container"
 		context_type = player_context
-		parent_window_name = topbar
+		window_name = "PB_options_topbar_button_container"
+		parent_window_token = top_bar
+		dirty = global.PB_options_dirty
 
+		ai_enabled = {
+			always = no
+		}
+
+		visible = {
+			always = yes
+		}
+
+		effects = {
+			PB_options_button_click = {
+				if = {
+					limit = { has_global_flag = mod_option_windows_opened }
+					clr_global_flag = mod_option_windows_opened
+				}
+				else = {
+					set_global_flag = mod_option_windows_opened
+				}
+				add_to_variable = { global.PB_options_dirty = 1 }
+			}
+		}
 	}
 
+	PB_options_gui = {
+		context_type = player_context
+		window_name = "PB_options_topbar_container"
+		parent_window_token = top_bar
+		dirty = global.PB_options_dirty
+
+		ai_enabled = {
+			always = no
+		}
+		visible = {
+			has_global_flag = mod_option_windows_opened
+		}
+
+		effects = {
+			superevent_music_option_button_click = {
+				if = {
+					limit = { has_global_flag = disable_superevents_music }
+					set_variable = { global.superevent_music_option_frame = 1 }
+					clr_global_flag = disable_superevents_music
+				}
+				else = {
+					set_variable = { global.superevent_music_option_frame = 2 }
+					set_global_flag = disable_superevents_music
+				}
+				add_to_variable = { global.PB_options_dirty = 1 }
+			}
+
+			renaming_option_button_click = {
+				if = {
+					limit = { has_global_flag = display_endonyms }
+					set_variable = { global.renaming_option_frame = 1 }
+					clr_global_flag = display_endonyms
+					set_global_flag = display_exonyms
+					PB_show_exonyms = yes
+				}
+				else = {
+					set_variable = { global.renaming_option_frame = 2 }
+					clr_global_flag = display_exonyms
+					set_global_flag = display_endonyms
+					PB_show_endonyms = yes
+				}
+				add_to_variable = { global.PB_options_dirty = 1 }
+			}
+		}
+
+		properties = {
+			superevent_music_option_button = {
+				frame = global.superevent_music_option_frame
+			}
+			renaming_option_button = {
+				frame = global.renaming_option_frame
+			}
+		}
+	}
 	PB_topbar_bulbs_gui = {
 		window_name = "PB_topbar_bulbs_container"
 		context_type = player_context
