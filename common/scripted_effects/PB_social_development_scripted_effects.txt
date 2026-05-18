@@ -505,40 +505,36 @@ update_social_development = {
 set_starting_social_development_variables = {
 
     # Monthly SOCDEV base change value, generic is 0
-	set_variable = { SOCDEV_POV_monthly_change = 0 } 
-	set_variable = { SOCDEV_IND_monthly_change = 0 } 
-	set_variable = { SOCDEV_LIT_monthly_change = 0 } 
-	set_variable = { SOCDEV_ECON_monthly_change = 0 }
-	set_variable = { SOCDEV_MIL_monthly_change = 0 } 
-	set_variable = { SOCDEV_WEST_monthly_change = 0 } 
+    set_variable = { SOCDEV_POV_monthly_change = 0 } 
+    set_variable = { SOCDEV_IND_monthly_change = 0 } 
+    set_variable = { SOCDEV_LIT_monthly_change = 0 } 
+    set_variable = { SOCDEV_ECON_monthly_change = 0 }
+    set_variable = { SOCDEV_MIL_monthly_change = 0 } 
+    set_variable = { SOCDEV_WEST_monthly_change = 0 } 
 
     # Initial SOCDEV progress value, generic is 0
-	set_variable = { SOCDEV_POV_count = 0 }  
-	set_variable = { SOCDEV_IND_count = 0 }
-	set_variable = { SOCDEV_LIT_count = 0 }
-	set_variable = { SOCDEV_ECON_count = 0 }
-	set_variable = { SOCDEV_MIL_count = 0 }
-	set_variable = { SOCDEV_WEST_count = 0 }
+    set_variable = { SOCDEV_POV_count = 0 }  
+    set_variable = { SOCDEV_IND_count = 0 }
+    set_variable = { SOCDEV_LIT_count = 0 }
+    set_variable = { SOCDEV_ECON_count = 0 }
+    set_variable = { SOCDEV_MIL_count = 0 }
+    set_variable = { SOCDEV_WEST_count = 0 }
 
     # Real SOCDEV change (base + modifiers), generic is 0
-	set_variable = { SOCDEV_POV_real_change = 0 }  
-	set_variable = { SOCDEV_IND_real_change = 0 }
-	set_variable = { SOCDEV_LIT_real_change = 0 }
-	set_variable = { SOCDEV_ECON_real_change = 0 }
-	set_variable = { SOCDEV_MIL_real_change = 0 }
-	set_variable = { SOCDEV_WEST_real_change = 0 }
+    set_variable = { SOCDEV_POV_real_change = 0 }  
+    set_variable = { SOCDEV_IND_real_change = 0 }
+    set_variable = { SOCDEV_LIT_real_change = 0 }
+    set_variable = { SOCDEV_ECON_real_change = 0 }
+    set_variable = { SOCDEV_MIL_real_change = 0 }
+    set_variable = { SOCDEV_WEST_real_change = 0 }
 
-    # Effectivness SOCDEV variable multiplier, generic base is 100%
+    # Effectiveness SOCDEV variable multiplier, base is 100%
     set_variable = { SOCDEV_POV_eff_var = 1 }  
     set_variable = { SOCDEV_IND_eff_var = 1 }
     set_variable = { SOCDEV_LIT_eff_var = 1 }
     set_variable = { SOCDEV_ECON_eff_var = 1 }
     set_variable = { SOCDEV_MIL_eff_var = 1 }
     set_variable = { SOCDEV_WEST_eff_var = 1 }
-
-
-    #set_variable = { SOCDEV_ECON_monthly_change_civ_base = 0 }
-	#set_variable = { SOCDEV_MIL_monthly_change_mil_base = 0 }
 
     ## DECISIONS
     set_variable = { mil_socdev_cost_small = 30 }
@@ -551,18 +547,21 @@ set_starting_social_development_variables = {
 
     set_variable = { mil_socdev_cost_small_neg = mil_socdev_cost_small }
     multiply_variable = { mil_socdev_cost_small_neg = -1 }
+
     set_variable = { mil_socdev_cost_medium_neg = mil_socdev_cost_medium }
     multiply_variable = { mil_socdev_cost_medium_neg = -1 }
+
     set_variable = { mil_socdev_cost_high_neg = mil_socdev_cost_high }
     multiply_variable = { mil_socdev_cost_high_neg = -1 }
 
     set_variable = { mil_socdev_cost_small_monthly_neg = mil_socdev_cost_small_monthly }
     multiply_variable = { mil_socdev_cost_small_monthly_neg = -1 }
+
     set_variable = { mil_socdev_cost_medium_monthly_neg = mil_socdev_cost_medium_monthly }
     multiply_variable = { mil_socdev_cost_medium_monthly_neg = -1 }
+
     set_variable = { mil_socdev_cost_high_monthly_neg = mil_socdev_cost_high_monthly }
     multiply_variable = { mil_socdev_cost_high_monthly_neg = -1 }
-
 }
 
 social_development_calculate_efficiency = {
@@ -646,9 +645,31 @@ social_development_calculate_efficiency = {
     socdev_store_values_after_efficiency = yes   # Store final result for code and tooltips
     socdev_calculate_tooltip_efficiency = yes    # Store tooltip from both category specific and global eff modifier
 }
+social_development_check_industry_calculate = {
 
+    set_variable = { SOCDEV_has_industry = 0 }
+
+    if = {
+        limit = { num_of_civilian_factories > 0 }
+        set_variable = { SOCDEV_has_industry = 1 }
+    }
+    if = {
+        limit = { num_of_military_factories > 0 }
+        set_variable = { SOCDEV_has_industry = 1 }
+    }
+    if = {
+        limit = { num_of_naval_factories > 0 }
+        set_variable = { SOCDEV_has_industry = 1 }
+    }
+
+    if = {
+        limit = { check_variable = { SOCDEV_has_industry > 0 } }
+        calculate_SOCDEV_industry = yes
+    }
+}
 social_development_monthly_effect = {
     # Updates socdev on fly and calculates efficiency
+    social_development_check_industry_calculate = yes
     update_social_development = yes
 
     # Adds up everything to var that controls final displayed value
@@ -658,57 +679,6 @@ social_development_monthly_effect = {
 	add_to_variable = { SOCDEV_ECON_count = SOCDEV_ECON_real_change }
 	add_to_variable = { SOCDEV_MIL_count = SOCDEV_MIL_real_change }  
 	add_to_variable = { SOCDEV_WEST_count = SOCDEV_WEST_real_change }  
-
-    # Calculate negative value for the proper bad progressbar display
-
-    if = {
-        limit = { check_variable = { SOCDEV_POV_count < 0 } }
-        set_variable = { SOCDEV_POV_count_negative = SOCDEV_POV_count }
-        multiply_variable = { SOCDEV_POV_count_negative = -1 }
-    }
-    else = {
-        set_variable = { SOCDEV_POV_count_negative = 0 }
-    }
-    if = {
-        limit = { check_variable = { SOCDEV_IND_count < 0 } }
-        multiply_variable = { SOCDEV_IND_count = -1 }
-        set_variable = { SOCDEV_IND_count_negative = SOCDEV_IND_count }
-    }
-    else = {
-        set_variable = { SOCDEV_IND_count_negative = 0 }
-    }
-    if = {
-        limit = { check_variable = { SOCDEV_LIT_count < 0 } }
-        multiply_variable = { SOCDEV_LIT_count = -1 }
-        set_variable = { SOCDEV_LIT_count_negative = SOCDEV_LIT_count }
-    }
-    else = {
-        set_variable = { SOCDEV_LIT_count_negative = 0 }
-    }
-    if = {
-        limit = { check_variable = { SOCDEV_ECON_count < 0 } }
-        multiply_variable = { SOCDEV_ECON_count = -1 }
-        set_variable = { SOCDEV_ECON_count_negative = SOCDEV_ECON_count }
-    }
-    else = {
-        set_variable = { SOCDEV_ECON_count_negative = 0 }
-    }
-    if = {
-        limit = { check_variable = { SOCDEV_MIL_count < 0 } }
-        multiply_variable = { SOCDEV_MIL_count = -1 }
-        set_variable = { SOCDEV_MIL_count_negative = SOCDEV_MIL_count }
-    }
-    else = {
-        set_variable = { SOCDEV_MIL_count_negative = 0 }
-    }
-    if = {
-        limit = { check_variable = { SOCDEV_WEST_count < 0 } }
-        multiply_variable = { SOCDEV_WEST_count = -1 }
-        set_variable = { SOCDEV_WEST_count_negative = SOCDEV_WEST_count }
-    }
-    else = {
-        set_variable = { SOCDEV_WEST_count_negative = 0 }
-    }
 
     # Events triggering and changings laws if socdev progressed/regressed
 	if = {
@@ -850,7 +820,6 @@ socdev_monthly_effect = {
     }
 }
 socdev_keep_values_before_efficiency = {
-
     ############################
     # POVERTY
     ############################
@@ -867,9 +836,11 @@ socdev_keep_values_before_efficiency = {
 
     set_variable = { SOCDEV_IND_base_value = SOCDEV_IND_monthly_change }
     set_variable = { SOCDEV_IND_base_modifiers = modifier@SOCDEV_IND_growth_monthly }
+    set_variable = { SOCDEV_IND_base_industry = SOCDEV_IND_industry_monthly }
 
     set_variable = { SOCDEV_IND_base_change = SOCDEV_IND_monthly_change }
     add_to_variable = { SOCDEV_IND_base_change = modifier@SOCDEV_IND_growth_monthly }
+    add_to_variable = { SOCDEV_IND_base_change = SOCDEV_IND_base_industry }
 
     ############################
     # LITERACY
@@ -911,47 +882,6 @@ socdev_keep_values_before_efficiency = {
     set_variable = { SOCDEV_WEST_base_change = SOCDEV_WEST_monthly_change }
     add_to_variable = { SOCDEV_WEST_base_change = modifier@SOCDEV_WEST_growth_monthly }
 }
-
-# Apply efficiency to total growth
-socdev_keep_values_before_efficiency = {
-    # store pre-efficiency values for tooltips
-
-    # POV
-    set_variable = { SOCDEV_POV_base_value = SOCDEV_POV_monthly_change }             
-    set_variable = { SOCDEV_POV_base_modifiers = modifier@SOCDEV_POV_growth_monthly }
-    set_variable = { SOCDEV_POV_base_change = SOCDEV_POV_monthly_change }            
-    add_to_variable = { SOCDEV_POV_base_change = modifier@SOCDEV_POV_growth_monthly }
-
-    # IND
-    set_variable = { SOCDEV_IND_base_value = SOCDEV_IND_monthly_change }
-    set_variable = { SOCDEV_IND_base_modifiers = modifier@SOCDEV_IND_growth_monthly }
-    set_variable = { SOCDEV_IND_base_change = SOCDEV_IND_monthly_change }
-    add_to_variable = { SOCDEV_IND_base_change = modifier@SOCDEV_IND_growth_monthly }
-
-    # LIT
-    set_variable = { SOCDEV_LIT_base_value = SOCDEV_LIT_monthly_change }
-    set_variable = { SOCDEV_LIT_base_modifiers = modifier@SOCDEV_LIT_growth_monthly }
-    set_variable = { SOCDEV_LIT_base_change = SOCDEV_LIT_monthly_change }
-    add_to_variable = { SOCDEV_LIT_base_change = modifier@SOCDEV_LIT_growth_monthly }
-
-    # ECON
-    set_variable = { SOCDEV_ECON_base_value = SOCDEV_ECON_monthly_change }
-    set_variable = { SOCDEV_ECON_base_modifiers = modifier@SOCDEV_ECON_growth_monthly }
-    set_variable = { SOCDEV_ECON_base_change = SOCDEV_ECON_monthly_change }
-    add_to_variable = { SOCDEV_ECON_base_change = modifier@SOCDEV_ECON_growth_monthly }
-
-    # MIL
-    set_variable = { SOCDEV_MIL_base_value = SOCDEV_MIL_monthly_change }
-    set_variable = { SOCDEV_MIL_base_modifiers = modifier@SOCDEV_MIL_growth_monthly }
-    set_variable = { SOCDEV_MIL_base_change = SOCDEV_MIL_monthly_change }
-    add_to_variable = { SOCDEV_MIL_base_change = modifier@SOCDEV_MIL_growth_monthly }
-
-    # CIV
-    set_variable = { SOCDEV_WEST_base_value = SOCDEV_WEST_monthly_change }
-    set_variable = { SOCDEV_WEST_base_modifiers = modifier@SOCDEV_WEST_growth_monthly }
-    set_variable = { SOCDEV_WEST_base_change = SOCDEV_WEST_monthly_change }
-    add_to_variable = { SOCDEV_WEST_base_change = modifier@SOCDEV_WEST_growth_monthly }
-}
 socdev_store_values_after_efficiency = {
 
     ############################
@@ -973,6 +903,10 @@ socdev_store_values_after_efficiency = {
 
     set_variable = { SOCDEV_IND_modifiers_after_eff = SOCDEV_IND_base_modifiers }
     multiply_variable = { SOCDEV_IND_modifiers_after_eff = SOCDEV_IND_eff_var_total }
+
+    set_variable = { SOCDEV_IND_industry_after_eff = SOCDEV_IND_base_industry }
+    multiply_variable = { SOCDEV_IND_industry_after_eff = SOCDEV_IND_eff_var_total }
+    clamp_variable = { var = SOCDEV_IND_industry_after_eff max = 10 }
 
     ############################
     # LITERACY
@@ -1023,6 +957,7 @@ socdev_multiply_by_efficiency = {
     # IND
     set_variable = { SOCDEV_IND_real_change = SOCDEV_IND_base_value }
     add_to_variable = { SOCDEV_IND_real_change = modifier@SOCDEV_IND_growth_monthly }
+    add_to_variable = { SOCDEV_IND_real_change = SOCDEV_IND_base_industry }
     multiply_variable = { SOCDEV_IND_real_change = SOCDEV_IND_eff_var_total }
 
     # LIT
@@ -1071,59 +1006,129 @@ socdev_calculate_tooltip_efficiency = {
     set_variable = { SOCDEV_WEST_eff_var_tooltip = modifier@SOCDEV_WEST_growth_efficiency }
     add_to_variable = { SOCDEV_WEST_eff_var_tooltip = modifier@SOCDEV_ALL_growth_efficiency }
 }
-# do not uncomment ts
-#calculate_socdev_additional = {
-#    calculate_socdev_military_industry = yes
-#    calculate_SOCDEV_WESTilian_industry = yes
-#}
-#calculate_socdev_military_industry = {
-#    # remove last month gain before recalculating to avoid stacking values
-#    subtract_from_variable = { SOCDEV_MIL_monthly_change_mil_base = last_socdev_mil_industry_base }
-#
-#    # Step 1: start base value
-#    set_variable = { socdev_mil_industry_base = num_of_military_factories }
-#    add_to_variable = { socdev_mil_industry_base = num_of_naval_factories }
-#    # Step 2: divide by number of states (linear per-state scaling)
-#    divide_variable = { socdev_mil_industry_base = num_owned_controlled_states }
-#
-#    # Step 3: apply weight factor
-#    multiply_variable = { socdev_mil_industry_base = 0.65 }
-#
-#    # Step 4: efficiency scaling
-#    multiply_variable = { socdev_mil_industry_base = SOCDEV_MIL_eff_var }
-#
-#    # Step 5: add this month value
-#    add_to_variable = { SOCDEV_MIL_monthly_change_mil_base = socdev_mil_industry_base }
-#    add_to_variable = { SOCDEV_MIL_count = SOCDEV_MIL_monthly_change_mil_base }
-#
-#    # Step 6: store this for next month to subtract
-#    set_variable = { last_socdev_mil_industry_base = socdev_mil_industry_base }
-#}
-#
-#calculate_SOCDEV_WESTilian_industry = {
-#    # remove last month gain before recalculating to avoid stacking values
-#    subtract_from_variable = { SOCDEV_ECON_monthly_change_civ_base = last_SOCDEV_WEST_industry_base }
-#
-#    # Step 1: start base value
-#    set_variable = { SOCDEV_WEST_industry_base = num_of_civilian_factories }
-#
-#    # Step 2: divide by number of states (linear per-state scaling)
-#    divide_variable = { SOCDEV_WEST_industry_base = num_owned_controlled_states }
-#
-#    # Step 3: apply weight factor
-#    multiply_variable = { SOCDEV_WEST_industry_base = 0.65 }
-#
-#    # Step 4: efficiency scaling
-#    multiply_variable = { SOCDEV_WEST_industry_base = SOCDEV_ECON_eff_var }
-#
-#    # Step 5: add this month value
-#    add_to_variable = { SOCDEV_ECON_monthly_change_civ_base = SOCDEV_WEST_industry_base }
-#    add_to_variable = { SOCDEV_ECON_count = SOCDEV_ECON_monthly_change_civ_base }
-#
-#    # Step 6: store this for next month to subtract
-#    set_variable = { last_SOCDEV_WEST_industry_base = SOCDEV_WEST_industry_base }
-#}
 
-ttt = {
-    log = "[?SOCDEV_POV_count_negative]"
+calculate_SOCDEV_industry = {
+
+    # =====================================================
+    # 1. REMOVE LAST VALUE (UNDO PREVIOUS TICK)
+    # =====================================================
+    subtract_from_variable = {
+        SOCDEV_IND_industry_monthly = last_SOCDEV_IND_base_total_contribution
+    }
+
+    # =====================================================
+    # 2. EFFECTIVE STATES PENALTY (UNCHANGED LOGIC)
+    # =====================================================
+
+    set_variable = { SOCDEV_effective_states = num_of_core_states }
+
+    set_variable = { SOCDEV_owned_temp = num_of_owned_controlled_states }
+    subtract_from_variable = { SOCDEV_owned_temp = num_of_core_states }
+    multiply_variable = { SOCDEV_owned_temp = 0.5 }
+    add_to_variable = { SOCDEV_effective_states = SOCDEV_owned_temp }
+
+    set_variable = { SOCDEV_occupied_temp = num_of_controlled_states }
+    subtract_from_variable = { SOCDEV_occupied_temp = num_of_owned_controlled_states }
+    multiply_variable = { SOCDEV_occupied_temp = 0.25 }
+    add_to_variable = { SOCDEV_effective_states = SOCDEV_occupied_temp }
+
+    if = {
+        limit = { check_variable = { SOCDEV_effective_states < 1 } }
+        set_variable = { SOCDEV_effective_states = 1 }
+    }
+
+    set_variable = { SOCDEV_state_penalty = SOCDEV_effective_states }
+    multiply_variable = { SOCDEV_state_penalty = 0.04 }
+    add_to_variable = { SOCDEV_state_penalty = 0.75 }
+
+
+    # =====================================================
+    # 3. CIVILIAN INDUSTRY (MAIN DRIVER)
+    # =====================================================
+    set_variable = { SOCDEV_civ = num_of_civilian_factories }
+
+    multiply_variable = { SOCDEV_civ = 0.06 }
+
+
+    # =====================================================
+    # 4. MILITARY INDUSTRY (WEAKER)
+    # =====================================================
+    set_variable = { SOCDEV_mil = num_of_military_factories }
+
+    multiply_variable = { SOCDEV_mil = 0.06 }
+    multiply_variable = { SOCDEV_mil = 0.4 }
+
+
+    # =====================================================
+    # 5. NAVAL INDUSTRY (MEDIUM)
+    # =====================================================
+    set_variable = { SOCDEV_nav = num_of_naval_factories }
+
+    multiply_variable = { SOCDEV_nav = 0.06 }
+    multiply_variable = { SOCDEV_nav = 0.6 }
+
+
+    # =====================================================
+    # 6. COMBINE TOTAL INDUSTRY IMPACT
+    # =====================================================
+    set_variable = { SOCDEV_IND_industry_monthly = SOCDEV_civ }
+    add_to_variable = { SOCDEV_IND_industry_monthly = SOCDEV_mil }
+    add_to_variable = { SOCDEV_IND_industry_monthly = SOCDEV_nav }
+
+
+    # =====================================================
+    # 7. APPLY STATE PENALTY (SAFE DIVISION)
+    # =====================================================
+    divide_variable = { SOCDEV_IND_industry_monthly = SOCDEV_state_penalty }
+
+    # =====================================================
+    # 8. APPLY ISOCDEV MULTIPLIERS
+    # =====================================================
+    if = {
+        limit = { has_idea = PB_socdev_subsistence_agrarianism }
+        multiply_variable = { SOCDEV_IND_industry_monthly = 1.4 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_agrarianism }
+        multiply_variable = { SOCDEV_IND_industry_monthly = 1.2 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_semi_industrialized }
+        multiply_variable = { SOCDEV_IND_industry_monthly = 0.9 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_industrialized }
+        multiply_variable = { SOCDEV_IND_industry_monthly = 0.65 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_post_industrialized }
+        multiply_variable = { SOCDEV_IND_industry_monthly = 0.4 }
+    }
+
+
+    # =====================================================
+    # 9. GLOBAL CAP (UNCHANGED DESIGN)
+    # =====================================================
+    clamp_variable = {
+        var = SOCDEV_IND_industry_monthly
+        min = 0
+        max = 10
+    }
+
+
+    # =====================================================
+    # 10. STORE RESULT
+    # =====================================================
+    set_variable = {
+        last_SOCDEV_IND_base_total_contribution = SOCDEV_IND_industry_monthly
+    }
+}
+
+
+test = {
+    log = "[?THIS.GetTag] core: [?num_core_states]"
+    log = "[?THIS.GetTag] owned: [?num_owned_states]"
+    log = "[?THIS.GetTag] owned and controlled: [?num_owned_controlled_states]"
+    log = "[?THIS.GetTag] controlled: [?num_controlled_states]"
+    log = "[?THIS.GetTag] occupied: [?num_occupied_states]"
 }
