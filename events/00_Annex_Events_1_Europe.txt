@@ -8335,8 +8335,6 @@ country_event = { #Fate of South Tyrol
 
 		set_temp_variable = { tag_to_release = event_target:tirol }
 		39 = { transfer_if_owned = yes } #South Tyrol
-
-		recheck_annexations = yes
 	}
 
 	option = { #Give it to the owner of Veneto
@@ -8370,8 +8368,6 @@ country_event = { #Fate of South Tyrol
 
 		set_temp_variable = { tag_to_release = event_target:veneto }
 		39 = { transfer_if_owned = yes } #South Tyrol
-
-		recheck_annexations = yes
 	}
 
 	option = { #Give to overlord
@@ -8388,7 +8384,6 @@ country_event = { #Fate of South Tyrol
 			}
 			transfer_state_and_notify = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Integrate
@@ -8398,15 +8393,20 @@ country_event = { #Fate of South Tyrol
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
+			limit = {
+				is_allowed_annexation_state = yes
+			}
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1053 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -8484,15 +8484,8 @@ country_event = { #Fate of Alsace
 		}
 
 		set_temp_variable = { tag_to_release = event_target:germany }
-		every_owned_state = {
-			limit = {
-				is_alsace = yes
-				is_valid_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-
-		recheck_annexations = yes
+		28 = { transfer_if_owned = yes } #Lorraine
+		1191 = { transfer_if_owned = yes } #Alsace
 	}
 
 	option = { #Give it to France
@@ -8525,15 +8518,8 @@ country_event = { #Fate of Alsace
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:france }
-		every_owned_state = {
-			limit = {
-				is_alsace = yes
-				is_valid_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-
-		recheck_annexations = yes
+		28 = { transfer_if_owned = yes } #Lorraine
+		1191 = { transfer_if_owned = yes } #Alsace
 	}
 
 	option = { #Give to overlord
@@ -8543,14 +8529,8 @@ country_event = { #Fate of Alsace
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = {
-				#is_starting_french_state = yes
-				is_allowed_annexation_state = yes
-			}
-			transfer_state_and_notify = yes
-		}
-		recheck_annexations = yes
+		28 = { transfer_state_and_notify = yes } #Lorraine
+		1191 = { transfer_state_and_notify = yes } #Alsace
 	}
 
 	option = { #Integrate
@@ -8559,10 +8539,8 @@ country_event = { #Fate of Alsace
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
-		recheck_annexations = yes
+		28 = { add_claim_of_ROOT = yes } #Lorraine
+		1191 = { add_claim_of_ROOT = yes } #Alsace
 	}
 
 	option = { #Cancel
@@ -10825,6 +10803,7 @@ country_event = { #Fate of West Herzegovina
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:dalmatia }
 						}
 					}
 				}
@@ -10836,6 +10815,8 @@ country_event = { #Fate of West Herzegovina
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:east_herzegovina }
+							NOT = { tag = event_target:dalmatia }
 						}
 					}
 				}
@@ -11064,34 +11045,6 @@ country_event = { #Fate of Croatia
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SER_Yugoslav_Republic
 			}
-		}
-	}
-
-	option = { #Transfer it to the Dinarics
-		log = "[GetLogInfo]: event annex.1071 option annex.1071.b"
-		name = annex.1071.b
-		trigger = {
-			is_subject = no
-			has_monarchist_government = yes
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 100
-				ROOT = {
-					original_tag = GER
-					original_tag = HWA
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = SLA }
-		every_owned_state = {
-			limit = {
-				is_allowed_annexation_state = yes
-				is_croatia = yes
-			}
-			transfer_state_and_notify = yes
 		}
 	}
 	
@@ -13502,12 +13455,26 @@ country_event = { #Fate of Bulgaria
 	is_triggered_only = yes
 
 	immediate = {
-		108 = { retain_state = yes }
-		106 = { retain_state = yes }
-		1038 = { retain_state = yes }
-		1039 = { retain_state = yes }
-		1042 = { retain_state = yes }
-		77 = { retain_state = yes }
+		hidden_effect = { 
+			every_owned_state = {
+				if = {
+					limit = {
+						is_bulgaria = yes
+					}
+					add_core_of = BUL
+				}
+				else = { 
+					remove_core_of = BUL
+					remove_claim_by = BUL
+				}
+			}
+			108 = { retain_state = yes }
+			106 = { retain_state = yes }
+			1038 = { retain_state = yes }
+			1039 = { retain_state = yes }
+			1042 = { retain_state = yes }
+			77 = { retain_state = yes }
+		}
 	}
 
 	option = { #Release Bulgaria
@@ -15365,7 +15332,7 @@ country_event = { #Fate of Polish Galicia
 		if = {
 			limit = {
 				var:91.owner = { #Lwow
-					original_tag = GAL
+					original_tag = PGA
 					ROOT_can_grant_land = yes
 				}
 			}
@@ -15421,8 +15388,8 @@ country_event = { #Fate of Polish Galicia
 	}
 
 	option = { #Give to owner of Kielce
-		log = "[GetLogInfo]: event annexation_events.1101 option annexation_events.europe.give_to_poland"
-		name = annexation_events.europe.give_to_poland
+		log = "[GetLogInfo]: event annexation_events.1101 option annex.1101.b"
+		name = annex.1101.b
 		trigger = {
 			has_event_target = poland
 		}
@@ -15447,8 +15414,8 @@ country_event = { #Fate of Polish Galicia
 	}
 
 	option = { #Give to Galicia
-		log = "[GetLogInfo]: event annexation_events.1022 option annexation_events.europe.give_to_galicia"
-		name = annexation_events.europe.give_to_galicia
+		log = "[GetLogInfo]: event annexation_events.1022 option annex.1101.c"
+		name = annex.1101.c
 		trigger = {
 			has_event_target = galicia
 		}
@@ -16209,7 +16176,6 @@ country_event = { #Fate of South Bucovina
 					AND = {
 						OR = {
 							original_tag = TRA
-							AUS_is_unified = yes
 						}
 						OR = {
 							owns_state = 80 #Cernauti
@@ -16236,7 +16202,6 @@ country_event = { #Fate of South Bucovina
 					OR = {
 						original_tag = GAL
 						original_tag = TRA
-						AUS_is_unified = yes
 					}
 					ROOT_can_grant_land = yes
 				}
@@ -16250,7 +16215,6 @@ country_event = { #Fate of South Bucovina
 					NOT = { tag = event_target:galicia }
 					OR = {
 						original_tag = TRA
-						AUS_is_unified = yes
 					}
 					ROOT_can_grant_land = yes
 				}
@@ -26435,9 +26399,22 @@ country_event = { #Fate of East Transylvania/Hunyad
 			has_event_target = alfold
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alfold }
+				OR = { 
+					is_ally_with = event_target:iasi
+					is_ally_with = event_target:ploiesti
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alfold = { is_subject = yes }
 			}
 		}
 
@@ -26458,12 +26435,24 @@ country_event = { #Fate of East Transylvania/Hunyad
 			has_event_target = ploiesti
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ploiesti }
+				OR = { 
+					is_ally_with = event_target:alfold
+					is_ally_with = event_target:iasi
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ploiesti = { is_subject = yes }
 			}
 		}
-
 		set_temp_variable = { tag_to_release = event_target:ploiesti }
 		every_owned_state = {
 			limit = {
@@ -26481,9 +26470,22 @@ country_event = { #Fate of East Transylvania/Hunyad
 			has_event_target = iasi
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:iasi }
+				OR = { 
+					is_ally_with = event_target:alfold
+					is_ally_with = event_target:ploiesti
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:iasi = { is_subject = yes }
 			}
 		}
 
@@ -26591,9 +26593,19 @@ country_event = { #Fate of Felvidek
 			has_event_target = pozsony
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:pozsony }
+				is_ally_with = event_target:pest
+			}
+			modifier = {
+				factor = 0.1
+				event_target:pozsony = { is_subject = yes }
 			}
 		}
 
@@ -26609,9 +26621,19 @@ country_event = { #Fate of Felvidek
 			has_event_target = pest
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:pest }
+				is_ally_with = event_target:pozsony
+			}
+			modifier = {
+				factor = 0.1
+				event_target:pest = { is_subject = yes }
 			}
 		}
 
@@ -26716,9 +26738,22 @@ country_event = { #Fate of Karpatalja/Carpathia
 			has_event_target = alfold
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alfold }
+				OR = { 
+					is_ally_with = event_target:stanislawow
+					is_ally_with = event_target:eperjes
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alfold = { is_subject = yes }
 			}
 		}
 
@@ -26734,9 +26769,22 @@ country_event = { #Fate of Karpatalja/Carpathia
 			has_event_target = eperjes
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:eperjes }
+				OR = { 
+					is_ally_with = event_target:stanislawow
+					is_ally_with = event_target:alfold
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:eperjes = { is_subject = yes }
 			}
 		}
 
@@ -26752,9 +26800,22 @@ country_event = { #Fate of Karpatalja/Carpathia
 			has_event_target = stanislawow
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:stanislawow }
+				OR = { 
+					is_ally_with = event_target:eperjes
+					is_ally_with = event_target:alfold
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:stanislawow = { is_subject = yes }
 			}
 		}
 
@@ -26845,9 +26906,19 @@ country_event = { #Fate of Burgenland
 			has_event_target = lower_austria
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:lower_austria }
+				is_ally_with = event_target:transdanubia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:lower_austria = { is_subject = yes }
 			}
 		}
 
@@ -26863,9 +26934,19 @@ country_event = { #Fate of Burgenland
 			has_event_target = transdanubia
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:transdanubia }
+				is_ally_with = event_target:krain
+			}
+			modifier = {
+				factor = 0.1
+				event_target:transdanubia = { is_subject = yes }
 			}
 		}
 
@@ -26970,9 +27051,22 @@ country_event = { #Fate of Mura
 			has_event_target = lower_austria
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:lower_austria }
+				OR = { 
+					is_ally_with = event_target:krain
+					is_ally_with = event_target:transdanubia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:lower_austria = { is_subject = yes }
 			}
 		}
 
@@ -26988,9 +27082,22 @@ country_event = { #Fate of Mura
 			has_event_target = transdanubia
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:transdanubia }
+				OR = { 
+					is_ally_with = event_target:lower_austria
+					is_ally_with = event_target:krain
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:transdanubia = { is_subject = yes }
 			}
 		}
 
@@ -27006,9 +27113,22 @@ country_event = { #Fate of Mura
 			has_event_target = krain
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:krain }
+				OR = { 
+					is_ally_with = event_target:transdanubia
+					is_ally_with = event_target:lower_austria
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:krain = { is_subject = yes }
 			}
 		}
 
@@ -27113,9 +27233,22 @@ country_event = { #Fate of Byelostok
 			has_event_target = warsaw
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:warsaw }
+				OR = { 
+					is_ally_with = event_target:grodno
+					is_ally_with = event_target:brest_litovsk
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:warsaw = { is_subject = yes }
 			}
 		}
 
@@ -27131,9 +27264,22 @@ country_event = { #Fate of Byelostok
 			has_event_target = grodno
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:grodno }
+				OR = { 
+					is_ally_with = event_target:warsaw
+					is_ally_with = event_target:brest_litovsk
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:grodno = { is_subject = yes }
 			}
 		}
 
@@ -27149,9 +27295,22 @@ country_event = { #Fate of Byelostok
 			has_event_target = brest_litovsk
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:brest_litovsk }
+				OR = { 
+					is_ally_with = event_target:warsaw
+					is_ally_with = event_target:grodno
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:brest_litovsk = { is_subject = yes }
 			}
 		}
 
@@ -27242,9 +27401,19 @@ country_event = { #Fate of Latgaliya
 			has_event_target = liflyandyia
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:liflyandyia }
+				is_ally_with = event_target:velikiye
+			}
+			modifier = {
+				factor = 0.1
+				event_target:liflyandyia = { is_subject = yes }
 			}
 		}
 
@@ -27260,9 +27429,19 @@ country_event = { #Fate of Latgaliya
 			has_event_target = velikiye
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:velikiye }
+				is_ally_with = event_target:liflyandyia
+			}
+			modifier = {
+				factor = 0.1
+				event_target:velikiye = { is_subject = yes }
 			}
 		}
 
@@ -27367,9 +27546,22 @@ country_event = { #Fate of Upper Savoy
 			has_event_target = torino
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:torino }
+				OR = { 
+					is_ally_with = event_target:alpes
+					is_ally_with = event_target:valais
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:torino = { is_subject = yes }
 			}
 		}
 
@@ -27385,9 +27577,22 @@ country_event = { #Fate of Upper Savoy
 			has_event_target = valais
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:valais }
+				OR = { 
+					is_ally_with = event_target:alpes
+					is_ally_with = event_target:torino
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:valais = { is_subject = yes }
 			}
 		}
 
@@ -27403,9 +27608,22 @@ country_event = { #Fate of Upper Savoy
 			has_event_target = alpes
 		}
 		ai_chance = {
-			base = 100
+			base = 40
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alpes }
+				OR = { 
+					is_ally_with = event_target:torino
+					is_ally_with = event_target:valais
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alpes = { is_subject = yes }
 			}
 		}
 
