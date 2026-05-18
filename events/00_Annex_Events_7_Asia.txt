@@ -10226,130 +10226,106 @@ country_event = { #Fate of Ganga
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-
-	option = { #Leave Ganga to Gwalior
-		log = "[GetLogInfo]: event annex.7063 option annex.7063.a"
-		name = annex.7063.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+					}
 				}
-				factor = 0
+				save_event_target_as = can_annex
 			}
-			modifier = {
-				ROOT = {
-					tag = NEP
-				}
-				factor = 0
-			}
+			determine_indian_ally = yes
 		}
-		
-		MAR = {
-			transfer_state = 1102
-		}
-		
-		recheck_annexations = yes
 	}
-	
-	option = { #Grant it to Nepal
-		log = "[GetLogInfo]: event annex.7063 option annex.7063.a"
-		name = annex.7063.a
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7063 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
 		trigger = {
-			is_subject = no
-			NEP = {
-				OR = {
-					owns_state = 483
-					owns_state = 1261
-				}
-			}
-			NOT = {
-				ROOT = {
-					tag = NEP
-				}
-			}
+			has_event_target = india
 		}
 		ai_chance = {
 			base = 10
 			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
-				}
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
 			}
 		}
-		
-		NEP = {
-			transfer_state = 1102
-		}
-		1102 = { add_claim_by = NEP }
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:india }
+		1102 = { transfer_state_and_notify = yes }
 	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7063 option annex.give_to_india"
-		name = annex.give_to_india
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7063 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
 		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
+			has_event_target = india_two
 		}
 		ai_chance = {
-			base = 60
+			base = 10
 			modifier = {
-				annexations_can_annex = yes
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
 			}
 		}
-		
-		1102 = {
-			set_state_flag = PB_Indian_Unifier_State
-		}
-		PB_give_to_indian_unifier = yes
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		1102 = { transfer_state_and_notify = yes }
 	}
-	
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7063 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		1102 = { transfer_state_and_notify = yes }
+	}
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7063 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -10357,37 +10333,17 @@ country_event = { #Fate of Ganga
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1102 = { transfer_if_owned = yes }
+		1102 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.7063 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				ROOT = {
-					tag = BEN
-					tag = BAN
-				}
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
-				}
-				factor = 100
-			}
-			modifier = {
-				ROOT = {
-					tag = NEP
-				}
-				factor = 100
-			}
-		}
-		every_owned_state = {
+
+		1102 = {
 			add_claim_of_ROOT = yes
 		}
 		recheck_annexations = yes
@@ -10399,6 +10355,10 @@ country_event = { #Fate of Ganga
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
 	}
+
+	after = {
+        recheck_annexations = yes
+    }
 }
 
 country_event = { #Fate of Awadh
@@ -10409,6 +10369,20 @@ country_event = { #Fate of Awadh
 
 	is_triggered_only = yes
 
+	immediate = { 
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			determine_indian_ally = yes
+		}
+	}
+
 	option = { #Release Awadh
 		log = "[GetLogInfo]: event annex.7064 option annex.7064.a"
 		name = annex.7064.a
@@ -10418,16 +10392,8 @@ country_event = { #Fate of Awadh
 		ai_chance = {
 			base = 100
 			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
-				}
 				factor = 0
-			}
-			modifier = {
-				ROOT = {
-					tag = NEP
-				}
-				factor = 0
+				annexations_can_annex = yes
 			}
 		}
 
@@ -10457,98 +10423,93 @@ country_event = { #Fate of Awadh
 				set_cosmetic_tag = AWD_Occupied_Republic
 			}
 		}
-		recheck_annexations = yes
 	}
 	
-	option = { #Grant it to Nepal
-		log = "[GetLogInfo]: event annex.7064 option annex.7064.b"
-		name = annex.7064.b
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7064 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
 		trigger = {
-			is_subject = no
-			NEP = {
-				OR = {
-					owns_state = 1259
-				}
-			}
-			NOT = {
-				ROOT = {
-					tag = NEP
-					is_indian_unifier = yes
-				}
-			}
+			has_event_target = india
 		}
 		ai_chance = {
 			base = 10
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
 			}
 		}
-		
-		NEP = {
-			transfer_state = 438
-		}
-		438 = { add_claim_by = NEP }
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:india }
+		438 = { transfer_state_and_notify = yes }
 	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7064 option annex.give_to_india"
-		name = annex.give_to_india
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7064 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
 		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
+			has_event_target = india_two
 		}
 		ai_chance = {
-			base = 60
+			base = 10
 			modifier = {
-				annexations_can_annex = yes
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
 			}
 		}
-		
-		438 = {
-			set_state_flag = PB_Indian_Unifier_State
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		438 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7064 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
 		}
-		PB_give_to_indian_unifier = yes
-		
-		recheck_annexations = yes
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		438 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -10558,37 +10519,16 @@ country_event = { #Fate of Awadh
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		AWD = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		438 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.7064 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				ROOT = {
-					tag = BEN
-					tag = BAN
-				}
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
-				}
-				factor = 100
-			}
-			modifier = {
-				ROOT = {
-					tag = NEP
-				}
-				factor = 100
-			}
-		}
+		
 		every_owned_state = {
 			add_claim_of_ROOT = yes
 		}
@@ -10601,6 +10541,10 @@ country_event = { #Fate of Awadh
 		ai_chance = { base = 0 }
 		recheck_annexations = yes
 	}
+
+	after = {
+        recheck_annexations = yes
+    }
 }
 
 country_event = { #Fate of Bundelkhand
@@ -10611,6 +10555,19 @@ country_event = { #Fate of Bundelkhand
 
 	is_triggered_only = yes
 
+	immediate = { 
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			determine_indian_ally = yes
+		}
+	}
 	option = { #Release Bundelkhand
 		log = "[GetLogInfo]: event annex.7065 option annex.7065.a"
 		name = annex.7065.a
@@ -10653,129 +10610,93 @@ country_event = { #Fate of Bundelkhand
 				set_cosmetic_tag = BDK_Occupied_Republic
 			}
 		}
-		recheck_annexations = yes
 	}
-	
-	option = { #Purify Bundelkhand from the Mongrel Machine Men
-		log = "[GetLogInfo]: event annex.7065 option annex.7065.b"
-		name = annex.7065.b
+
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7065 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
 		trigger = {
-			is_subject = no
-			ROOT = {
-				OR = {
-					has_idea = PB_augmentation_banned
-					tag = NEP
-					tag = AWD
-					tag = JBP
-					tag = MUG
-					tag = BAN
-				}
-			}
+			has_event_target = india
 		}
 		ai_chance = {
-			base = 20
+			base = 10
 			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
-				}
 				factor = 0
-			}
-		}
-
-		set_temp_variable = { tag_to_release = BDK }
-		release_targeted_tag = yes
-
-		if = {
-			limit = {
-				ROOT = {
-					OR = {
-						tag = BAN
-						tag = JBP
-						tag = BEN
-						tag = ENG
-					}
-				}
-			}
-			BDK = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BDK_ENG_Containment
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					NOT = {
-						tag = BAN
-						tag = JBP
-					}
-				}
-			}
-			BDK = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BDK_Containment
-			}
-		}
-		recheck_annexations = yes
-	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7065 option annex.give_to_india"
-		name = annex.give_to_india
-		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
-		}
-		ai_chance = {
-			base = 60
-			modifier = {
 				annexations_can_annex = yes
+			}
+			modifier = {
 				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
 			}
 		}
-		
-		1106 = {
-			set_state_flag = PB_Indian_Unifier_State
+		set_temp_variable = { tag_to_release = event_target:india }
+		1106 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7065 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
+		trigger = {
+			has_event_target = india_two
 		}
-		PB_give_to_indian_unifier = yes
-		
-		recheck_annexations = yes
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		1106 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7065 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		1106 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -10785,43 +10706,28 @@ country_event = { #Fate of Bundelkhand
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		BDK = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		1106 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.7065 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				ROOT = {
-					tag = BEN
-					tag = BAN
-				}
-				annexations_can_annex = yes
-			}
+			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
-				}
-				factor = 100
-			}
-		}
-		every_owned_state = {
+		1106 = {
 			add_claim_of_ROOT = yes
 		}
-		recheck_annexations = yes
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7065 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+		
 	}
+
+	after = { recheck_annexations = yes }
 }
 
 country_event = { #Fate of Jabalpur
@@ -10832,6 +10738,19 @@ country_event = { #Fate of Jabalpur
 
 	is_triggered_only = yes
 
+	immediate = { 
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			determine_indian_ally = yes
+		}
+	}
 	option = { #Release Jabalpur
 		log = "[GetLogInfo]: event annex.7066 option annex.7066.a"
 		name = annex.7066.a
@@ -10877,127 +10796,94 @@ country_event = { #Fate of Jabalpur
 		recheck_annexations = yes
 	}
 	
-	option = { #Establish our own corporate authority
-		log = "[GetLogInfo]: event annex.7066 option annex.7066.b"
-		name = annex.7066.b
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7066 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
 		trigger = {
-			is_subject = no
-			ROOT = {
-				OR = {
-					tag = GER
-					tag = ENG
-					tag = RUS
-				}
-			}
+			has_event_target = india
 		}
 		ai_chance = {
-			base = 50
+			base = 10
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
-		}
-
-		set_temp_variable = { tag_to_release = JBP }
-		release_targeted_tag = yes
-
-		if = {
-			limit = {
-				ROOT = {
-					tag = GER
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
 				}
 			}
-			JBP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JBP_GER_Colonial
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
 			}
 		}
-
-		if = {
-			limit = {
-				ROOT = {
-					tag = ENG
-				}
-			}
-			JBP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JBP_ENG_Colonial
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					tag = RUS
-				}
-			}
-			JBP = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JBP_RUS_Colonial
-			}
-		}
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:india }
+		1262 = { transfer_state_and_notify = yes }
+		436 = { transfer_state_and_notify = yes }
 	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7066 option annex.give_to_india"
-		name = annex.give_to_india
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7066 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
 		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
+			has_event_target = india_two
 		}
 		ai_chance = {
-			base = 60
+			base = 10
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
 			}
 		}
-		
-		1262 = {
-			set_state_flag = PB_Indian_Unifier_State
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		1262 = { transfer_state_and_notify = yes }
+		436 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7066 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
 		}
-		436 = {
-			set_state_flag = PB_Indian_Unifier_State
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
 		}
-		PB_give_to_indian_unifier = yes
-		
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		1262 = { transfer_state_and_notify = yes }
+		436 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -11015,22 +10901,7 @@ country_event = { #Fate of Jabalpur
 		log = "[GetLogInfo]: event annex.7066 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				ROOT = {
-					tag = BEN
-					tag = BAN
-				}
-				annexations_can_annex = yes
-			}
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				ROOT = {
-					is_indian_unifier = yes
-				}
-				factor = 100
-			}
+			annexations_can_annex = yes
 		}
 		every_owned_state = {
 			add_claim_of_ROOT = yes
@@ -11272,7 +11143,105 @@ country_event = { # Fate of Nepal
 	is_triggered_only = yes
 	
 	immediate = {
-		1259 = { retain_state = yes }
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			determine_indian_ally = yes
+			1259 = { retain_state = yes }
+		}
+	}
+
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7068 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
+		trigger = {
+			has_event_target = india
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india }
+		323 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7068 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
+		trigger = {
+			has_event_target = india_two
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		323 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7068 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		323 = { transfer_state_and_notify = yes }
 	}
 
 	option = { # Release Nepal
@@ -11340,20 +11309,7 @@ country_event = { # Fate of Nepal
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 60
-				ROOT = {
-					tag = TIB
-				}
-			}
-		}
-		every_owned_state = {
+		323 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -11377,89 +11333,154 @@ country_event = { # Fate of Terai
 
 	is_triggered_only = yes
 	
-	option = { # Leave it to Nepal
-		log = "[GetLogInfo]: event annex.7069 option annex.7069.a"
-		name = annex.7069.a
-		trigger = {
-			is_subject = no
-			NEP = {
-				exists = yes
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+						323 = { is_claim_or_core_of_ROOT = yes } #Madras
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			determine_indian_ally = yes
+			
+			if = {
+				limit = {
+					annexations_india_is_puppet_or_independent_ally_of_ROOT = no
+					323 = { #Nepal
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							NOT = { tag = event_target:india_two }
+							NOT = { tag = event_target:india_three }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:323.owner = { save_event_target_as = nepal add_to_array = { ROOT.potential_grant_targets = THIS } }
 			}
 		}
+	}
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7069 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
+		trigger = {
+			has_event_target = india
+		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0
-				ROOT = {
-					is_indian_unifier = yes
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:nepal
+					is_ally_with = event_target:india_three
 				}
 			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
+			}
 		}
-		NEP = {
-			transfer_state = 1259
-		}
+		set_temp_variable = { tag_to_release = event_target:india }
+		1259 = { transfer_state_and_notify = yes }
 	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7069 option annex.give_to_india"
-		name = annex.give_to_india
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7069 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
 		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
+			has_event_target = india_two
 		}
 		ai_chance = {
-			base = 60
+			base = 10
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:nepal
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
 			}
 		}
-		
-		1259 = {
-			set_state_flag = PB_Indian_Unifier_State
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		1259 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7069 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
 		}
-		PB_give_to_indian_unifier = yes
-		
-		recheck_annexations = yes
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:nepal
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		1259 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to owner of nepal
+		log = "[GetLogInfo]: event annexation_events.7069 option annexation_events.asia.give_to_madras"
+		name = annexation_events.asia.give_to_nepal
+		trigger = {
+			has_event_target = nepal
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:nepal }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:nepal = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:nepal }
+		1259 = {	transfer_state_and_notify = yes }
 	}
 
 	option = { #Give to overlord
@@ -11478,20 +11499,7 @@ country_event = { # Fate of Terai
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					is_indian_unifier = yes
-				}
-			}
-		}
-		every_owned_state = {
+		1259 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -11514,6 +11522,149 @@ country_event = { # Fate of Sikkim/Drenjong
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+						323 = { is_claim_or_core_of_ROOT = yes } #
+						324 = { is_claim_or_core_of_ROOT = yes } #
+						431 = { is_claim_or_core_of_ROOT = yes } #
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			if = {
+				limit = {
+					323 = { #bhutan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							NOT = { tag = event_target:india_two }
+							NOT = { tag = event_target:india_three }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:323.owner = { save_event_target_as = nepal add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					324 = { #bhutan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:nepal }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:324.owner = { save_event_target_as = bhutan add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					431 = { #calcutta
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:nepal }
+							NOT = { tag = event_target:bhutan }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:431.owner = { save_event_target_as = calcutta add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Give to owner of Nepal
+		log = "[GetLogInfo]: event annexation_events.7070 option annex.7070.b"
+		name = annex.7070.b
+		trigger = {
+			has_event_target = nepal
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:nepal }
+				OR = { 
+					is_ally_with = event_target:calcutta
+					is_ally_with = event_target:bhutan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:nepal = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:nepal }
+		425 = {	transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to owner of calcutta
+		log = "[GetLogInfo]: event annexation_events.7070 option annex.7070.c"
+		name = annex.7070.c
+		trigger = {
+			has_event_target = calcutta
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:calcutta }
+				OR = { 
+					is_ally_with = event_target:nepal
+					is_ally_with = event_target:bhutan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:calcutta = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:calcutta }
+		425 = {	transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to owner of bhutan
+		log = "[GetLogInfo]: event annexation_events.7070 option annex.7070.e"
+		name = annex.7070.e
+		trigger = {
+			has_event_target = bhutan
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bhutan }
+				OR = { 
+					is_ally_with = event_target:calcutta
+					is_ally_with = event_target:nepal
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bhutan = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:bhutan }
+		425 = {	transfer_state_and_notify = yes }
+	}
+
 	
 	option = { # Release Sikkim
 		log = "[GetLogInfo]: event annex.7070 option annex.7070.a"
@@ -11526,18 +11677,6 @@ country_event = { # Fate of Sikkim/Drenjong
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				ROOT = {
-					tag = NEP
-				}
-			}
-			modifier = {
-				factor = 0
-				ROOT = {
-					is_indian_unifier = yes
-				}
 			}
 		}
 
@@ -11570,92 +11709,6 @@ country_event = { # Fate of Sikkim/Drenjong
 
 	}
 	
-	option = { # Leave it to Nepal
-		log = "[GetLogInfo]: event annex.7070 option annex.7070.b"
-		name = annex.7070.b
-		trigger = {
-			is_subject = no
-			NEP = {
-				exists = yes
-			}
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				ROOT = {
-					is_indian_unifier = yes
-				}
-			}
-		}
-		NEP = {
-			transfer_state = 853
-		}
-		853 = { add_claim_by = NEP }
-	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7070 option annex.give_to_india"
-		name = annex.give_to_india
-		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
-		}
-		ai_chance = {
-			base = 60
-			modifier = {
-				factor = 0
-			}
-		}
-		
-		853 = {
-			set_state_flag = PB_Indian_Unifier_State
-		}
-		PB_give_to_indian_unifier = yes
-		
-		recheck_annexations = yes
-	}
-
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7070 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -11672,26 +11725,7 @@ country_event = { # Fate of Sikkim/Drenjong
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					is_indian_unifier = yes
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = NEP
-				}
-			}
-		}
-		every_owned_state = {
+		853 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -11715,6 +11749,16 @@ country_event = { # Fate of Bhutan
 
 	is_triggered_only = yes
 	
+	immediate = { 
+		if = {
+			limit = {
+				OR = {
+					is_indian_unifier = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+	}
 	option = { # Release Bhutan
 		log = "[GetLogInfo]: event annex.7071 option annex.7071.a"
 		name = annex.7071.a
@@ -11763,34 +11807,6 @@ country_event = { # Fate of Bhutan
 		}
 
 	}
-	
-	option = { # Leave it to Nepal
-		log = "[GetLogInfo]: event annex.7071 option annex.7071.b"
-		name = annex.7071.b
-		trigger = {
-			is_subject = no
-			NEP = {
-				exists = yes
-			}
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				ROOT = {
-					is_indian_unifier = yes
-				}
-			}
-		}
-		NEP = {
-			transfer_state = 324
-		}
-		324 = { add_claim_by = NEP }
-	}
 
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7071 option annex.give_to_overlord"
@@ -11808,20 +11824,7 @@ country_event = { # Fate of Bhutan
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = NEP
-				}
-			}
-		}
-		every_owned_state = {
+		324 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -13208,12 +13211,6 @@ country_event = { # Fate of Madras
 				factor = 0
 				annexations_can_annex = yes
 			}
-			modifier = {
-				factor = 0
-				ROOT = {
-					is_indian_unifier = yes
-				}
-			}
 		}
 
 		set_temp_variable = { tag_to_release = MDR }
@@ -13344,8 +13341,9 @@ country_event = { # Fate of Madras
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		MDR = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		848 = { transfer_state_and_notify = yes }
+		423 = { transfer_state_and_notify = yes }
+		1112 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -13356,7 +13354,7 @@ country_event = { # Fate of Madras
 		}
 		848 = { add_claim_of_ROOT = yes }
 		423 = { add_claim_of_ROOT = yes }
-		423 = { transfer_state_and_notify = yes }
+		1112 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { # Cancel
@@ -13384,7 +13382,6 @@ country_event = { # Fate of Hyderabad
 				limit = {
 					OR = {
 						is_indian_unifier = yes
-						423 = { is_claim_or_core_of_ROOT = yes } #Madras
 					}
 				}
 				save_event_target_as = can_annex
@@ -14517,83 +14514,154 @@ country_event = { # Fate of Goa
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-	
-	option = { #Leave it to Hyderabad
-		log = "[GetLogInfo]: event annex.7086 option annex.7086.a"
-		name = annex.7086.a
-		trigger = {
-			HYD = {
-				exists = yes
+	immediate = { 
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+						852 = { is_claim_or_core_of_ROOT = yes } #
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			determine_indian_ally = yes
+			
+			if = {
+				limit = {
+					annexations_india_is_puppet_or_independent_ally_of_ROOT = no
+					852 = { #sanghli
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							NOT = { tag = event_target:india_two }
+							NOT = { tag = event_target:india_three }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:852.owner = { save_event_target_as = hyderabad add_to_array = { ROOT.potential_grant_targets = THIS } }
 			}
 		}
+	}
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7086 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
+		trigger = {
+			has_event_target = india
+		}
 		ai_chance = {
-			base = 100
+			base = 10
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
-		}
-		
-		HYD = {
-			transfer_state = 846
-		}
-		846 = { add_claim_by = HYD }
-	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7086 option annex.give_to_india"
-		name = annex.give_to_india
-		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
-		}
-		ai_chance = {
-			base = 60
 			modifier = {
 				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+					is_ally_with = event_target:hyderabad
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
 			}
 		}
-		
-		846 = {
-			set_state_flag = PB_Indian_Unifier_State
+		set_temp_variable = { tag_to_release = event_target:india }
+		846 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7086 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
+		trigger = {
+			has_event_target = india_two
 		}
-		PB_give_to_indian_unifier = yes
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_three
+					is_ally_with = event_target:hyderabad
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		846 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7086 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:hyderabad
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		846 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Leave Surate to Hyderabad
+		log = "[GetLogInfo]: event annex.7086 option annex.7086.a"
+		name = annex.7086.a
+		trigger = {
+			has_event_target = hyderabad
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:hyderabad }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:hyderabad = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:hyderabad }
+		846 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Give to overlord
@@ -14610,26 +14678,9 @@ country_event = { # Fate of Goa
 		log = "[GetLogInfo]: event annex.7086 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				annexations_can_annex = yes
-				tag = BAN
-				tag = BEN
-			}
+			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					is_indian_unifier = yes
-				}
-			}
-		}
-		every_owned_state = {
+		846 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -14654,18 +14705,30 @@ country_event = { # Fate of East Bengal/BEN
 	is_triggered_only = yes
 	
 	immediate = {
-		640 = { retain_state = yes }
-		1113 = { retain_state = yes }
-		1109 = { retain_state = yes }
-		431 = { retain_state = yes }
-		434 = { retain_state = yes }
-		1116 = { retain_state = yes }
-		1115 = { retain_state = yes }
-		1427 = { retain_state = yes }
-		1114 = { retain_state = yes }
-		1123 = { retain_state = yes }
-		1124 = { retain_state = yes }
-		724 = { retain_state = yes }
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+						423 = { is_claim_or_core_of_ROOT = yes } #Madras
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			determine_indian_ally = yes
+			640 = { retain_state = yes }
+			1113 = { retain_state = yes }
+			1109 = { retain_state = yes }
+			431 = { retain_state = yes }
+			434 = { retain_state = yes }
+			1116 = { retain_state = yes }
+			1115 = { retain_state = yes }
+			1427 = { retain_state = yes }
+			1114 = { retain_state = yes }
+			1123 = { retain_state = yes }
+			1124 = { retain_state = yes }
+			724 = { retain_state = yes }
+		}
 	}
 	
 	option = { #Release Bengal
@@ -14715,174 +14778,100 @@ country_event = { # Fate of East Bengal/BEN
 			}
 		}
 	}
-	
-	option = { #Establish our own colonial administration
-		log = "[GetLogInfo]: event annex.7087 option annex.7087.b"
-		name = annex.7087.b
+	option = { #Give to india
+		log = "[GetLogInfo]: event annexation_events.7087 option annexation_events.asia.give_to_india"
+		name = annexation_events.asia.give_to_india
 		trigger = {
-			is_subject = no
-			ROOT = {
-				OR = {
-					tag = ENG
-					tag = RUS
-					tag = FRA
-					tag = GER
-				}
-			}
+			has_event_target = india
 		}
 		ai_chance = {
-			base = 50
+			base = 10
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
-		}
-
-		set_temp_variable = { tag_to_release = BEN }
-		release_targeted_tag = yes
-
-		if = {
-			limit = {
-				ROOT = {
-					tag = ENG
-				}
-			}
-			BEN = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BEN_ENG_Colonial
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					tag = RUS
-				}
-			}
-			BEN = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BEN_RUS_Colonial
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					tag = FRA
-				}
-			}
-			BEN = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BEN_FRA_Colonial
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					tag = GER
-				}
-			}
-			BEN = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BEN_GER_Colonial
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					tag = AME
-				}
-			}
-			BEN = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BEN_AME_Colonial
-			}
-		}
-		
-		if = {
-			limit = {
-				ROOT = {
-					NOT = {
-						tag = ENG
-						tag = RUS
-						tag = GER
-						tag = FRA
-						tag = AME
-					}
-				}
-			}
-			BEN = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = BEN_Colonial
-			}
-		}
-	}
-	
-	option = { #Give to the Indian State
-		log = "[GetLogInfo]: event annex.7087 option annex.give_to_india"
-		name = annex.give_to_india
-		trigger = {
-			is_subject = no
-			ROOT = {
-				NOT = {
-					is_indian_unifier = yes
-					capital_scope = {
-						is_on_continent = india
-					}
-				}
-			}
-			OR = {
-				MUG = {
-					exists = yes
-				}
-				AWD = {
-					exists = yes
-				}
-				BHP = {
-					exists = yes
-				}
-				FOM = {
-					exists = yes
-				}
-				BEN = {
-					exists = yes
-				}
-				BAN = {
-					exists = yes
-				}
-				JBP = {
-					exists = yes
-				}
-				BDK = {
-					exists = yes
-				}
-				MAR = {
-					exists = yes
-				}
-			}
-		}
-		ai_chance = {
-			base = 60
 			modifier = {
 				factor = 0
+				NOT = { is_ally_with = event_target:india }
+				OR = { 
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india = { is_subject = yes }
 			}
 		}
-		
-		430 = {
-			set_state_flag = PB_Indian_Unifier_State
+		set_temp_variable = { tag_to_release = event_target:india }
+		432 = { transfer_state_and_notify = yes }
+		1108 = { transfer_state_and_notify = yes }
+		851 = { transfer_state_and_notify = yes }
+		430 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_two
+		log = "[GetLogInfo]: event annexation_events.7087 option annexation_events.asia.give_to_princely_india"
+		name = annexation_events.asia.give_to_india_two
+		trigger = {
+			has_event_target = india_two
 		}
-		851 = {
-			set_state_flag = PB_Indian_Unifier_State
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_two }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_two = { is_subject = yes }
+			}
 		}
-		1108 = {
-			set_state_flag = PB_Indian_Unifier_State
+		set_temp_variable = { tag_to_release = event_target:india_two }
+		432 = { transfer_state_and_notify = yes }
+		1108 = { transfer_state_and_notify = yes }
+		851 = { transfer_state_and_notify = yes }
+		430 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to india_three
+		log = "[GetLogInfo]: event annexation_events.7087 option annexation_events.asia.give_to_india_three"
+		name = annexation_events.asia.give_to_india_three
+		trigger = {
+			has_event_target = india_three
 		}
-		432 = {
-			set_state_flag = PB_Indian_Unifier_State
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:india_three }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:india_three = { is_subject = yes }
+			}
 		}
-		PB_give_to_indian_unifier = yes
+		set_temp_variable = { tag_to_release = event_target:india_three }
+		432 = { transfer_state_and_notify = yes }
+		1108 = { transfer_state_and_notify = yes }
+		851 = { transfer_state_and_notify = yes }
+		430 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Give to overlord
@@ -14900,27 +14889,12 @@ country_event = { # Fate of East Bengal/BEN
 		log = "[GetLogInfo]: event annex.7087 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				annexations_can_annex = yes
-				tag = BAN
-			}
+			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					is_indian_unifier = yes
-				}
-			}
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		432 = { add_claim_of_ROOT = yes }
+		1108 = { add_claim_of_ROOT = yes }
+		851 = { add_claim_of_ROOT = yes }
+		430 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { # Cancel
