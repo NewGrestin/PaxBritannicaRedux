@@ -19706,3 +19706,155 @@ country_event = { # Fate of Chahar
         recheck_annexations = yes
     }
 }
+
+country_event = { #Fate of Ceylon
+	id = annex.7119
+	title = annexation_422
+	desc = annexation_422_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = HOL
+					tag = MDR
+					tag = RAJ
+					tag = BAN
+					tag = RUS
+					tag = ENG
+					tag = FRA
+					1112 = { is_claim_or_core_of_ROOT = yes } # Madurai
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		#Madurai
+		if = {
+			limit = {
+				1112 = { is_claim_or_core_of_ROOT = yes } # Madurai
+			}
+			var:1112.owner = { save_event_target_as = madurai }
+		}
+	}
+	
+	option = { #Release Sri Lanka
+		log = "[GetLogInfo]: event annex.7119 option annex.7119.a"
+		name = annex.7119.a
+		trigger = {
+			is_subject = no
+			SRL = { exists = no }
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 100
+				ROOT = { 
+					OR = { 
+						has_government = jc
+						has_government = ss
+					}
+				}
+			}
+			modifier = {
+				factor = 10
+				ROOT = {
+					OR = {
+						has_subject = event_target:madurai
+						is_ally_with = event_target:madurai
+					}
+				}
+			}
+		}
+	
+		set_temp_variable = { tag_to_release = SRL }
+		release_targeted_tag = yes
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+				}
+			}
+			SRL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SRL_Occupied_Monarchy
+			}
+		}
+		
+		else_if = {
+			limit = {
+				ROOT = {
+					has_republican_government = yes
+				}
+			}
+			SRL = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SRL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Madurai
+		log = "[GetLogInfo]: event annex.7119 option annex.7119.b"
+		name = annex.7119.b
+		trigger = {
+			is_subject = no
+			has_event_target = madurai
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:madurai }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:madurai = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:madurai }
+		422 = { transfer_if_owned = yes } #Ceylon
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7119 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		ai_chance = { base = 100 }
+		set_temp_variable = { tag_to_release = overlord }
+		422 = { transfer_if_owned = yes } #Ceylon
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7119 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		422 = { add_claim_of_ROOT = yes } #Ceylon
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.7119 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}

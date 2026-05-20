@@ -28234,3 +28234,135 @@ country_event = { #Fate of Grisons
 		recheck_annexations = yes
 	}
 }
+
+country_event = { #Fate of Spetsbergen
+	id = annex.1198
+	title = annexation_1079
+	desc = annexation_1079_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					tag = SWE
+					tag = NOR
+					tag = DEN
+					tag = MEN
+					tag = RUS
+					tag = ENG
+					100 = { is_claim_or_core_of_ROOT = yes } # Iceland
+					1011 = { is_claim_or_core_of_ROOT = yes } # Nordland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		#Iceland
+		if = {
+			limit = {
+				100 = { is_claim_or_core_of_ROOT = yes } # Iceland
+			}
+			var:100.owner = { save_event_target_as = iceland }
+		}
+		
+		#Nordland
+		if = {
+			limit = {
+				1011 = { is_claim_or_core_of_ROOT = yes } # Nordland
+			}
+			var:1011.owner = { save_event_target_as = nordland }
+		}
+	}
+
+	option = { #Give to Iceland
+		log = "[GetLogInfo]: event annex.1198 option annex.1198.a"
+		name = annex.1198.a
+		trigger = {
+			is_subject = no
+			has_event_target = iceland
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:iceland }
+				OR = { 
+					is_ally_with = event_target:nordland
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:iceland = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:iceland }
+		1079 = { transfer_if_owned = yes } #Spetsbergen
+	}
+
+	option = { #Give to Nordland
+		log = "[GetLogInfo]: event annex.1198 option annex.1198.b"
+		name = annex.1198.b
+		trigger = {
+			is_subject = no
+			has_event_target = nordland
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:nordland }
+				OR = { 
+					is_ally_with = event_target:iceland
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:nordland = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:nordland }
+		1079 = { transfer_if_owned = yes } #Spetsbergen
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1198 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		ai_chance = { base = 100 }
+		set_temp_variable = { tag_to_release = overlord }
+		1079 = { transfer_if_owned = yes } #Spetsbergen
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1198 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		1079 = { add_claim_of_ROOT = yes } #Spetsbergen
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1198 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}

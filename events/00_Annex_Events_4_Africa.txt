@@ -6607,6 +6607,24 @@ country_event = { #Fate of Nigeria
 			}
 			remove_core_of = NIG
 		}
+		558 = { add_core_of = SOK }
+		
+		set_temp_variable = { tag_to_release = SOK }
+		release_targeted_tag = yes
+		
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			SOK = {
+				set_cosmetic_tag = SOK_Occupied_Republic
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			SOK = {
+				set_cosmetic_tag = SOK_Occupied_Monarchy
+			}
+		}
 	}
 
 	option = { #Give to British African Authority
@@ -18565,6 +18583,102 @@ country_event = { #Fate of Selibaby
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.4124 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Bioko
+	id = annex.4125
+	title = annexation_1074
+	desc = annexation_1074_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						annexations_can_establish_african_colony = yes
+						773 = { is_claim_or_core_of_ROOT = yes } # Cameroon
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Cameroon
+			if = {
+				limit = {
+					773 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:773.owner = { save_event_target_as = cameroon }
+			}
+		}
+	}
+
+	option = { #Give to Cameroon
+		log = "[GetLogInfo]: event annex.4125 option annex.4125.a"
+		name = annex.4125.a
+		trigger = {
+			is_subject = no
+			has_event_target = cameroon
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:cameroon }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:cameroon = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:cameroon }
+        1074 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.4125 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+        1074 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.4125 option annex.integration"
+		name = annex.integration
+		trigger = {
+			OR = {
+				annexations_can_annex = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+		1074 = { add_claim_of_ROOT = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.4125 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
