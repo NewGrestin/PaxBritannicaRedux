@@ -664,7 +664,7 @@ social_development_check_industry_calculate = {
 
     if = {
         limit = { check_variable = { SOCDEV_has_industry > 0 } }
-        calculate_SOCDEV_industry = yes
+        calculate_SOCDEV_industries = yes
     }
 }
 social_development_monthly_effect = {
@@ -814,7 +814,7 @@ social_development_monthly_effect = {
 }
 
 socdev_monthly_effect = {
-    every_possible_country = {
+    every_country = {
         limit = { NOT = { tag = XXD } }
         social_development_monthly_effect = yes
     }
@@ -825,10 +825,12 @@ socdev_keep_values_before_efficiency = {
     ############################
 
     set_variable = { SOCDEV_POV_base_value = SOCDEV_POV_monthly_change }              
-    set_variable = { SOCDEV_POV_base_modifiers = modifier@SOCDEV_POV_growth_monthly } 
+    set_variable = { SOCDEV_POV_base_modifiers = modifier@SOCDEV_POV_growth_monthly }
+    set_variable = { SOCDEV_POV_base_industry = SOCDEV_POV_industry_monthly }
 
     set_variable = { SOCDEV_POV_base_change = SOCDEV_POV_monthly_change }             
     add_to_variable = { SOCDEV_POV_base_change = modifier@SOCDEV_POV_growth_monthly }
+    add_to_variable = { SOCDEV_POV_base_change = SOCDEV_POV_base_industry }
 
     ############################
     # INDUSTRIALIZATION
@@ -858,9 +860,11 @@ socdev_keep_values_before_efficiency = {
 
     set_variable = { SOCDEV_ECON_base_value = SOCDEV_ECON_monthly_change }
     set_variable = { SOCDEV_ECON_base_modifiers = modifier@SOCDEV_ECON_growth_monthly }
+    set_variable = { SOCDEV_ECON_base_industry = SOCDEV_ECON_industry_monthly }
 
     set_variable = { SOCDEV_ECON_base_change = SOCDEV_ECON_monthly_change }
     add_to_variable = { SOCDEV_ECON_base_change = modifier@SOCDEV_ECON_growth_monthly }
+    add_to_variable = { SOCDEV_ECON_base_change = SOCDEV_ECON_base_industry }
 
     ############################
     # MILITARY MODERNIZATION
@@ -893,6 +897,10 @@ socdev_store_values_after_efficiency = {
 
     set_variable = { SOCDEV_POV_modifiers_after_eff = SOCDEV_POV_base_modifiers }
     multiply_variable = { SOCDEV_POV_modifiers_after_eff = SOCDEV_POV_eff_var_total }
+
+    set_variable = { SOCDEV_POV_industry_after_eff = SOCDEV_POV_base_industry }
+    multiply_variable = { SOCDEV_POV_industry_after_eff = SOCDEV_POV_eff_var_total }
+    clamp_variable = { var = SOCDEV_POV_industry_after_eff max = 5 }
 
     ############################
     # INDUSTRIALIZATION
@@ -928,6 +936,10 @@ socdev_store_values_after_efficiency = {
     set_variable = { SOCDEV_ECON_modifiers_after_eff = SOCDEV_ECON_base_modifiers }
     multiply_variable = { SOCDEV_ECON_modifiers_after_eff = SOCDEV_ECON_eff_var_total }
 
+    set_variable = { SOCDEV_ECON_industry_after_eff = SOCDEV_ECON_base_industry }
+    multiply_variable = { SOCDEV_ECON_industry_after_eff = SOCDEV_ECON_eff_var_total }
+    clamp_variable = { var = SOCDEV_ECON_industry_after_eff max = 8 }
+
     ############################
     # MILITARY MODERNIZATION
     ############################
@@ -951,7 +963,8 @@ socdev_store_values_after_efficiency = {
 socdev_multiply_by_efficiency = {
     # POV
     set_variable = { SOCDEV_POV_real_change = SOCDEV_POV_base_value }                 
-    add_to_variable = { SOCDEV_POV_real_change = modifier@SOCDEV_POV_growth_monthly }  
+    add_to_variable = { SOCDEV_POV_real_change = modifier@SOCDEV_POV_growth_monthly }
+    add_to_variable = { SOCDEV_POV_real_change = SOCDEV_POV_base_industry }  
     multiply_variable = { SOCDEV_POV_real_change = SOCDEV_POV_eff_var_total }          
 
     # IND
@@ -968,6 +981,7 @@ socdev_multiply_by_efficiency = {
     # ECON
     set_variable = { SOCDEV_ECON_real_change = SOCDEV_ECON_base_value }
     add_to_variable = { SOCDEV_ECON_real_change = modifier@SOCDEV_ECON_growth_monthly }
+    add_to_variable = { SOCDEV_ECON_real_change = SOCDEV_ECON_base_industry }
     multiply_variable = { SOCDEV_ECON_real_change = SOCDEV_ECON_eff_var_total }
 
     # MIL
@@ -1006,8 +1020,34 @@ socdev_calculate_tooltip_efficiency = {
     set_variable = { SOCDEV_WEST_eff_var_tooltip = modifier@SOCDEV_WEST_growth_efficiency }
     add_to_variable = { SOCDEV_WEST_eff_var_tooltip = modifier@SOCDEV_ALL_growth_efficiency }
 }
+calculate_SOCDEV_industries = {
+    calculate_SOCDEV_IND_industry = yes
+    calculate_SOCDEV_ECON_industry = yes
+    calculate_SOCDEV_POV_industry = yes
+}
+calculate_SOCDEV_factories = {
+      set_variable = { SOCDEV_effective_states = num_of_core_states }
 
-calculate_SOCDEV_industry = {
+      set_variable = { SOCDEV_owned_temp = num_of_owned_controlled_states }
+      subtract_from_variable = { SOCDEV_owned_temp = num_of_core_states }
+      multiply_variable = { SOCDEV_owned_temp = 0.5 }
+      add_to_variable = { SOCDEV_effective_states = SOCDEV_owned_temp }
+
+      set_variable = { SOCDEV_occupied_temp = num_of_controlled_states }
+      subtract_from_variable = { SOCDEV_occupied_temp = num_of_owned_controlled_states }
+      multiply_variable = { SOCDEV_occupied_temp = 0.25 }
+      add_to_variable = { SOCDEV_effective_states = SOCDEV_occupied_temp }
+
+      if = {
+          limit = { check_variable = { SOCDEV_effective_states < 1 } }
+          set_variable = { SOCDEV_effective_states = 1 }
+      }
+
+      set_variable = { SOCDEV_state_penalty = SOCDEV_effective_states }
+      multiply_variable = { SOCDEV_state_penalty = 0.04 }
+      add_to_variable = { SOCDEV_state_penalty = 0.75 }
+}
+calculate_SOCDEV_IND_industry = {
 
     # =====================================================
     # 1. REMOVE LAST VALUE (UNDO PREVIOUS TICK)
@@ -1017,80 +1057,47 @@ calculate_SOCDEV_industry = {
     }
 
     # =====================================================
-    # 2. EFFECTIVE STATES PENALTY (UNCHANGED LOGIC)
+    # 2. CALCULATE PENALTY FROM NUMBER OF STATES (MORE STATES = SLOWER GAIN)
     # =====================================================
 
-    set_variable = { SOCDEV_effective_states = num_of_core_states }
-
-    set_variable = { SOCDEV_owned_temp = num_of_owned_controlled_states }
-    subtract_from_variable = { SOCDEV_owned_temp = num_of_core_states }
-    multiply_variable = { SOCDEV_owned_temp = 0.5 }
-    add_to_variable = { SOCDEV_effective_states = SOCDEV_owned_temp }
-
-    set_variable = { SOCDEV_occupied_temp = num_of_controlled_states }
-    subtract_from_variable = { SOCDEV_occupied_temp = num_of_owned_controlled_states }
-    multiply_variable = { SOCDEV_occupied_temp = 0.25 }
-    add_to_variable = { SOCDEV_effective_states = SOCDEV_occupied_temp }
-
-    if = {
-        limit = { check_variable = { SOCDEV_effective_states < 1 } }
-        set_variable = { SOCDEV_effective_states = 1 }
-    }
-
-    set_variable = { SOCDEV_state_penalty = SOCDEV_effective_states }
-    multiply_variable = { SOCDEV_state_penalty = 0.04 }
-    add_to_variable = { SOCDEV_state_penalty = 0.75 }
-
+    calculate_SOCDEV_factories = yes
 
     # =====================================================
     # 3. CIVILIAN INDUSTRY (MAIN DRIVER)
     # =====================================================
-    set_variable = { SOCDEV_civ = num_of_civilian_factories }
+    set_variable = { SOCDEV_IND_civ = num_of_civilian_factories }
 
-    multiply_variable = { SOCDEV_civ = 0.06 }
+    multiply_variable = { SOCDEV_IND_civ = 0.05 }
 
-    clamp_variable = {
-        var = SOCDEV_civ
-        min = 0
-        max = 6
-    }
-
+    clamp_variable = { var = SOCDEV_IND_civ max = 6 }
 
     # =====================================================
     # 4. MILITARY INDUSTRY (WEAKER)
     # =====================================================
-    set_variable = { SOCDEV_mil = num_of_military_factories }
+    set_variable = { SOCDEV_IND_mil = num_of_military_factories }
 
-    multiply_variable = { SOCDEV_mil = 0.06 }
-    multiply_variable = { SOCDEV_mil = 0.4 }
+    multiply_variable = { SOCDEV_IND_mil = 0.05 }
+    multiply_variable = { SOCDEV_IND_mil = 0.4 }
 
-    clamp_variable = {
-        var = SOCDEV_mil
-        min = 0
-        max = 2.5
-    }
+    clamp_variable = { var = SOCDEV_IND_mil max = 2.5 }
 
 
     # =====================================================
     # 5. NAVAL INDUSTRY (MEDIUM)
     # =====================================================
-    set_variable = { SOCDEV_nav = num_of_naval_factories }
+    set_variable = { SOCDEV_IND_nav = num_of_naval_factories }
 
-    multiply_variable = { SOCDEV_nav = 0.06 }
-    multiply_variable = { SOCDEV_nav = 0.6 }
-    clamp_variable = {
-        var = SOCDEV_mil
-        min = 0
-        max = 1.5
-    }
+    multiply_variable = { SOCDEV_IND_nav = 0.05 }
+    multiply_variable = { SOCDEV_IND_nav = 0.6 }
+    clamp_variable = { var = SOCDEV_IND_nav max = 1.5 }
 
 
     # =====================================================
     # 6. COMBINE TOTAL INDUSTRY IMPACT
     # =====================================================
-    set_variable = { SOCDEV_IND_industry_monthly = SOCDEV_civ }
-    add_to_variable = { SOCDEV_IND_industry_monthly = SOCDEV_mil }
-    add_to_variable = { SOCDEV_IND_industry_monthly = SOCDEV_nav }
+    set_variable = { SOCDEV_IND_industry_monthly = SOCDEV_IND_civ }
+    add_to_variable = { SOCDEV_IND_industry_monthly = SOCDEV_IND_mil }
+    add_to_variable = { SOCDEV_IND_industry_monthly = SOCDEV_IND_nav }
 
 
     # =====================================================
@@ -1127,9 +1134,8 @@ calculate_SOCDEV_industry = {
         multiply_variable = { SOCDEV_IND_industry_monthly = 0.75 }
     }
 
-
     # =====================================================
-    # 9. GLOBAL CAP (UNCHANGED DESIGN)
+    # 9. GLOBAL CAP
     # =====================================================
     clamp_variable = {
         var = SOCDEV_IND_industry_monthly
@@ -1137,12 +1143,219 @@ calculate_SOCDEV_industry = {
         max = 10
     }
 
-
     # =====================================================
     # 10. STORE RESULT
     # =====================================================
     set_variable = {
         last_SOCDEV_IND_base_total_contribution = SOCDEV_IND_industry_monthly
+    }
+}
+
+calculate_SOCDEV_ECON_industry = {
+
+    # =====================================================
+    # 1. REMOVE LAST VALUE (UNDO PREVIOUS TICK)
+    # =====================================================
+    subtract_from_variable = {
+        SOCDEV_ECON_industry_monthly = last_SOCDEV_ECON_base_total_contribution
+    }
+
+    # =====================================================
+    # 2. CALCULATE PENALTY FROM NUMBER OF STATES (MORE STATES = SLOWER GAIN)
+    # =====================================================
+
+    calculate_SOCDEV_factories = yes
+
+    # =====================================================
+    # 3. CIVILIAN INDUSTRY (MAIN DRIVER)
+    # =====================================================
+    set_variable = { SOCDEV_ECON_civ = num_of_civilian_factories }
+
+    multiply_variable = { SOCDEV_ECON_civ = 0.035 }
+    multiply_variable = { SOCDEV_ECON_civ = 0.6 }
+
+    clamp_variable = { var = SOCDEV_ECON_civ max = 3.25 }
+
+    # =====================================================
+    # 4. MILITARY INDUSTRY (WEAKER)
+    # =====================================================
+    set_variable = { SOCDEV_ECON_mil = num_of_military_factories }
+
+    multiply_variable = { SOCDEV_ECON_mil = 0.035 }
+    multiply_variable = { SOCDEV_ECON_mil = 0.8 }
+
+    clamp_variable = { var = SOCDEV_ECON_mil max = 3 }
+
+
+    # =====================================================
+    # 5. NAVAL INDUSTRY (MEDIUM)
+    # =====================================================
+    set_variable = { SOCDEV_ECON_nav = num_of_naval_factories }
+
+    multiply_variable = { SOCDEV_ECON_nav = 0.035 }
+    clamp_variable = { var = SOCDEV_ECON_nav max = 1.75 }
+
+
+    # =====================================================
+    # 6. COMBINE TOTAL INDUSTRY IMPACT
+    # =====================================================
+    set_variable = { SOCDEV_ECON_industry_monthly = SOCDEV_ECON_civ }
+    add_to_variable = { SOCDEV_ECON_industry_monthly = SOCDEV_ECON_mil }
+    add_to_variable = { SOCDEV_ECON_industry_monthly = SOCDEV_ECON_nav }
+
+
+    # =====================================================
+    # 7. APPLY STATE PENALTY (SAFE DIVISION)
+    # =====================================================
+    divide_variable = { SOCDEV_ECON_industry_monthly = SOCDEV_state_penalty }
+
+    # =====================================================
+    # 8. APPLY SOCDEV MULTIPLIERS AND CHECK FOR MAJOR STATUS
+    # =====================================================
+    if = {
+        limit = { has_idea = PB_socdev_collapsing_economy }
+        multiply_variable = { SOCDEV_ECON_industry_monthly = 1.1 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_underperforming_economy }
+        multiply_variable = { SOCDEV_ECON_industry_monthly = 1 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_stagnant_economy }
+        multiply_variable = { SOCDEV_ECON_industry_monthly = 0.9 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_stable_economy }
+        multiply_variable = { SOCDEV_ECON_industry_monthly = 0.3 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_booming_economy }
+        multiply_variable = { SOCDEV_ECON_industry_monthly = 0.15 }
+    }
+
+    if = {
+        limit = { is_major = yes }
+        multiply_variable = { SOCDEV_ECON_industry_monthly = 0.75 }
+    }
+
+    # =====================================================
+    # 9. GLOBAL CAP
+    # =====================================================
+    clamp_variable = {
+        var = SOCDEV_ECON_industry_monthly
+        min = 0
+        max = 8
+    }
+
+    # =====================================================
+    # 10. STORE RESULT
+    # =====================================================
+    set_variable = {
+        last_SOCDEV_ECON_base_total_contribution = SOCDEV_ECON_industry_monthly
+    }
+}
+
+calculate_SOCDEV_POV_industry = {
+
+    # =====================================================
+    # 1. REMOVE LAST VALUE (UNDO PREVIOUS TICK)
+    # =====================================================
+    subtract_from_variable = {
+        SOCDEV_POV_industry_monthly = last_SOCDEV_POV_base_total_contribution
+    }
+
+    # =====================================================
+    # 2. CALCULATE PENALTY FROM NUMBER OF STATES (MORE STATES = SLOWER GAIN)
+    # =====================================================
+
+    calculate_SOCDEV_factories = yes
+
+    # =====================================================
+    # 3. CIVILIAN INDUSTRY (MAIN DRIVER)
+    # =====================================================
+    set_variable = { SOCDEV_POV_civ = num_of_civilian_factories }
+
+    multiply_variable = { SOCDEV_POV_civ = 0.02 }
+    multiply_variable = { SOCDEV_POV_civ = 0.6 }
+
+    clamp_variable = { var = SOCDEV_POV_civ max = 3 }
+
+    # =====================================================
+    # 4. MILITARY INDUSTRY (WEAKER)
+    # =====================================================
+    set_variable = { SOCDEV_POV_mil = num_of_military_factories }
+
+    multiply_variable = { SOCDEV_POV_mil = 0.02 }
+    multiply_variable = { SOCDEV_POV_mil = 0.8 }
+
+    clamp_variable = { var = SOCDEV_POV_mil max = 1.25 }
+
+
+    # =====================================================
+    # 5. NAVAL INDUSTRY (MEDIUM)
+    # =====================================================
+    set_variable = { SOCDEV_POV_nav = num_of_naval_factories }
+
+    multiply_variable = { SOCDEV_POV_nav = 0.02 }
+    clamp_variable = { var = SOCDEV_POV_nav max = 0.75 }
+
+
+    # =====================================================
+    # 6. COMBINE TOTAL INDUSTRY IMPACT
+    # =====================================================
+    set_variable = { SOCDEV_POV_industry_monthly = SOCDEV_POV_civ }
+    add_to_variable = { SOCDEV_POV_industry_monthly = SOCDEV_POV_mil }
+    add_to_variable = { SOCDEV_POV_industry_monthly = SOCDEV_POV_nav }
+
+
+    # =====================================================
+    # 7. APPLY STATE PENALTY (SAFE DIVISION)
+    # =====================================================
+    divide_variable = { SOCDEV_POV_industry_monthly = SOCDEV_state_penalty }
+
+    # =====================================================
+    # 8. APPLY SOCDEV MULTIPLIERS AND CHECK FOR MAJOR STATUS
+    # =====================================================
+    if = {
+        limit = { has_idea = PB_socdev_extreme_poverty }
+        multiply_variable = { SOCDEV_POV_industry_monthly = 1.1 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_rampant_poverty }
+        multiply_variable = { SOCDEV_POV_industry_monthly = 1 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_widespread_poverty }
+        multiply_variable = { SOCDEV_POV_industry_monthly = 0.9 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_noticeable_poverty }
+        multiply_variable = { SOCDEV_POV_industry_monthly = 0.35 }
+    }
+    if = {
+        limit = { has_idea = PB_socdev_minor_poverty }
+        multiply_variable = { SOCDEV_POV_industry_monthly = 0.2 }
+    }
+
+    if = {
+        limit = { is_major = yes }
+        multiply_variable = { SOCDEV_POV_industry_monthly = 0.75 }
+    }
+
+    # =====================================================
+    # 9. GLOBAL CAP
+    # =====================================================
+    clamp_variable = {
+        var = SOCDEV_POV_industry_monthly
+        min = 0
+        max = 5
+    }
+
+    # =====================================================
+    # 10. STORE RESULT
+    # =====================================================
+    set_variable = {
+        last_SOCDEV_POV_base_total_contribution = SOCDEV_POV_industry_monthly
     }
 }
 
