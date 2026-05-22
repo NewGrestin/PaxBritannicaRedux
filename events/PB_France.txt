@@ -2,6 +2,8 @@
 # French Events
 ##################
 
+add_namespace = france_events
+add_namespace = france_flavour_events
 add_namespace = French
 add_namespace = French_flavour
 add_namespace = French_personality
@@ -11,9 +13,9 @@ add_namespace = Intermarium
 add_namespace = Prague_Conf
 
 country_event = {#Beginnings of the Doriot Coup
-	id = French.6
-	title = French.6.t
-	desc = French.6.d
+	id = france_events.1
+	title = france_events.1.t
+	desc = france_events.1.d
 	picture = GFX_report_PB_Paris_Event
 
 	is_triggered_only = yes
@@ -21,216 +23,168 @@ country_event = {#Beginnings of the Doriot Coup
 	fire_only_once = yes
 
 	immediate = {
-		set_country_flag = { flag = FRA_Doriot_Plot_Power value = 0 }
+		set_variable = { FRA_doriot_plot_power = 0 }
 	}
 
 	option = { #Don't investigate
-		name = French.6.a
+		name = france_events.1.a
 
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
-				add = 1000
-				has_game_rule = {
-					rule = PB_FRENCH_PATH
-					option = FRA_DOIROT_PATH
+				factor = 0
+				OR = {
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_ARMAND_PATH }
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_MAURRAS_PATH }
 				}
 			}
 		}
-
-		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
-
+		
 		add_political_power = -10
-		custom_effect_tooltip = FRA_Factionalism_0.02_increase
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = 0.02
-		}
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 1 }
-
-		hidden_effect = {
-			country_event = { id = French.7 days = 5 }
-		}
+		set_temp_variable = { number = 2 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
+		FRA_doriot_coup_power_increase = yes
 	}
 
 	option = { #Begin Investigation
-		name = French.6.b
+		name = france_events.1.b
 
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
-				add = 1000
-				OR = {
-					has_game_rule = {
-						rule = PB_FRENCH_PATH
-						option = FRA_ARMAND_PATH
-					}
-					has_game_rule = {
-						rule = PB_FRENCH_PATH
-						option = FRA_MAURRAS_PATH
-					}
-				}
+				factor = 0
+				has_game_rule = { rule = PB_FRENCH_PATH option = FRA_DOIROT_PATH }
 			}
 		}
 
 		add_political_power = -20
-
+	}
+	after = {
 		hidden_effect = {
-			country_event = { id = French.7 days = 5 }
+			country_event = { id = france_events.2 days = 5 }
 		}
 	}
 }
 
 country_event = {#The SP begins mobilizing
-	id = French.7
-	title = French.7.t
-	desc = French.7.d
+	id = france_events.2
+	title = france_events.2.t
+	desc = france_events.2.d
 	picture = GFX_report_PB_French_Soldiers
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
 
-	option = { #Demand they end their mobilization
-		name = French.7.a
+	option = { #Issue a minor protest
+		name = france_events.2.a
 
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
-				add = 1000
+				factor = 0
 				OR = {
-					has_game_rule = {
-						rule = PB_FRENCH_PATH
-						option = FRA_ARMAND_PATH
-					}
-					has_game_rule = {
-						rule = PB_FRENCH_PATH
-						option = FRA_MAURRAS_PATH
-					}
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_ARMAND_PATH }
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_MAURRAS_PATH }
 				}
+			}
+		}
+
+		add_political_power = -10
+		set_temp_variable = { number = 6 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
+		FRA_doriot_coup_power_increase = yes
+	}
+
+	option = { #Demand they end their mobilization
+		name = france_events.2.b
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				has_game_rule = { rule = PB_FRENCH_PATH option = FRA_DOIROT_PATH }
 			}
 		}
 
 		add_political_power = -30
-		custom_effect_tooltip = FRA_Factionalism_0.04_increase
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = 0.04
-		}
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
-
-		hidden_effect = {
-			country_event = { id = French.8 days = 3 }
-		}
+		set_temp_variable = { number = 4 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
+		FRA_doriot_coup_power_decrease = yes
 	}
 
-	option = { #Issue a minor protest
-		name = French.7.b
-
-		ai_chance = {
-			factor = 50
-			modifier = {
-				add = 1000
-				has_game_rule = {
-					rule = PB_FRENCH_PATH
-					option = FRA_DOIROT_PATH
-				}
-			}
-		}
-
-		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
-
-		add_political_power = -10
-		custom_effect_tooltip = FRA_Factionalism_0.06_increase
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = 0.06
-		}
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 1 }
-
+	after = {
 		hidden_effect = {
-			country_event = { id = French.8 days = 3 }
+			country_event = { id = france_events.3 days = 3 }
 		}
 	}
 }
 
 country_event = {#Doriot begins issuing orders
-	id = French.8
-	title = French.8.t
-	desc = French.8.d
+	id = france_events.3
+	title = france_events.3.t
+	desc = france_events.3.d
 	picture = GFX_report_PB_Secret_Documents
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
 
-	option = { #The orders are intercepted!
-		name = French.8.a
+
+	option = { #The orders remain secret
+		name = france_events.3.a
 
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
-				add = 1000
+				factor = 0
 				OR = {
-					has_game_rule = {
-						rule = PB_FRENCH_PATH
-						option = FRA_ARMAND_PATH
-					}
-					has_game_rule = {
-						rule = PB_FRENCH_PATH
-						option = FRA_MAURRAS_PATH
-					}
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_ARMAND_PATH }
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_MAURRAS_PATH }
 				}
+			}
+		}
+
+
+		add_political_power = -10
+		custom_effect_tooltip = tooltip_white_line
+		custom_effect_tooltip = FRA_doriot_coup_power_increase_tt
+		add_to_variable = { FRA_doriot_plot_power = 2 }
+
+	}
+
+	option = { #The orders are intercepted!
+		name = france_events.3.b
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				has_game_rule = { rule = PB_FRENCH_PATH option = FRA_DOIROT_PATH }
 			}
 		}
 
 		add_political_power = -25
-		custom_effect_tooltip = FRA_Factionalism_0.02_increase
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = 0.02
-		}
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
-
-		hidden_effect = {
-			country_event = { id = French.9 days = 3 }
-		}
+		set_temp_variable = { number = 2 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
+		FRA_doriot_coup_power_decrease = yes
 	}
 
-	option = { #The orders remain secret
-		name = French.8.b
-
-		ai_chance = {
-			factor = 50
-			modifier = {
-				add = 1000
-				has_game_rule = {
-					rule = PB_FRENCH_PATH
-					option = FRA_DOIROT_PATH
-				}
-			}
-		}
-
-		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
-
-		add_political_power = -10
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 2 }
-
+	after = {
 		hidden_effect = {
-			country_event = { id = French.9 days = 3 }
+			country_event = { id = france_events.4 days = 3 }
 		}
 	}
 }
 
 country_event = {#The Final Hour - which faction to arm
-	id = French.9
-	title = French.9.t
-	desc = French.9.d
+	id = france_events.4
+	title = france_events.4.t
+	desc = france_events.4.d
 	picture = GFX_report_PB_Gala_Dinner
 
 	is_triggered_only = yes
@@ -238,198 +192,123 @@ country_event = {#The Final Hour - which faction to arm
 	fire_only_once = yes
 
 	option = { #Neither, rely on the police
-		name = French.9.a
+		name = france_events.4.a
 
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
-				add = 1000
-				has_game_rule = {
-					rule = PB_FRENCH_PATH
-					option = FRA_DOIROT_PATH
+				factor = 0
+				OR = {
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_ARMAND_PATH }
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_MAURRAS_PATH }
 				}
 			}
 		}
 
 		add_political_power = 25
-		custom_effect_tooltip = FRA_Factionalism_0.02_increase
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = 0.02
-		}
-
-		custom_effect_tooltip = tooltip_FRA_Coup_Gains_Power
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = 5 }
-
-		hidden_effect = {
-			if = {
-				limit = {
-					original_tag = FRA
-					FRA = {
-						OR = { 
-						    has_country_flag = { flag = FRA_Doriot_Plot_Power value > 3 }
-							has_country_flag = { flag = FRA_Doriot_Plot_Power value = 3 }
-						}
-					}
-				}
-				country_event = { id = French.10 hours = 1 } # Doriot Wins
-			}
-
-			if = {
-				limit = {
-					original_tag = FRA
-					FRA = {
-						has_country_flag = { flag = FRA_Doriot_Plot_Power value < 3 }
-					}
-				}
-				country_event = { id = French.11 hours = 1 } # Muarras Wins
-			}
-		}
+		set_temp_variable = { number = 2 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
+		custom_effect_tooltip = FRA_doriot_coup_power_increase_tt
+		add_to_variable = { FRA_doriot_plot_power = 5 }
 	}
 
 	option = { #Arm the restorationists
-		name = French.9.b
+		name = france_events.4.b
 
 		ai_chance = {
-			factor = 30
+			base = 30
 			modifier = {
-				add = 1000
-				has_game_rule = {
-					rule = PB_FRENCH_PATH
-					option = FRA_MAURRAS_PATH
+				factor = 0
+				OR = {
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_ARMAND_PATH }
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_DOIROT_PATH }
 				}
 			}
 		}
 
 		add_political_power = -10
-		custom_effect_tooltip = FRA_Factionalism_0.02_increase
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = 0.02
-		}
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
-
-		hidden_effect = {
-			if = {
-				limit = {
-					original_tag = FRA
-					FRA = {
-						OR = { 
-						    has_country_flag = { flag = FRA_Doriot_Plot_Power value > 3 }
-							has_country_flag = { flag = FRA_Doriot_Plot_Power value = 3 }
-						}
-					}
-				}
-				country_event = { id = French.10 hours = 1 } # Doriot Wins
-			}
-
-			if = {
-				limit = {
-					original_tag = FRA
-					FRA = {
-						has_country_flag = { flag = FRA_Doriot_Plot_Power value < 3 }
-					}
-				}
-				country_event = { id = French.11 hours = 1 } # Muarras Wins
-			}
-		}
+		set_temp_variable = { number = 2 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
+		FRA_doriot_coup_power_decrease = yes
 	}
 
-	option = { #Arm the Armandists
-		name = French.9.c
+	option = { #Arm the d'Herbenville Faction
+		name = france_events.4.c
 
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
-				add = 1000
-				has_game_rule = {
-					rule = PB_FRENCH_PATH
-					option = FRA_ARMAND_PATH
+				factor = 0
+				OR = {
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_DOIROT_PATH }
+					has_game_rule = { rule = PB_FRENCH_PATH option = FRA_MAURRAS_PATH }
 				}
 			}
 		}
+
+		set_country_flag = FRA_herbenville_faction_armed
 
 			
 		add_political_power = -20
-		custom_effect_tooltip = FRA_Factionalism_0.02_increase
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = 0.02
-		}
-
-		set_country_flag = FRA_Armandists_Armed
-
-		modify_country_flag = { flag = FRA_Doriot_Plot_Power value = -1 }
-
+		set_temp_variable = { number = 2 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
+		FRA_doriot_coup_power_decrease = yes
+	}
+	after = {
 		hidden_effect = {
 			if = {
 				limit = {
-					original_tag = FRA
-					FRA = {
-						OR = { 
-						    has_country_flag = { flag = FRA_Doriot_Plot_Power value > 3 }
-							has_country_flag = { flag = FRA_Doriot_Plot_Power value = 3 }
-						}
-					}
+					FRA = { check_variable = { var = FRA_doriot_plot_power value = 3 compare = greater_than_or_equals }  }
 				}
-				country_event = { id = French.10 hours = 1 } # Doriot Wins
+				country_event = { id = france_events.5 hours = 1 } # Doriot Wins
 			}
 
-			if = {
+			else_if = {
 				limit = {
-					original_tag = FRA
-					FRA = {
-						has_country_flag = { flag = FRA_Doriot_Plot_Power value < 3 }
-					}
+					FRA = { check_variable = { FRA_doriot_plot_power < 3 }  }
 				}
-				country_event = { id = French.11 hours = 1 } # Muarras Wins
+				country_event = { id = france_events.6 hours = 1 } # Muarras Wins
 			}
 		}
 	}
 }
 
 country_event = {#Doriot Coup Success
-	id = French.10
-	title = French.10.t
-	desc = French.10.d
+	id = france_events.5
+	title = france_events.5.t
+	desc = france_events.5.d
 	picture = GFX_report_PB_Doriot_Coup
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
 
+	immediate = {
+		set_variable = { FRA_doriot_plot_power = 0 }
+		set_country_flag = FRA_doriot_coup_succeeded
+	}
+
 	option = {
-		name = French.10.a
+		name = france_events.5.a
 
-		ai_chance = {
-			factor = 100
-		}
+		ai_chance = { base = 100 }
 
-		set_country_flag = FRA_Doriot_Was_In_Power
+		set_country_flag = FRA_doriot_led_france
 
 		add_political_power = 150
-
-		custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = -0.06
-		}
-
-		set_country_flag = PB_FRA_Muarras_Died_Coup_Success
-		clr_country_flag = FRA_Doriot_Plot_Power
-
-		clr_country_flag = FRA_Charles_Nogues_Militarists
-		set_country_flag = FRA_Claire_Chennault_Militarists
-		
+		set_temp_variable = { number = -6 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
 		swap_ideas = {
 			remove_idea = PB_parliamentary_monarchy
 			add_idea = PB_presidential_dictatorship
 		}
 
-		remove_ideas = PB_FRA_Crumbling_Coalition
-
+		remove_ideas = FRA_crumbling_coalition
+		custom_effect_tooltip = tooltip_white_line
 		add_popularity = {
 			ideology = ni
 			popularity = 0.05
@@ -438,16 +317,24 @@ country_event = {#Doriot Coup Success
 			ideology = ss
 			popularity = 0.03
 		}
-		
+		custom_effect_tooltip = tooltip_white_line
+		retire_character = FRA_jean_dorleans
+		FRA_charles_maurras = { kill_character = yes }
+		FRA_inessa_armand = { kill_character = yes }
+		custom_effect_tooltip = tooltip_white_line
 		FRA = {
 			drop_cosmetic_tag = yes
 			set_cosmetic_tag = FRA_Dorito
 		}
+
+		FRA_charles_nogues = { kill_character = yes }
+		clr_country_flag = FRA_charles_nogues_lead_military
+		custom_override_tooltip = {
+			tooltip = FRA_claire_chennault_lead_military_tt
+			set_country_flag = FRA_claire_chennault_lead_military
+		}
 		
 		hidden_effect = {
-			FRA_jean_dorleans = {
-				retire = yes
-			}
 			add_to_leading_coalition_ni = yes
 			remove_from_farright_coalition_ni = yes
 			remove_from_farright_coalition_ds = yes
@@ -460,130 +347,78 @@ country_event = {#Doriot Coup Success
             ban_party_lb = yes
             ban_party_ss = yes
             ban_party_jc = yes
+
+			news_event = { id = PBNews.14 days = 1 }
+			complete_national_focus = FRA_the_morning_after
+			complete_national_focus = FRA_doriot_takeover
 		}
-		
-		news_event = {
-			id = PBNews.14
-			days = 1
-		}
-		complete_national_focus = FRA_purge_aftermath
-		complete_national_focus = FRA_doriot_takeover
 	}
 }
 
 country_event = {#Doriot Coup Failure
-	id = French.11
-	title = French.11.t
-	desc = French.11.d
+	id = france_events.6
+	title = france_events.6.t
+	desc = france_events.6.d
 	picture = GFX_report_PB_Doriot_Coup_Fail
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
-
+	immediate = {
+		set_variable = { FRA_doriot_plot_power = 0 }
+		set_country_flag = FRA_doriot_coup_failed
+	}
 	option = { #
-		name = French.11.a
+		name = france_events.6.a
 
-		ai_chance = {
-			factor = 100
-		}
+		ai_chance = { base = 100 }
 
-		set_country_flag = FRA_Maurras_Was_In_Power
+		set_country_flag = FRA_maurras_led_france
 
 		add_political_power = 150
-		custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = -0.06
-		}
+		set_temp_variable = { number = -6 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
 
-		clr_country_flag = FRA_Doriot_Plot_Power
-
-		FRA_jacques_doriot = {
-			retire = yes
+		retire_character = FRA_jean_dorleans
+		FRA_jacques_doriot = { kill_character = yes }
+		custom_effect_tooltip = tooltip_white_line
+		FRA_charles_maurras = {
+			custom_effect_tooltip = character_becomes_country_leader_tt	
 		}
-		FRA_jean_dorleans = {
-			retire = yes
+		swap_ideas = {
+			remove_idea = PB_parliamentary_monarchy
+			add_idea = PB_ultranationalist_dictatorship
 		}
-		set_politics = {
-			ruling_party = rc
-			elections_allowed = no
-		}
-		FRA = {
-			FRA_charles_maurras = {
-				custom_effect_tooltip = PB_character_becomes_country_leader_tt
-			}
-		}
-
-		add_popularity = {
-			ideology = ni
-			popularity = -0.1
-		}
-		add_popularity = {
-			ideology = ds
-			popularity = -0.1
-		}
-		add_popularity = {
-			ideology = rc
-			popularity = 0.1
-		}
+		custom_effect_tooltip = tooltip_white_line
+		remove_ideas = FRA_crumbling_coalition
+		custom_effect_tooltip = tooltip_white_line
+		set_politics = { ruling_party = rc elections_allowed = no }
+		add_popularity = { ideology = ni popularity = -0.1 }
+		add_popularity = { ideology = ds popularity = -0.1 }
+		add_popularity = { ideology = rc popularity = -0.1 }
 		
 		swap_ideas = {
 			remove_idea = PB_parliamentary_monarchy
 			add_idea = PB_ultranationalist_dictatorship
 		}
-
-		remove_ideas = PB_FRA_Crumbling_Coalition
 		
 		FRA = {
 			drop_cosmetic_tag = yes
 			set_cosmetic_tag = FRA_Regency
 		}
-
 		if = {
-			limit = {
-				NOT = {
-					has_country_flag = FRA_Armandists_Armed
-				}
-			}
-			complete_national_focus = FRA_purge_aftermath
-			complete_national_focus = FRA_maurras_takeover
-			set_country_flag = PB_FRA_Muarras_Survives
-			news_event = {
-				id = PBNews.15
-				days = 1
-			}
-		}
-
-		country_event = {
-			id = French_personality.5
-			days = 30
-		}
-
-		if = {
-			limit = {
-				has_country_flag = FRA_Armandists_Armed
-			}
-			country_event = { id = French.12 hours = 1 }
-		}
-		if = {
-			limit = {
-				NOT = {
-					has_country_flag = FRA_Armandists_Armed
-				}
-			}
-			custom_effect_tooltip = FRA_remove_ministers
+			limit = { NOT = { has_country_flag = FRA_herbenville_faction_armed } }
 			activate_advisor = FRA_raphael_alibert_hog
 			activate_advisor = FRA_leon_daudet_ecm
 			activate_advisor = FRA_maurice_papon_fam
 			activate_advisor = FRA_georges_valois_iam
-			
 			hidden_effect = {
-				set_party_name = {
-					ideology = ni
-					long_name = FRA_af_party_long
-					name = FRA_af_party
-				}
+				complete_national_focus = FRA_the_morning_after
+				complete_national_focus = FRA_maurras_takeover
+				set_country_flag = FRA_maurras_survived_coup
+				news_event = { id = PBNews.15 days = 1 }
+
 				unban_party_rc = yes
 				add_to_leading_coalition_rc = yes
 				remove_from_leading_coalition_ni = yes
@@ -599,112 +434,94 @@ country_event = {#Doriot Coup Failure
                 ban_party_jc = yes
 			}
 		}
+		else_if = {
+			limit = { has_country_flag = FRA_herbenville_faction_armed }
+			country_event = { id = france_events.7 hours = 2 }
+		}
+	}
+	after = {
+		country_event = { id = French_personality.5 days = 30 }
 	}
 }
 
 country_event = {#Doriot Coup Failure - Armandists turn on Maurras
-	id = French.12
-	title = French.12.t
-	desc = French.12.d
+	id = france_events.7
+	title = france_events.7.t
+	desc = france_events.7.d
 	picture = GFX_report_PB_Armand_Coup
 
 	is_triggered_only = yes
 
 	fire_only_once = yes
 
+	immediate = {
+		set_country_flag = FRA_herbenville_counter_coup_happened
+	}
+
 	option = { #
-		name = French.12.a
+		name = france_events.7.a
 
-		ai_chance = {
-			factor = 100
-		}
+		ai_chance = { factor = 100 }
 
-		clr_country_flag = FRA_Maurras_Was_In_Power
+		clr_country_flag = FRA_maurras_led_france
 
-		set_country_flag = FRA_Armand_Was_In_Power
+		set_country_flag = FRA_herbenville_led_france
 
 		add_political_power = 150
 
-		custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-		add_to_variable = {
-			var = FRA_Factionalism
-			value = -0.06
-		}
+		set_temp_variable = { number = -6 }
+		FRA_factionalism_change = yes
+		custom_effect_tooltip = tooltip_white_line
 		
-		FRA_jacques_doriot = {
-			retire = yes
-		}
-		FRA_jean_dorleans = {
-			retire = yes
-		}
-		FRA = {
-			FRA_inessa_armand = {
-				custom_effect_tooltip = PB_character_becomes_country_leader_tt
-				hidden_effect = {
-					add_country_leader_role = {
-						country_leader = {
-							desc = FRA_inessa_armand_leader_desc
-							ideology = NI_VARIANT_05
-						}
-						promote_leader = yes
+		retire_character = FRA_jean_dorleans
+		FRA_charles_maurras = { kill_character = yes }
+		custom_effect_tooltip = tooltip_white_line
+		FRA_inessa_armand = {
+			custom_effect_tooltip = character_becomes_country_leader_tt	
+			hidden_effect = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						desc = FRA_inessa_armand_leader_desc
+						ideology = NI_VARIANT_05
 					}
 				}
 			}
-
 		}
-
-		set_politics = {
-			ruling_party = ni
-		}
-
-		add_popularity = {
-			ideology = ni
-			popularity = 0.1
-		}
-		add_popularity = {
-			ideology = ss
-			popularity = 0.05
-		}
-		add_popularity = {
-			ideology = jc
-			popularity = 0.1
-		}
-		add_popularity = {
-			ideology = ds
-			popularity = -0.1
-		}
-		add_popularity = {
-			ideology = rc
-			popularity = -0.05
-		}
-		
 		swap_ideas = {
 			remove_idea = PB_parliamentary_monarchy
 			add_idea = PB_presidential_dictatorship
 		}
-
+		custom_effect_tooltip = tooltip_white_line
+		remove_ideas = FRA_crumbling_coalition
+		custom_effect_tooltip = tooltip_white_line
+		custom_effect_tooltip = tooltip_white_line
+		set_politics = { ruling_party = ni }
+		add_popularity = { ideology = ni popularity = 0.1 }
+		add_popularity = { ideology = ss popularity = 0.05 }
+		add_popularity = { ideology = jc popularity = -0.1 }
+		add_popularity = { ideology = ds popularity = -0.1 }
+		add_popularity = { ideology = rc popularity = -0.05 }
+		custom_effect_tooltip = tooltip_white_line
 		set_cosmetic_tag = FRA_Armand
-		set_country_flag = PB_FRA_Armandist_Counter_Coup
-
-		clr_country_flag = FRA_Charles_Nogues_Militarists
-		set_country_flag = FRA_Maxime_Weygand_Militarists
-
-		remove_ideas = PB_FRA_Crumbling_Coalition
-
-		news_event = {
-			id = PBNews.16
-			days = 1
+		custom_effect_tooltip = tooltip_white_line
+		FRA_charles_nogues = { kill_character = yes }
+		clr_country_flag = FRA_charles_nogues_lead_military
+		custom_override_tooltip = {
+			tooltip = FRA_maxime_weygand_lead_military_tt
+			set_country_flag = FRA_maxime_weygand_lead_military
 		}
-
-		complete_national_focus = FRA_purge_aftermath
-		complete_national_focus = FRA_armand_takeover
-
-		custom_effect_tooltip = FRA_remove_ministers
+		custom_effect_tooltip = tooltip_white_line
 		activate_advisor = FRA_hubert_lagardelle_hog
 		activate_advisor = FRA_adrien_marquet_ecm
 		activate_advisor = FRA_rene_bousquet_fam
 		activate_advisor = FRA_hubert_lagardelle_iam
+
 		hidden_effect = {
+			news_event = { id = PBNews.16 days = 1 }
+			complete_national_focus = FRA_the_morning_after
+			complete_national_focus = FRA_armand_takeover
+
 			remove_from_leading_coalition_ds = yes
 			remove_from_leading_coalition_cn = yes
 			remove_from_leading_coalition_an = yes
@@ -723,9 +540,9 @@ country_event = {#Doriot Coup Failure - Armandists turn on Maurras
 }
 
 country_event = {#Maurras restores the legitimate king
-	id = French.13
-	title = French.13.t
-	desc = French.13.d
+	id = france_events.8
+	title = france_events.8.t
+	desc = france_events.8.d
 	picture = GFX_report_PB_Crowning
 
 	is_triggered_only = yes
@@ -733,51 +550,59 @@ country_event = {#Maurras restores the legitimate king
 	fire_only_once = yes
 
 	option = { #
-		name = French.13.a
+		name = france_events.8.a
 
-		ai_chance = {
-			factor = 100
-		}
+		ai_chance = { base = 100 }
 
-		add_political_power = 100
-		FRA = {
-			FRA_louis_bourbon = {
-				set_character_name = FRA_louis_bourbon_regnal
-				custom_effect_tooltip = PB_character_becomes_country_leader_tt
-				hidden_effect = {
-					add_country_leader_role = {
-						country_leader = {
-							desc = FRA_louis_bourbon_desc
-							ideology = RC_VARIANT_01
-						}
-						promote_leader = yes
+		FRA_louis_bourbon = {
+			custom_effect_tooltip = FRA_louis_bourbon_regnal_name_adopt_tt
+			set_character_name = FRA_louis_bourbon_regnal
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = character_becomes_country_leader_tt
+			hidden_effect = {
+				add_country_leader_role = {
+					country_leader = {
+						desc = FRA_louis_bourbon_desc
+						ideology = RC_VARIANT_01
 					}
+					promote_leader = yes
 				}
 			}
-			set_politics = {
-				ruling_party = rc
+		}
+		FRA_charles_maurras = {
+			add_advisor_role = {
+				advisor = {
+					slot = head_of_government
+					ledger = civilian
+					idea_token = FRA_charles_maurras_hog
+					traits = { PB_rc_trait }
+					cost = 0
+					can_be_fired = no
+				}
 			}
 		}
-
+		activate_advisor = FRA_charles_maurras_hog
+		set_politics = {
+			ruling_party = rc
+		}
 		add_popularity = {
 			ideology = rc
 			popularity = 0.1
 		}
-		
-		drop_cosmetic_tag = yes
-		set_cosmetic_tag = FRA_Monarchy
-		set_country_flag = DS_Subideology_Absolutism
+		custom_effect_tooltip = tooltip_white_line
 		swap_ideas = {
 			remove_idea = PB_ultranationalist_dictatorship
 			add_idea = PB_absolute_monarchy
 		}
+		drop_cosmetic_tag = yes
+		set_cosmetic_tag = FRA_Monarchy
 	}
 }
 
 country_event = {#Maurras purges the Armandists
-	id = French.14
-	title = French.14.t
-	desc = French.14.d
+	id = france_events.9
+	title = france_events.9.t
+	desc = france_events.9.d
 	picture = GFX_report_PB_Gas_Mask_Soldiers
 
 	is_triggered_only = yes
@@ -785,14 +610,13 @@ country_event = {#Maurras purges the Armandists
 	fire_only_once = yes
 
 	option = { #
-		name = French.14.a
+		name = france_events.9.a
 
-		ai_chance = {
-			factor = 100
-		}
+		ai_chance = { base = 100 }
 		FRA_inessa_armand = {
 			kill_character = yes
 		}
+		custom_effect_tooltip = tooltip_white_line
 		add_political_power = -20
 	}
 }
@@ -1846,7 +1670,7 @@ country_event = {#France - SP Protests Military Bias
 
 		custom_effect_tooltip = FRA_Factionalism_0.04_increase
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = 0.04
 		}
 
@@ -1909,7 +1733,7 @@ country_event = {#France - Military Protests SP Bias
 
 		custom_effect_tooltip = FRA_Factionalism_0.04_increase
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = 0.04
 		}
 
@@ -1940,7 +1764,7 @@ country_event = {#France - SP Attempts to Sieze Control
 
 		custom_effect_tooltip = FRA_Factionalism_0.04_increase
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = 0.04
 		}
 
@@ -1973,7 +1797,7 @@ country_event = {#France - SP Attempts to Sieze Control
 		custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = -0.06
 		}
 
@@ -1982,12 +1806,12 @@ country_event = {#France - SP Attempts to Sieze Control
 		if = {
 			limit = {
 				FRA = {
-					has_country_flag = FRA_Joseph_Darnand_SP
+					has_country_flag = FRA_joseph_darnard_lead_sp
 				}
 			}
 			FRA = {
 				FRA_joseph_darnard = {
-					custom_effect_tooltip = PB_character_becomes_country_leader_tt
+					custom_effect_tooltip = character_becomes_country_leader_tt
 					hidden_effect = {
 						add_country_leader_role = {
 							country_leader = {
@@ -2004,12 +1828,12 @@ country_event = {#France - SP Attempts to Sieze Control
 		if = {
 			limit = {
 				FRA = {
-					has_country_flag = FRA_Xavier_Vallat_SP
+					has_country_flag = FRA_xavier_vallat_lead_sp
 				}
 			}
 			FRA = {
 				FRA_xavier_vallat = {
-					custom_effect_tooltip = PB_character_becomes_country_leader_tt
+					custom_effect_tooltip = character_becomes_country_leader_tt
 					hidden_effect = {
 						add_country_leader_role = {
 							country_leader = {
@@ -2026,12 +1850,12 @@ country_event = {#France - SP Attempts to Sieze Control
 		if = {
 			limit = {
 				FRA = {
-					has_country_flag = FRA_Coco_Chanel_SP
+					has_country_flag = FRA_gabrielle_chanel_lead_sp
 				}
 			}
 			FRA = {
 				FRA_gabrielle_chanel = {
-					custom_effect_tooltip = PB_character_becomes_country_leader_tt
+					custom_effect_tooltip = character_becomes_country_leader_tt
 					hidden_effect = {
 						add_country_leader_role = {
 							country_leader = {
@@ -2089,19 +1913,19 @@ country_event = {#France - SP Attempts to Sieze Control
 			remove_ideas = FRA_Military_Budget_Increased
 			if = {
 				limit = {
-					has_country_flag = FRA_Maurras_Was_In_Power
+					has_country_flag = FRA_maurras_led_france
 				}
 			    ban_party_ds = yes
 				unban_party_ni = yes
 			}
 			if = {
 				limit = {
-					has_country_flag = FRA_Armand_Was_In_Power
+					has_country_flag = FRA_herbenville_led_france
 				}
 			}
 			if = {
 				limit = {
-					has_country_flag = FRA_Doriot_Was_In_Power
+					has_country_flag = FRA_doriot_led_france
 				}
 				remove_from_farright_coalition_ni = yes
 			    remove_from_farright_coalition_ds = yes
@@ -2634,7 +2458,7 @@ country_event = {#France - Military Attempts to Sieze Control
 
 		custom_effect_tooltip = FRA_Factionalism_0.04_increase
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = 0.04
 		}
 
@@ -2667,7 +2491,7 @@ country_event = {#France - Military Attempts to Sieze Control
 		custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = -0.06
 		}
 
@@ -2676,12 +2500,12 @@ country_event = {#France - Military Attempts to Sieze Control
 		if = {
 			limit = {
 				FRA = {
-					has_country_flag = FRA_Charles_Nogues_Militarists
+					has_country_flag = FRA_charles_nogues_lead_military
 				}
 			}
 			FRA = {
 				FRA_charles_nogues = {
-					custom_effect_tooltip = PB_character_becomes_country_leader_tt
+					custom_effect_tooltip = character_becomes_country_leader_tt
 					hidden_effect = {
 						add_country_leader_role = {
 							country_leader = {
@@ -2699,13 +2523,13 @@ country_event = {#France - Military Attempts to Sieze Control
 		if = {
 			limit = {
 				FRA = {
-					has_country_flag = FRA_Claire_Chennault_Militarists
+					has_country_flag = FRA_claire_chennault_lead_military
 				}
 			}
 
 			FRA = {
 				FRA_claire_chennault = {
-					custom_effect_tooltip = PB_character_becomes_country_leader_tt
+					custom_effect_tooltip = character_becomes_country_leader_tt
 					hidden_effect = {
 						add_country_leader_role = {
 							country_leader = {
@@ -2723,13 +2547,13 @@ country_event = {#France - Military Attempts to Sieze Control
 		if = {
 			limit = {
 				FRA = {
-					has_country_flag = FRA_Maxime_Weygand_Militarists
+					has_country_flag = FRA_maxime_weygand_lead_military
 				}
 			}
 
 			FRA = {
 				FRA_maxime_weygand = {
-					custom_effect_tooltip = PB_character_becomes_country_leader_tt
+					custom_effect_tooltip = character_becomes_country_leader_tt
 					hidden_effect = {
 						add_country_leader_role = {
 							country_leader = {
@@ -2789,19 +2613,19 @@ country_event = {#France - Military Attempts to Sieze Control
 			remove_ideas = FRA_SP_Army_Integration
 			if = {
 				limit = {
-					has_country_flag = FRA_Maurras_Was_In_Power
+					has_country_flag = FRA_maurras_led_france
 				}
 			}
 			if = {
 				limit = {
-					has_country_flag = FRA_Armand_Was_In_Power
+					has_country_flag = FRA_herbenville_led_france
 				}
 				ban_party_ni = yes
 				unban_party_ds = yes
 			}
 			if = {
 				limit = {
-					has_country_flag = FRA_Doriot_Was_In_Power
+					has_country_flag = FRA_doriot_led_france
 				}
 			    ban_party_ni = yes
 				remove_from_farright_coalition_ni = yes
@@ -3233,7 +3057,7 @@ country_event = {#Military meets with Monarchists
 
 		custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = -0.06
 		}
 		
@@ -3527,12 +3351,12 @@ country_event = {#France - Doriot reshuffles the SP
 		add_political_power = -50
 		custom_effect_tooltip = FRA_Factionalism_0.04_increase
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = 0.04
 			}
 
-		clr_country_flag = FRA_Joseph_Darnand_SP
-		set_country_flag = FRA_Xavier_Vallat_SP
+		clr_country_flag = FRA_joseph_darnard_lead_sp
+		set_country_flag = FRA_xavier_vallat_lead_sp
 	}
 
 	option = { #Don't Purge Darnand
@@ -3631,9 +3455,9 @@ country_event = {# New Cities Plan
 }
 
 country_event = {# The Eternal State
-	id = French.58
-	title = French.58.t
-	desc = French.58.d
+	id = france_flavour_events.2
+	title = france_flavour_events.2.t
+	desc = france_flavour_events.2.d
 	picture = GFX_report_PB_Nazi_Propaganda
 
 	is_triggered_only = yes
@@ -3641,7 +3465,7 @@ country_event = {# The Eternal State
 	fire_only_once = yes
 
 	option = {
-		name = French.58.a
+		name = france_flavour_events.2.a
 
 		ai_chance = {
 			factor = 1
@@ -3669,9 +3493,9 @@ country_event = {# Year Zero
 }
 
 country_event = {# Vive la France
-	id = French.60
-	title = French.60.t
-	desc = French.60.d
+	id = france_flavour_events.1
+	title = france_flavour_events.1.t
+	desc = france_flavour_events.1.d
 	picture = GFX_report_PB_Conference3
 
 	is_triggered_only = yes
@@ -3679,11 +3503,9 @@ country_event = {# Vive la France
 	fire_only_once = yes
 
 	option = {
-		name = French.60.a
+		name = france_flavour_events.1.a
 
-		ai_chance = {
-			factor = 1
-		}
+		ai_chance = { base = 100 }
 	}
 }
 
@@ -6135,9 +5957,9 @@ country_event = {#test for dutch being SP controlled REMOVE WHEN STARTING WORK O
 }
 
 country_event = {#Volte Face
-	id = French.117
-	title = French.117.t
-	desc = French.117.d
+	id = france_events.10
+	title = france_events.10.t
+	desc = france_events.10.d
 	picture = GFX_report_PB_French_Soldiers
 
 	is_triggered_only = yes
@@ -6147,44 +5969,42 @@ country_event = {#Volte Face
 	immediate = {
 		if = {
 			limit = {
-				check_variable = { PB_FRA_Dissonance_Left > 1 }
-				check_variable = { PB_FRA_Dissonance_Left < 3 }
-				check_variable = { PB_FRA_Dissonance_Right < 2 }
+				check_variable = { FRA_doriot_dissonance_left > 1 }
+				check_variable = { FRA_doriot_dissonance_left < 3 }
+				check_variable = { FRA_doriot_dissonance_right < 2 }
 			}
 			FRA = { save_event_target_as = political_dissonance_left }
 		}
 		
 		if = {
 			limit = {
-				check_variable = { PB_FRA_Dissonance_Left > 2 }
-				check_variable = { PB_FRA_Dissonance_Right < 1 }
+				check_variable = { FRA_doriot_dissonance_left > 2 }
+				check_variable = { FRA_doriot_dissonance_right < 1 }
 			}
 			FRA = { save_event_target_as = political_dissonance_far_left }
 		}
 		
 		if = {
 			limit = {
-				check_variable = { PB_FRA_Dissonance_Left < 2 }
-				check_variable = { PB_FRA_Dissonance_Right > 1 }
-				check_variable = { PB_FRA_Dissonance_Right < 3 }
+				check_variable = { FRA_doriot_dissonance_left < 2 }
+				check_variable = { FRA_doriot_dissonance_right > 1 }
+				check_variable = { FRA_doriot_dissonance_right < 3 }
 			}
 			FRA = { save_event_target_as = political_dissonance_right }
 		}
 		
 		if = {
 			limit = {
-				check_variable = { PB_FRA_Dissonance_Left < 1 }
-				check_variable = { PB_FRA_Dissonance_Right > 2 }
+				check_variable = { FRA_doriot_dissonance_left < 1 }
+				check_variable = { FRA_doriot_dissonance_right > 2 }
 			}
 			FRA = { save_event_target_as = political_dissonance_far_right }
 		}
 		
 		if = {
 			limit = {
-				AND = {
-					check_variable = { PB_FRA_Dissonance_Left < 2 }
-					check_variable = { PB_FRA_Dissonance_Right < 2 }
-				}
+				check_variable = { FRA_doriot_dissonance_left < 2 }
+				check_variable = { FRA_doriot_dissonance_right < 2 }
 				OR = {
 					NOT = {
 						AND = {
@@ -6195,10 +6015,6 @@ country_event = {#Volte Face
 							has_completed_focus = FRA_plebeians_tribune
 							has_completed_focus = FRA_nation_first_son
 						}
-						AND = {
-							has_completed_focus = FRA_beloved_president
-							has_completed_focus = FRA_mighty_marshal
-						}
 					}
 				}
 			}
@@ -6207,12 +6023,10 @@ country_event = {#Volte Face
 		
 		if = {
 			limit = {
-				AND = {
-					check_variable = { PB_FRA_Dissonance_Left > 0 }
-					check_variable = { PB_FRA_Dissonance_Left < 3 }
-					check_variable = { PB_FRA_Dissonance_Right > 0 }
-					check_variable = { PB_FRA_Dissonance_Right < 3 }
-				}
+				check_variable = { FRA_doriot_dissonance_left > 0 }
+				check_variable = { FRA_doriot_dissonance_left < 3 }
+				check_variable = { FRA_doriot_dissonance_right > 0 }
+				check_variable = { FRA_doriot_dissonance_right < 3 }
 				NOT = {
 					AND = {
 						has_completed_focus = FRA_class_collaboration
@@ -6228,18 +6042,16 @@ country_event = {#Volte Face
 		
 		if = {
 			limit = {
-				AND = {
-					check_variable = { PB_FRA_Dissonance_Left > 2 }
-					check_variable = { PB_FRA_Dissonance_Right > 2 }
-				}
+				check_variable = { FRA_doriot_dissonance_left > 2 }
+				check_variable = { FRA_doriot_dissonance_right > 2 }
 			}
 			FRA = { save_event_target_as = political_dissonance_confusion }
 		}
 	}
 
 	option = { #The Man From the People
-		log = "[GetLogInfo]: event French.117 option French.117.a"
-		name = French.117.a
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.a"
+		name = france_events.10.a
 		trigger = {
 			has_event_target = political_dissonance_left
 		}
@@ -6247,7 +6059,9 @@ country_event = {#Volte Face
 			base = 100
 		}
 		
-		add_country_leader_trait = PB_FRA_Man_From_People_trait
+		FRA_jacques_doriot = {
+			add_country_leader_trait = PB_FRA_Man_From_People_trait
+		}
 		hidden_effect = {
 			set_country_leader_ideology = DS_VARIANT_08
 			add_popularity = {
@@ -6266,28 +6080,27 @@ country_event = {#Volte Face
 	}
 	
 	option = { #The Modern Danton
-		log = "[GetLogInfo]: event French.117 option French.117.b"
-		name = French.117.b
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.b"
+		name = france_events.10.b
 		trigger = {
 			has_event_target = political_dissonance_far_left
 		}
 		ai_chance = {
 			base = 100
 		}
-		
-		if = {
-			limit = {
-				FRA_jacques_doriot = {
+		FRA_jacques_doriot = {
+			if = {
+				limit = {
 					has_trait = PB_FRA_Beloved_Statesman_trait
 				}
+				swap_ruler_traits = { 
+					remove = PB_FRA_Beloved_Statesman_trait
+					add = PB_FRA_Modern_Danton_trait
+				}
 			}
-			swap_ruler_traits = { 
-				remove = PB_FRA_Beloved_Statesman_trait
-				add = PB_FRA_Modern_Danton_trait
+			else = {
+				add_country_leader_trait = PB_FRA_Modern_Danton_trait
 			}
-		}
-		else = {
-			add_country_leader_trait = PB_FRA_Modern_Danton_trait
 		}
 		swap_ideas = {
 			remove_idea = PB_presidential_dictatorship
@@ -6344,8 +6157,8 @@ country_event = {#Volte Face
 	}
 	
 	option = { #The Father of the Nation
-		log = "[GetLogInfo]: event French.117 option French.117.c"
-		name = French.117.c
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.c"
+		name = france_events.10.c
 		trigger = {
 			has_event_target = political_dissonance_right
 		}
@@ -6391,28 +6204,24 @@ country_event = {#Volte Face
 	}
 	
 	option = { #Our Grand Marshal
-		log = "[GetLogInfo]: event French.117 option French.117.e"
-		name = French.117.e
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.e"
+		name = france_events.10.e
 		trigger = {
 			has_event_target = political_dissonance_far_right
 		}
 		ai_chance = {
 			base = 100
 		}
-		
-		if = {
-			limit = {
-				FRA_jacques_doriot = {
-					has_trait = PB_FRA_Grand_Marshal_Inexperienced_trait
+		FRA_jacques_doriot = {
+			if = {
+				limit = { has_trait = PB_FRA_Grand_Marshal_Inexperienced_trait }
+				swap_ruler_traits = { 
+					remove = PB_FRA_Grand_Marshal_Inexperienced_trait
+					add = PB_FRA_Grand_Marshal_Experienced_trait 
 				}
 			}
-			swap_ruler_traits = { 
-				remove = PB_FRA_Grand_Marshal_Inexperienced_trait
-				add = PB_FRA_Grand_Marshal_Experienced_trait 
-			}
-		}
-		else = {
-			add_country_leader_trait = PB_FRA_Grand_Marshal_Experienced_trait
+			else = { add_country_leader_trait = PB_FRA_Grand_Marshal_Experienced_trait }
+			gain_xp = 100
 		}
 		FRA_jacques_doriot = {
 			gain_xp = 100
@@ -6453,8 +6262,8 @@ country_event = {#Volte Face
 	}
 	
 	option = { #The Wisest Among All
-		log = "[GetLogInfo]: event French.117 option French.117.f"
-		name = French.117.f
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.f"
+		name = france_events.10.f
 		trigger = {
 			has_event_target = political_dissonance_center
 		}
@@ -6501,8 +6310,8 @@ country_event = {#Volte Face
 	}
 	
 	option = { #Protector of the Organic Country
-		log = "[GetLogInfo]: event French.117 option French.117.g"
-		name = French.117.g
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.g"
+		name = france_events.10.g
 		trigger = {
 			has_event_target = political_dissonance_corporatist
 		}
@@ -6541,11 +6350,11 @@ country_event = {#Volte Face
 	}
 	
 	option = { #The One Who Transcend Politics
-		log = "[GetLogInfo]: event French.117 option French.117.h"
-		name = French.117.h
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.h"
+		name = france_events.10.h
 		trigger = {
 			has_event_target = political_dissonance_confusion
-			check_variable = { FRA_Factionalism < 0.16 }
+			check_variable = { FRA_factionalism_var < 16 }
 		}
 		ai_chance = {
 			base = 100
@@ -6617,11 +6426,11 @@ country_event = {#Volte Face
 	}
 	
 	option = { #The Opportunist
-		log = "[GetLogInfo]: event French.117 option French.117.i"
-		name = French.117.i
+		log = "[GetLogInfo]: event france_events.10 option france_events.10.i"
+		name = france_events.10.i
 		trigger = {
 			has_event_target = political_dissonance_confusion
-			check_variable = { FRA_Factionalism > 0.15 }
+			check_variable = { FRA_factionalism_var > 15 }
 		}
 		ai_chance = {
 			base = 10
@@ -6659,25 +6468,21 @@ country_event = {#Volte Face
 	}
 	
 	after = {
-		clear_variable = PB_FRA_Dissonance_Left
-		clear_variable = PB_FRA_Dissonance_Right
-		if = {
-			limit = {
-				has_country_flag = PB_FRA_AI_Doriot_Left
+		clear_variable = FRA_doriot_dissonance_left
+		clear_variable = FRA_doriot_dissonance_right
+		FRA_jacques_doriot = {
+			if = {
+				limit = { has_character_flag = FRA_doriot_AI_left }
+				clr_character_flag = FRA_doriot_AI_left
 			}
-			clr_country_flag = PB_FRA_AI_Doriot_Left
-		}
-		if = {
-			limit = {
-				has_country_flag = PB_FRA_AI_Doriot_Right
+			if = {
+				limit = { has_character_flag = FRA_doriot_AI_right }
+				clr_character_flag = FRA_doriot_AI_right
 			}
-			clr_country_flag = PB_FRA_AI_Doriot_Right
-		}
-		if = {
-			limit = {
-				has_country_flag = PB_FRA_AI_Doriot_Center
+			if = {
+				limit = { has_character_flag = FRA_doriot_AI_center }
+				clr_character_flag = FRA_doriot_AI_center
 			}
-			clr_country_flag = PB_FRA_AI_Doriot_Center
 		}
 	}
 }
@@ -6854,7 +6659,7 @@ country_event = { #The Revolution Still Breathes
 		name = French_flavour.4.a
 		custom_effect_tooltip = FRA_Factionalism_0.04_increase
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = 0.04
 		}
 		hidden_effect = {
@@ -8004,7 +7809,7 @@ country_event = { #The Revolution Surpasses The Revolution
 		}
 		custom_effect_tooltip = FRA_Factionalism_0.04_decrease
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = -0.04
 		}
 		add_popularity = {
@@ -8048,7 +7853,7 @@ country_event = { # Workers protest
         add_political_power = -50
 		custom_effect_tooltip = FRA_Factionalism_0.04_increase
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = 0.04
 		}
 		ai_chance = {
@@ -8086,7 +7891,7 @@ country_event = { # Echoes Of Corruption
 		name = French_personality.2.a
 		custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = -0.02
 		}
 		ai_chance = {
@@ -8101,7 +7906,7 @@ country_event = { # Echoes Of Corruption
 		add_political_power = -30
 		add_stability = 0.025
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = 0.04
 		}
 		ai_chance = {
@@ -8385,7 +8190,7 @@ country_event = { #The SP demand Hannover
 			if = {
 				limit = {
 					FRA = {
-						has_country_flag = FRA_Joseph_Darnand_SP
+						has_country_flag = FRA_joseph_darnard_lead_sp
 					}
 				}
 				create_country_leader = {
@@ -8399,7 +8204,7 @@ country_event = { #The SP demand Hannover
 			if = {
 				limit = {
 					FRA = {
-					has_country_flag = FRA_Xavier_Vallat_SP
+					has_country_flag = FRA_xavier_vallat_lead_sp
 					}
 				}
 				create_country_leader = {
@@ -8413,7 +8218,7 @@ country_event = { #The SP demand Hannover
 			if = {
 				limit = {
 					FRA = {
-					has_country_flag = FRA_Coco_Chanel_SP
+					has_country_flag = FRA_gabrielle_chanel_lead_sp
 					}
 				}
 				create_country_leader = {
@@ -8428,7 +8233,7 @@ country_event = { #The SP demand Hannover
 		custom_effect_tooltip = PB_FRA_HAN_SP
 		custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 		add_to_variable = {
-			var = FRA_Factionalism
+			var = FRA_factionalism_var
 			value = -0.06
 		}
 		every_state = {
@@ -8602,7 +8407,7 @@ country_event = { #The SP demand Hannover
 			if = {
 				limit = {
 					FRA = {
-						has_country_flag = FRA_Joseph_Darnand_SP
+						has_country_flag = FRA_joseph_darnard_lead_sp
 					}
 				}
 				create_country_leader = {
@@ -8616,7 +8421,7 @@ country_event = { #The SP demand Hannover
 			if = {
 				limit = {
 					FRA = {
-					has_country_flag = FRA_Xavier_Vallat_SP
+					has_country_flag = FRA_xavier_vallat_lead_sp
 					}
 				}
 				create_country_leader = {
@@ -8630,7 +8435,7 @@ country_event = { #The SP demand Hannover
 			if = {
 				limit = {
 					FRA = {
-					has_country_flag = FRA_Coco_Chanel_SP
+					has_country_flag = FRA_gabrielle_chanel_lead_sp
 					}
 				}
 				create_country_leader = {

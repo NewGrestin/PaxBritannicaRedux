@@ -22,7 +22,7 @@ focus_tree = {
 		y = 1200
 	}
 	initial_show_position = {
-		focus = FRA_purge
+		focus = FRA_evening_in_paris
 	}
 
 	shared_focus = FRA_behead_the_bear
@@ -31,85 +31,68 @@ focus_tree = {
 	#FRENCH POLITICAL TREE#
 	#######################
 	focus = {
-		id = FRA_purge
+		id = FRA_evening_in_paris
 		icon = GFX_goal_FRA_Long_Knives
+		cost = 7
+
 		x = 8
 		y = 0
-		cost = 7
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 
 		completion_reward = {
-			country_event = {
-				id = French.6
-				days = 1
-			}
-			custom_effect_tooltip = FRA_Factionalism_0.04_increase
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = 0.04
-			}
-			custom_effect_tooltip = PB_FRA_Purge_tt
+			country_event = { id = france_events.1 days = 1 }
+			set_temp_variable = { number = 4 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = FRA_evening_in_paris_tt
 		}
 	}
 	focus = {
-		id = FRA_purge_aftermath
+		id = FRA_the_morning_after
 		icon = GFX_goal_Generic_Political_Killing
+		cost = 7
+
 		x = 8
 		y = 1
-		cost = 7
+
 		ai_will_do = {
 			factor = 100
 		}
 		available = {
 			hidden_trigger = { always = no }
-			custom_trigger_tooltip = {
-				tooltip = PB_FRA_Doriot_Coup_tooltip
-				OR = {
-					has_country_flag = PB_FRA_Muarras_Survives
-					has_country_flag = PB_FRA_Muarras_Died_Coup_Success
-					has_country_flag = PB_FRA_Armandist_Counter_Coup
-				}
+			OR = {
+				has_country_flag = FRA_doriot_coup_succeeded
+				has_country_flag = FRA_maurras_survived_coup
+				has_country_flag = FRA_herbenville_counter_coup_happened
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
 		prerequisite = {
-			focus = FRA_purge
+			focus = FRA_evening_in_paris
 		}
+
 		completion_reward = {
+			custom_effect_tooltip = FRA_coup_reward_tt
 		}
+		search_filters = {FOCUS_FILTER_POLITICAL}
 	}
 	focus = {
 		id = FRA_maurras_takeover
 		icon = GFX_goal_FRA_Focus_Maurras
+		cost = 7
+
 		x = 2
 		y = 2
-		cost = 7
+		
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
-		available = {
-			hidden_trigger = { always = no }
-			custom_trigger_tooltip = {
-				tooltip = PB_FRA_Muarras_Survives_tooltip
-				OR = {
-					has_country_flag = PB_FRA_Muarras_Survives
-				}
-			}
-			has_country_leader = {
-				name = "Charles Maurras"
-				ruling_only = yes
-			}
-		}
 		offset = {
 			x = 6
 			y = 0
@@ -123,52 +106,62 @@ focus_tree = {
 				has_completed_focus = FRA_armand_takeover
 			}
 		}
-		
+
+		available = {
+			hidden_trigger = { always = no }
+			has_country_flag = FRA_maurras_survived_coup
+			has_country_leader = {
+				character = FRA_charles_maurras
+				ruling_only = yes
+			}
+		}
+
 		prerequisite = {
-			focus = FRA_purge_aftermath
+			focus = FRA_the_morning_after
 		}
 		completion_reward = {
 			mark_focus_tree_layout_dirty = yes
 		}
+
+		search_filters = {FOCUS_FILTER_POLITICAL}
 	}
+
 	focus = {
 		id = FRA_doriot_takeover
 		icon = GFX_goal_FRA_Focus_Doriot
+		cost = 7
+
 		x = 8
 		y = 2
-		cost = 7
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
-		available = {
-			hidden_trigger = { always = no }
-			custom_trigger_tooltip = {
-				tooltip = PB_FRA_Doriot_Coup_tooltip
-				OR = {
-					has_country_flag = PB_FRA_Muarras_Died_Coup_Success
-				}
-			}
-			has_country_leader = {
-				name = "Jacques Doriot"
-				ruling_only = yes
-			}
-		}
 		allow_branch = {
 			NOT = {
 				has_completed_focus = FRA_maurras_takeover
 				has_completed_focus = FRA_armand_takeover
 			}
 		}
+
+
+		available = {
+			hidden_trigger = { always = no }
+			has_country_flag = FRA_doriot_coup_succeeded
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
 		
 		prerequisite = {
-			focus = FRA_purge_aftermath
+			focus = FRA_the_morning_after
 		}
 		completion_reward = {
 			mark_focus_tree_layout_dirty = yes
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL }
 	}
 	focus = {
 		id = FRA_armand_takeover
@@ -180,14 +173,13 @@ focus_tree = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
 
 		available = {
 			hidden_trigger = { always = no }
 			custom_trigger_tooltip = {
 				tooltip = PB_FRA_Armand_Counter_Coup_tooltip
 				OR = {
-					has_country_flag = PB_FRA_Armandist_Counter_Coup
+					has_country_flag = FRA_herbenville_counter_coup_happened
 				}
 			}
 			has_country_leader = {
@@ -212,33 +204,36 @@ focus_tree = {
 			custom_trigger_tooltip = {
 				tooltip = PB_FRA_Armand_Counter_Coup_tooltip
 				OR = {
-					has_country_flag = PB_FRA_Armandist_Counter_Coup
+					has_country_flag = FRA_herbenville_counter_coup_happened
 				}
 			}
 		}
 		prerequisite = {
-			focus = FRA_purge_aftermath
+			focus = FRA_the_morning_after
 		}
 		completion_reward = {
 			mark_focus_tree_layout_dirty = yes
 		}
+		search_filters = {FOCUS_FILTER_POLITICAL}
 		
 	}
 	focus = {
 		id = FRA_bourbon_restoration
 		icon = GFX_goal_FRA_Bourbons_Restored
-		x = 2
-		y = 3
-		cost = 30
+		cost = 15
+
+		relative_position_id = FRA_maurras_takeover
+		x = 0
+		y = 1
+		
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
 		available = {
 			has_country_leader = {
-				name = "Charles Maurras"
+				character = FRA_charles_maurras
 				ruling_only = yes
 			}
 		}
@@ -246,98 +241,74 @@ focus_tree = {
 		prerequisite = {
 			focus = FRA_maurras_takeover
 		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
 		completion_reward = {
-			FRA = {
-				country_event = {
-					id = French.13
-					days = 1
-				}
-			}
+			add_political_power = 100
+			country_event = { id = france_events.8 days = 1 }
 		}
+		search_filters = {FOCUS_FILTER_POLITICAL}
 	}
 	focus = {
 		id = FRA_restore_noble_titles
 		icon = GFX_goal_FRA_Restore_Nobility
-		x = 0
-		y = 4
 		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = -2
+		y = 2
+
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
-
 		available = {
 			OR = {
 				has_country_leader = {
-					name = "Charles Maurras"
+					character = FRA_charles_maurras
 					ruling_only = yes
 				}
 				has_country_leader = {
-					name = "Louis XIX"
+					character = FRA_louis_bourbon
 					ruling_only = yes
 				}
 			}
 		}
-		
 		prerequisite = {
 			focus = FRA_bourbon_restoration
 		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
 		completion_reward = {
-			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.06
-			}
-			add_ideas = PB_FRA_Nobility_Restored
+			set_temp_variable = { number = -8 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_restore_provincial_privileges
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 	}
+
 	focus = {
 		id = FRA_light_of_the_sovereign
 		icon = GFX_goal_Generic_Angel
-		x = 2
-		y = 4
 		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+
+		x = 0
+		y = 2
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_NATIONALISM}
-		search_filters = {FOCUS_FILTER_STABILITY}
-
 		available = {
 			OR = {
 				has_country_leader = {
-					name = "Charles Maurras"
+					character = FRA_charles_maurras
 					ruling_only = yes
 				}
 				has_country_leader = {
-					name = "Louis XIX"
+					character = FRA_louis_bourbon
 					ruling_only = yes
 				}
-			}
-		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
 			}
 		}
 		
@@ -347,43 +318,35 @@ focus_tree = {
 		completion_reward = {
 			add_stability = 0.05
 			add_political_power = 100
-			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.04_increase
-			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
-				value = 0.04
-			}
+			set_temp_variable = { number = 4 }
+			FRA_fervour_change = yes
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_STABILITY FOCUS_FILTER_NATIONALISM }
 	}
 	focus = {
 		id = FRA_purge_armand
 		icon = GFX_goal_FRA_Armand_Vibe_Check
-		x = 4
-		y = 4
 		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = 2
+		y = 2
+		
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
 
 		available = {
 			OR = {
 				has_country_leader = {
-					name = "Charles Maurras"
+					character = FRA_charles_maurras
 					ruling_only = yes
 				}
 				has_country_leader = {
-					name = "Louis XIX"
+					character = FRA_louis_bourbon
 					ruling_only = yes
 				}
-			}
-		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
 			}
 		}
 		
@@ -391,59 +354,55 @@ focus_tree = {
 			focus = FRA_bourbon_restoration
 		}
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = PB_state_intimidation_policing
-				add_idea = PB_secret_police_policing
-			}
-			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.04
-			}
-			FRA = {
-				country_event = {
-					id = French.14
-					days = 1
+			if = {
+				limit = { has_idea = PB_state_intimidation_policing }
+				swap_ideas = {
+					remove_idea = PB_state_intimidation_policing
+					add_idea = PB_secret_police_policing
 				}
+				custom_effect_tooltip = tooltip_white_line
 			}
+			else_if = {
+				limit = { has_idea = PB_secret_police_policing }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_secret_police_policing
+				custom_effect_tooltip = tooltip_white_line
+			}
+			set_temp_variable = { number = -4 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			country_event = { id = French.14 hours = 12 }
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
 		id = FRA_support_loyalists
 		icon = GFX_URL_A_Paying_Job
-		x = 1
-		y = 5
 		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = -1
+		y = 3
+		
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
-		search_filters = {FOCUS_FILTER_INDUSTRY}
-		search_filters = {FOCUS_FILTER_MANPOWER}
-		search_filters = {FOCUS_FILTER_ARMY}
-		search_filters = {FOCUS_FILTER_STABILITY}
-
 		available = {
 			OR = {
 				has_country_leader = {
-					name = "Charles Maurras"
+					character = FRA_charles_maurras
 					ruling_only = yes
 				}
 				has_country_leader = {
-					name = "Louis XIX"
+					character = FRA_louis_bourbon
 					ruling_only = yes
 				}
 			}
 		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
+		
 		
 		prerequisite = {
 			focus = FRA_restore_noble_titles
@@ -451,47 +410,49 @@ focus_tree = {
 			focus = FRA_purge_armand
 		}
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = PB_basic_state_welfare
-				add_idea = PB_moderate_state_welfare
+			if = {
+				limit = { has_idea = PB_basic_state_welfare }
+				swap_ideas = {
+					remove_idea = PB_basic_state_welfare
+					add_idea = PB_moderate_state_welfare
+				}
 			}
-			add_timed_idea = { idea = PB_FRA_Loyalist_Welfare days = 365 }
-			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.04
+			else_if = {
+				limit = { has_idea = PB_moderate_state_welfare }
+				add_political_power = 150
 			}
+			else = {
+				add_ideas = PB_moderate_state_welfare
+			}
+			custom_effect_tooltip = tooltip_white_line
+			add_timed_idea = { idea = FRA_loyalist_welfare years = 1 }
+			custom_effect_tooltip = tooltip_white_line
+			set_temp_variable = { number = -3 }
+			FRA_factionalism_change = yes
 			add_stability = 0.025
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_INDUSTRY FOCUS_FILTER_MANPOWER FOCUS_FILTER_ARMY FOCUS_FILTER_STABILITY FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
 		id = FRA_anti_decadence_propaganda
 		icon = GFX_goal_Generic_Propaganda_Axis
-		x = 3
-		y = 5
 		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = 1
+		y = 3
 		ai_will_do = {
 			factor = 100
 		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_MANPOWER}
 
 		available = {
 			OR = {
 				has_country_leader = {
-					name = "Charles Maurras"
+					character = FRA_charles_maurras
 					ruling_only = yes
 				}
 				has_country_leader = {
-					name = "Louis XIX"
+					character = FRA_louis_bourbon
 					ruling_only = yes
 				}
 			}
@@ -503,55 +464,77 @@ focus_tree = {
 			focus = FRA_purge_armand
 		}
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = PB_single_party_system_voting
-				add_idea = PB_no_voting
+			if = {
+				limit = { has_idea = PB_single_party_system_voting }
+				swap_ideas = {
+					remove_idea = PB_single_party_system_voting
+					add_idea = PB_no_voting
+				}
 			}
-			swap_ideas = {
-				remove_idea = PB_sociogenetics_system_illnesses
-				add_idea = PB_sociogenetics_restricted
+			else_if = {
+				limit = { has_idea = PB_no_voting }
+				add_political_power = 150
 			}
-			swap_ideas = {
-				remove_idea = PB_augmentation_no_legislation
-				add_idea = PB_augmentation_banned
+			else = {
+				add_ideas = PB_no_voting
 			}
+
+			if = {
+				limit = { has_idea = PB_sociogenetics_system_illnesses }
+				swap_ideas = {
+					remove_idea = PB_sociogenetics_system_illnesses
+					add_idea = PB_sociogenetics_restricted
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_sociogenetics_restricted }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_sociogenetics_restricted
+			}
+
+			if = {
+				limit = { has_idea = PB_augmentation_no_legislation }
+				swap_ideas = {
+					remove_idea = PB_augmentation_no_legislation
+					add_idea = PB_augmentation_banned
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_augmentation_banned }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_augmentation_banned
+			}
+			custom_effect_tooltip = tooltip_white_line
 			add_political_power = 100
-			add_popularity = {
-				ideology = rc
-				popularity = 0.05
-			}
+			add_popularity = { ideology = rc popularity = 0.05 }
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_MANPOWER }
 	}
 	focus = {
-		id = FRA_renewed_imperialism
+		id = FRA_reignite_imperialism
 		icon = GFX_goal_Generic_Paternal_Autocracy
-		x = 2
-		y = 6
-		cost = 50
+		cost = 45
+
+		relative_position_id = FRA_maurras_takeover
+		x = 0
+		y = 4
+		
 		ai_will_do = {
 			factor = 100
 		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_NATIONALISM}
-		search_filters = {FOCUS_FILTER_MANPOWER}
-		search_filters = {FOCUS_FILTER_ARMY}
 
 		available = {
 			OR = {
 				has_country_leader = {
-					name = "Charles Maurras"
+					character = FRA_charles_maurras
 					ruling_only = yes
 				}
 				has_country_leader = {
-					name = "Louis XIX"
+					character = FRA_louis_bourbon
 					ruling_only = yes
 				}
 			}
@@ -564,138 +547,463 @@ focus_tree = {
 			focus = FRA_anti_decadence_propaganda
 		}
 		completion_reward = {
-			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_increase
-			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
-				value = 0.06
-			}
-			add_ideas = PB_FRA_Renewed_Imperialism_Idea
-			FRA = {
-				country_event = {
-					id = French.63
-					days = 1
-				}
-			}
+			set_temp_variable = { number = 6 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_renewed_imperialism
+			country_event = { id = French.63 days = 1 }
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_MANPOWER FOCUS_FILTER_ARMY FOCUS_FILTER_NATIONALISM }
 	}
 	focus = {
-		id = FRA_doriot_who_are_thou
-		icon = GFX_goal_PB_FRA_Doriot_Who_Are_Thou
-		x = 8
-		y = 3
-		cost = 10
+		id = FRA_doctrine_of_integralism
+		icon = GFX_goal_CAN_bilingual
+		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = 0
+		y = 5
+		
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_STABILITY}
-
 		available = {
-			has_country_leader = {
-				name = "Jacques Doriot"
-				ruling_only = yes
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
 			}
 		}
 		
+		prerequisite = {
+			focus = FRA_reignite_imperialism
+		}
+		completion_reward = {
+			if = {
+				limit = { has_idea = PB_public_meetings_monitored }
+				swap_ideas = {
+					remove_idea = PB_public_meetings_monitored
+					add_idea = PB_public_meetings_banned
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_public_meetings_banned }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_public_meetings_banned
+			}
+			custom_effect_tooltip = tooltip_white_line
+			set_temp_variable = { number = -2 }
+			FRA_factionalism_change = yes
+			add_stability = 0.025
+		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_nation_of_faith
+		icon = GFX_goal_POR_catholic_education
+		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = -1
+		y = 6
+
+		offset = {
+			x = -1
+			y = 0
+			trigger = { has_completed_focus = FRA_maurras_takeover }
+		}
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_doctrine_of_integralism
+		}
+		completion_reward = {
+			add_political_power = 35
+			set_temp_variable = { number = 2 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_state_catholicism
+		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_POLITICAL FOCUS_FILTER_NATIONALISM }
+	}
+	focus = {
+		id = FRA_anti_semetism
+		icon = GFX_goal_Focus_FRA_Anti_Semetism
+		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = -1
+		y = 7
+
+		offset = {
+			x = -1
+			y = 0
+			trigger = { has_completed_focus = FRA_maurras_takeover }
+		}
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_nation_of_faith
+		}
+		completion_reward = {
+			add_political_power = 150
+			add_ideas = FRA_anti_semitic_sentiments
+		}
+		search_filters = { FOCUS_FILTER_POLITICAL }
+	}
+	focus = {
+		id = FRA_alliance_with_patriotic_leagues
+		icon = GFX_goal_RAJ_establish_secret_service
+		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = -1
+		y = 8
+
+		offset = {
+			x = -1
+			y = 0
+			trigger = { has_completed_focus = FRA_maurras_takeover }
+		}
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_anti_semetism
+		}
+		completion_reward = {
+			set_temp_variable = { number = -2 }
+			FRA_factionalism_change = yes
+			set_temp_variable = { number = 6 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_cooperation_with_leagues
+		}
+		search_filters = {FOCUS_FILTER_ARMY FOCUS_FILTER_NATIONALISM FOCUS_FILTER_FACTIONALISM}
+
+	}
+	focus = {
+		id = FRA_reversing_reformation
+		icon = GFX_goal_GER_burn_the_blacklist
+		cost = 30
+		relative_position_id = FRA_maurras_takeover
+		x = 1
+		y = 6
+
+		offset = {
+			x = 1
+			y = 0
+			trigger = { has_completed_focus = FRA_maurras_takeover }
+		}
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_doctrine_of_integralism
+		}
+		completion_reward = {
+			add_political_power = 100
+			add_stability = 0.05
+			add_popularity = {
+				ideology = rc
+				popularity = 0.1
+			}
+		}
+		search_filters = {FOCUS_FILTER_POLITICAL}
+	}
+	focus = {
+		id = FRA_modern_absolutism
+		icon = GFX_goal_Focus_FRA_Modern_Absolutism
+		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = 1
+		y = 7
+
+		offset = {
+			x = 1
+			y = 0
+			trigger = { has_completed_focus = FRA_maurras_takeover }
+		}
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_reversing_reformation
+		}
+		completion_reward = {
+			set_temp_variable = { number = -5 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			swap_ideas = {
+				remove_idea = PB_absolute_monarchy
+				add_idea = PB_ultranationalist_monarchy
+			}
+			if = {
+				limit = {
+					has_country_leader = {
+						character = FRA_louis_bourbon
+						ruling_only = yes
+					}
+				}
+				add_country_leader_trait = imperial_connections
+			}
+		}
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_rally_the_youth
+		icon = GFX_goal_KTG_Bookstack
+		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = 1
+		y = 8
+
+		offset = {
+			x = 1
+			y = 0
+			trigger = { has_completed_focus = FRA_maurras_takeover }
+		}
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_modern_absolutism
+		}
+		completion_reward = {
+			set_temp_variable = { number = 3 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_youth_leagues
+		}
+		search_filters = { FOCUS_FILTER_MANPOWER FOCUS_FILTER_NATIONALISM }
+	}
+		focus = {
+		id = FRA_rebirth_of_the_latin_empire
+		icon = GFX_goal_NFA_French_Kingdom
+		cost = 30
+
+		relative_position_id = FRA_maurras_takeover
+		x = 0
+		y = 9
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			OR = {
+				has_country_leader = {
+					character = FRA_charles_maurras
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = FRA_louis_bourbon
+					ruling_only = yes
+				}
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_alliance_with_patriotic_leagues
+		}
+		prerequisite = {
+			focus = FRA_rally_the_youth
+		}
+		completion_reward = {
+			set_temp_variable = { number = -8 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_popularity = { ideology = rc popularity = 0.2 }
+			add_ideas = FRA_french_values
+			remove_ideas = FRA_state_catholicism
+			remove_ideas = FRA_cooperation_with_leagues 
+			remove_ideas = FRA_youth_leagues
+			add_stability = 0.025
+			add_research_slot = 1
+			country_event = { id = france_flavour_events.1 days = 1 }
+		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_ARMY FOCUS_FILTER_MANPOWER FOCUS_FILTER_STABILITY FOCUS_FILTER_RESEARCH FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_doriot_who_are_thou
+		icon = GFX_goal_PB_FRA_Doriot_Who_Are_Thou
+		cost = 10
+
+		relative_position_id = FRA_doriot_takeover
+		x = 0
+		y = 1
+
+		ai_will_do = {
+			factor = 100
+		}
+
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
 		prerequisite = {
 			focus = FRA_doriot_takeover
 		}
 		completion_reward = {
 			custom_effect_tooltip = PB_FRA_Political_Dissonance_tt
 			custom_effect_tooltip = tooltip_white_line
-			country_event = {
-				id = French_personality.5
-				days = 3
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_add_dynmod
+					DYNMOD = FRA_political_dissonance
+				}
+				add_dynamic_modifier = { modifier = FRA_political_dissonance }
 			}
+			add_to_variable = { FRA_PD_stability_factor = -0.05 tooltip = stability_factor_tt }
+			add_to_variable = { FRA_PD_war_support_factor = 0.03 tooltip = war_support_factor_tt }
+			add_to_variable = { FRA_PD_political_power_factor = 0.03 tooltip = political_power_factor_tt }
+
 			hidden_effect = {
-				#SET POLITICAL DISSONANCE DYNMOD
-				set_variable = {
-					FRA_stability_factor_var = -0.05
-				}
-				set_variable = {
-					FRA_war_support_factor_var = 0.03
-				}
-				set_variable = {
-					FRA_political_power_factor_var = 0.03
-				}
-				set_variable = {
-					FRA_conscription_factor_var = 0
-				}
-				set_variable = {
-					FRA_army_org_factor_var = 0
-				}
-				set_variable = {
-					FRA_consumer_goods_factor_var = 0
-				}
-				set_variable = {
-					FRA_production_speed_buildings_factor_var = 0
-				}
-				set_variable = {
-					FRA_industrial_capacity_factory_var = 0
-				}
-				set_variable = {
-					FRA_production_speed_arms_factory_factor_var = 0
-				}
-				set_variable = {
-					FRA_production_speed_industrial_complex_factor_var = 0
-				}
-				set_variable = {
-					FRA_research_speed_factor_var = 0
-				}
-				add_dynamic_modifier = { 
-					modifier = PB_FRA_Political_Dissonance
-				}
+				country_event = { id = French_personality.5 days = 3 }
 				#SET POLITICAL DISSONANCE LEFT/RIGHT VARS
-				set_variable = {
-					PB_FRA_Dissonance_Left = 0
-				}
-				set_variable = {
-					PB_FRA_Dissonance_Right = 0
-				}
+				set_variable = { FRA_doriot_dissonance_left = 0 }
+				set_variable = { FRA_doriot_dissonance_right = 0 }
 				random_list = {
-					10 = {
-						set_country_flag = PB_FRA_AI_Doriot_Left
-					}
-					10 = {
-						set_country_flag = PB_FRA_AI_Doriot_Right
-					}
-					10 = {
-						set_country_flag = PB_FRA_AI_Doriot_Center
-					}
+					10 = { FRA_jacques_doriot = { set_character_flag = FRA_doriot_AI_left } }
+					10 = { FRA_jacques_doriot = { set_character_flag = FRA_doriot_AI_right } }
+					10 = { FRA_jacques_doriot = { set_character_flag = FRA_doriot_AI_center } }
 				}
 			}
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_STABILITY }
 	}
 	focus = {
 		id = FRA_beloved_president
 		icon = GFX_goal_PB_FRA_Beloved_President
-		x = 7
-		y = 4
 		cost = 25
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 2
+		
 		ai_will_do = {
 			factor = 80
 			modifier = {
 				factor = 100
-				has_country_flag = PB_FRA_AI_Doriot_Left
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_left }
 			}
 			modifier = {
 				factor = 10
-				has_country_flag = PB_FRA_AI_Doriot_Right
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_right }
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_ARMY}
-		search_filters = {FOCUS_FILTER_MANPOWER}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
@@ -703,59 +1011,71 @@ focus_tree = {
 		}
 		completion_reward = {
 			if = {
+				limit = { has_completed_focus = FRA_mighty_marshal }
+				custom_effect_tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = FRA_political_dissonance
+				}
+				add_to_variable = { FRA_PD_stability_factor = -0.05 tooltip = stability_factor_tt }
+			}
+			else = { custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt }
+			if = {
 				limit = {
-					has_completed_focus = FRA_mighty_marshal
+					has_country_leader = {
+						character = FRA_jacques_doriot
+						ruling_only = yes
+					}
 				}
-				add_to_variable = {
-					var = FRA_stability_factor_var
-					value = -0.05
-					tooltip = FRA_stability_factor_var_decrease_tt
+				add_country_leader_trait = PB_FRA_Beloved_Statesman_trait
+			}
+			custom_effect_tooltip = tooltip_white_line
+			if = {
+				limit = { has_idea = PB_basic_education }
+				swap_ideas = {
+					remove_idea = PB_basic_education
+					add_idea = PB_subsidized_basic_education
 				}
+			}
+			else_if = {
+				limit = { has_idea = PB_subsidized_basic_education }
+				add_political_power = 150
 			}
 			else = {
-				custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt
-			}
-			add_country_leader_trait = PB_FRA_Beloved_Statesman_trait
-			swap_ideas = {
-				remove_idea = PB_basic_education
-				add_idea = PB_subsidized_basic_education
+				add_ideas = PB_subsidized_basic_education
 			}
 			hidden_effect = {
-				add_to_variable = {
-					PB_FRA_Dissonance_Left = 1
-				}
+				add_to_variable = { FRA_doriot_dissonance_left = 1 }
 			}
 		}
+		search_filters = {FOCUS_FILTER_ARMY FOCUS_FILTER_MANPOWER}
 	}
 	focus = {
 		id = FRA_mighty_marshal
 		icon = GFX_goal_PB_FRA_Mighty_Marshal
-		x = 9
-		y = 4
 		cost = 25
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 2
+		
 		ai_will_do = {
 			factor = 80
 			modifier = {
-				factor = 10
-				has_country_flag = PB_FRA_AI_Doriot_Left
+				factor = 100
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_right }
 			}
 			modifier = {
-				factor = 100
-				has_country_flag = PB_FRA_AI_Doriot_Right
+				factor = 10
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_left }
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_ARMY}
-		search_filters = {FOCUS_FILTER_MANPOWER}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
@@ -763,74 +1083,82 @@ focus_tree = {
 		}
 		completion_reward = {
 			if = {
+				limit = { has_completed_focus = FRA_beloved_president }
+				custom_effect_tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = FRA_political_dissonance
+				}
+				add_to_variable = { FRA_PD_stability_factor = -0.05 tooltip = stability_factor_tt }
+			}
+			else = { custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt }
+			add_field_marshal_role = {
+				character = FRA_jacques_doriot
+				skill = 2
+				attack_skill = 2
+				defense_skill = 1
+				planning_skill = 2
+				logistics_skill = 1
+			}
+			if = {
 				limit = {
-					has_completed_focus = FRA_beloved_president
+					has_country_leader = {
+						character = FRA_jacques_doriot
+						ruling_only = yes
+					}
 				}
-				add_to_variable = {
-					var = FRA_stability_factor_var
-					value = -0.05
-					tooltip = FRA_stability_factor_var_decrease_tt
+				add_country_leader_trait = PB_FRA_Grand_Marshal_Inexperienced_trait
+			}
+			if = {
+				limit = { has_idea = PB_state_intimidation_policing }
+				swap_ideas = {
+					remove_idea = PB_state_intimidation_policing
+					add_idea = PB_secret_police_policing
 				}
+			}
+			else_if = {
+				limit = { has_idea = PB_secret_police_policing }
+				add_political_power = 150
 			}
 			else = {
-				custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt
-			}
-			FRA_jacques_doriot = {
-				add_field_marshal_role = {
-				  skill = 2
-				  attack_skill = 2
-				  defense_skill = 1
-				  planning_skill = 2
-				  logistics_skill = 1
-				}
-			}
-			add_country_leader_trait = PB_FRA_Grand_Marshal_Inexperienced_trait
-			swap_ideas = {
-				remove_idea = PB_state_intimidation_policing
-				add_idea = PB_secret_police_policing
+				add_ideas = PB_secret_police_policing
 			}
 			hidden_effect = {
-				add_to_variable = {
-					PB_FRA_Dissonance_Right = 1
-				}
+				add_to_variable = { FRA_doriot_dissonance_right = 1 }
 			}
 		}
+		search_filters = { FOCUS_FILTER_ARMY FOCUS_FILTER_MANPOWER }
 	}
 	focus = {
 		id = FRA_plebeians_tribune
 		icon = GFX_goal_PB_FRA_Plebeians_Tribune
-		x = 6
-		y = 5
 		cost = 40
+
+		relative_position_id = FRA_doriot_takeover
+		x = -2
+		y = 3
+
 		ai_will_do = {
 			factor = 70
 			modifier = {
 				factor = 100
-				has_country_flag = PB_FRA_AI_Doriot_Left
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_left }
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Right
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_center }
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Center
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_right }
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
-		search_filters = {FOCUS_FILTER_STABILITY}
-		search_filters = {FOCUS_FILTER_WAR_SUPPORT}
-		search_filters = {FOCUS_FILTER_ARMY}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
@@ -838,107 +1166,90 @@ focus_tree = {
 			focus = FRA_mighty_marshal
 		}
 		completion_reward = {
-			add_to_variable = {
-				var = FRA_stability_factor_var
-				value = 0.05
-				tooltip = FRA_stability_factor_var_tt
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = FRA_political_dissonance
 			}
-			add_to_variable = {
-				var = FRA_consumer_goods_factor_var
-				value = 0.05
-				tooltip = FRA_consumer_goods_factor_var_tt
-			}
+			add_to_variable = { FRA_PD_stability_factor = 0.05 tooltip = stability_factor_tt }
+			add_to_variable = { FRA_PD_consumer_goods_factor = 0.05 tooltip = consumer_goods_factor_tt }
 			custom_effect_tooltip = tooltip_white_line
 			if = {
 				limit = {
-					AND = {
-						has_completed_focus = FRA_nation_first_son
-						NOT = {
-							has_completed_focus = FRA_mighty_marshal
-						}
-					}
-				}
-				custom_effect_tooltip = FRA_Factionalism_0.02_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.02
-				}
-			}
-			if = {
-				limit = {
-					AND = {
-						has_completed_focus = FRA_mighty_marshal
-						NOT = {
+					OR = {
+						AND = {
 							has_completed_focus = FRA_nation_first_son
+							NOT = { has_completed_focus = FRA_mighty_marshal }
+						}
+						AND = {
+							has_completed_focus = FRA_mighty_marshal
+							NOT = { has_completed_focus = FRA_nation_first_son }
 						}
 					}
 				}
-				custom_effect_tooltip = FRA_Factionalism_0.02_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.02
-				}
+				set_temp_variable = { number = 3 }
+				FRA_factionalism_change = yes
+				custom_effect_tooltip = tooltip_white_line
 			}
 			if = {
 				limit = {
-					AND = {
-						has_completed_focus = FRA_mighty_marshal
-						has_completed_focus = FRA_nation_first_son
-					}
+					has_completed_focus = FRA_mighty_marshal
+					has_completed_focus = FRA_nation_first_son
 				}
-				custom_effect_tooltip = FRA_Factionalism_0.04_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.04
-				}
+				set_temp_variable = { number = 10 }
+				FRA_factionalism_change = yes
+				custom_effect_tooltip = tooltip_white_line
 			}
-			else = {
-				custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt
-			}
+			else = { custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt }
 			add_offsite_building = { type = industrial_complex level = 2 }
-			custom_effect_tooltip = tooltip_white_line
-			PB_FRA_unemployment_variable_minus0.25 = yes
-			custom_effect_tooltip = tooltip_white_line
+			set_temp_variable = { number = -0.25 }
+			FRA_unemployment_change = yes
 			modify_building_resources = {
 				building = farm
 				resource = grain
 				amount = 1
 			}
 			custom_effect_tooltip = tooltip_white_line
-			add_ideas = PB_FRA_Lex_Sempronia
+			add_ideas = FRA_lex_sempronia
 			custom_effect_tooltip = tooltip_white_line
-			swap_ideas = {
-				remove_idea = PB_14_hour_workday
-				add_idea = PB_12_hour_workday
-			}
-			hidden_effect = {
-				add_to_variable = {
-					PB_FRA_Dissonance_Left = 1
+			if = {
+				limit = { has_idea = PB_14_hour_workday }
+				swap_ideas = {
+					remove_idea = PB_14_hour_workday
+					add_idea = PB_12_hour_workday
 				}
 			}
+			else_if = {
+				limit = { has_idea = PB_12_hour_workday }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_12_hour_workday
+			}
+			hidden_effect = {
+				add_to_variable = { FRA_doriot_dissonance_left = 1 }
+			}
 		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_WAR_SUPPORT FOCUS_FILTER_ARMY FOCUS_FILTER_FACTIONALISM FOCUS_FILTER_UNEMPLOYMENT }
 	}
 	focus = {
 		id = FRA_savior_of_france
 		icon = GFX_goal_Focus_PB_FRA_Personality_Cult
-		x = 8
-		y = 5
 		cost = 40
+
+		relative_position_id = FRA_doriot_takeover
+		x = 0
+		y = 3
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_FOREIGN_POLICY}
-		search_filters = {FOCUS_FILTER_ARMY}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
@@ -946,24 +1257,27 @@ focus_tree = {
 			focus = FRA_mighty_marshal
 		}
 		completion_reward = {
-			add_to_variable = {
-				var = FRA_stability_factor_var
-				value = 0.05
-				tooltip = FRA_stability_factor_var_tt
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = FRA_political_dissonance
 			}
+			add_to_variable = { FRA_PD_stability_factor = 0.05 tooltip = stability_factor_tt }
 			custom_effect_tooltip = tooltip_white_line
-			add_country_leader_trait = PB_FRA_Savior_of_France_trait
-			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.04_increase
-			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
-				value = 0.04
+			if = {
+				limit = {
+					has_country_leader = {
+						character = FRA_jacques_doriot
+						ruling_only = yes
+					}
+				}
+				add_country_leader_trait = PB_FRA_Savior_of_France_trait
 			}
-			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.02
-			}
+			set_temp_variable = { number = 5 }
+			FRA_fervour_change = yes
+			set_temp_variable = { number = -2 }
+			FRA_factionalism_change = yes
 		}
+		search_filters = {FOCUS_FILTER_FOREIGN_POLICY FOCUS_FILTER_ARMY FOCUS_FILTER_NATIONALISM FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
 		id = FRA_nation_first_son
@@ -974,29 +1288,25 @@ focus_tree = {
 		ai_will_do = {
 			factor = 70
 			modifier = {
-				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Left
-			}
-			modifier = {
 				factor = 100
-				has_country_flag = PB_FRA_AI_Doriot_Right
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_right }
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Center
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_center }
+			}
+			modifier = {
+				factor = 0
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_left }
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
@@ -1004,253 +1314,228 @@ focus_tree = {
 			focus = FRA_mighty_marshal
 		}
 		completion_reward = {
-			add_to_variable = {
-				var = FRA_war_support_factor_var
-				value = 0.05
-				tooltip = FRA_war_support_factor_var_tt
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = FRA_political_dissonance
 			}
-			add_to_variable = {
-				var = FRA_conscription_factor_var
-				value = 0.03
-				tooltip = FRA_conscription_factor_var_tt
-			}
-			add_to_variable = {
-				var = FRA_consumer_goods_factor_var
-				value = -0.05
-				tooltip = FRA_consumer_goods_factor_var_decrease_tt
-			}
+			add_to_variable = { FRA_PD_war_support_factor = 0.05 tooltip = war_support_factor_tt }
+			add_to_variable = { FRA_PD_conscription_factor = 0.03 tooltip = conscription_factor_tt }
+			add_to_variable = { FRA_PD_consumer_goods_factor = -0.05 tooltip = consumer_goods_factor_tt }
 			custom_effect_tooltip = tooltip_white_line
 			if = {
 				limit = {
-					AND = {
+					OR = {
 						has_completed_focus = FRA_plebeians_tribune
-						NOT = {
-							has_completed_focus = FRA_beloved_president
-						}
+						NOT = { has_completed_focus = FRA_beloved_president }
+					}
+					OR = {
+						has_completed_focus = FRA_beloved_president
+						NOT = { has_completed_focus = FRA_plebeians_tribune }
 					}
 				}
-				custom_effect_tooltip = FRA_Factionalism_0.04_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.04
-				}
+				set_temp_variable = { number = 5 }
+				FRA_factionalism_change = yes
+				custom_effect_tooltip = tooltip_white_line
 			}
 			if = {
 				limit = {
-					AND = {
-						has_completed_focus = FRA_beloved_president
-						NOT = {
-							has_completed_focus = FRA_plebeians_tribune
-						}
-					}
+					has_completed_focus = FRA_beloved_president
+					has_completed_focus = FRA_plebeians_tribune
 				}
-				custom_effect_tooltip = FRA_Factionalism_0.04_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.04
-				}
+				set_temp_variable = { number = 12 }
+				FRA_factionalism_change = yes
+				custom_effect_tooltip = tooltip_white_line
 			}
-			if = {
-				limit = {
-					AND = {
-						has_completed_focus = FRA_beloved_president
-						has_completed_focus = FRA_plebeians_tribune
-					}
-				}
-				custom_effect_tooltip = FRA_Factionalism_0.06_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.06
-				}
-			}
-			else = {
-				custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt
-			}
-			every_military_industrial_organization = {
-				add_mio_funds = 100
-			}
+			else = { custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt }
 			custom_effect_tooltip = tooltip_white_line
-			add_ideas = PB_FRA_New_French_Man_Idea
+			every_military_industrial_organization = { add_mio_funds = 100 }
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_model_citizen_soldier
 			hidden_effect = {
-				add_to_variable = {
-					PB_FRA_Dissonance_Right = 1
-				}
+				add_to_variable = { FRA_doriot_dissonance_right = 1 }
 			}
 		}
+		search_filters = {FOCUS_FILTER_POLITICAL}
 	}
 	focus = {
 		id = FRA_audace
 		icon = GFX_goal_Generic_Woman
-		x = 5
-		y = 6
 		cost = 40
+
+		relative_position_id = FRA_doriot_takeover
+		x = -3
+		y = 4
+
 		ai_will_do = {
 			factor = 60
 			modifier = {
 				factor = 90
-				has_country_flag = PB_FRA_AI_Doriot_Left
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_left }
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Right
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_center }
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Center
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_right }
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
 			focus = FRA_plebeians_tribune
 			focus = FRA_savior_of_france
+			focus = FRA_nation_first_son
 		}
 		completion_reward = {
-			add_to_variable = {
-				var = FRA_production_speed_industrial_complex_factor_var
-				value = 0.1
-				tooltip = FRA_production_speed_industrial_complex_factor_var_tt
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = FRA_political_dissonance
 			}
-			add_to_variable = {
-				var = FRA_research_speed_factor_var
-				value = 0.05
-				tooltip = FRA_research_speed_factor_var_tt
+			if = {
+				limit = { has_completed_focus = FRA_la_terre }
+				add_to_variable = { FRA_PD_stability_factor = -0.05 tooltip = stability_factor_tt }
 			}
-			add_to_variable = {
-				var = FRA_production_speed_arms_factory_factor_var
-				value = -0.05
-				tooltip = FRA_production_speed_arms_factory_factor_var_decrease_tt
-			}
+			add_to_variable = { FRA_PD_production_speed_industrial_complex_factor = 0.1 tooltip = production_speed_industrial_complex_factor_tt }
+			add_to_variable = { FRA_PD_research_speed_factor = 0.05 tooltip = research_speed_factor_tt }
+			add_to_variable = { FRA_PD_production_speed_arms_factory_factor = -0.05 tooltip = production_speed_arms_factory_factor_tt }
 			custom_effect_tooltip = tooltip_white_line
 			if = {
-				limit = {
-					has_completed_focus = FRA_audace
-				}
-				add_to_variable = {
-					var = FRA_stability_factor_var
-					value = -0.05
-					tooltip = FRA_stability_factor_var_decrease_tt
-				}
-				custom_effect_tooltip = FRA_Factionalism_0.06_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.06
-				}
+				limit = { has_completed_focus = FRA_la_terre }
+				set_temp_variable = { number = 8}
+				FRA_factionalism_change = yes
 			}
 			else = {
 				custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt
 			}
+			custom_effect_tooltip = tooltip_white_line
 			every_core_state = {
+				limit = { is_in_europe = yes is_owned_by = ROOT }
 				add_extra_state_shared_building_slots = 1
 			}
 			custom_effect_tooltip = tooltip_white_line
-			swap_ideas = {
-				remove_idea = PB_monitored_voting
-				add_idea = PB_biased_universal_voting
-			}
-			swap_ideas = {
-				remove_idea = PB_no_womens_legal_protection
-				add_idea = PB_limited_womens_rights
-			}
-			add_popularity = {
-				ideology = jc
-				popularity = 0.05
-			}
-			add_popularity = {
-				ideology = ss
-				popularity = 0.05
-			}
-			hidden_effect = {
-				add_to_variable = {
-					PB_FRA_Dissonance_Left = 1
+			if = {
+				limit = { has_idea = PB_monitored_voting }
+				swap_ideas = {
+					remove_idea = PB_monitored_voting
+					add_idea = PB_biased_universal_voting
 				}
 			}
+			else_if = {
+				limit = { has_idea = PB_biased_universal_voting }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_biased_universal_voting
+			}
+
+			if = {
+				limit = { has_idea = PB_no_womens_legal_protection }
+				swap_ideas = {
+					remove_idea = PB_no_womens_legal_protection
+					add_idea = PB_limited_womens_rights
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_limited_womens_rights }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_limited_womens_rights
+			}
+			add_popularity = { ideology = jc popularity = 0.05 }
+			add_popularity = { ideology = ss popularity = 0.05 }
+			hidden_effect = {
+				add_to_variable = { FRA_doriot_dissonance_left = 1 }
+			}
 		}
+		search_filters = {FOCUS_FILTER_POLITICAL FOCUS_FILTER_INDUSTRY FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
 		id = FRA_class_collaboration
 		icon = GFX_goal_Focus_FRA_Year_Zero
-		x = 7
-		y = 6
 		cost = 40
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 4
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
 			focus = FRA_plebeians_tribune
 			focus = FRA_savior_of_france
+			focus = FRA_nation_first_son
 		}
 		completion_reward = {
-			add_to_variable = {
-				var = FRA_production_speed_buildings_factor_var
-				value = 0.05
-				tooltip = FRA_production_speed_buildings_factor_var_tt
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = FRA_political_dissonance
 			}
-			add_to_variable = {
-				var = FRA_industrial_capacity_factory_var
-				value = 0.05
-				tooltip = FRA_industrial_capacity_factory_var_tt
-			}
+			add_to_variable = { FRA_PD_production_speed_buildings_factor = 0.05 tooltip = production_speed_buildings_factor_tt }
+			add_to_variable = { FRA_PD_industrial_capacity_factory = 0.05 tooltip = industrial_capacity_factory_tt }
 			custom_effect_tooltip = tooltip_white_line
-			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.04
-			}
+			set_temp_variable = { number = -4 }
+			FRA_factionalism_change = yes
 			custom_effect_tooltip = tooltip_white_line
-			swap_ideas = {
-				remove_idea = PB_mixed_market_capitalism
-				add_idea = PB_state_capitalism
+			if = {
+				limit = { has_idea = PB_mixed_market_capitalism }
+				swap_ideas = {
+					remove_idea = PB_mixed_market_capitalism
+					add_idea = PB_state_capitalism
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_state_capitalism }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_state_capitalism
 			}
 		}
+		search_filters = {FOCUS_FILTER_POLITICAL FOCUS_FILTER_INDUSTRY FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
-		id = FRA_anti_germanism
+		id = FRA_against_oppressors
 		icon = GFX_goal_Focus_PB_FRA_Anti_Germanism
-		x = 9
-		y = 6
 		cost = 40
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 4
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
+			focus = FRA_plebeians_tribune
 			focus = FRA_nation_first_son
 			focus = FRA_savior_of_france
 		}
@@ -1263,176 +1548,144 @@ focus_tree = {
 			}
 			custom_effect_tooltip = tooltip_white_line
 			if = {
-			    limit = {
-				    has_idea = civilian_economy
-			    }
-			    swap_ideas = {
-				    remove_idea = civilian_economy
-				    add_idea = low_economic_mobilisation
-			    }
-			}
-			else_if = {
 				limit = {
-				   has_idea = low_economic_mobilisation
+					OR = {
+						has_idea = civilian_economy
+						has_idea = low_economic_mobilisation
+						has_idea = partial_economic_mobilisation
+					}
 				}
-				swap_ideas = {
-					remove_idea = low_economic_mobilisation
-					add_idea = partial_economic_mobilisation
-				}
+				upgrade_economy_law = yes
 			}
-			else_if = {
-				limit = {
-				    has_idea = partial_economic_mobilisation
-				}
-				swap_ideas = {
-					remove_idea = partial_economic_mobilisation
-					add_idea = war_economy
-				}
-			}
-			else = {
-				add_war_support = 0.05
-			}
-			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_increase
-			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
-				value = 0.06
-			}
+			else = { add_political_power = 150 add_war_support = 0.05 }
+			custom_effect_tooltip = tooltip_white_line
+			set_temp_variable = { number = 10 }
+			FRA_fervour_change = yes
 			custom_effect_tooltip = tooltip_white_line
 			swap_ideas = {
-				remove_idea = PB_FRA_Bitter_Revanchism
+				remove_idea = FRA_bitter_revanchism
 				add_idea = PB_FRA_Anti_German_Stance
 			}
 		}
+		search_filters = {FOCUS_FILTER_POLITICAL FOCUS_FILTER_NATIONALISM FOCUS_FILTER_ARMY FOCUS_FILTER_INDUSTRY FOCUS_FILTER_WAR_SUPPORT }
 	}
 	focus = {
 		id = FRA_la_terre
 		icon = GFX_goal_Focus_PB_FRA_Triumph_Will
-		x = 11
-		y = 6
 		cost = 40
+
+		relative_position_id = FRA_doriot_takeover
+		x = 3
+		y = 4
+
 		ai_will_do = {
 			factor = 60
 			modifier = {
-				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Left
-			}
-			modifier = {
 				factor = 90
-				has_country_flag = PB_FRA_AI_Doriot_Right
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_right }
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = PB_FRA_AI_Doriot_Center
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_center }
+			}
+			modifier = {
+				factor = 0
+				FRA_jacques_doriot = { has_character_flag = FRA_doriot_AI_left }
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
-			NOT = {
-				has_completed_focus = FRA_new_france
-			}
+			NOT = { has_completed_focus = FRA_new_france }
 		}
 		
 		prerequisite = {
 			focus = FRA_nation_first_son
 			focus = FRA_savior_of_france
+			focus = FRA_plebeians_tribune
 		}
 		completion_reward = {
-			add_to_variable = {
-				var = FRA_stability_factor_var
-				value = -0.05
-				tooltip = FRA_stability_factor_var_decrease_tt
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = FRA_political_dissonance
 			}
-			add_to_variable = {
-				var = FRA_conscription_factor_var
-				value = 0.03
-				tooltip = FRA_conscription_factor_var_tt
+			if = {
+				limit = { has_completed_focus = FRA_audace }
+				add_to_variable = { FRA_PD_stability_factor = -0.1 tooltip = stability_factor_tt }
 			}
-			add_to_variable = {
-				var = FRA_consumer_goods_factor_var
-				value = -0.05
-				tooltip = FRA_consumer_goods_factor_var_decrease_tt
-			}
-			add_to_variable = {
-				var = FRA_production_speed_industrial_complex_factor_var
-				value = -0.15
-				tooltip = FRA_production_speed_industrial_complex_factor_var_decrease_tt
-			}
-			add_to_variable = {
-				var = FRA_production_speed_arms_factory_factor_var
-				value = 0.1
-				tooltip = FRA_production_speed_arms_factory_factor_var_tt
-			}
+			else = { add_to_variable = { FRA_PD_stability_factor = -0.05 tooltip = stability_factor_tt } }
+			add_to_variable = { FRA_PD_conscription_factor = 0.03 tooltip = conscription_factor_tt }
+			add_to_variable = { FRA_PD_consumer_goods_factor = -0.05 tooltip = consumer_goods_factor_tt }
+			add_to_variable = { FRA_PD_production_speed_industrial_complex_factor = -0.15 tooltip = production_speed_industrial_complex_factor_tt }
+			add_to_variable = { FRA_PD_production_speed_arms_factory_factor = 0.1 tooltip = production_speed_arms_factory_factor_tt }
 			custom_effect_tooltip = tooltip_white_line
 			if = {
-				limit = {
-					has_completed_focus = FRA_audace
-				}
-				add_to_variable = {
-					var = FRA_stability_factor_var
-					value = -0.05
-					tooltip = FRA_stability_factor_var_decrease_tt
-				}
-				custom_effect_tooltip = FRA_Factionalism_0.06_increase
-				add_to_variable = {
-					var = FRA_Factionalism
-					value = 0.06
-				}
+				limit = { has_completed_focus = FRA_audace }
+				set_temp_variable = { number = 8}
+				FRA_factionalism_change = yes
 			}
 			else = {
 				custom_effect_tooltip = PB_FRA_Political_Dissonance_Focuses_tt
+				custom_effect_tooltip = tooltip_white_line
 			}
-			swap_ideas = {
-				remove_idea = PB_public_meetings_monitored 
-				add_idea = PB_public_meetings_banned
+			if = {
+				limit = { has_idea = PB_public_meetings_monitored }
+				swap_ideas = {
+					remove_idea = PB_public_meetings_monitored
+					add_idea = PB_public_meetings_banned
+				}
 			}
-			swap_ideas = {
-				remove_idea = PB_censored_press
-				add_idea = PB_state_controlled_press
+			else_if = {
+				limit = { has_idea = PB_public_meetings_banned }
+				add_political_power = 150
 			}
-			add_popularity = {
-				ideology = ni
-				popularity = 0.05
+			else = {
+				add_ideas = PB_public_meetings_banned
 			}
-			add_popularity = {
-				ideology = rc
-				popularity = 0.05
+
+			if = {
+				limit = { has_idea = PB_censored_press }
+				swap_ideas = {
+					remove_idea = PB_censored_press
+					add_idea = PB_state_controlled_press
+				}
 			}
+			else_if = {
+				limit = { has_idea = PB_state_controlled_press }
+				add_political_power = 150
+			}
+			else = {
+				add_ideas = PB_state_controlled_press
+			}
+			add_popularity = { ideology = ni popularity = 0.05 }
+			add_popularity = { ideology = rc popularity = 0.05 }
 			custom_effect_tooltip = tooltip_white_line
-			FRA = {
-				country_event = {
-					id = French.58
-					days = 1
-				}
-			}
+			country_event = { id = france_flavour_events.2 days = 1 }
 			hidden_effect = {
-				add_to_variable = {
-					PB_FRA_Dissonance_Right = 1
-				}
+				add_to_variable = { FRA_doriot_dissonance_right = 1 }
 			}
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM FOCUS_FILTER_INDUSTRY FOCUS_FILTER_ARMY FOCUS_FILTER_STABILITY }
 	}
 	focus = {
 		id = FRA_new_france
 		icon = GFX_goal_Focus_PB_FRA_A_New_France_Rises
-		x = 8
-		y = 7
 		cost = 40
+
+		relative_position_id = FRA_doriot_takeover
+		x = 0
+		y = 5
+
 		ai_will_do = {
 			factor = 100
 		}
 
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
-
 		available = {
 			has_country_leader = {
-				name = "Jacques Doriot"
+				character = FRA_jacques_doriot
 				ruling_only = yes
 			}
 		}
@@ -1440,26 +1693,19 @@ focus_tree = {
 		prerequisite = {
 			focus = FRA_audace
 			focus = FRA_class_collaboration
-			focus = FRA_anti_germanism
+			focus = FRA_against_oppressors
 			focus = FRA_la_terre
 		}
 		
 		cancelable = no
 		
 		completion_reward = {
-			FRA = {
-				country_event = {
-					id = French.117
-					days = 1
-				}
-			}
+			country_event = { id = france_events.10 hours = 1 }
 			custom_effect_tooltip = tooltip_white_line
-			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.02
-			}
+			set_temp_variable = { number = -5}
+			FRA_factionalism_change = yes
 		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
 		id = FRA_armandist_constitution
@@ -1560,7 +1806,7 @@ focus_tree = {
 			custom_effect_tooltip = tooltip_white_line
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.06
 			}
 		}
@@ -1603,17 +1849,17 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.04_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.04
 			}
 			custom_effect_tooltip = tooltip_white_line
 			swap_ideas = {
-				remove_idea = PB_FRA_Bitter_Revanchism
+				remove_idea = FRA_bitter_revanchism
 				add_idea = PB_FRA_Left_Nationalist_Doctrine
 			}
 			FRA = {
@@ -1660,7 +1906,7 @@ focus_tree = {
 			custom_effect_tooltip = tooltip_white_line
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			custom_effect_tooltip = tooltip_white_line
@@ -1840,397 +2086,19 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.04
 			}
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.04_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.04
 			}
 			custom_effect_tooltip = tooltip_white_line
 			add_ideas = extensive_conscription
 		}
 	}
-	focus = {
-		id = FRA_doctrine_of_integralism
-		icon = GFX_goal_CAN_bilingual
-		x = 2
-		y = 7
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
 
-		search_filters = {FOCUS_FILTER_STABILITY}
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_renewed_imperialism
-		}
-		completion_reward = {
-			swap_ideas = {
-				remove_idea = PB_public_meetings_monitored
-				add_idea = PB_public_meetings_banned
-			}
-			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.02
-			}
-			add_stability = 0.025
-		}
-	}
-	focus = {
-		id = FRA_catholic_state
-		icon = GFX_goal_POR_catholic_education
-		x = 1
-		y = 8
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
-		offset = {
-			x = 5
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_STABILITY}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_doctrine_of_integralism
-		}
-		completion_reward = {
-			add_ideas = FRA_State_Catholicism
-		}
-	}
-	focus = {
-		id = FRA_anti_parliamentarianism
-		icon = GFX_goal_GER_burn_the_blacklist
-		x = 3
-		y = 8
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
-		offset = {
-			x = 7
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_doctrine_of_integralism
-		}
-		completion_reward = {
-			add_political_power = 100
-			add_popularity = {
-				ideology = rc
-				popularity = 0.1
-			}
-		}
-	}
-	focus = {
-		id = FRA_anti_semetism
-		icon = GFX_goal_Focus_FRA_Anti_Semetism
-		x = 1
-		y = 9
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
-		offset = {
-			x = 5
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_POLITICAL}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_catholic_state
-		}
-		completion_reward = {
-			add_political_power = 150
-		}
-	}
-	focus = {
-		id = FRA_modern_absolutism
-		icon = GFX_goal_Focus_FRA_Modern_Absolutism
-		x = 3
-		y = 9
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
-		offset = {
-			x = 7
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_WAR_SUPPORT}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_anti_parliamentarianism
-		}
-		completion_reward = {
-			swap_ideas = {
-				remove_idea = PB_absolute_monarchy
-				add_idea = PB_ultranationalist_monarchy
-			}
-			ROOT = {
-				add_country_leader_trait = imperial_connections
-			}
-		}
-	}
-	focus = {
-		id = FRA_cooperation_with_the_leagues
-		icon = GFX_goal_RAJ_establish_secret_service
-		x = 1
-		y = 10
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
-		search_filters = {FOCUS_FILTER_NATIONALISM}
-		search_filters = {FOCUS_FILTER_ARMY}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_anti_semetism
-		}
-		completion_reward = {
-			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.02
-			}
-			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_increase
-			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
-				value = 0.06
-			}
-			add_ideas = FRA_League_Cooperation
-		}
-	}
-	focus = {
-		id = FRA_rally_the_youth
-		icon = GFX_goal_KTG_Bookstack
-		x = 3
-		y = 10
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_NATIONALISM}
-		search_filters = {FOCUS_FILTER_MANPOWER}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_modern_absolutism
-		}
-		completion_reward = {
-			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.02_increase
-			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
-				value = 0.02
-			}
-			add_ideas = FRA_Youth_Leagues
-		}
-	}
-	focus = {
-		id = FRA_imperial_glory
-		icon = GFX_goal_NFA_French_Kingdom
-		x = 2
-		y = 11
-		cost = 30
-		ai_will_do = {
-			factor = 100
-		}
-		offset = {
-			x = 6
-			y = 0
-			trigger = {
-				has_completed_focus = FRA_maurras_takeover
-			}
-		}
-
-		search_filters = {FOCUS_FILTER_POLITICAL}
-		search_filters = {FOCUS_FILTER_FACTIONALISM}
-		search_filters = {FOCUS_FILTER_ARMY}
-		search_filters = {FOCUS_FILTER_MANPOWER}
-		search_filters = {FOCUS_FILTER_STABILITY}
-		search_filters = {FOCUS_FILTER_RESEARCH}
-
-		available = {
-			OR = {
-				has_country_leader = {
-					name = "Charles Maurras"
-					ruling_only = yes
-				}
-				has_country_leader = {
-					name = "Louis XIX"
-					ruling_only = yes
-				}
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_cooperation_with_the_leagues
-		}
-		prerequisite = {
-			focus = FRA_rally_the_youth
-		}
-		completion_reward = {
-			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.06
-			}
-			add_popularity = {
-				ideology = rc
-				popularity = 0.2
-			}
-			add_ideas = FRA_French_Values
-			remove_ideas = FRA_State_Catholicism
-			remove_ideas = FRA_League_Cooperation 
-			remove_ideas = FRA_Youth_Leagues
-			add_stability = 0.025
-			add_research_slot = 1
-			FRA = {
-				country_event = {
-					id = French.60
-					days = 1
-				}
-			}
-		}
-	}
 	focus = {
 		id = FRA_anti_leftism
 		icon = GFX_goal_Generic_Ultranat_Eagle
@@ -2332,7 +2200,7 @@ focus_tree = {
 			PB_FRA_unemployment_variable_plus0.1 = yes
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 		}
@@ -2456,7 +2324,7 @@ focus_tree = {
 			add_political_power = 50
 			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.04
 			}
 		}
@@ -2492,7 +2360,7 @@ focus_tree = {
 			custom_effect_tooltip = tooltip_white_line
 			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.04
 			}
 			custom_effect_tooltip = tooltip_white_line
@@ -2533,7 +2401,7 @@ focus_tree = {
 			}
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_decrease
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = -0.06
 			}
 		}
@@ -2614,7 +2482,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.06
 			}
 			add_ideas = FRA_Manifest_Destiny_Idea
@@ -2622,7 +2490,7 @@ focus_tree = {
 			add_stability = 0.025
 			FRA = {
 				country_event = {
-					id = French.60
+					id = france_flavour_events.1
 					days = 1
 				}
 			}
@@ -2668,7 +2536,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.06
 			}
 			custom_effect_tooltip = tooltip_white_line
@@ -2716,7 +2584,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.04
 			}
 			FRA = {
@@ -2866,7 +2734,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			add_ideas = FRA_Armandist_Syndicalism
@@ -2941,7 +2809,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.04_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.04
 			}
 			swap_ideas = {
@@ -2983,7 +2851,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			swap_ideas = {
@@ -3067,7 +2935,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.06
 			}
 			remove_ideas = FRA_Armandist_Constitution_idea3
@@ -3077,7 +2945,7 @@ focus_tree = {
 			add_stability = 0.025
 			FRA = {
 				country_event = {
-					id = French.60
+					id = france_flavour_events.1
 					days = 1
 				}
 			}
@@ -3153,27 +3021,27 @@ focus_tree = {
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_Nobility_Restored
+						has_idea = FRA_restore_provincial_privileges
 					}
-					remove_ideas = PB_FRA_Nobility_Restored
+					remove_ideas = FRA_restore_provincial_privileges
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_Loyalist_Welfare
+						has_idea = FRA_loyalist_welfare
 					}
-					remove_ideas = PB_FRA_Loyalist_Welfare
+					remove_ideas = FRA_loyalist_welfare
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_Renewed_Imperialism_Idea
+						has_idea = FRA_renewed_imperialism
 					}
-					remove_ideas = PB_FRA_Renewed_Imperialism_Idea
+					remove_ideas = FRA_renewed_imperialism
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_New_French_Man_Idea
+						has_idea = FRA_model_citizen_soldier
 					}
-					remove_ideas = PB_FRA_New_French_Man_Idea
+					remove_ideas = FRA_model_citizen_soldier
 				}
 				if = {
 					limit = {
@@ -3195,27 +3063,27 @@ focus_tree = {
 				}
 				if = {
 					limit = {
-						has_idea = FRA_State_Catholicism
+						has_idea = FRA_state_catholicism
 					}
-					remove_ideas = FRA_State_Catholicism
+					remove_ideas = FRA_state_catholicism
 				}
 				if = {
 					limit = {
-						has_idea = FRA_League_Cooperation
+						has_idea = FRA_cooperation_with_leagues
 					}
-					remove_ideas = FRA_League_Cooperation
+					remove_ideas = FRA_cooperation_with_leagues
 				}
 				if = {
 					limit = {
-						has_idea = FRA_Youth_Leagues
+						has_idea = FRA_youth_leagues
 					}
-					remove_ideas = FRA_Youth_Leagues
+					remove_ideas = FRA_youth_leagues
 				}
 				if = {
 					limit = {
-						has_idea = FRA_French_Values
+						has_idea = FRA_french_values
 					}
-					remove_ideas = FRA_French_Values
+					remove_ideas = FRA_french_values
 				}
 				if = {
 					limit = {
@@ -3347,27 +3215,27 @@ focus_tree = {
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_Nobility_Restored
+						has_idea = FRA_restore_provincial_privileges
 					}
-					remove_ideas = PB_FRA_Nobility_Restored
+					remove_ideas = FRA_restore_provincial_privileges
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_Loyalist_Welfare
+						has_idea = FRA_loyalist_welfare
 					}
-					remove_ideas = PB_FRA_Loyalist_Welfare
+					remove_ideas = FRA_loyalist_welfare
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_Renewed_Imperialism_Idea
+						has_idea = FRA_renewed_imperialism
 					}
-					remove_ideas = PB_FRA_Renewed_Imperialism_Idea
+					remove_ideas = FRA_renewed_imperialism
 				}
 				if = {
 					limit = {
-						has_idea = PB_FRA_New_French_Man_Idea
+						has_idea = FRA_model_citizen_soldier
 					}
-					remove_ideas = PB_FRA_New_French_Man_Idea
+					remove_ideas = FRA_model_citizen_soldier
 				}
 				if = {
 					limit = {
@@ -3389,27 +3257,27 @@ focus_tree = {
 				}
 				if = {
 					limit = {
-						has_idea = FRA_State_Catholicism
+						has_idea = FRA_state_catholicism
 					}
-					remove_ideas = FRA_State_Catholicism
+					remove_ideas = FRA_state_catholicism
 				}
 				if = {
 					limit = {
-						has_idea = FRA_League_Cooperation
+						has_idea = FRA_cooperation_with_leagues
 					}
-					remove_ideas = FRA_League_Cooperation
+					remove_ideas = FRA_cooperation_with_leagues
 				}
 				if = {
 					limit = {
-						has_idea = FRA_Youth_Leagues
+						has_idea = FRA_youth_leagues
 					}
-					remove_ideas = FRA_Youth_Leagues
+					remove_ideas = FRA_youth_leagues
 				}
 				if = {
 					limit = {
-						has_idea = FRA_French_Values
+						has_idea = FRA_french_values
 					}
-					remove_ideas = FRA_French_Values
+					remove_ideas = FRA_french_values
 				}
 				if = {
 					limit = {
@@ -3585,7 +3453,7 @@ focus_tree = {
 			add_political_power = 150
 			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.06
 			}
 			set_rule = {
@@ -3629,7 +3497,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.04_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.04
 			}
 			add_ideas = FRA_SP_Rule
@@ -3670,7 +3538,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			every_army_leader = { 
@@ -3761,7 +3629,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			FRA = {
@@ -3809,7 +3677,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			every_army_leader = { 
@@ -3901,7 +3769,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.06
 			}
 			FRA = {
@@ -4095,7 +3963,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Factionalism_0.02_decrease
 			add_to_variable = {
-				var = FRA_Factionalism
+				var = FRA_factionalism_var
 				value = -0.02
 			}
 			FRA = {
@@ -4121,7 +3989,7 @@ focus_tree = {
 			factor = 150
 		}
 		available = {
-			has_completed_focus = FRA_purge_aftermath
+			has_completed_focus = FRA_the_morning_after
 		}
 		offset = {
 			x = -5
@@ -5358,7 +5226,7 @@ focus_tree = {
 			}
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.02_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.02
 			}
 		}
@@ -5398,7 +5266,7 @@ focus_tree = {
 			}
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.02_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.02
 			}
 		}
@@ -6045,7 +5913,7 @@ focus_tree = {
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.02_increase
 			add_stability = -0.1
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.02
 			}
 			8 = {
@@ -6127,7 +5995,7 @@ focus_tree = {
 			factor = 100
 		}
 		available = {
-			has_completed_focus = FRA_purge_aftermath
+			has_completed_focus = FRA_the_morning_after
 		}
 
 		search_filters = {FOCUS_FILTER_FOREIGN_POLICY}
@@ -6137,7 +6005,7 @@ focus_tree = {
 			add_threat = 2
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.06
 			}
 			FRA = {
@@ -6479,7 +6347,7 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.04_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.04
 			}
 			3 = {
@@ -7197,15 +7065,15 @@ focus_tree = {
 			PB_Megacity_Paris_Change_Effect = yes
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.02_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.02
 			}
 			if = { 
 			    limit = {
-                    has_idea = PB_FRA_Bitter_Revanchism
+                    has_idea = FRA_bitter_revanchism
 				}
 				swap_ideas = {
-				    remove_idea = PB_FRA_Bitter_Revanchism
+				    remove_idea = FRA_bitter_revanchism
 				    add_idea = PB_FRA_Renewed_Spirit
 			    }
 			}
@@ -7615,7 +7483,7 @@ focus_tree = {
 			factor = 100
 		}
 		available = {
-			has_completed_focus = FRA_purge_aftermath
+			has_completed_focus = FRA_the_morning_after
 		}
 
 		search_filters = {FOCUS_FILTER_ARMY}
@@ -10200,7 +10068,7 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_FOREIGN_POLICY}
 
 		prerequisite = {
-			focus = FRA_imperial_glory
+			focus = FRA_rebirth_of_the_latin_empire
 			focus = FRA_manifest_destiny
 			focus = FRA_revolution_against_revolution
 		}
@@ -10220,7 +10088,7 @@ focus_tree = {
 			factor = 100
 		}
 		available = {
-			has_completed_focus = FRA_purge_aftermath
+			has_completed_focus = FRA_the_morning_after
 			has_war = yes
             date > 1939.01.01
 			surrender_progress > 0.1
@@ -11031,7 +10899,7 @@ focus_tree = {
 			}
 			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_increase
 			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
+				var = FRA_fervour_var
 				value = 0.06
 			}
 			set_capital = { state = 735 }
