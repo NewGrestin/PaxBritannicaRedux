@@ -20,14 +20,36 @@ can_release_807 = {
     add_state_to_resistance_target_array = yes
 }
 
-#Carnegia - annexation_carnegia
+#Carnegia
 can_release_920 = {
-	920 = { annexations_state_is_tied_to_annexation_decision = yes } #North Carnegia
+	920 = { annexations_state_is_tied_to_annexation_decision = yes } #New Alexandria
 	NOT = { country_exists = WAF }
 	add_state_to_resistance_target_array = yes
+	ROOT = {
+		should_release_morocco_first = yes
+	}
 }
 
-#Algiers - annexation_algiers
+can_release_922 = {
+    922 = { annexations_state_is_tied_to_annexation_decision = yes } #Melonville
+    ROOT = {
+        OR = {
+            WAF = { ROOT_can_grant_land = yes }
+            MOR = { ROOT_can_grant_land = yes }
+            922 = { 
+                annexations_state_owner_is_valid_grant_target = yes
+                owner = { ROOT_can_grant_land = yes }
+            }
+        }
+    }
+    add_state_to_resistance_target_array = yes
+	ROOT = {
+		should_release_carnegia_first = yes
+		should_release_mali_first = yes
+	}
+}
+
+#Algiers / Algerian Concessions
 can_release_838 = {
 	838 = { annexations_state_is_tied_to_annexation_decision = yes } #Algiers
     ROOT = {
@@ -40,20 +62,50 @@ can_release_838 = {
             }
         }
     }
-    NOT = { country_exists = ALG }
     add_state_to_resistance_target_array = yes
     NOT = {
         ROOT = {
             OR = {
-                TAG = INA
-                TAG = BAF
-                TAG = FRA
-            }          
+                tag = INA
+                tag = BAF
+                tag = FRA
+            }
         }
     }
+	ROOT = {
+		should_release_algeria_first = yes
+	}
 }
 
-#Rif- annexation_rif
+can_release_1472 = {
+	1472 = { annexations_state_is_tied_to_annexation_decision = yes } #Bizerte
+    ROOT = {
+        OR = {
+            TUN = { ROOT_can_grant_land = yes }
+            INA = { ROOT_can_grant_land = yes }
+            1472 = { #Bizerte
+                annexations_state_owner_is_valid_grant_target = yes
+                owner = { ROOT_can_grant_land = yes }
+            }
+        }
+    }
+    add_state_to_resistance_target_array = yes
+    NOT = {
+        ROOT = {
+            OR = {
+                tag = INA
+                tag = BAF
+                tag = FRA
+            }
+        }
+    }
+	ROOT = {
+		should_release_algiers_first = yes
+		should_release_tunisia_first = yes
+	}
+}
+
+#Rif
 can_release_290 = {
     290 = { annexations_state_is_tied_to_annexation_decision = yes } #Rif
     ROOT = {
@@ -71,9 +123,14 @@ can_release_290 = {
         }
     }
     add_state_to_resistance_target_array = yes
+	ROOT = {
+		should_release_morocco_first = yes
+		should_release_spain_first = yes
+		should_release_algiers_first = yes
+	}
 }
 
-#Algeria - annexation_algeria
+#Algeria
 can_release_460 = {
 	460 = { annexations_state_is_tied_to_annexation_decision = yes } #Constantine
 	NOT = { country_exists = ALG }
@@ -85,6 +142,7 @@ can_release_460 = {
 	add_state_to_resistance_target_array = yes
 	ROOT = {
         should_release_senegal_first = yes
+        should_release_france_first = yes
     }
 }
 
@@ -464,7 +522,7 @@ can_release_1501 = {
     add_state_to_resistance_target_array = yes
 	ROOT = {
 		should_release_carnegia_first = yes
-		should_release_algiers_first = yes
+		should_release_algeria_first = yes
 		should_release_mali_first = yes
 	}
 }
@@ -772,7 +830,6 @@ can_release_839 = {
         ROOT = {
             OR = {
                 tag = BAF
-                tag = GER
             }          
         }
     }
@@ -1211,6 +1268,27 @@ can_release_448 = {
         }
     }
     add_state_to_resistance_target_array = yes
+}
+
+can_release_1266 = {
+	1266 = { annexations_state_is_tied_to_annexation_decision = yes } #Tripoli
+    ROOT = {
+        OR = {
+            MLT = { ROOT_can_grant_land = yes }
+            1266 = { 
+                annexations_state_owner_is_valid_grant_target = yes
+                owner = { ROOT_can_grant_land = yes }
+            }
+        }
+    }
+    add_state_to_resistance_target_array = yes
+	NOT = {
+		tag = MLT
+	}
+	ROOT = {
+		should_release_malta_first = yes
+		should_release_tripolitania_first = yes
+	}
 }
 
 can_release_767 = { #Darfur
@@ -1683,9 +1761,22 @@ should_release_egypt_first = {
 
 should_release_algiers_first = {
 	OR = {
-		country_exists = ALG
 		country_exists = INA
 		838 = { annexations_state_has_valid_annexation = no } #Algiers
+	}
+}
+
+should_release_tunisia_first = {
+	OR = {
+		country_exists = TUN
+		458 = { annexations_state_has_valid_annexation = no } #Tunisia
+	}
+}
+
+should_release_algeria_first = {
+	OR = {
+		country_exists = ALG
+		460 = { annexations_state_has_valid_annexation = no } #Constantine
 	}
 }
 
@@ -1834,6 +1925,10 @@ should_release_shari_first = {
 should_release_congo_first = {
 	OR = {
 		country_exists = RCG
+		AND = {
+			country_exists = DAF
+			DAF = { owns_state = 718 }
+		}
 		718 = { annexations_state_has_valid_annexation = no } #Ituri
 	}
 }
@@ -2139,3 +2234,15 @@ should_release_ashanti_first = {
 		839 = { annexations_state_has_valid_annexation = no } #Ashanti
 	}
 }
+
+should_release_malta_first = {
+	OR = {
+		country_exists = MLT
+		116 = { annexations_state_has_valid_annexation = no } #Malta
+	}
+}
+should_release_tripolitania_first = {
+	OR = {
+		448 = { annexations_state_has_valid_annexation = no } #Tripolitania
+	}
+} 
