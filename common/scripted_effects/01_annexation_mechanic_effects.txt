@@ -754,8 +754,10 @@ generate_new_german_puppet = {
 		}
 		release_targeted_tag = yes
 		hidden_effect = {
-			var:tag_to_release = {
-				#WIP
+			if = { 
+				limit = { has_custom_puppet_GER = yes }
+				setup_custom_puppet_GER = yes
+				custom_effect_tooltip = has_custom_puppet
 			}
 		}
 	}
@@ -766,7 +768,9 @@ generate_new_german_puppet = {
 		}
 		set_temp_variable = { tag_to_release = DDR }
 		hidden_effect = {
-			#GER = { var:tag_to_release = { copy_laws_of_PREV = yes } }
+			ROOT = { 
+				country_event = { id = Russian_Foreign_Policy.3 days = 35 }
+			}
 		}
 		every_state = {
 			limit = { is_germany = yes }
@@ -1245,6 +1249,185 @@ determine_chinese_ally = {
 					}
 				}
 			}
+		}
+	}
+}
+
+
+determine_indian_ally = { 
+	hidden_effect = {
+		if = {
+			limit = {
+				is_subject = no
+				is_indian_unifier = no
+			}
+
+			# First target
+			if = {
+				limit = { 
+					any_neighbor_country = { is_indian_unifier = yes }
+				}
+
+				random_neighbor_country = {
+					limit = { is_indian_unifier = yes }
+					save_event_target_as = india
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			else_if = {
+				limit = { 
+					any_subject_country = { is_indian_unifier = yes }
+				}
+
+				random_subject_country = {
+					limit = { is_indian_unifier = yes }
+					save_event_target_as = india
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			else = {
+				random_other_country = {
+					limit = { is_indian_unifier = yes }
+					save_event_target_as = india
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+
+			# Second target
+			if = {
+				limit = {
+					any_neighbor_country = {
+						is_indian_unifier = yes
+						NOT = { tag = event_target:india }
+					}
+				}
+
+				random_neighbor_country = {
+					limit = {
+						is_indian_unifier = yes
+						NOT = { tag = event_target:india }
+					}
+					save_event_target_as = india_two
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			else = {
+				random_other_country = {
+					limit = {
+						is_indian_unifier = yes
+						NOT = { tag = event_target:india }
+					}
+					save_event_target_as = india_two
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+
+			# Third target
+			if = {
+				limit = {
+					any_neighbor_country = {
+						is_indian_unifier = yes
+						NOT = { tag = event_target:india }
+						NOT = { tag = event_target:india_two }
+					}
+				}
+
+				random_neighbor_country = {
+					limit = {
+						is_indian_unifier = yes
+						NOT = { tag = event_target:india }
+						NOT = { tag = event_target:india_two }
+					}
+					save_event_target_as = india_three
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+			else = {
+				random_other_country = {
+					limit = {
+						is_indian_unifier = yes
+						NOT = { tag = event_target:india }
+						NOT = { tag = event_target:india_two }
+					}
+					save_event_target_as = india_three
+					add_to_array = { ROOT.potential_grant_targets = THIS }
+				}
+			}
+		}
+	}
+}
+debug_assign_indian_unifier = { 
+	hidden_effect = { 
+		random_other_country = {
+			limit = {
+				NOT = { has_country_flag = PB_Indian_Unifier } 
+			}
+			set_country_flag = PB_Indian_Unifier
+		}
+		random_other_country = {
+			limit = {
+				NOT = { has_country_flag = PB_Indian_Unifier } 
+			}
+			set_country_flag = PB_Indian_Unifier
+		}
+		random_other_country = {
+			limit = {
+				NOT = { has_country_flag = PB_Indian_Unifier } 
+			}
+			set_country_flag = PB_Indian_Unifier
+		}
+	}
+}
+annexations_give_india_to_target = {
+	#annexations_india_retain_special_states = yes
+	every_owned_state = {
+		limit = {
+			is_india = yes
+			is_valid_annexation_state = yes
+		}
+		transfer_state_and_notify = yes
+	}
+}
+
+annexations_reset_yugoslavian_cores_claims = {
+	if = {
+		limit = { NOT = { country_exists = CRO } }
+		every_state = {
+			limit = { is_croatia = no }
+			remove_core_of = SLV
+			remove_claim_by = SLV
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = SLV } }
+		every_state = {
+			limit = { is_slovenia = no }
+			remove_core_of = SLV
+			remove_claim_by = SLV
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = BOS } }
+		every_state = {
+			limit = { is_bosnia = no }
+			remove_core_of = BOS
+			remove_claim_by = BOS
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = SER } }
+		every_state = {
+			limit = { is_serbia = no }
+			remove_core_of = SER
+			remove_claim_by = SER
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = MNT } }
+		every_state = {
+			limit = { is_montenegro = no }
+			remove_core_of = MNT
+			remove_claim_by = MNT
 		}
 	}
 }

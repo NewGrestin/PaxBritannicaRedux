@@ -12,145 +12,383 @@
 #
 #  }
 # }
-
-setup_custom_puppet_NOR = {
-	if = { #FRANCE 
-	limit = { tag = FRA }
-	if = {  #HERBENVILLE/ARMAND
-		limit = {
-			has_country_flag = PB_FRA_Armandist_Counter_Coup
+setup_custom_puppet_PRS = { 
+	if = { 
+		limit = { 
+			tag = GER
 		}
 		ROOT = {
 			set_autonomy = {
-				target = NOR
-				autonomous_state = autonomy_PB_Sister_Republic
+				target = PRS
+				autonomous_state = autonomy_PB_Constituent_Kingdom
 				freedom_level = 0.50
 			}
 		}
-		NOR = {
-			set_politics = {
-				ruling_party = ni
+		PRS = { 
+			set_politics = { 
+				ruling_party = ds
 			}
 
 			add_popularity = {
-				ideology = ni
+				ideology = ds
 				popularity = 0.3
 			}
 
 			kill_country_leader = yes
 			create_country_leader = {
-				name = "Ragnar Skancke"
+				name = ""
 				desc = "PB_Ragnar_Skancke_DESC"
-				picture = "Portrait_NOR_Ragnar_Skancke.dds"
+				picture = GFX_Portrait_SPR_regency_civilian_large
 				expire = "1965.1.1"
-				ideology = NI_VARIANT_05
+				ideology = DS_VARIANT_06
 			}
 			drop_cosmetic_tag = yes
-			set_cosmetic_tag = NOR_Armand
+			set_cosmetic_tag = PRS_GER
 		}
 	}
-	else_if = {  # DORIOT
-		limit = {
-			has_country_flag = PB_FRA_Muarras_Died_Coup_Success
+	else_if = { 
+		limit = { 
+			tag = RUS
 		}
+		
+		#WIP
 		ROOT = {
 			set_autonomy = {
-				target = NOR
-				autonomous_state = autonomy_client_state
+				target = PRS
+				autonomous_state = autonomy_PB_Autonomous_State
 				freedom_level = 0.50
 			}
 		}
-		NOR = {
-			set_politics = {
-				ruling_party = ni
+		PRS = { 
+			set_politics = { 
+				ruling_party = ds
 			}
 
 			add_popularity = {
-				ideology = ni
+				ideology = ds
 				popularity = 0.3
+			}
+
+			set_party_name = {
+				ideology = ds
+				long_name = "Preußisches Komitee für Kaiserliche Wiederherstellung"
+				name = "PKKW"
 			}
 
 			kill_country_leader = yes
 			create_country_leader = {
-				name = "Johan Bernhard Hjort"
-				desc = "PB_Johan_Bernhard_Hjort_DESC"
-				picture = "Portrait_NOR_Johan_Bernhard_Hjort.dds"
+				name = "Pavel Bermondt-Avalov"
+				desc = "PB_Ragnar_Skancke_DESC"
+				picture = "Portrait_PRS_Pavel_Avalov.dds"
 				expire = "1965.1.1"
-				ideology = NI_VARIANT_01
+				ideology = DS_VARIANT_06
 			}
 			drop_cosmetic_tag = yes
-			set_cosmetic_tag = NOR_Doriot
+			set_cosmetic_tag = PRS_RUS
 		}
 	}
-	else_if = {
-		if = { #MAURRAS
-			limit = {
-				has_country_flag = PB_FRA_Muarras_Survives
-				SND = {
-					exists = yes
-				}
-			}
-			SND = {
-				annex_country = {
-					target = NOR
-					transfer_troops = no
-				}					
-				add_state_core = 110
-				add_state_core = 142
-				add_state_core = 143
-				add_state_core = 144
-			}
+}
+setup_custom_puppet_CAT = { 
+	if = { 
+		limit = {
+			tag = RUS
 		}
-
-		if = {
+		set_autonomy = {
+			target = var:tag_to_release
+			autonomous_state = autonomy_PB_Constituent_Kingdom
+			freedom_level = 0.50
+		}
+		var:tag_to_release = { 
+			set_politics = {
+				ruling_party = ds
+			}
+			set_party_name = {
+				ideology = ds
+				long_name = "Casa del Barón Skossyreff"
+				name = "Casa del Barón Skossyreff"
+			}
+			kill_country_leader = yes
+			create_country_leader = {
+				name = "Boris I"
+				desc = "PB_Jakob_Zaleski_DESC"
+				picture = "Portrait_CAT_Boris_Skossyef.dds"
+				expire = "1965.1.1"
+				ideology = DS_VARIANT_12
+			}
+			set_cosmetic_tag = CAT_RUS
+		}
+		every_owned_state = { 
+			limit = { 
+				OR = { 
+					state = 177
+					state = 701
+					state = 167
+					state = 913
+					state = 31
+				}
+			}
+			transfer_state_to = var:tag_to_release
+			add_core_of = var:tag_to_release
+		}
+	}
+}
+setup_custom_puppet_BRN = { 
+	if = { 
+		limit = { 
+			tag = RUS
+		}
+		if = { 
 			limit = {
-				has_country_flag = PB_FRA_Muarras_Survives
-				SND = {
-					exists = no
+				has_completed_focus = RUS_slavic_union
+			}
+
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_PB_Satellite_State
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_politics = {
+					ruling_party = ni
+				}
+				set_party_name = {
+					ideology = ni
+					long_name = "Serbske Narodne Hnutje - Sorbian National Movement"
+					name = "SNH"
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Jakub Lorenc-Zaleski"
+					desc = "PB_Jakob_Zaleski_DESC"
+					picture = "Portrait_BRN_Jakob_Zaleski.dds"
+					expire = "1965.1.1"
+					ideology = NI_VARIANT_02
+				}
+				set_cosmetic_tag = BRN_Sorbia
+				transfer_state = 1182
+				every_owned_state = { 
+					limit = { 
+						NOT = { 
+							state = 1182
+							state = 1181
+						}
+					}
+					remove_core_of = var:tag_to_release
+					add_claim_by = var:tag_to_release
 				}
 			}
-			SND = {
-				annex_country = {
-					target = NOR
-					transfer_troops = no
-				}					
-				add_state_core = 110
-				add_state_core = 142
-				add_state_core = 143
-				add_state_core = 144
+			
+			1180 = { retain_state = yes }
+			1456 = { retain_state = yes }
+		}
+		else_if = { 
+			limit = {
+				has_completed_focus = RUS_revolutionary_empire
 			}
-			FRA = {
-				set_autonomy = {
-					target = SND
-					autonomous_state = autonomy_PB_Dependent_Kingdom
-					freedom_level = 0.50
-				}
+
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_PB_Satellite_State
+				freedom_level = 0.50
 			}
-			SND = {
+			var:tag_to_release = {
 				set_politics = {
 					ruling_party = ds
 				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Serbske Narodne Hnutje - Sorbian National Movement"
+					name = "SNH"
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = ""
+					desc = "PB_Pope_Gennadius_III_DESC"
+					picture = "Portrait_ITA_Pope_Gennadius_III.dds"
+					expire = "1965.1.1"
+					ideology = SS_VARIANT_13
+				}
+				set_cosmetic_tag = BRN_Sorbia
+			}
+		}
+	}
+}
+setup_custom_puppet_NOR = {
+	if = { #FRANCE 
+		limit = { tag = FRA }
+		if = {  #HERBENVILLE/ARMAND
+			limit = {
+				has_country_flag = FRA_herbenville_counter_coup_happened
+			}
+			ROOT = {
+				set_autonomy = {
+					target = NOR
+					autonomous_state = autonomy_PB_Sister_Republic
+					freedom_level = 0.50
+				}
+			}
+			NOR = {
+				set_politics = {
+					ruling_party = ni
+				}
 
 				add_popularity = {
-					ideology = ds
+					ideology = ni
 					popularity = 0.3
 				}
 
 				kill_country_leader = yes
 				create_country_leader = {
-					name = "Knud Christian Frederik Michael"
-					desc = "PB_Knud_Christian_Frederik_Michael_DESC"
-					picture = "Portrait_SND_Knud_Christian_Frederik_Michael.dds"
+					name = "Ragnar Skancke"
+					desc = "PB_Ragnar_Skancke_DESC"
+					picture = "Portrait_NOR_Ragnar_Skancke.dds"
 					expire = "1965.1.1"
-					ideology = DS_VARIANT_01
+					ideology = NI_VARIANT_05
 				}
 				drop_cosmetic_tag = yes
-				set_cosmetic_tag = SND_Jean
+				set_cosmetic_tag = NOR_Armand
+			}
+		}
+		else_if = {  # DORIOT
+			limit = {
+				has_country_flag = PB_FRA_Muarras_Died_Coup_Success
+			}
+			ROOT = {
+				set_autonomy = {
+					target = NOR
+					autonomous_state = autonomy_client_state
+					freedom_level = 0.50
+				}
+			}
+			NOR = {
+				set_politics = {
+					ruling_party = ni
+				}
+
+				add_popularity = {
+					ideology = ni
+					popularity = 0.3
+				}
+
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Johan Bernhard Hjort"
+					desc = "PB_Johan_Bernhard_Hjort_DESC"
+					picture = "Portrait_NOR_Johan_Bernhard_Hjort.dds"
+					expire = "1965.1.1"
+					ideology = NI_VARIANT_01
+				}
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = NOR_Doriot
+			}
+		}
+		else_if = {
+			if = { #MAURRAS
+				limit = {
+					has_country_flag = FRA_maurras_survived_coup
+					SND = {
+						exists = yes
+					}
+				}
+				SND = {
+					annex_country = {
+						target = NOR
+						transfer_troops = no
+					}					
+					add_state_core = 110
+					add_state_core = 142
+					add_state_core = 143
+					add_state_core = 144
+				}
+			}
+
+			if = {
+				limit = {
+					has_country_flag = FRA_maurras_survived_coup
+					SND = {
+						exists = no
+					}
+				}
+				SND = {
+					annex_country = {
+						target = NOR
+						transfer_troops = no
+					}					
+					add_state_core = 110
+					add_state_core = 142
+					add_state_core = 143
+					add_state_core = 144
+				}
+				FRA = {
+					set_autonomy = {
+						target = SND
+						autonomous_state = autonomy_PB_Dependent_Kingdom
+						freedom_level = 0.50
+					}
+				}
+				SND = {
+					set_politics = {
+						ruling_party = ds
+					}
+
+					add_popularity = {
+						ideology = ds
+						popularity = 0.3
+					}
+
+					kill_country_leader = yes
+					create_country_leader = {
+						name = "Knud Christian Frederik Michael"
+						desc = "PB_Knud_Christian_Frederik_Michael_DESC"
+						picture = "Portrait_SND_Knud_Christian_Frederik_Michael.dds"
+						expire = "1965.1.1"
+						ideology = DS_VARIANT_01
+					}
+					drop_cosmetic_tag = yes
+					set_cosmetic_tag = SND_Jean
+				}
 			}
 		}
 	}
-}
-#RUSSIA 
+	#RUSSIA 
+	else_if = { 
+		limit = { tag = RUS }
+		set_autonomy = {
+			target = var:tag_to_release
+			autonomous_state = autonomy_client_state
+			freedom_level = 0.50
+		}
+		var:tag_to_release = {
+			set_popularities = {
+				ni = 5
+				ds = 56
+				rc = 10
+				cn = 16
+				lb = 8
+				an = 3
+				ss = 1
+				jc = 1
+			}
+			set_party_name = {
+				ideology = ds
+				long_name = "Den Norske Nasjonale Administrasjon"
+				name = "NSA"
+			}
+			set_politics = {
+				ruling_party = ds
+			}
+			kill_country_leader = yes
+			create_country_leader = {
+				name = "Johan Ludwig Mowinckel"
+				desc = "PB_Ecclesiastical_Authority_DESC"
+				picture = GFX_Portrait_SPR_regency_civilian_large
+				expire = "1965.1.1"
+				ideology = DS_VARIANT_12
+			}
+			set_cosmetic_tag = NOR_RUS
+			#prob more 
+		}
+	}
 }
 setup_custom_puppet_ITA = { 
 	if = { # FRANCE
@@ -159,7 +397,7 @@ setup_custom_puppet_ITA = {
 		}
 		if = { # HERBENVILLE/ARMAND
 			limit = {
-				has_country_flag = PB_FRA_Armandist_Counter_Coup
+				has_country_flag = FRA_herbenville_counter_coup_happened
 			}
 			set_autonomy = {
 				target = var:tag_to_release
@@ -208,7 +446,7 @@ setup_custom_puppet_ITA = {
 		# Maurras/Jean 
 		else_if = {
 			limit = { 
-				has_country_flag = PB_FRA_Muarras_Survives
+				has_country_flag = FRA_maurras_survived_coup
 			}
 			set_autonomy = {
 				target = var:tag_to_release
@@ -241,7 +479,7 @@ setup_custom_puppet_ITA = {
 		# Darnand/Vallat/Chanel
 		else_if = {
 			limit = {
-				has_completed_focus = PB_FRA_SP_Government
+				has_completed_focus = FRA_sp_government
 			}
 			set_autonomy = {
 				target = var:tag_to_release
@@ -274,7 +512,7 @@ setup_custom_puppet_ITA = {
 		# Nogues/Chennault/Weygand
 		else_if = {
 			limit = {
-				has_completed_focus = PB_FRA_Military_Government
+				has_completed_focus = FRA_military_government
 			}
 			FRA = {
 				set_autonomy = {
@@ -307,66 +545,116 @@ setup_custom_puppet_ITA = {
 		}
 	}
 	else_if = { # RUSSIA
-	limit = { tag = RUS }
-	if = { 
-		limit = {
-			has_government = ds
-		}
+		limit = { tag = RUS }
+		if = { 
+			limit = {
+				has_completed_focus = RUS_god_returns_to_save_russia
+			}
 
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_PB_Russian_Theocracy
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_politics = {
+					ruling_party = ds
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Ecumenical Patriarch of Rome"
+					name = "Ecumenical Patriarch of Rome"
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Pope Gennadius III"
+					desc = "PB_Pope_Gennadius_III_DESC"
+					picture = "Portrait_ITA_Pope_Gennadius_III.dds"
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_09
+				}
+				set_cosmetic_tag = ITA_RUS_Theocracy
+			}
+		}
+		
+		else = {
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_PB_Satellite_State
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_politics = {
+					ruling_party = rc
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Viktor Abakumov"
+					desc = "PB_Viktor_Abakumov_DESC"
+					picture = "Portrait_ITA_Viktor_Abakumov.dds"
+					expire = "1965.1.1"
+					ideology = RC_VARIANT_04
+				}
+				set_cosmetic_tag = ITA_RUS_Occupied
+			}
+		}
+	}
+	else_if = { 
+		limit = { tag = GER }
 		set_autonomy = {
 			target = var:tag_to_release
-			autonomous_state = autonomy_PB_Russian_Theocracy
+			autonomous_state = autonomy_PB_Constituent_Kingdom
+			freedom_level = 0.50
+		}
+		
+		else = {
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_PB_Satellite_State
+				freedom_level = 0.50
+			}
+			kill_country_leader = yes
+			create_country_leader = {
+				name = "Ferdinand V"
+				desc = "PB_Viktor_Abakumov_DESC"
+				picture = GFX_portrait_ITA_ferdinand_V_civilian_large
+				expire = "1965.1.1"
+				ideology = DS_VARIANT_08
+			}
+		set_cosmetic_tag = ITA_GER_RC
+		}
+	}
+}
+setup_custom_puppet_UKR = {
+	if = { 
+		limit = { tag = GER }
+		set_autonomy = {
+			target = var:tag_to_release
+			autonomous_state = autonomy_PB_Constituent_Kingdom
 			freedom_level = 0.50
 		}
 		var:tag_to_release = {
 			set_politics = {
 				ruling_party = ds
 			}
-			set_party_name = {
-				ideology = ds
-				long_name = "Ecumenical Patriarch of Rome"
-				name = "Ecumenical Patriarch of Rome"
-			}
 			kill_country_leader = yes
 			create_country_leader = {
-				name = "Pope Gennadius III"
-				desc = "PB_Pope_Gennadius_III_DESC"
-				picture = "Portrait_ITA_Pope_Gennadius_III.dds"
-				expire = "1965.1.1"
-				ideology = DS_VARIANT_09
-			}
-			set_cosmetic_tag = ITA_RUS_Theocracy
-		}
-	}
-	
-	else = {
-		set_autonomy = {
-			target = var:tag_to_release
-			autonomous_state = autonomy_PB_Satellite_State
-			freedom_level = 0.50
-		}
-		var:tag_to_release = {
-			set_politics = {
-				ruling_party = rc
-			}
-			kill_country_leader = yes
-			create_country_leader = {
-				name = "Viktor Abakumov"
+				name = "Vasyl I"
 				desc = "PB_Viktor_Abakumov_DESC"
-				picture = "Portrait_ITA_Viktor_Abakumov.dds"
+				picture = GFX_portrait_UKR_Vasyl_I_civilian_large
 				expire = "1965.1.1"
-				ideology = RC_VARIANT_04
+				ideology = DS_VARIANT_08
 			}
-			set_cosmetic_tag = ITA_RUS_Occupied
+		set_cosmetic_tag = UKR_GER_RC
 		}
 	}
 }
-}
+
 setup_custom_puppet_GER = { 
 	if = { #RUSSIA
 		limit = { tag = RUS }
 		if = {
-			limit = { has_government = ds }
+			limit = { has_completed_focus = RUS_god_returns_to_save_russia }
 			set_autonomy = {
 				target = var:tag_to_release
 				autonomous_state = autonomy_PB_Russian_Theocracy
@@ -391,23 +679,23 @@ setup_custom_puppet_GER = {
 		else = { 
 			set_autonomy = {
 				target = PREV
-				autonomous_state = autonomy_PB_Satellite_State
+				autonomous_state = autonomy_subordinate_state
 				freedom_level = 0.50
 			}
 					
 			var:tag_to_release = {
 				set_politics = {
-					ruling_party = rc
+					ruling_party = ds
 				}
 				kill_country_leader = yes
-				create_country_leader = {
-					name = "Lavr Kornilov"
-					desc = "PB_Lavr_Kornilov_DESC"
-					picture = "Portrait_PB_DDR_Lavr_Kornilov.dds"
-					expire = "1965.1.1"
-					ideology = RC_VARIANT_04
-				}
-				set_cosmetic_tag = DDR_RUS_Occupied
+				#create_country_leader = {
+				#	name = "Lavr Kornilov"
+				#	desc = "PB_Lavr_Kornilov_DESC"
+				#	picture = "Portrait_PB_DDR_Lavr_Kornilov.dds"
+				#	expire = "1965.1.1"
+				#	ideology = RC_VARIANT_04
+				#}
+				#set_cosmetic_tag = DDR_RUS_Occupied For when its fully unified
 			}
 		}
 		every_owned_state = { 
@@ -422,9 +710,9 @@ setup_custom_puppet_GER = {
 	}
 	else_if = { #FRANCE
 		limit = { tag = FRA }
-		if = { 
-			limit = { 
-				has_country_flag = PB_FRA_Muarras_Survives
+		if = {
+			limit = {
+				has_country_flag = FRA_maurras_survived_coup
 			}
 		
 			set_autonomy = {
@@ -489,7 +777,7 @@ setup_custom_puppet_GER = {
 		}
 		else_if = { #ARMAND/HERBENVILLE
 			limit = { 
-				has_country_flag = PB_FRA_Armandist_Counter_Coup
+				has_country_flag = FRA_herbenville_counter_coup_happened
 			}
 		
 			set_autonomy = {
@@ -523,7 +811,10 @@ setup_custom_puppet_GER = {
 		every_owned_state = { 
 			limit = { 
 				OR = { 
-					is_germany = yes
+					AND = { 
+						is_germany = yes
+						NOT = { is_rhineland = yes }
+					}
 					is_austria = yes
 				}
 			}
@@ -531,14 +822,14 @@ setup_custom_puppet_GER = {
 		}
 	}
 }
-setup_custom_puppet_SPR = { 
+setup_custom_puppet_SPR = {
 	if = {  #RUSSIA
 		limit = { 
 			tag = RUS
 		}
 		if = { 
 			limit = { 
-				has_government = ds
+				has_completed_focus = RUS_god_returns_to_save_russia
 			}
 			set_autonomy = {
 				target = SPR
@@ -568,6 +859,12 @@ setup_custom_puppet_SPR = {
 			every_owned_state = { 
 				limit = { 
 					is_spain = yes
+					NOT = { 
+						state = 167
+						state = 165
+						state = 913
+						state = 177
+					}
 				}
 				transfer_state_to = SPR
 			}
@@ -709,7 +1006,7 @@ setup_custom_puppet_SPR = {
 	}
 	else_if = { 
 		limit = { 
-			has_country_flag = PB_FRA_Armandist_Counter_Coup
+			has_country_flag = FRA_herbenville_counter_coup_happened
 		}
 		set_autonomy = {
 			target = SPR
@@ -740,7 +1037,7 @@ setup_custom_puppet_SPR = {
 	}
 	else_if = { 
 		limit = { 
-			has_country_flag = PB_FRA_Muarras_Survives	
+			has_country_flag = FRA_maurras_survived_coup	
 		}
 		set_autonomy = {
 			target = SPR
@@ -799,7 +1096,7 @@ setup_custom_puppet_FRA = {
 		}
 		if = { 
 			limit = { 
-				has_government = ds
+				has_completed_focus = RUS_god_returns_to_save_russia
 			}
 			set_autonomy = {
 				target = FRA
@@ -880,7 +1177,7 @@ setup_custom_puppet_ENG = {
 		}
 		if = { 
 			limit = { 
-				has_government = ds
+				has_completed_focus = RUS_god_returns_to_save_russia
 			}
 			set_autonomy = {
 				target = ENG
@@ -994,7 +1291,7 @@ setup_custom_puppet_WLA = {
 setup_custom_puppet_HOL = {
 	if = { limit = { tag = FRA } 
 		if = { 
-			limit = { has_country_flag = PB_FRA_Muarras_Survives }
+			limit = { has_country_flag = FRA_maurras_survived_coup }
 		
 			HOL = {
 				set_popularities = {
@@ -1031,7 +1328,7 @@ setup_custom_puppet_HOL = {
 setup_custom_puppet_HUN	= {
 	if = { limit = { tag = GER } 
 		#if = { 
-			#limit = { has_country_flag = PB_FRA_Muarras_Survives }
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
 			set_autonomy = {
 				target = HUN
 				autonomous_state = autonomy_PB_Constituent_Kingdom
@@ -1060,7 +1357,7 @@ setup_custom_puppet_HUN	= {
 				create_country_leader = {
 					name = "House of Magnates"
 					desc = "PB_Ecclesiastical_Authority_DESC"
-					picture = GFX_Portrait_SPR_regency_civilian_large
+					picture = "Portrait_HUN_Miklos_Kozma.dds"
 					expire = "1965.1.1"
 					ideology = DS_VARIANT_12
 				}
@@ -1077,11 +1374,93 @@ setup_custom_puppet_HUN	= {
 			}
 		#}
 	}
+	else_if = { limit = { tag = RUS }
+		if = { 
+			limit = { 
+				has_completed_focus = RUS_slavic_union
+			}
+			set_autonomy = {
+				target = HUN
+				autonomous_state = autonomy_subordinate_state
+				freedom_level = 0.50
+			}
+			HUN = {
+				set_popularities = {
+					ni = 56
+					ds = 5
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ni
+					long_name = "Pannonskiy Soyuz Vozrozhdeniya - Pannonian Union of the Resurgence"
+					name = "PSV"
+				}
+				set_politics = {
+					ruling_party = ni
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Pannonian Congress"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_Portrait_SPR_regency_civilian_large
+					expire = "1965.1.1"
+					ideology = NI_VARIANT_02
+				}
+				set_cosmetic_tag = HUN_pannonia
+				#prob more 
+			}
+		}
+		else_if = { 
+			limit = { 
+				NOT = { has_completed_focus = RUS_slavic_union }
+			}
+			set_autonomy = {
+				target = HUN
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			HUN = {
+				set_popularities = {
+					ni = 56
+					ds = 5
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ni
+					long_name = "HMagyar Nemzetvédelmi Rend"
+					name = "MNR"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Kozma Miklós"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_Portrait_SPR_regency_civilian_large
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_01
+				}
+				set_cosmetic_tag = HUN_RUS
+				#prob more 
+			}
+		}
+ 	} 
 }
 setup_custom_puppet_PGA	= {
 	if = { limit = { tag = GER } 
 		#if = { 
-			#limit = { has_country_flag = PB_FRA_Muarras_Survives }
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
 			set_autonomy = {
 				target = PGA
 				autonomous_state = autonomy_PB_Constituent_Kingdom
@@ -1131,7 +1510,7 @@ setup_custom_puppet_PGA	= {
 setup_custom_puppet_CRO	= {
 	if = { limit = { tag = GER } 
 		#if = { 
-			#limit = { has_country_flag = PB_FRA_Muarras_Survives }
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
 			set_autonomy = {
 				target = CRO
 				autonomous_state = autonomy_PB_Constituent_Kingdom
@@ -1178,6 +1557,351 @@ setup_custom_puppet_CRO	= {
 				}
 				transfer_state_to = CRO
 				add_core_of = CRO
+			}
+		#}
+	}
+}
+
+setup_custom_puppet_YUG	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Opšteslovenska Narodna Direkcija"
+					name = "OND"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Pyotyr Wrangel"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_portrait_RUS_pyotr_wrangel_army_large
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = SER_Yugoslav_RUS
+				#prob more 
+			}
+		#}
+	}
+}
+setup_custom_puppet_BUL	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Bǎlgarsko Pravitelstvo za Natsionalno Spasenie"
+					name = "BPNS"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Alexander Tsankov"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = "Portrait_BUL_Aleksander_Tsankov.dds"
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = BUL_RUS
+				#prob more 
+			}
+		#}
+	}
+}
+setup_custom_puppet_ROM	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Uniunea Național-Conservatoare"
+					name = "UNC"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Constantin C. Arion"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_Portrait_SPR_regency_civilian_large
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = ROM_RUS
+				#prob more 
+			}
+		#}
+	}
+}
+setup_custom_puppet_CZE	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Všeslovanská Národní Strana"
+					name = "VNS"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Josef Jiří Švec"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = "Portrait_CZE_Josef_Svec.dds"
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = CZE_RUS
+				#prob more 
+			}
+		#}
+	}
+}
+setup_custom_puppet_SLO	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Slovenská Strana Národnej Obrody"
+					name = "SSNO"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Vojtech Tuka"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_Portrait_SPR_regency_civilian_large
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = SLO_RUS
+				#prob more 
+			}
+		#}
+	}
+}
+setup_custom_puppet_DEN	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Det Nationale Samarbejdsparti"
+					name = "DNS"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Erik Scavenius"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_Portrait_SPR_regency_civilian_large
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = DEN_RUS
+				#prob more 
+			}
+		#}
+	}
+}
+setup_custom_puppet_SWE	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Svenska Nationella Enhetsrörelsen"
+					name = "SNE"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Nils Flyg"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_Portrait_SPR_regency_civilian_large
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = SWE_RUS
+				#prob more 
+			}
+		#}
+	}
+}
+setup_custom_puppet_SCH	= {
+	if = {
+		limit = { tag = RUS } 
+		#if = { 
+			#limit = { has_country_flag = FRA_maurras_survived_coup }
+			set_autonomy = {
+				target = var:tag_to_release
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+			var:tag_to_release = {
+				set_popularities = {
+					ni = 5
+					ds = 56
+					rc = 10
+					cn = 16
+					lb = 8
+					an = 3
+					ss = 1
+					jc = 1
+				}
+				set_party_name = {
+					ideology = ds
+					long_name = "Deutscher Grenzschutzbund"
+					name = "DG"
+				}
+				set_politics = {
+					ruling_party = ds
+				}
+				kill_country_leader = yes
+				create_country_leader = {
+					name = "Bruno Ernst Buchrucker"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = GFX_Portrait_SPR_regency_civilian_large
+					expire = "1965.1.1"
+					ideology = DS_VARIANT_12
+				}
+				set_cosmetic_tag = SCH_RUS
+				#prob more 
 			}
 		#}
 	}

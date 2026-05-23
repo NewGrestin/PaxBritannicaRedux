@@ -1,4 +1,16 @@
 on_actions = {
+	#ROOT is winner, FROM is loser (called for all winners against all losers)
+	on_before_peace_conference_start = {
+		effect = {
+			if = {
+				limit = {
+					tag = IMP
+					FROM = { tag = RUS }
+				}
+				#RUS_set_up_peace_conference_with_lon = yes
+			}
+		}
+	}
 	on_capitulation_immediate = {
 		effect = { 
 			if = { #GER COLLAPSE
@@ -194,6 +206,25 @@ on_actions = {
 					}
 				}
 			}
+			else_if = {# Ulster War
+				limit = {
+					ROOT = { 
+						original_tag = ICA
+					}
+				}
+				if = { 
+					limit = { 
+						ULS = { exists = yes }
+						IRE = { is_subject_of = ENG }
+					}
+					IRE = { 
+						annex_country = { 
+							target = ULS
+							transfer_troops = yes
+						}
+					}
+				}
+			}
 			else_if = { #Swedish victory in finland
 				limit = {
 					ROOT = { 
@@ -238,6 +269,19 @@ on_actions = {
 					}
 					log = "[GetLogInfo]: SPR Peace with ENG succesful"
 				}
+			}
+			else_if = { #Philippine Victory Effects
+				limit = {
+					ROOT = { 
+						original_tag = DAS
+					}
+					PHI = { 
+						exists = yes
+						NOT = { has_global_flag = DAS_PHI_peace_out }
+					}
+				}
+				PHI_victory_effects = yes
+				set_global_flag = DAS_PHI_peace_out
 			}
 			else_if = {# MEXICO Defeated
 				limit = {
