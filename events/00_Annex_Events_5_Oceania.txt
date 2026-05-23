@@ -657,7 +657,7 @@ country_event = { #Fate of Aotearoa
 }	
 
 state_event = { #Fate of the Pacific Islands
-	id = annexation_events.5008
+	id = annexation_events.5009
 	title = annexation_633
 	desc = annexation_633_desc
 	picture = GFX_report_event_generic_conference2
@@ -730,7 +730,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 	
 	option = { #Give to Hawaii
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.oceania.give_to_hawaii"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.oceania.give_to_hawaii"
 		name = annexation_events.oceania.give_to_hawaii
 		trigger = {
 			has_event_target = hawaii
@@ -779,7 +779,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 	
 	option = { #Give to North Hawaii
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.oceania.give_to_north_hawaii"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.oceania.give_to_north_hawaii"
 		name = annexation_events.oceania.give_to_north_hawaii
 		trigger = {
 			has_event_target = north_hawaii
@@ -828,7 +828,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 
 	option = { #Give to New Zealand
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.oceania.give_to_new_zealand"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.oceania.give_to_new_zealand"
 		name = annexation_events.oceania.give_to_new_zealand
 		trigger = {
 			has_event_target = new_zealand
@@ -877,7 +877,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 
 	option = { #Palau only: Give to the Philippines
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.oceania.give_to_philippines"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.oceania.give_to_philippines"
 		name = annexation_events.oceania.give_to_philippines
 		trigger = {
 			has_event_target = philippines
@@ -915,7 +915,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 
 	option = { #Give to Germany
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.europe.give_to_germany"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.europe.give_to_germany"
 		name = annexation_events.europe.give_to_germany
 		trigger = {
 			has_event_target = germany
@@ -949,7 +949,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 
 	option = { #Give to Japan
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.give_to_japan"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.give_to_japan"
 		name = annexation_events.give_to_japan
 		trigger = {
 			has_event_target = japan
@@ -983,7 +983,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 
 	option = { #Give to overlord
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.give_to_overlord"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.give_to_overlord"
 		name = annexation_events.give_to_overlord
 		trigger = {
 			ROOT = { annexations_should_give_lands_to_overlord = yes }
@@ -993,7 +993,7 @@ state_event = { #Fate of the Pacific Islands
 	}
 
 	option = { #integrate
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.integration"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.integration"
 		name = annexation_events.integration
 		trigger = {
 			annexations_can_annex = yes
@@ -1002,12 +1002,151 @@ state_event = { #Fate of the Pacific Islands
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annexation_events.5008 option annexation_events.cancel"
+		log = "[GetLogInfo]: event annexation_events.5009 option annexation_events.cancel"
 		name = annexation_events.cancel
 		ai_chance = { base = 0 }
 	}
 
 	after = {
 		ROOT = { recheck_annexations = yes }
+	}
+}
+
+
+country_event = { # Fate of Hawaii
+	id = annex.5010
+	title = annexation_629
+	desc = annexation_629_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_hawaii = yes }
+					add_core_of = HWI
+				}
+				else = {
+					remove_core_of = HWI
+				}
+				remove_claim_by = HWI
+			}
+		}
+	}
+	
+	option = { # Release Hawaii
+		log = "[GetLogInfo]: event annex.5010 option annex.5010.a"
+		name = annex.5010.a
+
+		trigger = {
+			is_subject = no
+			NOT = { original_tag = RUS }
+		}
+
+		ai_chance = {
+			base = 100
+			modifier = { factor = 0 }
+		}
+
+		set_temp_variable = { tag_to_release = HWI }
+		release_targeted_tag = yes
+
+		else_if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			HWI = {
+				set_cosmetic_tag = HWI_Occupied_Republic
+			}
+		}
+
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			HWI = {
+				set_cosmetic_tag = HWI_Occupied_Monarchy
+			}
+		}
+	}
+
+	option = { # Release Russian Hawaii
+		log = "[GetLogInfo]: event annex.5010 option annex.5010.b"
+		name = annex.5010.b
+
+		trigger = {
+			is_subject = no
+			original_tag = RUS
+		}
+
+		ai_chance = {
+			base = 100
+			modifier = { factor = 0 }
+		}
+		every_state = {
+			if = {
+				limit = { is_hawaii = yes }
+				add_core_of = NHW
+			}
+			else = {
+				remove_core_of = NHW
+			}
+			remove_claim_by = NHW
+		}
+
+		set_temp_variable = { tag_to_release = NHW }
+		release_targeted_tag = yes
+
+		else_if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			NHW = {
+				set_cosmetic_tag = NHW_Occupied_Republic
+			}
+		}
+
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			NHW = {
+				set_cosmetic_tag = NHW_Occupied_Monarchy
+			}
+		}
+	}
+
+	option = { # Give to overlord
+		log = "[GetLogInfo]: event annex.5010 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+
+		set_temp_variable = { tag_to_release = overlord }
+
+		every_owned_state = {
+			limit = { is_hawaii = yes }
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { # Integrate
+		log = "[GetLogInfo]: event annex.5010 option annex.integration"
+		name = annex.integration
+
+		trigger = {
+			annexations_can_annex = yes
+		}
+
+		every_owned_state = {
+			limit = { is_hawaii = yes }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { # Cancel
+		log = "[GetLogInfo]: event annex.5010 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
 	}
 }
