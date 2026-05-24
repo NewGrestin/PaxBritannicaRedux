@@ -589,8 +589,8 @@ country_event = { #Fate of Azerbijan
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		419 = { transfer_if_owned = yes } #Azerbaijan
-		420 = { transfer_if_owned = yes } #Gilan
+		419 = { transfer_state_and_notify = yes } #Azerbaijan
+		420 = { transfer_state_and_notify = yes } #Gilan
 	}
 
 	option = { #Integrate
@@ -848,7 +848,7 @@ country_event = { #Fate of Kuzestan
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		413 = { transfer_if_owned = yes }
+		413 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -979,8 +979,8 @@ country_event = { #Fate of Orumiyeh
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1426 = { transfer_if_owned = yes }
-		421 = { transfer_if_owned = yes }
+		1426 = { transfer_state_and_notify = yes }
+		421 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -1089,7 +1089,7 @@ country_event = { # Fate of Kordestan
         # Erbil only if valid
         if = {
             limit = { has_event_target = erbil_owner }
-            676 = { transfer_if_owned = yes }
+            676 = { transfer_state_and_notify = yes }
         }
     }
 
@@ -1228,7 +1228,7 @@ country_event = { #Fate of Lorestan
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1423 = { transfer_if_owned = yes }
+		1423 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -1514,7 +1514,7 @@ country_event = { #Fate of Bandar Abbas
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1303 = { transfer_if_owned = yes }
+		1303 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -1661,7 +1661,7 @@ country_event = { #Fate of Gwadar
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1304 = { transfer_if_owned = yes }
+		1304 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -1766,7 +1766,7 @@ country_event = { #Fate of Hasab
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1308 = { transfer_if_owned = yes }
+		1308 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -2784,7 +2784,7 @@ country_event = { # Fate of Kurdistan
 		set_temp_variable = { tag_to_release = event_target:ottomans }
 		every_state = {
 			limit = { is_kurdistan = yes }
-			transfer_if_owned = yes
+			transfer_state_and_notify = yes
 		}
 	}
 
@@ -2797,7 +2797,7 @@ country_event = { # Fate of Kurdistan
 		set_temp_variable = { tag_to_release = overlord }
 		every_state = {
 			limit = { is_kurdistan = yes }
-			transfer_if_owned = yes
+			transfer_state_and_notify = yes
 		}
 	}
 
@@ -4122,8 +4122,13 @@ country_event = { #Fate of Turkey/Turkiye
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		TUR = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_turkey = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -4133,6 +4138,9 @@ country_event = { #Fate of Turkey/Turkiye
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
+			limit = {
+				is_turkey = yes
+			}
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -4155,93 +4163,106 @@ country_event = { #Fate of Adaneh
 	picture = GFX_report_PB_Peace_Deals_Middle_East
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = EGY
+						tag = TUR
+						tag = SYR
+						348 = { is_claim_or_core_of_ROOT = yes } # Qaysaryah
+						677 = { is_claim_or_core_of_ROOT = yes } # Halab
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Qaysaryah
+			if = {
+				limit = {
+					348 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:348.owner = { save_event_target_as = qaysaryah }
+			}
+			
+			# Halab
+			if = {
+				limit = {
+					677 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:677.owner = { save_event_target_as = halab }
+			}
+		}
+	}
 
-	option = { #Grant it to Turkey
+	option = { #Grant it to Qaysaryah
 		log = "[GetLogInfo]: event annex.6030 option annex.6030.a"
 		name = annex.6030.a
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-			}
+			has_event_target = qaysaryah
 		}
 		ai_chance = {
-			base = 100
+			base = 65
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:qaysaryah }
+				OR = { 
+					is_ally_with = event_target:halab
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:qaysaryah = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 344
-		}
+		set_temp_variable = { tag_to_release = event_target:qaysaryah }
+        344 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Syria
+	option = { #Grant it to Halab
 		log = "[GetLogInfo]: event annex.6030 option annex.6030.b"
 		name = annex.6030.b
 		trigger = {
 			is_subject = no
-			SYR = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = SYR
-				}
-			}
+			has_event_target = halab
 		}
 		ai_chance = {
-			base = 50
+			base = 65
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:halab }
+				OR = { 
+					is_ally_with = event_target:qaysaryah
 				}
-				factor = 90
+			}
+			modifier = {
+				factor = 0.1
+				event_target:halab = { is_subject = yes }
 			}
 		}
 
-		SYR = {
-			transfer_state = 344
-		}
-		344 = { add_claim_by = SYR }
-	}
-	
-	option = { #Grant it to Egypt
-		log = "[GetLogInfo]: event annex.6030 option annex.6030.c"
-		name = annex.6030.c
-		trigger = {
-			is_subject = no
-			EGY = {
-				exists = yes
-				owns_state = 554
-			}
-			NOT = {
-				ROOT = {
-					tag = EGY
-				}
-			}
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-			}
-			modifier = {
-				ROOT = {
-					tag = RUS
-				}
-				factor = 90
-			}
-		}
-
-		EGY = {
-			transfer_state = 344
-		}
-		344 = { add_claim_by = EGY }
+		set_temp_variable = { tag_to_release = event_target:halab }
+        344 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -4251,7 +4272,7 @@ country_event = { #Fate of Adaneh
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		344 = { transfer_if_owned = yes }
+		344 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -4263,22 +4284,9 @@ country_event = { #Fate of Adaneh
 			}
 		}
 		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						tag = SYR
-						tag = EGY
-					}
-				}
-			}
+			base = 100
 		}
-		every_owned_state = {
+		344 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -4301,124 +4309,155 @@ country_event = { #Fate of Erzurum
 	picture = GFX_report_PB_Peace_Deals_Middle_East
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = TUR
+						tag = RUS
+						tag = TRS
+						tag = KRD
+						230 = { is_claim_or_core_of_ROOT = yes } # Armenia
+						349 = { is_claim_or_core_of_ROOT = yes } # Sivas
+						352 = { is_claim_or_core_of_ROOT = yes } # Van
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Armenia
+			if = {
+				limit = {
+					230 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = RUS
+							tag = ARM
+						}
+					}
+				}
+				var:230.owner = { save_event_target_as = armenia }
+			}
+			
+			# Sivas
+			if = {
+				limit = {
+					349 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:349.owner = { save_event_target_as = sivas }
+			}
+			
+			# Van
+			if = {
+				limit = {
+					352 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:352.owner = { save_event_target_as = van }
+			}
+		}
+	}
 
-	option = { #Grant it to Turkey
+	option = { #Grant it to Armenia
 		log = "[GetLogInfo]: event annex.6031 option annex.6031.a"
 		name = annex.6031.a
 		trigger = {
 			is_subject = no
+			has_event_target = armenia
 		}
 		ai_chance = {
-			base = 100
+			base = 65
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:armenia }
+				OR = {
+					is_ally_with = event_target:sivas
+					is_ally_with = event_target:van
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:armenia = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 353
-		}
+		set_temp_variable = { tag_to_release = event_target:armenia }
+        353 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Armenia
+	option = { #Grant it to Sivas
 		log = "[GetLogInfo]: event annex.6031 option annex.6031.b"
 		name = annex.6031.b
 		trigger = {
 			is_subject = no
-			ARM = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = ARM
-				}
-			}
+			has_event_target = sivas
 		}
 		ai_chance = {
-			base = 50
+			base = 65
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:sivas }
+				OR = { 
+					is_ally_with = event_target:armenia
+					is_ally_with = event_target:van
 				}
-				factor = 90
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sivas = { is_subject = yes }
 			}
 		}
 
-		ARM = {
-			transfer_state = 353
-		}
-		353 = { add_claim_by = ARM }
+		set_temp_variable = { tag_to_release = event_target:sivas }
+        353 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Kurdistan
+	option = { #Grant it to Van
 		log = "[GetLogInfo]: event annex.6031 option annex.6031.c"
 		name = annex.6031.c
 		trigger = {
 			is_subject = no
-			KRD = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = KRD
-				}
-			}
+			has_event_target = van
 		}
 		ai_chance = {
-			base = 50
+			base = 65
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:van }
+				OR = { 
+					is_ally_with = event_target:armenia
+					is_ally_with = event_target:sivas
 				}
-				factor = 70
+			}
+			modifier = {
+				factor = 0.1
+				event_target:van = { is_subject = yes }
 			}
 		}
 
-		KRD = {
-			transfer_state = 353
-		}
-		353 = { add_claim_by = KRD }
-	}
-	
-	option = { #Grant it to Russia
-		log = "[GetLogInfo]: event annex.6031 option annex.6031.d"
-		name = annex.6031.d
-		trigger = {
-			is_subject = no
-			RUS = {
-				exists = yes
-				owns_state = 230
-				is_ally_with = ROOT
-			}
-			NOT = {
-				ROOT = {
-					tag = RUS
-				}
-			}
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-			}
-			modifier = {
-				ROOT = {
-					tag = RUS
-				}
-				factor = 90
-			}
-		}
-
-		RUS = {
-			transfer_state = 353
-		}
-		353 = { add_claim_by = RUS }
+		set_temp_variable = { tag_to_release = event_target:van }
+        353 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -4428,46 +4467,19 @@ country_event = { #Fate of Erzurum
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		353 = { transfer_if_owned = yes }
+		353 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.6031 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				annexations_can_annex = yes
-				tag = RUS
-				tag = ARM
-				tag = KRD
-			}
+			annexations_can_annex = yes
 		}
 		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						tag = ARM
-					}
-				}
-			}
-			modifier = {
-				factor = 50
-				ROOT = {
-					OR = {
-						tag = RUS
-					}
-				}
-			}
+			base = 100
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		353 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -4488,59 +4500,157 @@ country_event = { #Fate of Taborrabzon
 	picture = GFX_report_PB_Peace_Deals_Middle_East
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = TUR
+						tag = GRE
+						tag = RUS
+						tag = TRS
+						1386 = { is_claim_or_core_of_ROOT = yes } # Kars
+						349 = { is_claim_or_core_of_ROOT = yes } # Sivas
+						821 = { is_claim_or_core_of_ROOT = yes } # East Thrace
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Kars
+			if = {
+				limit = {
+					1386 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = RUS
+							tag = TRS
+							tag = GRE
+						}
+					}
+				}
+				var:1386.owner = { save_event_target_as = kars }
+			}
+			
+			# Sivas
+			if = {
+				limit = {
+					349 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:349.owner = { save_event_target_as = sivas }
+			}
+			
+			# East Thrace
+			if = {
+				limit = {
+					821 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = GRE
+						}
+					}
+				}
+				var:821.owner = { save_event_target_as = east_thrace }
+			}
+		}
+	}
 
-	option = { #Grant it to Turkey
+	option = { #Grant it to Kars
 		log = "[GetLogInfo]: event annex.6032 option annex.6032.a"
 		name = annex.6032.a
 		trigger = {
 			is_subject = no
+			has_event_target = kars
 		}
 		ai_chance = {
-			base = 100
+			base = 65
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kars }
+				OR = { 
+					is_ally_with = event_target:sivas
+					is_ally_with = event_target:east_thrace
 				}
-				factor = 40
+			}
+			modifier = {
+				factor = 0.1
+				event_target:kars = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 354
-		}
+		set_temp_variable = { tag_to_release = event_target:kars }
+        354 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Greece
+	option = { #Grant it to Sivas
 		log = "[GetLogInfo]: event annex.6032 option annex.6032.b"
 		name = annex.6032.b
 		trigger = {
 			is_subject = no
-			GRE = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = GRE
-				}
-			}
+			has_event_target = sivas
 		}
 		ai_chance = {
-			base = 10
+			base = 65
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:sivas }
+				OR = { 
+					is_ally_with = event_target:kars
+					is_ally_with = event_target:east_thrace
 				}
-				factor = 90
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sivas = { is_subject = yes }
 			}
 		}
 
-		GRE = {
-			transfer_state = 354
+		set_temp_variable = { tag_to_release = event_target:sivas }
+        354 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Grant it to East Thrace
+		log = "[GetLogInfo]: event annex.6032 option annex.6032.c"
+		name = annex.6032.c
+		trigger = {
+			is_subject = no
+			has_event_target = east_thrace
 		}
-		354 = { add_claim_by = GRE }
+		ai_chance = {
+			base = 65
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:east_thrace }
+				OR = { 
+					is_ally_with = event_target:kars
+					is_ally_with = event_target:sivas
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_thrace = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:east_thrace }
+        354 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -4550,7 +4660,7 @@ country_event = { #Fate of Taborrabzon
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		354 = { transfer_if_owned = yes }
+		354 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -4562,30 +4672,9 @@ country_event = { #Fate of Taborrabzon
 			}
 		}
 		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						tag = GRE
-					}
-				}
-			}
-			modifier = {
-				factor = 50
-				ROOT = {
-					tag = RUS
-					has_government = ni
-				}
-			}
+			base = 100
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		354 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -4606,59 +4695,115 @@ country_event = { #Fate of Samsun
 	picture = GFX_report_PB_Peace_Deals_Middle_East
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = TUR
+						tag = GRE
+						354 = { is_claim_or_core_of_ROOT = yes } # Taborrabzon
+						349 = { is_claim_or_core_of_ROOT = yes } # Sivas
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Taborrabzon
+			if = {
+				limit = {
+					354 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = GRE
+							tag = TUR
+						}
+					}
+				}
+				var:354.owner = { save_event_target_as = taborrabzon }
+			}
+			
+			# Sivas
+			if = {
+				limit = {
+					349 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:349.owner = { save_event_target_as = sivas }
+			}
+		}
+	}
 
-	option = { #Grant it to Turkey
+	option = { #Grant it to Taborrabzon
 		log = "[GetLogInfo]: event annex.6033 option annex.6033.a"
 		name = annex.6033.a
 		trigger = {
 			is_subject = no
+			has_event_target = taborrabzon
+		}
+		trigger = {
+			is_subject = no
+			has_event_target = taborrabzon
 		}
 		ai_chance = {
-			base = 100
+			base = 45
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:taborrabzon }
+				OR = { 
+					is_ally_with = event_target:sivas
 				}
-				factor = 40
+			}
+			modifier = {
+				factor = 0.1
+				event_target:taborrabzon = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 355
-		}
+		set_temp_variable = { tag_to_release = event_target:taborrabzon }
+        355 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Greece
+	option = { #Grant it to Sivas
 		log = "[GetLogInfo]: event annex.6033 option annex.6033.b"
 		name = annex.6033.b
 		trigger = {
 			is_subject = no
-			GRE = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = GRE
-				}
-			}
+			has_event_target = sivas
+		}
+		trigger = {
+			is_subject = no
+			has_event_target = sivas
 		}
 		ai_chance = {
-			base = 10
+			base = 65
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:sivas }
+				OR = { 
+					is_ally_with = event_target:taborrabzon
 				}
-				factor = 90
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sivas = { is_subject = yes }
 			}
 		}
 
-		GRE = {
-			transfer_state = 355
-		}
-		355 = { add_claim_by = GRE }
+		set_temp_variable = { tag_to_release = event_target:sivas }
+        355 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -4667,8 +4812,9 @@ country_event = { #Fate of Samsun
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
+		
 		set_temp_variable = { tag_to_release = overlord }
-		355 = { transfer_if_owned = yes }
+		355 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -4679,31 +4825,9 @@ country_event = { #Fate of Samsun
 				annexations_can_annex = yes
 			}
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						tag = GRE
-					}
-				}
-			}
-			modifier = {
-				factor = 50
-				ROOT = {
-					tag = RUS
-					has_government = ni
-				}
-			}
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		ai_chance = { base = 100 }
+		
+		355 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -4724,63 +4848,157 @@ country_event = { #Fate of Bursa
 	picture = GFX_report_PB_Peace_Deals_Middle_East
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = TUR
+						tag = GRE
+						tag = RUS
+						822 = { is_claim_or_core_of_ROOT = yes } # Troas
+						1244 = { is_claim_or_core_of_ROOT = yes } # Uskudar
+						49 = { is_claim_or_core_of_ROOT = yes } # Osman
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Troas
+			if = {
+				limit = {
+					822 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = GRE
+							tag = TUR
+						}
+					}
+				}
+				var:822.owner = { save_event_target_as = troas }
+			}
+			
+			# Uskudar
+			if = {
+				limit = {
+					1244 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = GRE
+							tag = TUR
+							tag = RUS
+						}
+					}
+				}
+				var:1244.owner = { save_event_target_as = uskudar }
+			}
+			
+			# Osman
+			if = {
+				limit = {
+					49 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:49.owner = { save_event_target_as = osman }
+			}
+		}
+	}
 
-	option = { #Grant it to Turkey
+	option = { #Grant it to Troas
 		log = "[GetLogInfo]: event annex.6034 option annex.6034.a"
 		name = annex.6034.a
 		trigger = {
 			is_subject = no
+			has_event_target = troas
 		}
 		ai_chance = {
-			base = 100
+			base = 65
 			modifier = {
-				ROOT = {
-					is_ally_with = GRE
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:troas }
+				OR = { 
+					is_ally_with = event_target:uskudar
+					is_ally_with = event_target:osman
 				}
-				GRE = {
-					owns_state = 822
-				}
-				factor = 20
+			}
+			modifier = {
+				factor = 0.1
+				event_target:troas = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 340
-		}
+		set_temp_variable = { tag_to_release = event_target:troas }
+        340 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Greece
+	option = { #Grant it to Uskudar
 		log = "[GetLogInfo]: event annex.6034 option annex.6034.b"
 		name = annex.6034.b
 		trigger = {
 			is_subject = no
-			GRE = {
-				exists = yes
-				owns_state = 822
-			}
-			NOT = {
-				ROOT = {
-					tag = GRE
-				}
-			}
+			has_event_target = uskudar
 		}
 		ai_chance = {
-			base = 10
+			base = 65
 			modifier = {
-				ROOT = {
-					is_ally_with = GRE
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:uskudar }
+				OR = { 
+					is_ally_with = event_target:troas
+					is_ally_with = event_target:osman
 				}
-				GRE = {
-					owns_state = 822
-				}
-				factor = 80
+			}
+			modifier = {
+				factor = 0.1
+				event_target:uskudar = { is_subject = yes }
 			}
 		}
 
-		GRE = {
-			transfer_state = 340
+		set_temp_variable = { tag_to_release = event_target:uskudar }
+        340 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Grant it to Osman
+		log = "[GetLogInfo]: event annex.6034 option annex.6034.c"
+		name = annex.6034.c
+		trigger = {
+			is_subject = no
+			has_event_target = osman
 		}
-		340 = { add_claim_by = GRE }
+		ai_chance = {
+			base = 65
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:osman }
+				OR = { 
+					is_ally_with = event_target:troas
+					is_ally_with = event_target:uskudar
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:osman = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:osman }
+        340 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -4790,7 +5008,7 @@ country_event = { #Fate of Bursa
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		340 = { transfer_if_owned = yes }
+		340 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -4802,23 +5020,9 @@ country_event = { #Fate of Bursa
 			}
 		}
 		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						tag = GRE
-					}
-				}
-			}
+			base = 100
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		340 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -4840,61 +5044,157 @@ country_event = { #Fate of Lazistan
 
 	is_triggered_only = yes
 
-	option = { #Grant it to Turkey
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = TUR
+						tag = GRE
+						tag = RUS
+						tag = TRS
+						1385 = { is_claim_or_core_of_ROOT = yes } # Batum
+						349 = { is_claim_or_core_of_ROOT = yes } # Sivas
+						821 = { is_claim_or_core_of_ROOT = yes } # East Thrace
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Batum
+			if = {
+				limit = {
+					1385 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = RUS
+							tag = TRS
+							tag = GRE
+							tag = TUR
+						}
+					}
+				}
+				var:1385.owner = { save_event_target_as = batum }
+			}
+			
+			# Sivas
+			if = {
+				limit = {
+					349 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:349.owner = { save_event_target_as = sivas }
+			}
+			
+			# East Thrace
+			if = {
+				limit = {
+					821 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = GRE
+						}
+					}
+				}
+				var:821.owner = { save_event_target_as = east_thrace }
+			}
+		}
+	}
+
+	option = { #Grant it to Batum
 		log = "[GetLogInfo]: event annex.6035 option annex.6035.a"
 		name = annex.6035.a
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-			}
+			has_event_target = batum
 		}
 		ai_chance = {
-			base = 100
+			base = 65
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:batum }
+				OR = { 
+					is_ally_with = event_target:sivas
+					is_ally_with = event_target:east_thrace
 				}
-				factor = 20
+			}
+			modifier = {
+				factor = 0.1
+				event_target:batum = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 1460
-		}
+		set_temp_variable = { tag_to_release = event_target:batum }
+        1460 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Greece
+	option = { #Grant it to Sivas
 		log = "[GetLogInfo]: event annex.6035 option annex.6035.b"
 		name = annex.6035.b
 		trigger = {
 			is_subject = no
-			GRE = {
-				exists = yes
-			}
-			NOT = {
-				ROOT = {
-					tag = GRE
-				}
-			}
+			has_event_target = sivas
 		}
 		ai_chance = {
-			base = 10
+			base = 55
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:sivas }
+				OR = { 
+					is_ally_with = event_target:batum
+					is_ally_with = event_target:east_thrace
 				}
-				factor = 20
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sivas = { is_subject = yes }
 			}
 		}
 
-		GRE = {
-			transfer_state = 1460
+		set_temp_variable = { tag_to_release = event_target:sivas }
+        1460 = { transfer_state_and_notify = yes }
+	}
+	
+	option = { #Grant it to East Thrace
+		log = "[GetLogInfo]: event annex.6035 option annex.6035.c"
+		name = annex.6035.c
+		trigger = {
+			is_subject = no
+			has_event_target = east_thrace
 		}
-		1460 = { add_claim_by = GRE }
+		ai_chance = {
+			base = 55
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:east_thrace }
+				OR = { 
+					is_ally_with = event_target:batum
+					is_ally_with = event_target:sivas
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_thrace = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:east_thrace }
+        1460 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -4904,7 +5204,7 @@ country_event = { #Fate of Lazistan
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1460 = { transfer_if_owned = yes }
+		1460 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -4916,29 +5216,9 @@ country_event = { #Fate of Lazistan
 			}
 		}
 		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						tag = GRE
-					}
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = RUS
-				}
-			}
+			base = 100
 		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		1460 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -4959,66 +5239,107 @@ country_event = { #Fate of Mugla
 	picture = GFX_report_PB_Peace_Deals_Middle_East
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = TUR
+						tag = GRE
+						823 = { is_claim_or_core_of_ROOT = yes } # Aydin
+						1048 = { is_claim_or_core_of_ROOT = yes } # Alasehir
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Aydin
+			if = {
+				limit = {
+					823 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = GRE
+							tag = TUR
+						}
+					}
+				}
+				var:823.owner = { save_event_target_as = aydin }
+			}
+			
+			# Alasehir
+			if = {
+				limit = {
+					1048 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1048.owner = { save_event_target_as = alasehir }
+			}
+		}
+	}
 
-	option = { #Grant it to Turkey
+	option = { #Grant it to Aydin
 		log = "[GetLogInfo]: event annex.6036 option annex.6036.a"
 		name = annex.6036.a
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-			}
+			has_event_target = aydin
 		}
 		ai_chance = {
-			base = 100
+			base = 55
 			modifier = {
-				ROOT = {
-					is_ally_with = GRE
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:aydin }
+				OR = { 
+					is_ally_with = event_target:alasehir
 				}
-				GRE = {
-					owns_state = 823
-				}
-				factor = 10
+			}
+			modifier = {
+				factor = 0.1
+				event_target:aydin = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 1049
-		}
+		set_temp_variable = { tag_to_release = event_target:aydin }
+        1049 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Greece
+	option = { #Grant it to Alasehir
 		log = "[GetLogInfo]: event annex.6036 option annex.6036.b"
 		name = annex.6036.b
 		trigger = {
 			is_subject = no
-			GRE = {
-				exists = yes
-				owns_state = 823
-			}
-			NOT = {
-				ROOT = {
-					tag = GRE
-				}
-			}
+			has_event_target = alasehir
 		}
 		ai_chance = {
-			base = 10
+			base = 55
 			modifier = {
-				ROOT = {
-					is_ally_with = GRE
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alasehir }
+				OR = { 
+					is_ally_with = event_target:aydin
 				}
-				GRE = {
-					owns_state = 822
-				}
-				factor = 90
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alasehir = { is_subject = yes }
 			}
 		}
 
-		GRE = {
-			transfer_state = 1049
-		}
-		1049 = { add_claim_by = GRE }
+		set_temp_variable = { tag_to_release = event_target:alasehir }
+        1049 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -5028,7 +5349,7 @@ country_event = { #Fate of Mugla
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1049 = { transfer_if_owned = yes }
+		1049 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -5039,24 +5360,9 @@ country_event = { #Fate of Mugla
 				annexations_can_annex = yes
 			}
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						tag = GRE
-					}
-				}
-			}
-		}
-		every_owned_state = {
-			add_claim_of_ROOT = yes
-		}
+		ai_chance = { base = 100 }
+		
+		1049 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -5077,97 +5383,108 @@ country_event = { #Fate of Izmit
 	picture = GFX_report_PB_Peace_Deals_Middle_East
 
 	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						tag = TUR
+						tag = GRE
+						tag = RUS
+						340 = { is_claim_or_core_of_ROOT = yes } # Bursa
+						1244 = { is_claim_or_core_of_ROOT = yes } # Uskudar
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Bursa
+			if = {
+				limit = {
+					340 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = GRE
+							tag = TUR
+						}
+					}
+				}
+				var:340.owner = { save_event_target_as = bursa }
+			}
+			
+			# Uskudar
+			if = {
+				limit = {
+					1244 = {
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1244.owner = { save_event_target_as = uskudar }
+			}
+		}
+	}
 
-	option = { #Grant it to Turkey
+	option = { #Grant it to Bursa
 		log = "[GetLogInfo]: event annex.6037 option annex.6037.a"
 		name = annex.6037.a
 		trigger = {
 			is_subject = no
-			TUR = {
-				exists = yes
-			}
+			has_event_target = bursa
 		}
 		ai_chance = {
-			base = 100
+			base = 75
 			modifier = {
-				ROOT = {
-					tag = RUS
-					owns_state = 1244
-				}
-				factor = 40
+				factor = 0
+				annexations_can_annex = yes
 			}
 			modifier = {
-				ROOT = {
-					tag = RUS
-					has_government = ds
-					has_government = ni
-					owns_state = 1244
+				factor = 0
+				NOT = { is_ally_with = event_target:bursa }
+				OR = { 
+					is_ally_with = event_target:uskudar
 				}
-				factor = 10
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bursa = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 347
-		}
+		set_temp_variable = { tag_to_release = event_target:bursa }
+        347 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Grant it to Russia
+	option = { #Grant it to Uskudar
 		log = "[GetLogInfo]: event annex.6037 option annex.6037.b"
 		name = annex.6037.b
 		trigger = {
 			is_subject = no
-			RUS = {
-				exists = yes
-				owns_state = 1244
-			}
-			ROOT = {
-				is_ally_with = RUS
-				NOT = {
-					tag = RUS
-				}
-			}
+			has_event_target = uskudar
 		}
 		ai_chance = {
-			base = 30
+			base = 55
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
-		}
-
-		RUS = {
-			transfer_state = 347
-		}
-		347 = { add_claim_by = RUS }
-	}
-	
-	option = { #Grant it to Greece
-		log = "[GetLogInfo]: event annex.6037 option annex.6037.c"
-		name = annex.6037.c
-		trigger = {
-			is_subject = no
-			GRE = {
-				exists = yes
-				OR = {
-					owns_state = 340
-					owns_state = 1244
-				}
-			}
-		}
-		ai_chance = {
-			base = 30
 			modifier = {
-				factor = 70
-				ROOT = {
-					tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:uskudar }
+				OR = { 
+					is_ally_with = event_target:bursa
 				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:uskudar = { is_subject = yes }
 			}
 		}
 
-		GRE = {
-			transfer_state = 347
-		}
-		347 = { add_claim_by = GRE }
+		set_temp_variable = { tag_to_release = event_target:uskudar }
+        347 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -5176,57 +5493,22 @@ country_event = { #Fate of Izmit
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
+		
 		set_temp_variable = { tag_to_release = overlord }
-		347 = { transfer_if_owned = yes }
+		347 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.6037 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				annexations_can_annex = yes
-				tag = RUS
-				tag = GRE
-				tag = TUR
-			}
+			annexations_can_annex = yes
 		}
 		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 50
-				ROOT = {
-					tag = RUS
-				}
-			}
-			modifier = {
-				factor = 90
-				ROOT = {
-					tag = RUS
-					has_government = ds
-					has_government = ni
-				}
-			}
-			modifier = {
-				factor = 90
-				ROOT = {
-					tag = GRE
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = TUR
-				}
-			}
+			base = 100
 		}
-		347 = {
-			add_claim_of_ROOT = yes
-		}
+		
+		347 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -5248,103 +5530,104 @@ country_event = { #Fate of Ha'il
 
 	is_triggered_only = yes
 	
-	option = { #Release Jabal Shammar
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						is_arabian_tag = yes
+						1312 = { is_claim_or_core_of_ROOT = yes } # Der Al Zur
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			# Der Al Zur
+			if = {
+				limit = {
+					ROOT = { is_arabian_tag = no }
+					1312 = {
+						owner = {
+							ROOT_can_grant_land = yes
+							original_tag = TUR
+						}
+					}
+				}
+				var:1312.owner = { save_event_target_as = der_al_zur }
+			}
+		}
+	}
+	
+	option = { #Grant it to Arabia
 		log = "[GetLogInfo]: event annex.6038 option annex.6038.a"
 		name = annex.6038.a
 		trigger = {
 			is_subject = no
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-			modifier = {
-				factor = 20
-				ROOT = {
-					OR = {
-						tag = TUR
-					}
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = JBS }
-		release_targeted_tag = yes
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-				}
-			}
-			JBS = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JBS_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_republican_government = yes
-				}
-			}
-			JBS = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = JBS_Occupied_Republic
-			}
-		}
-	}
-
-	option = { #Grant it to the Ottoman Empire
-		log = "[GetLogInfo]: event annex.6038 option annex.6038.b"
-		name = annex.6038.b
-		trigger = {
-			is_subject = no
-			TUR = {
-				exists = yes
-				AND = {
-					owns_state = 1312
-					owns_state = 554
-					owns_state = 680
-				}
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = TUR
-						tag = SAU
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			SAU = { exists = yes }
+			is_arabian_tag = no
 		}
 		ai_chance = {
 			base = 80
 			modifier = {
-				ROOT = {
-					tag = RUS
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = SAU }
+				OR = { 
+					is_ally_with = event_target:der_al_zur
 				}
-				factor = 20
+			}
+			modifier = {
+				factor = 0.1
+				SAU = { is_subject = yes }
 			}
 		}
 
-		TUR = {
-			transfer_state = 1296
-			transfer_state = 1091
+		set_temp_variable = { tag_to_release = SAU }
+		every_owned_state = {
+			limit = {
+				is_jabbal = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Grant it to Der Al Zur
+		log = "[GetLogInfo]: event annex.6038 option annex.6038.b"
+		name = annex.6038.b
+		trigger = {
+			is_subject = no
+			has_event_target = der_al_zur
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:der_al_zur }
+				OR = { 
+					is_ally_with = SAU
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:der_al_zur = { is_subject = yes }
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = event_target:der_al_zur }
+		every_owned_state = {
+			limit = {
+				is_jabbal = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 	}
 	
@@ -5354,8 +5637,15 @@ country_event = { #Fate of Ha'il
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
+		
 		set_temp_variable = { tag_to_release = overlord }
-		1091 = { transfer_if_owned = yes }
+		every_owned_state = {
+			limit = {
+				is_jabbal = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -5366,32 +5656,12 @@ country_event = { #Fate of Ha'il
 				annexations_can_annex = yes
 			}
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
+		ai_chance = { base = 100 }
+		
+		every_owned_state = {
+			limit = {
+				is_jabbal = yes
 			}
-			modifier = {
-				factor = 70
-				ROOT = {
-					tag = TUR
-					owns_state = 1312
-					owns_state = 554
-					owns_state = 680
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SAU
-					tag = IKW
-					tag = NAN
-					tag = SDT
-				}
-			}
-		}
-		1091 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -5559,7 +5829,7 @@ country_event = { #Fate of Summan
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1299 = { transfer_if_owned = yes }
+		1299 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -5739,7 +6009,7 @@ country_event = { #Fate of Qatar
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		765 = { transfer_if_owned = yes }
+		765 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -5942,17 +6212,15 @@ country_event = { #Fate of Najd
 		1091 = { retain_state = yes }
 		678 = { retain_state = yes }
 		1292 = { retain_state = yes }
-		
-		# Ha'il owner
-		if = {
-			limit = {
-				1091 = {
-					owner = {
-						ROOT_can_grant_land = yes
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						is_arabian_tag = yes
 					}
 				}
+				save_event_target_as = can_annex
 			}
-			var:1091.owner = { save_event_target_as = hail }
 		}
 	}
 	
@@ -5961,20 +6229,12 @@ country_event = { #Fate of Najd
 		name = annex.6042.a
 		trigger = {
 			is_subject = no
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			is_arabian_tag = no
 		}
 		ai_chance = {
-			base = 100
+			base = 80
 			modifier = {
+				annexations_can_annex = yes
 				factor = 0
 			}
 		}
@@ -6006,39 +6266,6 @@ country_event = { #Fate of Najd
 			}
 		}
 	}
-
-	option = { #Grant it to the Jabbal Shammar
-		log = "[GetLogInfo]: event annex.6042 option annex.6042.b"
-		name = annex.6042.b
-		trigger = {
-			is_subject = no
-			has_event_target = hail
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = TUR
-						tag = SAU
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 70
-			modifier = {
-				ROOT = {
-					tag = TUR
-				}
-				factor = 100
-			}
-		}
-		
-		set_temp_variable = { tag_to_release = event_target:hail }
-		SAU = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
 	
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.6042 option annex.give_to_overlord"
@@ -6046,51 +6273,31 @@ country_event = { #Fate of Najd
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
+		
 		set_temp_variable = { tag_to_release = overlord }
-		SAU = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_saudi_arabia = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.6042 option annex.integration"
 		name = annex.integration
 		trigger = {
-			OR = {
-				annexations_can_annex = yes
-				tag = SAU
-				tag = JBS
-				tag = IKW
-				tag = NAN
-				tag = SDT
-			}
+			annexations_can_annex = yes
 		}
 		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
+			base = 100
+		}
+		
+		every_owned_state = {
+			limit = {
+				is_saudi_arabia = yes
 			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SAU
-					tag = JBS
-					tag = IKW
-					tag = NAN
-					tag = SDT
-				}
-			}
-		}
-		292 = {
-			add_claim_of_ROOT = yes
-		}
-		1295 = {
-			add_claim_of_ROOT = yes
-		}
-		1294 = {
-			add_claim_of_ROOT = yes
-		}
-		1298 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -6106,7 +6313,7 @@ country_event = { #Fate of Najd
 	}
 }
 
-country_event = { #Fate of Rub Al-Khali
+country_event = { #Fate of Rub Al-Khali / Ikhwan
 	id = annex.6043
 	title = annexation_678
 	desc = annexation_678_desc
@@ -6114,135 +6321,54 @@ country_event = { #Fate of Rub Al-Khali
 
 	is_triggered_only = yes
 	
-	option = { #Release Ikhwan
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						is_arabian_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
+	}
+	
+	option = { #Grant it to Arabia
 		log = "[GetLogInfo]: event annex.6043 option annex.6043.a"
 		name = annex.6043.a
 		trigger = {
 			is_subject = no
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
-			JBS = {
-				exists = no
-			}
-			SAU = {
-				exists = no
-			}
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 0
-				ROOT = {
-					original_tag = TUR
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = IKW }
-		release_targeted_tag = yes
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-				}
-			}
-			IKW = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = IKW_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_republican_government = yes
-				}
-			}
-			IKW = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = IKW_Occupied_Republic
-			}
-		}
-	}
-
-	option = { #Grant it to Najd
-		log = "[GetLogInfo]: event annex.6043 option annex.6043.b"
-		name = annex.6043.b
-		trigger = {
-			is_subject = no
-			SAU = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			SAU = { exists = yes }
+			is_arabian_tag = no
 		}
 		ai_chance = {
 			base = 80
 			modifier = {
 				factor = 0
-				ROOT = {
-					original_tag = TUR
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = SAU }
+				OR = { 
+					is_ally_with = event_target:der_al_zur
 				}
+			}
+			modifier = {
+				factor = 0.1
+				SAU = { is_subject = yes }
 			}
 		}
 
 		set_temp_variable = { tag_to_release = SAU }
-		IKW = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-	
-	option = { #Grant it to Jabal
-		log = "[GetLogInfo]: event annex.6043 option annex.6043.c"
-		name = annex.6043.c
-		trigger = {
-			is_subject = no
-			SAU = {
-				exists = yes
+		every_owned_state = {
+			limit = {
+				is_ikwhan = yes
+				is_allowed_annexation_state = yes
 			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			transfer_state_and_notify = yes
 		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 100
-				ROOT = {
-					original_tag = TUR
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = JBS }
-		IKW = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
 	}
 	
 	option = { #Give to overlord
@@ -6251,9 +6377,15 @@ country_event = { #Fate of Rub Al-Khali
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
+		
 		set_temp_variable = { tag_to_release = overlord }
-		IKW = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_ikwhan = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -6262,33 +6394,14 @@ country_event = { #Fate of Rub Al-Khali
 		trigger = {
 			OR = {
 				annexations_can_annex = yes
-				tag = SAU
-				tag = JBS
-				tag = IKW
-				tag = NAN
-				tag = SDT
 			}
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
+		ai_chance = { base = 100 }
+		
+		every_owned_state = {
+			limit = {
+				is_ikwhan = yes
 			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SAU
-					tag = IKW
-					tag = NAN
-					tag = SDT
-				}
-			}
-		}
-		678 = {
-			add_claim_of_ROOT = yes
-		}
-		1293 = {
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -6312,103 +6425,48 @@ country_event = { #Fate of Najran
 
 	is_triggered_only = yes
 
-	option = { #Grant it to Najd
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						is_arabian_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
+	}
+	
+	option = { #Grant it to Arabia
 		log = "[GetLogInfo]: event annex.6044 option annex.6044.a"
 		name = annex.6044.a
 		trigger = {
 			is_subject = no
-			SAU = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			SAU = { exists = yes }
+			is_arabian_tag = no
 		}
 		ai_chance = {
 			base = 80
 			modifier = {
 				factor = 0
-				ROOT = {
-					original_tag = TUR
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = SAU }
+				OR = { 
+					is_ally_with = event_target:der_al_zur
 				}
+			}
+			modifier = {
+				factor = 0.1
+				SAU = { is_subject = yes }
 			}
 		}
 
 		set_temp_variable = { tag_to_release = SAU }
-		SDT = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-	
-	option = { #Grant it to Jabal
-		log = "[GetLogInfo]: event annex.6044 option annex.6044.b"
-		name = annex.6044.b
-		trigger = {
-			is_subject = no
-			SAU = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 100
-				ROOT = {
-					original_tag = TUR
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = JBS }
-		SDT = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-	
-	option = { #Grant it to Ikhwan
-		log = "[GetLogInfo]: event annex.6044 option annex.6044.c"
-		name = annex.6044.c
-		trigger = {
-			is_subject = no
-			SAU = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 0
-		}
-
-		set_temp_variable = { tag_to_release = IKW }
-		SDT = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		1929 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -6417,9 +6475,9 @@ country_event = { #Fate of Najran
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
+		
 		set_temp_variable = { tag_to_release = overlord }
-		SDT = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		1929 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -6428,32 +6486,11 @@ country_event = { #Fate of Najran
 		trigger = {
 			OR = {
 				annexations_can_annex = yes
-				tag = SAU
-				tag = JBS
-				tag = IKW
-				tag = NAN
-				tag = SDT
 			}
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SAU
-					tag = IKW
-					tag = NAN
-					tag = SDT
-				}
-			}
-		}
-		1292 = {
-			add_claim_of_ROOT = yes
-		}
+		ai_chance = { base = 100 }
+		
+		1929 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -6475,28 +6512,30 @@ country_event = { #Fate of Hejaz/Medine
 
 	is_triggered_only = yes
 	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						is_arabian_tag = yes
+						original_tag = TUR
+						original_tag = EGY
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
+	}
+	
 	option = { #Release Hejaz
 		log = "[GetLogInfo]: event annex.6045 option annex.6045.a"
 		name = annex.6045.a
 		trigger = {
 			is_subject = no
-			SAU = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			is_arabian_tag = no
 		}
 		ai_chance = {
-			base = 80
+			base = 50
 			modifier = {
 				factor = 0
 				ROOT = {
@@ -6532,104 +6571,42 @@ country_event = { #Fate of Hejaz/Medine
 			}
 		}
 	}
-
-	option = { #Grant it to Najd
+	
+	option = { #Grant it to Arabia
 		log = "[GetLogInfo]: event annex.6045 option annex.6045.b"
 		name = annex.6045.b
 		trigger = {
 			is_subject = no
-			SAU = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			SAU = { exists = yes }
+			is_arabian_tag = no
 		}
 		ai_chance = {
 			base = 80
 			modifier = {
 				factor = 0
-				ROOT = {
-					original_tag = TUR
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = SAU }
+				OR = { 
+					is_ally_with = event_target:der_al_zur
 				}
+			}
+			modifier = {
+				factor = 0.1
+				SAU = { is_subject = yes }
 			}
 		}
 
 		set_temp_variable = { tag_to_release = SAU }
-		HEJ = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-	
-	option = { #Grant it to Jabal
-		log = "[GetLogInfo]: event annex.6045 option annex.6045.c"
-		name = annex.6045.c
-		trigger = {
-			is_subject = no
-			SAU = {
-				exists = yes
+		every_owned_state = {
+			limit = {
+				is_hejaz = yes
+				is_allowed_annexation_state = yes
 			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
+			transfer_state_and_notify = yes
 		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 100
-				ROOT = {
-					original_tag = TUR
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = JBS }
-		HEJ = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-	
-	option = { #Grant it to Ikhwan
-		log = "[GetLogInfo]: event annex.6045 option annex.6045.d"
-		name = annex.6045.d
-		trigger = {
-			is_subject = no
-			SAU = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					OR = {
-						tag = SAU
-						tag = JBS
-						tag = IKW
-						tag = NAN
-						tag = SDT
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 0
-		}
-
-		set_temp_variable = { tag_to_release = IKW }
-		HEJ = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
 	}
 	
 	option = { #Give to overlord
@@ -6638,9 +6615,15 @@ country_event = { #Fate of Hejaz/Medine
 		trigger = {
 			annexations_should_give_lands_to_overlord = yes
 		}
+		
 		set_temp_variable = { tag_to_release = overlord }
-		HEJ = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_hejaz = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
 	}
 
 	option = { #Integrate
@@ -6649,31 +6632,14 @@ country_event = { #Fate of Hejaz/Medine
 		trigger = {
 			OR = {
 				annexations_can_annex = yes
-				tag = SAU
-				tag = JBS
-				tag = IKW
-				tag = NAN
-				tag = SDT
 			}
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = SAU
-					tag = IKW
-					tag = NAN
-					tag = SDT
-				}
-			}
-		}
+		ai_chance = { base = 100 }
+		
 		every_owned_state = {
-			limit = { is_core_of = HEJ }
+			limit = {
+				is_hejaz = yes
+			}
 			add_claim_of_ROOT = yes
 		}
 	}
