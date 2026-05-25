@@ -8628,6 +8628,7 @@ country_event = { #Fate of Silesia
 
 		set_temp_variable = { tag_to_release = event_target:uppersilesia }
 		66 = { transfer_if_owned = yes } #Niederschliesen
+		1461 = { transfer_if_owned = yes } #Opole Silesia
 	}
 
 	option = { #Grant it to Wartheland
@@ -8661,6 +8662,7 @@ country_event = { #Fate of Silesia
 		
 		set_temp_variable = { tag_to_release = event_target:wartheland }
 		66 = { transfer_if_owned = yes } #Niederschliesen
+		1461 = { transfer_if_owned = yes } #Opole Silesia
 	}
 
 	option = { #Give to overlord
@@ -8680,6 +8682,7 @@ country_event = { #Fate of Silesia
 			annexations_can_annex = yes
 		}
 		66 = { add_claim_of_ROOT = yes } #Niederschliesen
+		1461 = { add_claim_of_ROOT = yes } #Opole Silesia
 	}
 
 	option = { #Cancel
@@ -16812,7 +16815,8 @@ country_event = { #Fate of Lithuania
 	is_triggered_only = yes
 
 	immediate = {
-		every_state = {
+		hidden_effect = { 
+			every_state = {
 			if = {
 				limit = {
 					is_lithuania = yes 
@@ -16825,6 +16829,42 @@ country_event = { #Fate of Lithuania
 			}
 		}
 		784 = { retain_state = yes } #Vilnius
+		if = { 
+				limit = { 
+					BAL = { 
+						exists = no
+					}
+				}
+				every_state = {
+					if = {
+						limit = {
+							is_baltic = yes 
+						}
+						add_core_of = BAL
+					}
+					else = {
+						remove_core_of = BAL
+						remove_claim_by = BAL
+					}
+				}
+			}
+			if = { 
+				limit = { 
+					OR = { 
+						original_tag = BAL
+						original_tag = RUS
+					}
+				}
+			}
+			if = {
+				limit = {
+					BAL = { 
+						ROOT_can_grant_land = yes
+					}
+				}
+				BAL = { save_event_target_as = baltic }
+			}
+		}
 	}
 
 	option = { #Release Lithuania
@@ -16853,6 +16893,63 @@ country_event = { #Fate of Lithuania
 			LIT = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = LIT_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Release Baltic States
+		log = "[GetLogInfo]: event annex.1111 option annex.europe_release_baltic"
+		name = annex.europe_release_baltic
+		trigger = {
+			is_subject = no
+			NOT = { country_exists = BAL }
+		}
+		ai_chance = {
+			base = 10
+		}
+
+		set_temp_variable = { tag_to_release = BAL }
+		release_targeted_tag = yes
+		if = { 
+			limit = { ROOT = { has_custom_puppet_BAL = yes  } }
+			setup_custom_puppet_BAL = yes
+		}
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			BAL = {
+				set_cosmetic_tag = BAL_Occupied_Monarchy
+			}
+		}
+
+		else_if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BAL = {
+				set_cosmetic_tag = BAL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Baltic States
+		log = "[GetLogInfo]: event annex.1111 option annex.europe.give_to_baltic"
+		name = annex.europe.give_to_baltic
+		trigger = {
+			is_subject = no
+			has_event_target = baltic
+		}
+		ai_chance = {
+			base = 10
+		}
+
+		set_temp_variable = { tag_to_release = BAL }
+
+		hidden_effect = {
+			every_state = {
+				limit = {
+					is_estonia = yes
+					is_latvia = yes
+					is_lithuania = yes
+				}
+				transfer_state_to = BAL
 			}
 		}
 	}
@@ -16922,6 +17019,41 @@ country_event = { #Fate of Latvia
 				}
 			}
 			951 = { retain_state = yes } #Latgalia
+			if = { 
+				limit = { 
+					BAL = { 
+						exists = no
+					}
+				}
+				every_state = {
+					if = {
+						limit = {
+							is_baltic = yes 
+						}
+						add_core_of = BAL
+					}
+					else = {
+						remove_core_of = BAL
+						remove_claim_by = BAL
+					}
+				}
+			}
+			if = { 
+				limit = { 
+					OR = { 
+						original_tag = BAL
+						original_tag = RUS
+					}
+				}
+			}
+			if = {
+				limit = {
+					BAL = { 
+						ROOT_can_grant_land = yes
+					}
+				}
+				BAL = { save_event_target_as = baltic }
+			}
 		}
 	}
 
@@ -16951,6 +17083,63 @@ country_event = { #Fate of Latvia
 			LAT = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = LAT_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Release Baltic States
+		log = "[GetLogInfo]: event annex.1112 option annex.europe_release_baltic"
+		name = annex.europe_release_baltic
+		trigger = {
+			is_subject = no
+			NOT = { country_exists = BAL }
+		}
+		ai_chance = {
+			base = 10
+		}
+
+		set_temp_variable = { tag_to_release = BAL }
+		release_targeted_tag = yes
+
+		if = { 
+			limit = { ROOT = { has_custom_puppet_BAL = yes  } }
+			setup_custom_puppet_BAL = yes
+		}
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			BAL = {
+				set_cosmetic_tag = BAL_Occupied_Monarchy
+			}
+		}
+
+		else_if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BAL = {
+				set_cosmetic_tag = BAL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Baltic States
+		log = "[GetLogInfo]: event annex.1112 option annex.europe.give_to_baltic"
+		name = annex.europe.give_to_baltic
+		trigger = {
+			is_subject = no
+			has_event_target = baltic
+		}
+		ai_chance = {
+			base = 10
+		}
+
+		set_temp_variable = { tag_to_release = BAL }
+
+		hidden_effect = {
+			every_state = {
+				limit = {
+					is_estonia = yes
+					is_latvia = yes
+				}
+				transfer_state_to = BAL
 			}
 		}
 	}
@@ -17018,6 +17207,41 @@ country_event = { #Fate of Estonia
 					remove_claim_by = EST
 				}
 			}
+			if = { 
+				limit = { 
+					BAL = { 
+						exists = no
+					}
+				}
+				every_state = {
+					if = {
+						limit = {
+							is_baltic = yes 
+						}
+						add_core_of = BAL
+					}
+					else = {
+						remove_core_of = BAL
+						remove_claim_by = BAL
+					}
+				}
+			}
+			if = { 
+				limit = { 
+					OR = { 
+						original_tag = BAL
+						original_tag = RUS
+					}
+				}
+			}
+			if = {
+				limit = {
+					BAL = { 
+						ROOT_can_grant_land = yes
+					}
+				}
+				BAL = { save_event_target_as = baltic }
+			}
 		}
 	}
 
@@ -17047,6 +17271,63 @@ country_event = { #Fate of Estonia
 			EST = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = EST_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Release Baltic States
+		log = "[GetLogInfo]: event annex.1113 option annex.europe_release_baltic"
+		name = annex.europe_release_baltic
+		trigger = {
+			is_subject = no
+			NOT = { country_exists = BAL }
+		}
+		ai_chance = {
+			base = 10
+		}
+
+		set_temp_variable = { tag_to_release = BAL }
+		release_targeted_tag = yes
+
+		if = { 
+			limit = { ROOT = { has_custom_puppet_BAL = yes  } }
+			setup_custom_puppet_BAL = yes
+		}
+		else_if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			BAL = {
+				set_cosmetic_tag = BAL_Occupied_Monarchy
+			}
+		}
+
+		else_if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BAL = {
+				set_cosmetic_tag = BAL_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Baltic States
+		log = "[GetLogInfo]: event annex.1113 option annex.europe.give_to_baltic"
+		name = annex.europe.give_to_baltic
+		trigger = {
+			is_subject = no
+			has_event_target = baltic
+		}
+		ai_chance = {
+			base = 10
+		}
+
+		set_temp_variable = { tag_to_release = BAL }
+
+		hidden_effect = {
+			every_state = {
+				limit = {
+					is_estonia = yes
+					is_latvia = yes
+				}
+				transfer_state_to = BAL
 			}
 		}
 	}
