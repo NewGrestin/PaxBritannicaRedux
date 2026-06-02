@@ -19277,6 +19277,7 @@ country_event = { #Fate of Russia
 			}
 			retain_state = yes
 		}
+		195 = { retain_state = yes } #Saint petersburg
 		655 = { retain_state = yes } #North Sakhalin
 		537 = { retain_state = yes } #South Sakhalin
 		555 = { retain_state = yes } #Kuril Islands
@@ -20152,6 +20153,23 @@ country_event = { #Fate of Volga Germany
 	is_triggered_only = yes
 
 	immediate = {
+		hidden_effect = { 
+			if = { 
+				limit = { 
+					is_russian_tag = yes
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					251 = { #Samara
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:251.owner = { save_event_target_as = russia }
+			}
+		}
 	}
 
 	option = { #Release an independent Volga Germany
@@ -20171,22 +20189,6 @@ country_event = { #Fate of Volga Germany
 			limit = {
 				ROOT = {
 					has_monarchist_government = yes
-					original_tag = GER
-				}
-			}
-			VGE = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = VGE_Occupied_Monarchy_Kraut
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-					NOT = {
-						original_tag = GER
-					}
 				}
 			}
 			VGE = {
@@ -20207,44 +20209,32 @@ country_event = { #Fate of Volga Germany
 	}
 
 	option = { #Give it back to Russia
-		log = "[GetLogInfo]: event annex.1123 option annex.1123.b"
-		name = annex.1123.b
-		trigger = {
-			is_subject = no
-			RUS = {
-				exists = yes
-			}
-		}
-		ai_chance = {
-			base = 10
-		}
-
-		RUS = {
-			transfer_state = 401
-		}
-
-		recheck_annexations = yes
-	}
-
-	option = { #Integrate it
-		log = "[GetLogInfo]: event annex.1123 option annex.1123.c"
+		log = "[GetLogInfo]: event annex.1124 option annex.1123.b"
 		name = annex.1123.c
 		trigger = {
 			is_subject = no
-			OR = {
-				original_tag = GER
-				original_tag = PRS
-			}
+			has_event_target = russia
 		}
 		ai_chance = {
 			base = 10
+			modifier = {
+				factor = 0.1
+				event_target:russia = { is_subject = yes }
+			}
 		}
-
-		ROOT = {
-			add_state_core = 401
+		set_temp_variable = { tag_to_release = event_target:russia }
+		401 = {
+			transfer_state_and_notify = yes	
 		}
+	}
 
-		recheck_annexations = yes
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1124 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		401 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -20264,6 +20254,32 @@ country_event = { #Fate of Uralic States
 	is_triggered_only = yes
 
 	immediate = {
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = { is_uralic = no }
+					remove_core_of = IUR
+				}
+				else = {
+					add_core_of = IUR
+				}
+			}
+			if = { 
+				limit = { 
+					is_russian_tag = yes
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					251 = { #Samara
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:251.owner = { save_event_target_as = russia }
+			}
+		}
 	}
 
 	option = { #Release an independent Ural State
@@ -20294,8 +20310,6 @@ country_event = { #Fate of Uralic States
 				set_cosmetic_tag = IUR_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
 	option = { #Give it back to Russia
@@ -20303,32 +20317,40 @@ country_event = { #Fate of Uralic States
 		name = annex.1124.b
 		trigger = {
 			is_subject = no
-			RUS = {
-				exists = yes
-			}
+			has_event_target = russia
 		}
 		ai_chance = {
 			base = 10
+			modifier = {
+				factor = 0.1
+				event_target:russia = { is_subject = yes }
+			}
 		}
-
+		set_temp_variable = { tag_to_release = event_target:russia }
 		every_state = {
 			limit = {
-				is_core_of = IUR
+				is_uralic = yes
 			}
-			RUS = {
-				transfer_state = PREV
-			}
+			transfer_state_and_notify = yes	
 		}
+	}
 
-		recheck_annexations = yes
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1124 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		IUR = { add_claim_of_ROOT_on_valid_cores = yes }
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1124 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
 	}
+
+	after = { recheck_annexations = yes }
 }
 
 country_event = { #Fate of Chernomorsk
@@ -30402,6 +30424,123 @@ country_event = { #Fate of Spetsbergen
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1198 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of St. Petersburg
+	id = annex.1199
+	title = annexation_195
+	desc = annexation_195_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					is_russian_tag = yes
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		#Gatchina
+		if = {
+			limit = {
+				244 = { 
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				} # Gatchina
+			}
+			var:244.owner = { save_event_target_as = gatchina }
+		}
+	}
+
+	option = { #Puppet Saint Peters Burg
+		log = "[GetLogInfo]: event annex.1199 option annex.1199.a"
+		name = annex.1199.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = PET }
+		195 = { remove_claim_and_add_core_of_target = yes }
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			PET = {
+				set_cosmetic_tag = PET_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			PET = {
+				set_cosmetic_tag = PET_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Russia
+		log = "[GetLogInfo]: event annex.1199 option annex.1199.a"
+		name = annex.1199.a
+		trigger = {
+			has_event_target = gatchina
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:gatchina = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:gatchina }
+		195 = { transfer_if_owned = yes } #St. Petersburg
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1199 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		ai_chance = { base = 100 }
+		set_temp_variable = { tag_to_release = overlord }
+		195 = { transfer_if_owned = yes } #St. Petersburg
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1199 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		195 = { add_claim_of_ROOT = yes } #St. Petersburg
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1199 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
