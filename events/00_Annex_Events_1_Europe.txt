@@ -9,10 +9,1880 @@
 # Thanks KR ;) - Pax Team
 ###########################
 
-## the bottom table of context and other events need to be adjusted to Pax - Lexus
-## i left one event as example for the rest of the events, if you're not sure check out KR code
+# Table of Contents
+# We're going from West to East (mostly), North to South or most to least important if possible starting with British Isles, you'll get it
+#
+# Europe
+#	British Isles
+#		Britain
+#			England (UK as whole)
+#			Scotland
+#			Wales
+#			Ireland
+#			Ulster
+#			Isle of Man
+#	Northern Sea Islands
+#		Iceland
+#		Faroe Islands
+#		Jan Mayen
+#		Svalbard
+#		Doggerland
+#			Masuria
+#			Memel
+#			Upper Silesia
+#			Bavaria
+#		Poland
+#			Bialystok
+#		UBD
+#			Estonia
+#			Latvia
+#		Lithuania
+#			Vilnius
+#		Austria
+#			Austria proper
+#			Bohemia
+#			Galicia
+#				Bukovina
+#			Hungary
+#				Slovakia
+#				Transcarpathia
+#				Transylvania
+#				West Banat
+#				Vojvodina
+#				Burgenland
+#			Croatia
+#				Dalmatia
+#				Istria
+#			Triest
+#			Slovenia
+#			Trentino
+#		Switzerland
+#			Romandy
+#			Ticino
+#
+#	Western Europe
+#		France
+#			Brittany
+#			Pas-de-Calais
+#		Britain
+#			Scotland
+#			Wales
+#		Ireland
+#		Netherlands
+#		Belgium
+#			Wallonia
+#
+#	Northern Europe
+#		Denmark
+#			Iceland
+#			Greenland
+#		Norway
+#		Sweden
+#			Aland
+#		Finland
+#			Karelia
+#
+#	Eastern Europe
+#		Ukraine
+#			Brest
+#		White Ruthenia
+#			Eastern White Ruth.
+#		European Russia
+#			Dvinsk
+#			Siberia
+#
+#	Southeastern Europe
+#		Albania
+#		Montenegro
+#		Bosnia
+#		Kosovo
+#		Serbia
+#			Nis
+#			Macedonia
+#		Romania
+#		Bulgaria
+#		Constantinople
+#		Greece
+#			Thessaloniki
+#			Keraferia
+#			Northern Epirus
+#
+#	Southern Europe
+#		Spain
+#			Galicia
+#			Euskadi
+#			Catalonia
+#		Portugal
+#		Southern France
+#		Corsica
+#		Italy
+#			Aosta
+#			Piedmont
+#			Lombardy
+#			Venetia
+#			Emilia
+#			Tuscany
+#			Central Italy
+#			Rome
+#			Southern Italy
+#			Sardinia
+#		Malta
 
+add_namespace = annexation_events
 add_namespace = annex
+#######################
+##   BRITISH ISLES   ##
+#######################
+country_event = { #Fate of England
+	id = annex.1013
+	title = annexation_126
+	desc = annexation_126_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			ENG = { drop_cosmetic_tag = yes }
+			every_state = {
+				if = {
+					limit = { is_great_britain = no }
+					remove_core_of = ENG
+				}
+				else = {
+					add_core_of = ENG
+				}
+				remove_claim_by = ENG
+			}
+			1176 = { retain_state = yes } #Isle of Man
+		}
+	}
+
+	option = { #Puppet ENG
+		log = "[GetLogInfo]: event annex.1013 option annex.1013.a"
+		name = annex.1013.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_britain = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = ENG }
+		release_targeted_tag = yes
+		if = { 
+			limit = { has_custom_puppet_ENG = yes }
+			setup_custom_puppet_ENG = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ENG = {
+				set_cosmetic_tag = ENG_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ENG = {
+				set_cosmetic_tag = ENG_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Release England only
+		log = "[GetLogInfo]: event annex.1013 option annex.1013.b"
+		name = annex.1013.b
+		trigger = {
+			is_subject = no
+		}
+
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_britain = yes
+			}
+		}
+
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = {
+						is_england = no
+					} 
+					remove_core_of = ENG
+				}
+				else = {
+					add_core_of = ENG
+				}
+				remove_claim_by = ENG
+			}
+		}
+		set_temp_variable = { tag_to_release = ENG }
+		release_targeted_tag = yes
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ENG = {
+				set_cosmetic_tag = ENG_Occupied_Monarchy_Split
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ENG = {
+				set_cosmetic_tag = ENG_Occupied_Republic_Split
+			}
+		}
+	}
+
+	option = { #Split Up Great Britain
+		log = "[GetLogInfo]: event annex.1013 option annex.1013.c"
+		name = annex.1013.c
+		trigger = {
+			is_subject = no
+		}
+
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 3
+				annexations_AI_country_wants_to_dismantle_britain = yes
+			}
+		}
+
+		custom_effect_tooltip = annexations_country_to_be_divided_tt
+		set_global_flag = PB_ENG_Divided_via_Peace
+		ROOT = { set_country_flag = annexations_divided_britain }
+
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = {
+						is_england = no
+					} 
+					remove_core_of = ENG
+				}
+				remove_claim_by = ENG
+			}
+		}
+		set_temp_variable = { tag_to_release = ENG }
+		release_targeted_tag = yes
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ENG = {
+				set_cosmetic_tag = ENG_Occupied_Monarchy_Split
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ENG = {
+				set_cosmetic_tag = ENG_Occupied_Republic_Split
+			}
+		}
+	}
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1013 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		ENG = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.1013 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_core_of = ENG }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1013 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+country_event = { #Fate of Scotland
+	id = annex.1015
+	title = annexation_121
+	desc = annexation_121_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			SCO = {
+				drop_cosmetic_tag = yes
+				clear_cores_of_tag_if_possible = yes
+			}
+			if = {
+				limit = {
+					any_state_of = {
+						target = { 131 1199 } #Northumberland, Cumberland
+						is_claim_or_core_of_ROOT = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					131 = { #Northumberland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:131.owner = { save_event_target_as = england add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			else_if = {
+				limit = {
+					1199 = { #Cumberland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:1199.owner = { save_event_target_as = england add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Puppet SCO
+		log = "[GetLogInfo]: event annex.1015 option annex.1015.a"
+		name = annex.1015.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = england
+				is_ally_with = event_target:england
+			}
+		}
+
+		set_temp_variable = { tag_to_release = SCO }
+		every_state = {
+		limit = { is_scotland = yes } 
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			SCO = {
+				set_cosmetic_tag = SCO_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			SCO = {
+				drop_cosmetic_tag = yes
+			}
+		}
+	}
+
+	option = { #Give to England
+		log = "[GetLogInfo]: event annex.1015 option annex.europe.give_to_britain"
+		name = annex.europe.give_to_britain
+		trigger = {
+			is_subject = no
+			NOT = { has_country_flag = annexations_divided_britain }
+		}
+
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { is_ally_with = event_target:england }
+					event_target:england = {
+						is_subject = yes
+						NOT = { is_subject_of = ROOT }
+					}
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:england = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:england }
+		every_owned_state = {
+			limit = { is_scotland = yes }
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes
+		}
+		if = {
+			limit = { ENG = { OR = { has_cosmetic_tag = ENG_Occupied_Monarchy_Split has_cosmetic_tag = ENG_Occupied_Monarchy_with_Wales } } }
+			ENG = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ENG_Occupied_Monarchy
+			}
+		}
+		else_if = {
+			limit = { ENG = { has_cosmetic_tag = ENG_Occupied_Republic_Split } }
+			ENG = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ENG_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1015 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = { is_scotland = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1015 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_scotland = yes }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1015 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+country_event = { #Fate of Wales
+	id = annex.1014
+	title = annexation_122
+	desc = annexation_122_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			WLS = { clear_cores_of_tag_if_possible = yes }
+			if = {
+				limit = { 128 = { is_claim_or_core_of_ROOT = yes } } #West Midlands
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					128 = { #West Midlands
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:128.owner = { save_event_target_as = england add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Puppet WLS
+		log = "[GetLogInfo]: event annex.1014 option annex.1014.a"
+		name = annex.1014.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = england
+				is_ally_with = event_target:england
+			}
+		}
+
+		set_temp_variable = { tag_to_release = WLS }
+		every_state = {
+		limit = { is_wales = yes } 
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			WLS = {
+				set_cosmetic_tag = WLS_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			WLS = {
+				drop_cosmetic_tag = yes
+			}
+		}
+	}
+
+	option = { #Give to England
+		log = "[GetLogInfo]: event annex.1014 option annex.europe.give_to_britain"
+		name = annex.europe.give_to_britain
+		trigger = {
+			is_subject = no
+			NOT = { has_country_flag = annexations_divided_britain }
+		}
+
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { is_ally_with = event_target:england }
+					event_target:england = {
+						is_subject = yes
+						NOT = { is_subject_of = ROOT }
+					}
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:england = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:england }
+		every_owned_state = {
+			limit = { is_wales = yes }
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes
+		}
+
+		if = {
+			limit = { ENG = { has_cosmetic_tag = ENG_Occupied_Monarchy } }
+			ENG = { set_cosmetic_tag = ENG_Occupied_Monarchy_with_Wales }
+		}
+	}
+
+	option = { #give to overlord
+		log = "[GetLogInfo]: event annex.1014 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = { is_wales = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1014 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_owned_state = {
+			limit = { is_wales = yes }
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1014 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+country_event = { #Fate of Ireland
+	id = annex.1138
+	title = annexation_113
+	desc = annexation_113_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			IRE = { clear_cores_of_tag_if_possible = yes }
+			if = {
+				limit = {
+					OR = {
+						original_tag = ENG
+						113 = { is_claim_or_core_of_ROOT = yes } #Leinster
+						owns_state = 122 #Wales
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			119 = { #Ulster
+				remove_claim_by = IRE
+				add_core_of = IRE
+				if = {
+					limit = { NOT = { country_exists = ULS } }
+					remove_claim_by = ULS
+					remove_core_of = ULS
+				}
+				retain_state = yes
+			}
+			if = {
+				limit = {
+					126 = { #Greater London
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							owns_state = 122 #Wales
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:126.owner = { save_event_target_as = britain add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Puppet IRE (unified)
+		log = "[GetLogInfo]: event annex.1138 option annex.1138.a"
+		name = annex.1138.a
+		trigger = {
+			NOT = { country_exists = ULS }
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = britain
+				is_ally_with = event_target:britain
+			}
+		}
+
+		119 = { #Ulster
+			if = {
+				limit = { is_claimed_by = ROOT } #Ulster
+				remove_claim_by = ROOT
+			}
+			if = {
+				limit = { is_core_of = ROOT }
+				remove_core_of = ROOT
+			}
+			clear_retain_state = yes
+		}
+
+		set_temp_variable = { tag_to_release = IRE }
+		every_state = {
+		limit = { is_ireland = yes } 
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes NOT = { original_tag = ENG } } }
+			IRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRE_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes original_tag = ENG } }
+			IRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRE_Occupied_Monarchy_Brits
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			IRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRE_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Puppet IRE (without ulster)
+		log = "[GetLogInfo]: event annex.1138 option annex.1138.b"
+		name = annex.1138.b
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = britain
+				is_ally_with = event_target:britain
+			}
+		}
+
+		set_temp_variable = { tag_to_release = IRE }
+		every_state = {
+		limit = { is_ireland = yes } 
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes NOT = { original_tag = ENG } } }
+			IRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRE_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes original_tag = ENG } }
+			IRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRE_Occupied_Monarchy_Brits
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			IRE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = IRE_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Britain
+		log = "[GetLogInfo]: event annex.1014 option annex.europe.give_to_britain"
+		name = annex.europe.give_to_britain
+		trigger = {
+			has_event_target = britain
+			is_subject = no
+			NOT = { has_country_flag = annexations_divided_britain }
+		}
+
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					NOT = { is_ally_with = event_target:britain }
+					event_target:britain = {
+						is_subject = yes
+						NOT = { is_subject_of = ROOT }
+					}
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:britain = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:britain }
+		every_owned_state = {
+			limit = { is_ireland = yes }
+			transfer_if_owned = yes
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1138 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		hidden_effect = {
+			113 = { add_core_of = IRE } #Leinster
+			134 = { add_core_of = IRE } #Connaught
+			135 = { add_core_of = IRE } #Munster
+		}
+		IRE = { set_transfer_target_cores = yes }
+		ULS = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1138 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		hidden_effect = {
+			113 = { add_core_of = IRE } #Leinster
+			134 = { add_core_of = IRE } #Connaught
+			135 = { add_core_of = IRE } #Munster
+		}
+		IRE = { set_transfer_target_cores = yes }
+		ULS = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Integrate it
+		log = "[GetLogInfo]: event annex.1138 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 30 }
+
+		IRE = { add_claim_of_ROOT_on_valid_cores = yes }
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1138 annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+country_event = { #Fate of Ulster
+	id = annex.1139
+	title = annexation_119
+	desc = annexation_119_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = IRE
+					AND = {
+						annexations_britain_can_annex_overseas = yes
+						owns_state = 133 #Lanark
+					}
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = { IRE = { ROOT_can_grant_land_ignore_ideology = yes } }
+			IRE = { save_event_target_as = ireland add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+		if = {
+			limit = {
+				126 = { #Greater London
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						NOT = { tag = event_target:ireland }
+						owns_state = 133 #Lanark
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:126.owner = { save_event_target_as = britain add_to_array = { ROOT.potential_grant_targets = THIS } }
+		}
+	}
+
+	option = { #Puppet ULS
+		log = "[GetLogInfo]: event annex.1139 option annex.1139.a"
+		name = annex.1139.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = britain
+				OR = {
+					is_major = no
+					is_ally_with = event_target:britain
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = ireland
+				OR = {
+					is_major = no
+					is_ally_with = event_target:ireland
+				}
+			}
+		}
+		set_temp_variable = { tag_to_release = ULS }
+		119 = { remove_claim_and_add_core_of_target = yes } #Ulster
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes NOT = { original_tag = ENG } } }
+			ULS = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ULS_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = { has_monarchist_government = yes original_tag = ENG } }
+			ULS = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ULS_Occupied_Monarchy_Brits
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ULS = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ULS_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Ireland
+		log = "[GetLogInfo]: event annex.1139 option annex.europe.give_to_ireland"
+		name = annex.europe.give_to_ireland
+		trigger = {
+			has_event_target = ireland
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ireland }
+				is_ally_with = event_target:britain
+				#annexations_AI_will_consider_returning_colonies = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ireland = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:ireland }
+		119 = { transfer_state_and_notify = yes } #Ulster
+	}
+
+	option = { #Give to Britain
+		log = "[GetLogInfo]: event annex.1139 option annex.europe.give_to_britain"
+		name = annex.europe.give_to_britain
+		trigger = {
+			has_event_target = britain
+			NOT = { has_country_flag = annexations_divided_britain }
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				#annexations_AI_will_consider_returning_colonies = no
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:britain }
+				OR = {
+					is_major = yes
+					is_ally_with = event_target:ireland
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:britain = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:britain }
+		119 = { transfer_state_and_notify = yes } #Ulster
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1139 option annex.europe.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		119 = { transfer_state_and_notify = yes } #Ulster
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1139 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		119 = { add_claim_of_ROOT = yes } #Ulster
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1139 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+country_event = { #Fate of Isle of Man
+	id = annex.1152
+	title = annexation_1176
+	desc = annexation_1176_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					any_state_of = {
+						target = { 132 133 1201 113 119 } #Lancashire, Lanark, Northern Wales, Leinster, Ulster
+						is_claim_or_core_of_ROOT = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					132 = { #Leinster
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:132.owner = { save_event_target_as = england add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					133 = { #Lanark
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:england }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:133.owner = { save_event_target_as = scotland add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					1201 = { #Northern Wales
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:england }
+							NOT = { tag = event_target:scotland }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1201.owner = { save_event_target_as = wales add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					113 = { #Leinster
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:england }
+							NOT = { tag = event_target:scotland }
+							NOT = { tag = event_target:wales }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:113.owner = { save_event_target_as = ireland add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					119 = { #Ulster
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:england }
+							NOT = { tag = event_target:scotland }
+							NOT = { tag = event_target:wales }
+							NOT = { tag = event_target:ireland }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:119.owner = { save_event_target_as = ulster add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Give to owner of Lancashire
+		log = "[GetLogInfo]: event annex.1152 option annex.europe.give_to_britain"
+		name = annex.europe.give_to_britain
+		trigger = {
+			has_event_target = england
+			NOT = { has_country_flag = annexations_divided_britain }
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:england }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:england = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:england }
+		1176 = { transfer_state_and_notify = yes } #Isle of Man
+	}
+	option = { #Give to owner of Lanark
+		log = "[GetLogInfo]: event annex.1152 option annex.1152.a"
+		name = annex.1152.a
+		trigger = {
+			has_event_target = scotland
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:scotland }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:scotland = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:scotland }
+		1176 = { transfer_state_and_notify = yes } #Isle of Man
+	}
+	option = { #Give to owner of Northern Wales
+		log = "[GetLogInfo]: event annex.1152 option annex.1152.b"
+		name = annex.1152.b
+		trigger = {
+			has_event_target = wales
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:wales }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:wales = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:wales }
+		1176 = { transfer_state_and_notify = yes } #Isle of Man
+	}
+	option = { #Give to owner of Leinster
+		log = "[GetLogInfo]: event annex.1152 option annex.1152.c"
+		name = annex.1152.c
+		trigger = {
+			has_event_target = ireland
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ireland }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ireland = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:ireland }
+		1176 = { transfer_state_and_notify = yes } #Isle of Man
+	}
+	option = { #Give to owner of Ulster
+		log = "[GetLogInfo]: event annex.1152 option annex.1152.c"
+		name = annex.1152.d
+		trigger = {
+			has_event_target = ulster
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ulster }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ulster = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:ulster }
+		1176 = { transfer_state_and_notify = yes } #Isle of Man
+	}
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1152 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1176 = { transfer_state_and_notify = yes } #Isle of Man
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1152 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1176 = { add_claim_of_ROOT = yes } #Isle of Man
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1152 option name = annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+#############################
+##   NORTHERN SEA ISLANDS  ##
+#############################
+country_event = { #Fate of Iceland
+	id = annex.1136
+	title = annexation_100
+	desc = annexation_100_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						any_state_of = {
+							target = { 37 110 } #Zealand, Ostlandet
+							is_claim_or_core_of_ROOT = yes
+						}
+						AND = {
+							141 = { is_claim_or_core_of_ROOT = yes } #Svealand
+							OR = {
+								owns_state = 144 #Finnmark
+								owns_state = 1011 #Nordland
+							}
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					37 = { #Zealand
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:37.owner = { save_event_target_as = denmark add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					110 = { #Ostlandet
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:denmark }
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:110.owner = { save_event_target_as = norway add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					141 = { #Svealand
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:denmark }
+							NOT = { tag = event_target:norway }
+							ROOT_can_grant_land = yes
+							is_subject = no
+							OR = {
+								144 = { annexations_required_state_is_owned_by_either_side = yes } #Finnmark
+								1011 = { annexations_required_state_is_owned_by_either_side = yes } #Nordland
+							}
+						}
+					}
+				}
+				var:141.owner = { save_event_target_as = sweden add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Puppet ICE
+		log = "[GetLogInfo]: event annex.1136 option annex.1136.a"
+		name = annex.1136.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = ICE }
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ICE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ICE_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ICE = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = ICE_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Give to Norway
+		log = "[GetLogInfo]: event annex.1136 option annex.europe.give_to_norway"
+		name = annex.europe.give_to_norway
+		trigger = {
+			has_event_target = norway
+	    }
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:norway }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:norway = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:norway }
+		100 = {  #Iceland
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+
+	option = { #Give to Denmark
+		log = "[GetLogInfo]: event annex.1136 option annex.europe.give_to_denmark"
+		name = annex.europe.give_to_denmark
+		trigger = {
+			has_event_target = denmark
+	    }
+
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:denmark }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:denmark = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:denmark }
+		100 = {  #Iceland
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+
+	option = { #Give to Sweden
+		log = "[GetLogInfo]: event annex.1136 option annex.europe.give_to_sweden"
+		name = annex.europe.give_to_sweden
+		trigger = {
+			has_event_target = sweden
+	    }
+
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:sweden }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sweden = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:sweden }
+		100 = {  #Iceland
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1136 option annex.europe.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		100 = { transfer_state_and_notify = yes } #Iceland
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1136 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		100 = { add_claim_of_ROOT = yes } #Iceland
+	}
+
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1136 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+country_event = { #Fate of Faroe Islands
+	id = annex.1153
+	title = annexation_337
+	desc = annexation_337_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+		immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						any_state_of = {
+							target = { 37 110 100 120 } #Zealand, Ostlandet, Iceland, Scottish Highlands
+							is_claim_or_core_of_ROOT = yes
+						}
+						AND = {
+							141 = { is_claim_or_core_of_ROOT = yes } #Svealand
+							OR = {
+								owns_state = 144 #Finnmark
+								owns_state = 1011 #Nordland
+							}
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					37 = { #Zealand
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							is_subject = no
+						}
+					}
+				}
+				var:37.owner = { save_event_target_as = denmark add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					110 = { #Ostlandet
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:denmark }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:110.owner = { save_event_target_as = norway add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					141 = { #Svealand
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:denmark }
+							NOT = { tag = event_target:norway }
+							ROOT_can_grant_land = yes
+							is_subject = no
+							OR = {
+								144 = { annexations_required_state_is_owned_by_either_side = yes } #Finnmark
+								1011 = { annexations_required_state_is_owned_by_either_side = yes } #Nordland
+							}
+						}
+					}
+				}
+				var:141.owner = { save_event_target_as = sweden add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					100 = { #Iceland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:denmark }
+							NOT = { tag = event_target:norway }
+							NOT = { tag = event_target:sweden }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:100.owner = { save_event_target_as = iceland add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					120 = { #Scottish Highlands
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:denmark }
+							NOT = { tag = event_target:norway }
+							NOT = { tag = event_target:sweden }
+							NOT = { tag = event_target:iceland }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:120.owner = { save_event_target_as = scotland add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Give to Denmark
+		log = "[GetLogInfo]: event annex.1153 option annex.europe.give_to_denmark"
+		name = annex.europe.give_to_denmark
+		trigger = {
+			has_event_target = denmark
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:denmark }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:denmark = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:denmark }
+		337 = {  #Faroe Islands
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+
+	option = { #Give to Norway
+		log = "[GetLogInfo]: event annex.1153 option annex.europe.give_to_norway"
+		name = annex.europe.give_to_norway
+		trigger = {
+			has_event_target = norway
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:norway }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:norway = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:norway }
+		337 = {  #Faroe Islands
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+	option = { #Give to Sweden
+		log = "[GetLogInfo]: event annex.1153 option annex.europe.give_to_sweden"
+		name = annex.europe.give_to_sweden
+		trigger = {
+			has_event_target = sweden
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:sweden }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sweden = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:sweden }
+		337 = {  #Faroe Islands
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+	option = { #Give to Iceland
+		log = "[GetLogInfo]: event annex.1153 option annex.1153.a"
+		name = annex.1153.a
+		trigger = {
+			has_event_target = iceland
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:iceland }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:iceland = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:iceland }
+		337 = { transfer_state_and_notify = yes } #Faroe Islands
+	}
+	option = { #Give to owner of Scottish Highlands
+		log = "[GetLogInfo]: event annex.1153 option annex.1153.b"
+		name = annex.1153.b
+		trigger = {
+			has_event_target = scotland
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:scotland }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:scotland = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:scotland }
+		337 = {  #Faroe Islands
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1153 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		337 = { transfer_state_and_notify = yes } #Faroe Islands
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1153 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		337 = {  #Faroe Islands
+			transfer_state_and_notify = yes 
+			remove_claim_and_add_core_of_target = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1153 option name = annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
 
 #####################################
 ##   C E N T R A L   E U R O P E   ##
@@ -1693,425 +3563,7 @@ country_event = { #Fate of Neuchatel
 	}
 }
 
-country_event = { #Fate of Britain
-	id = annex.1013
-	title = annexation_126
-	desc = annexation_126_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
 
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			every_state = {
-				if = {
-					limit = { is_great_britain = yes }
-					add_core_of = ENG
-				}
-				else = {
-					remove_core_of = ENG
-				}
-				remove_claim_by = ENG
-			}
-		}
-	}
-
-	option = { #Puppet Britain
-		log = "[GetLogInfo]: event annex.1013 option annex.1013.a"
-		name = annex.1013.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 60
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				annexations_AI_country_wants_to_dismantle_britain = yes
-			}
-		}
-
-		set_temp_variable = { tag_to_release = ENG }
-		release_targeted_tag = yes
-		if = { 
-			limit = { has_custom_puppet_ENG = yes }
-			setup_custom_puppet_ENG = yes
-			custom_effect_tooltip = has_custom_puppet
-		}
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			ENG = {
-				set_cosmetic_tag = ENG_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			ENG = {
-				set_cosmetic_tag = ENG_Occupied_Republic
-			}
-		}
-	}
-
-	option = { #Split Up Great Britain
-		log = "[GetLogInfo]: event annex.1013 option annex.1013.b"
-		name = annex.1013.b
-		trigger = {
-			is_subject = no
-		}
-
-		ai_chance = {
-			base = 60
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 3
-				annexations_AI_country_wants_to_dismantle_britain = yes
-			}
-		}
-
-		custom_effect_tooltip = annexations_country_to_be_divided_tt
-
-		set_global_flag = PB_ENG_Divided_via_Peace
-
-
-		set_temp_variable = { tag_to_release = ENG }
-
-		hidden_effect = {
-			every_state = {
-				if = {
-					limit = {
-						is_england = no
-					} 
-					remove_core_of = ENG
-				}
-				remove_claim_by = ENG
-			}
-		}
-
-		if = {
-			limit = { country_exists = ENG }
-			custom_effect_tooltip = ENG_puppet_tooltip
-		}
-		else = {
-			set_temp_variable = { tag_to_release = ENG }
-			release_targeted_tag = yes
-		}
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			ENG = {
-				set_cosmetic_tag = ENG_Occupied_Monarchy_Split
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			ENG = {
-				set_cosmetic_tag = ENG_Occupied_Republic_Split
-			}
-		}
-	}
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1013 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		ENG = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-
-	option = { #Annex
-		log = "[GetLogInfo]: event annex.1013 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		every_owned_state = {
-			limit = { is_core_of = ENG }
-			add_claim_of_ROOT = yes
-		}
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1013 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Wales
-	id = annex.1014
-	title = annexation_122
-	desc = annexation_122_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		if = {
-			limit = {
-				ENG = {
-					ROOT_can_grant_land = yes
-				}
-			}
-			ENG = { save_event_target_as = england }
-		}
-	}
-
-	option = { #Puppet Wales
-		log = "[GetLogInfo]: event annex.1014 option annex.1014.a"
-		name = annex.1014.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		set_temp_variable = { tag_to_release = WLS }
-		every_owned_state = {
-			limit = { is_wales = yes }
-			remove_claim_and_add_core_of_target = yes
-		}
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			WLS = {
-				set_cosmetic_tag = WLS_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			WLS = {
-				drop_cosmetic_tag = yes
-			}
-		}
-	}
-
-	option = { #Return Wales to Britain
-		log = "[GetLogInfo]: event annex.1014 option annex.europe.give_to_britain"
-		name = annex.europe.give_to_britain
-		trigger = {
-			is_subject = no
-			NOT = {
-				has_global_flag = PB_ENG_Divided_via_Peace
-			}
-		}
-
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:england = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:england }
-		every_owned_state = {
-			limit = { is_wales = yes }
-			transfer_if_owned = yes
-		}
-
-		if = {
-			limit = {
-				ENG = {
-					has_cosmetic_tag = ENG_Occupied_Monarchy
-				}
-			}
-			ENG = {
-				set_cosmetic_tag = ENG_Occupied_Monarchy_with_Wales
-			}
-		}
-	}
-
-	option = { #give to overlord
-		log = "[GetLogInfo]: event annex.1014 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = { is_wales = yes }
-			transfer_if_owned = yes
-		}
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1014 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		every_owned_state = {
-			limit = { is_wales = yes }
-			add_claim_of_ROOT = yes
-		}
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1014 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Scotland
-	id = annex.1015
-	title = annexation_121
-	desc = annexation_121_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		every_state = {
-			if = {
-				limit = { is_scotland = no }
-				remove_core_of = SCO
-			}
-			else = {
-				add_core_of = SCO
-			}
-		}
-		if = {
-			limit = {
-				ENG = {
-					ROOT_can_grant_land = yes
-				}
-			}
-			ENG = { save_event_target_as = england }
-		}
-	}
-
-	option = { #Puppet Scotland
-		log = "[GetLogInfo]: event annex.1015 option annex.1015.a"
-		name = annex.1015.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		set_temp_variable = { tag_to_release = SCO }
-		every_owned_state = {
-			limit = {
-				is_scotland = yes
-			 	state = 1198  #Shetland & Orkney 
-			}
-			remove_claim_and_add_core_of_target = yes
-		}
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			SCO = {
-				set_cosmetic_tag = SCO_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			SCO = {
-				drop_cosmetic_tag = yes
-			}
-		}
-	}
-
-	option = { #Return Scotland to Great Britain
-		log = "[GetLogInfo]: event annex.1015 option annex.europe.give_to_britain"
-		name = annex.europe.give_to_britain
-		trigger = {
-			is_subject = no
-			NOT = {
-				has_global_flag = PB_ENG_Divided_via_Peace
-			}
-		}
-
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:england = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:england }
-		every_owned_state = {
-			limit = { is_scotland = yes }
-			transfer_if_owned = yes
-		}
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1015 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		every_owned_state = {
-			limit = { is_scotland = yes }
-			transfer_if_owned = yes
-		}
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1015 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		every_owned_state = {
-			limit = { is_scotland = yes }
-			add_claim_of_ROOT = yes
-		}
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1015 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
 
 country_event = { #Fate of Portugal
 	id = annex.1016
@@ -14566,9 +16018,22 @@ country_event = { #Fate of Thessaloniniki
 			has_event_target = south_macedonia
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:south_macedonia }
+				OR = {
+					is_ally_with = event_target:pirin
+					is_ally_with = event_target:west_thrace
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:south_macedonia = { is_subject = yes }
 			}
 		}
 
@@ -14584,9 +16049,22 @@ country_event = { #Fate of Thessaloniniki
 			has_event_target = pirin
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:pirin }
+				OR = {
+					is_ally_with = event_target:south_macedonia
+					is_ally_with = event_target:west_thrace
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:pirin = { is_subject = yes }
 			}
 		}
 
@@ -14602,9 +16080,22 @@ country_event = { #Fate of Thessaloniniki
 			has_event_target = west_thrace
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:west_thrace }
+				OR = {
+					is_ally_with = event_target:south_macedonia
+					is_ally_with = event_target:pirin
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:west_thrace = { is_subject = yes }
 			}
 		}
 
@@ -14708,9 +16199,22 @@ country_event = { #Fate of West Thrace
 			has_event_target = east_thrace
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:east_thrace }
+				OR = {
+					is_ally_with = event_target:plovdiv
+					is_ally_with = event_target:thessaloniniki
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_thrace = { is_subject = yes }
 			}
 		}
 
@@ -14726,9 +16230,22 @@ country_event = { #Fate of West Thrace
 			has_event_target = plovdiv
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:plovdiv }
+				OR = {
+					is_ally_with = event_target:east_thrace
+					is_ally_with = event_target:thessaloniniki
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:plovdiv = { is_subject = yes }
 			}
 		}
 
@@ -14744,9 +16261,22 @@ country_event = { #Fate of West Thrace
 			has_event_target = thessaloniniki
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:thessaloniniki }
+				OR = {
+					is_ally_with = event_target:east_thrace
+					is_ally_with = event_target:plovdiv
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:thessaloniniki = { is_subject = yes }
 			}
 		}
 
@@ -14852,9 +16382,22 @@ country_event = { #Fate of East Thrace
 			has_event_target = east_thrace
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:west_thrace }
+				OR = {
+					is_ally_with = event_target:burgas
+					is_ally_with = event_target:constantinople
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:west_thrace = { is_subject = yes }
 			}
 		}
 
@@ -14870,9 +16413,22 @@ country_event = { #Fate of East Thrace
 			has_event_target = burgas
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:burgas }
+				OR = {
+					is_ally_with = event_target:west_thrace
+					is_ally_with = event_target:constantinople
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:burgas = { is_subject = yes }
 			}
 		}
 
@@ -14888,9 +16444,22 @@ country_event = { #Fate of East Thrace
 			has_event_target = constantinople
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:constantinople }
+				OR = {
+					is_ally_with = event_target:west_thrace
+					is_ally_with = event_target:burgas
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:constantinople = { is_subject = yes }
 			}
 		}
 
@@ -15162,14 +16731,22 @@ country_event = { #Fate of Constantinople
 			has_event_target = east_thrace
 		}
 		ai_chance = {
-			base = 50
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 10
-				original_tag = ENG
+				factor = 0
+				NOT = { is_ally_with = event_target:east_thrace }
+				OR = {
+					is_ally_with = event_target:osman
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_thrace = { is_subject = yes }
 			}
 		}
 
@@ -15185,18 +16762,22 @@ country_event = { #Fate of Constantinople
 			has_event_target = osman
 		}
 		ai_chance = {
-			base = 50
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 70
-				original_tag = ENG
+				factor = 0
+				NOT = { is_ally_with = event_target:osman }
+				OR = {
+					is_ally_with = event_target:east_thrace
+					is_ally_with = event_target:attica
+				}
 			}
 			modifier = {
-				factor = 0
-				original_tag = RUS
+				factor = 0.1
+				event_target:osman = { is_subject = yes }
 			}
 		}
 
@@ -15212,18 +16793,22 @@ country_event = { #Fate of Constantinople
 			has_event_target = attica
 		}
 		ai_chance = {
-			base = 50
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 80
-				original_tag = RUS
+				factor = 0
+				NOT = { is_ally_with = event_target:attica }
+				OR = {
+					is_ally_with = event_target:east_thrace
+					is_ally_with = event_target:osman
+				}
 			}
 			modifier = {
-				factor = 10
-				original_tag = ENG
+				factor = 0.1
+				event_target:attica = { is_subject = yes }
 			}
 		}
 
@@ -15244,6 +16829,17 @@ country_event = { #Fate of Constantinople
 		}
 		ai_chance = {
 			base = 90
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 40
+				OR = {
+					is_ally_with = event_target:east_thrace
+					is_ally_with = event_target:osman
+				}
+			}
 		}
 
 		set_temp_variable = { tag_to_release = BYZ }
@@ -15278,6 +16874,7 @@ country_event = { #Fate of Constantinople
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.1100 option annex.integration"
 		name = annex.integration
+		ai_chance = { base = 100 }
 		trigger = {
 			OR = {
 				annexations_can_annex = yes
@@ -16398,6 +17995,25 @@ country_event = { #Fate of Cieszyn
 			is_subject = no
 			has_event_target = moravia
 		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:moravia }
+				OR = {
+					is_ally_with = event_target:galicia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:moravia = { is_subject = yes }
+			}
+		}
+		
 		set_temp_variable = { tag_to_release = event_target:moravia }
 		762 = { transfer_state_and_notify = yes } #Katowice
 	}
@@ -16409,6 +18025,25 @@ country_event = { #Fate of Cieszyn
 			is_subject = no
 			has_event_target = galicia
 		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:galicia }
+				OR = {
+					is_ally_with = event_target:moravia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:galicia = { is_subject = yes }
+			}
+		}
+		
 		set_temp_variable = { tag_to_release = event_target:galicia }
 		762 = { transfer_state_and_notify = yes } #Katowice
 	}
@@ -16542,7 +18177,7 @@ country_event = { #Fate of Poland
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = { 
 			limit = { 
-				is_poland =yes
+				is_poland = yes
 				is_valid_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -16741,14 +18376,24 @@ country_event = { #Fate of Wielpolska
 			has_event_target = prussia
 		}
 		ai_chance = {
-			base = 10
+			base = 60
 			modifier = {
-				factor = 10
-				ROOT = {
-					original_tag = ENG
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:prussia }
+				OR = {
+					is_ally_with = event_target:poland
 				}
 			}
+			modifier = {
+				factor = 0.1
+				event_target:prussia = { is_subject = yes }
+			}
 		}
+		
 		set_temp_variable = { tag_to_release = event_target:prussia }
 		86 = { transfer_state_and_notify = yes } #Wielpolska
 		recheck_annexations = yes
@@ -16762,12 +18407,21 @@ country_event = { #Fate of Wielpolska
 			has_event_target = poland
 		}
 		ai_chance = {
-			base = 10
+			base = 60
 			modifier = {
-				factor = 10
-				ROOT = {
-					original_tag = ENG
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:poland }
+				OR = {
+					is_ally_with = event_target:prussia
 				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:poland = { is_subject = yes }
 			}
 		}
 
@@ -17667,7 +19321,7 @@ country_event = { #Fate of Russia
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = { 
 			limit = { 
-				is_russia =yes
+				is_russia = yes
 				is_valid_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -17680,9 +19334,9 @@ country_event = { #Fate of Russia
 		trigger = {
 			annexations_can_annex = yes
 		}
-		every_state = { 
+		every_owned_state = {
 			limit = { 
-				is_russia =yes
+				is_russia = yes
 			}
 			add_claim_of_ROOT = yes
 		}
@@ -19562,172 +21216,7 @@ country_event = { #Fate of Doggerland
 	}
 }
 
-country_event = { #Fate of Iceland
-	id = annex.1136
-	title = annexation_iceland
-	desc = annexation_iceland_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
 
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			if = {
-				limit = {
-					OR = {
-						original_tag = SWE
-						original_tag = DEN
-						original_tag = NOR
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			if = {
-				limit = {
-					37 = { #Zealand
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-							is_subject = no
-						}
-					}
-				}
-				var:37.owner = { save_event_target_as = denmark }
-			}
-			if = {
-				limit = {
-					110 = { #Ostlandet
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							NOT = { tag = event_target:denmark }
-							ROOT_can_grant_land = yes
-							is_subject = no
-						}
-					}
-				}
-				var:110.owner = { save_event_target_as = norway }
-			}
-		}
-	}
-
-	option = { #Release Iceland
-		log = "[GetLogInfo]: event annex.1136 option annex.1136.a"
-		name = annex.1136.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		set_temp_variable = { tag_to_release = ICE }
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			ICE = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = ICE_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			ICE = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = ICE_Occupied_Republic
-			}
-		}
-	}
-
-	option = { #Return to Norway
-		log = "[GetLogInfo]: event annex.1136 option annex.1136.b"
-		name = annex.1136.b
-		trigger = {
-			has_event_target = norway
-	    }
-		ai_chance = {
-			base = 70
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:norway }
-				is_ally_with = event_target:denmark
-			}
-			modifier = {
-				factor = 0.1
-				event_target:norway = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:norway }
-		100 = { transfer_state_and_notify = yes } #Iceland
-	}
-
-	option = { #Give to Denmark
-		log = "[GetLogInfo]: event annex.1136 option annex.1136.c"
-		name = annex.1136.c
-		trigger = {
-			has_event_target = denmark
-	    }
-
-		ai_chance = {
-			base = 70
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:denmark }
-				is_ally_with = event_target:norway
-			}
-			modifier = {
-				factor = 0.1
-				event_target:denmark = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:denmark }
-		100 = { transfer_state_and_notify = yes } #Iceland
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1136 option annex.europe.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		100 = { transfer_state_and_notify = yes } #Iceland
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1136 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		100 = { add_claim_of_ROOT = yes } #Iceland
-	}
-
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1136 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
 
 country_event = { #Fate of Norway
 	id = annex.1137
@@ -19827,316 +21316,8 @@ country_event = { #Fate of Norway
 	}
 }
 
-country_event = { #Fate of Ireland
-	id = annex.1138
-	title = annexation_113
-	desc = annexation_113_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
 
-	is_triggered_only = yes
 
-	immediate = {
-		hidden_effect = {
-			every_state = {
-				remove_core_of = IRE
-				remove_claim_by = IRE
-			}
-			if = {
-				limit = {
-					OR = {
-						original_tag = ENG
-						original_tag = ULS
-						113 = { is_claim_or_core_of_ROOT = yes } #Leinster
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			119 = { #Ulster
-				remove_claim_by = IRE
-				add_core_of = IRE
-				if = {
-					limit = { NOT = { country_exists = ULS } }
-					remove_claim_by = ULS
-					remove_core_of = ULS
-				}
-				retain_state = yes
-			}
-		}
-	}
-
-	option = { #Puppet Ireland
-		log = "[GetLogInfo]: event annex.1138 option annex.1138.a"
-		name = annex.1138.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-		}
-
-		set_temp_variable = { tag_to_release = IRE }
-		hidden_effect = {
-			113 = { add_core_of = IRE } #Leinster
-			134 = { add_core_of = IRE } #Connaught
-			135 = { add_core_of = IRE } #Munster
-		}
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes NOT = { original_tag = ENG } } }
-			IRE = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = IRE_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes original_tag = ENG } }
-			IRE = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = IRE_Occupied_Monarchy_Brits
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			IRE = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = IRE_Occupied_Republic
-			}
-		}
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1138 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		hidden_effect = {
-			113 = { add_core_of = IRE } #Leinster
-			134 = { add_core_of = IRE } #Connaught
-			135 = { add_core_of = IRE } #Munster
-		}
-		IRE = { set_transfer_target_cores = yes }
-		ULS = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-
-	option = { #Integrate it
-		log = "[GetLogInfo]: event annex.1138 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		ai_chance = { base = 30 }
-
-		IRE = { add_claim_of_ROOT_on_valid_cores = yes }
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1138 annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-country_event = { #Fate of Ulster
-	id = annex.1139
-	title = annexation_119
-	desc = annexation_119_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		if = {
-			limit = {
-				OR = {
-					original_tag = IRE
-					AND = {
-						annexations_britain_can_annex_overseas = yes
-						owns_state = 133 #Lanark
-					}
-				}
-			}
-			save_event_target_as = can_annex
-		}
-		if = {
-			limit = { IRE = { ROOT_can_grant_land_ignore_ideology = yes } }
-			IRE = { save_event_target_as = ireland }
-		}
-		if = {
-			limit = {
-				126 = { #London
-					annexations_state_owner_is_valid_grant_target = yes
-					owner = {
-						NOT = { tag = event_target:ireland }
-						owns_state = 133 #Lanark
-						ROOT_can_grant_land = yes
-					}
-				}
-			}
-			var:126.owner = { save_event_target_as = britain }
-		}
-	}
-
-	option = { #Puppet Ulster
-		log = "[GetLogInfo]: event annex.1139 option annex.1139.a"
-		name = annex.1139.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				has_event_target = britain
-				OR = {
-					is_major = no
-					is_ally_with = event_target:britain
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = ireland
-				OR = {
-					is_major = no
-					is_ally_with = event_target:ireland
-				}
-			}
-		}
-		set_temp_variable = { tag_to_release = ULS }
-		119 = { remove_claim_and_add_core_of_target = yes } #Ulster
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes NOT = { original_tag = ENG } } }
-			ULS = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = ULS_Occupied_Monarchy
-			}
-		}
-
-		if = {
-			limit = {
-				ROOT = { has_monarchist_government = yes original_tag = ENG } }
-			ULS = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = ULS_Occupied_Monarchy_Brits
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			ULS = {
-				drop_cosmetic_tag = yes
-				set_cosmetic_tag = ULS_Occupied_Republic
-			}
-		}
-	}
-
-	option = { #Give to Ireland
-		log = "[GetLogInfo]: event annex.1139 option annex.europe.give_to_ireland"
-		name = annex.europe.give_to_ireland
-		trigger = {
-			has_event_target = ireland
-		}
-		ai_chance = {
-			base = 70
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:ireland }
-				is_ally_with = event_target:britain
-				#annexations_AI_will_consider_returning_colonies = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:ireland = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:ireland }
-		119 = { transfer_state_and_notify = yes } #Ulster
-	}
-
-	option = { #Give to Britain
-		log = "[GetLogInfo]: event annex.1139 option annex.europe.give_to_britain"
-		name = annex.europe.give_to_britain
-		trigger = {
-			has_event_target = britain
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				#annexations_AI_will_consider_returning_colonies = no
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:britain }
-				OR = {
-					is_major = yes
-					is_ally_with = event_target:ireland
-				}
-			}
-			modifier = {
-				factor = 0.1
-				event_target:britain = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:britain }
-		119 = { transfer_state_and_notify = yes } #Ulster
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1139 option annex.europe.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		119 = { transfer_state_and_notify = yes } #Ulster
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1139 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		119 = { add_claim_of_ROOT = yes } #Ulster
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1139 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
 country_event = { #Fate of Malta
 	id = annex.1140
 	title = annex_116
@@ -20610,12 +21791,25 @@ country_event = { #Fate of Cyprus
 			has_event_target = greece
 		}
 		ai_chance = {
-			base = 80
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:greece }
+				OR = {
+					is_ally_with = event_target:turkey
+					is_ally_with = event_target:britain
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:greece = { is_subject = yes }
+			}
 		}
+		
 		set_temp_variable = { tag_to_release = GRE }
 		183 = { transfer_state_and_notify = yes } #Cyprus
 	}
@@ -20627,16 +21821,25 @@ country_event = { #Fate of Cyprus
 			has_event_target = turkey
 		}
 		ai_chance = {
-			base = 20
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0
-				is_ally_with = GRE
+				NOT = { is_ally_with = event_target:turkey }
+				OR = {
+					is_ally_with = event_target:greece
+					is_ally_with = event_target:britain
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:turkey = { is_subject = yes }
 			}
 		}
+		
 		set_temp_variable = { tag_to_release = TUR }
 		183 = { transfer_state_and_notify = yes } #Cyprus
 	}
@@ -20648,7 +21851,7 @@ country_event = { #Fate of Cyprus
 			has_event_target = britain
 		}
 		ai_chance = {
-			base = 20
+			base = 10
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
@@ -20656,12 +21859,17 @@ country_event = { #Fate of Cyprus
 			modifier = {
 				factor = 0
 				NOT = { is_ally_with = event_target:britain }
+				OR = {
+					is_ally_with = event_target:greece
+					is_ally_with = event_target:turkey
+				}
 			}
 			modifier = {
 				factor = 0.1
 				event_target:britain = { is_subject = yes }
 			}
 		}
+		
 		set_temp_variable = { tag_to_release = event_target:britain }
 		183 = { transfer_state_and_notify = yes } #Cyprus
 	}
@@ -22003,322 +23211,7 @@ country_event = { #Fate of Channel Islands
 	}
 }
 
-country_event = { #Fate of Isle of Man
-	id = annex.1152
-	title = annexation_1176
-	desc = annexation_1176_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
 
-	is_triggered_only = yes
-
-	immediate = {
-		if = {
-			limit = {
-				OR = {
-					AND = {
-						132 = { is_claim_or_core_of_ROOT = yes } #Lancashire
-						original_tag = ENG
-					}
-					AND = {
-						133 = { is_claim_or_core_of_ROOT = yes } #Lanark
-						original_tag = SCO
-					}
-					AND = {
-						113 = { is_claim_or_core_of_ROOT = yes } #Leinster
-						original_tag = IRE
-					}
-					AND = {
-						1201 = { is_claim_or_core_of_ROOT = yes } #Norhtern Wales
-						original_tag = WLS
-					}
-				}
-			}
-			save_event_target_as = can_annex
-		}
-		if = {
-			limit = {
-				ENG = {
-					AND = {
-						ROOT_can_grant_land = yes 
-						owns_state = 132 #Lancashire
-					}
-				}
-			}
-			ENG = { save_event_target_as = britain }
-		}
-		if = {
-			limit = {
-				SCO = {
-					AND = {
-						ROOT_can_grant_land = yes 
-						owns_state = 133 #Lanark
-					}
-				}
-			}
-			SCO = { save_event_target_as = scotland }
-		}
-		if = {
-			limit = {
-				IRE = {
-					AND = {
-						ROOT_can_grant_land = yes 
-						owns_state = 113 #Leinster
-					}
-				}
-			}
-			IRE = { save_event_target_as = ireland }
-		}
-		if = {
-			limit = {
-				WLS = {
-					AND = {
-						ROOT_can_grant_land = yes 
-						owns_state = 1201 #Northern Wales
-					}
-				}
-			}
-			WLS = { save_event_target_as = wales }
-		}
-	}
-
-	option = { #Give to Britain
-		log = "[GetLogInfo]: event annex.1152 option annex.europe.give_to_britain"
-		name = annex.europe.give_to_britain
-		trigger = {
-			has_event_target = britain
-		}
-		ai_chance = {
-			base = 20
-			modifier = {
-				factor = 0
-				annexations_AI_wants_to_annex = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:britain = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:britain }
-		1176 = { transfer_state_and_notify = yes } #Isle of Man
-	}
-	option = { #Give to Scotland
-		log = "[GetLogInfo]: event annex.1152 option annex.1152.a"
-		name = annex.1152.a
-		trigger = {
-			has_event_target = scotland
-		}
-		ai_chance = {
-			base = 20
-			modifier = {
-				factor = 0
-				annexations_AI_wants_to_annex = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:scotland = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:scotland }
-		1176 = { transfer_state_and_notify = yes } #Isle of Man
-	}
-	option = { #Give to Ireland
-		log = "[GetLogInfo]: event annex.1152 option annex.1152.b"
-		name = annex.1152.b
-		trigger = {
-			has_event_target = ireland
-		}
-		ai_chance = {
-			base = 20
-			modifier = {
-				factor = 0
-				annexations_AI_wants_to_annex = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:ireland = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:ireland }
-		1176 = { transfer_state_and_notify = yes } #Isle of Man
-	}
-	option = { #Give to Wales
-		log = "[GetLogInfo]: event annex.1152 option annex.1152.c"
-		name = annex.1152.c
-		trigger = {
-			has_event_target = wales
-		}
-		ai_chance = {
-			base = 20
-			modifier = {
-				factor = 0
-				annexations_AI_wants_to_annex = yes
-			}
-			modifier = {
-				factor = 0.1
-				event_target:wales = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:wales }
-		1176 = { transfer_state_and_notify = yes } #Isle of Man
-	}
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1152 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		1176 = { transfer_state_and_notify = yes } #Isle of Man
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1152 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		1176 = { add_claim_of_ROOT = yes } #Isle of Man
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1152 option name = annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Faroe Islands
-	id = annex.1153
-	title = annexation_337
-	desc = annexation_337_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			if = {
-				limit = {
-					37 = { #Zealand
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-							is_subject = no
-						}
-					}
-				}
-				var:37.owner = { save_event_target_as = denmark }
-			}
-			if = {
-				limit = {
-					110 = { #Ostlandet
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							NOT = { tag = event_target:denmark }
-							ROOT_can_grant_land = yes
-							is_subject = no
-						}
-					}
-				}
-				var:110.owner = { save_event_target_as = norway }
-			}
-		}
-	}
-
-	option = { #Give to Denmark
-		log = "[GetLogInfo]: event annex.1153 option annex.europe.give_to_denmark"
-		name = annex.europe.give_to_denmark
-		trigger = {
-			has_event_target = denmark
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:denmark }
-				37 = { is_claim_or_core_of_ROOT = no } #Zealand
-				110 = { is_claim_or_core_of_ROOT = no } #Ostlandet
-				OR = {
-					is_major = yes
-					is_ally_with = event_target:norway
-				}
-			}
-			modifier = {
-				factor = 0.1
-				event_target:denmark = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:denmark }
-		337 = { transfer_state_and_notify = yes } #Faroe Islands
-	}
-
-	option = { #Give to Norway
-		log = "[GetLogInfo]: event annex.1153 option annex.europe.give_to_norway"
-		name = annex.europe.give_to_norway
-		trigger = {
-			has_event_target = norway
-		}
-		ai_chance = {
-			base = 20
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:norway }
-				37 = { is_claim_or_core_of_ROOT = no } #Zealand
-				110 = { is_claim_or_core_of_ROOT = no } #Ostlandet
-				OR = {
-					is_major = yes
-					is_ally_with = event_target:denmark
-				}
-			}
-			modifier = {
-				factor = 0.1
-				event_target:norway = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:norway }
-		337 = { transfer_state_and_notify = yes } #Faroe Islands
-	}
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1153 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		337 = { transfer_state_and_notify = yes } #Faroe Islands
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1153 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		337 = { add_claim_of_ROOT = yes } #Faroe Islands
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1153 option name = annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
 
 country_event = { #Fate of La Rioja
 	id = annex.1154
@@ -24249,9 +25142,22 @@ country_event = { #Fate of South Macedonia
 			has_event_target = thessaloniniki
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:thessaloniniki }
+				OR = {
+					is_ally_with = event_target:vardar
+					is_ally_with = event_target:thessaly
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:thessaloniniki = { is_subject = yes }
 			}
 		}
 
@@ -24266,8 +25172,25 @@ country_event = { #Fate of South Macedonia
 			is_subject = no
 			has_event_target = vardar
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:vardar }
+				OR = {
+					is_ally_with = event_target:thessaloniniki
+					is_ally_with = event_target:thessaly
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:vardar = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:vardar }
 		1043 = { transfer_if_owned = yes } #South Macedonia
@@ -24280,8 +25203,25 @@ country_event = { #Fate of South Macedonia
 			is_subject = no
 			has_event_target = thessaly
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:thessaly }
+				OR = {
+					is_ally_with = event_target:thessaloniniki
+					is_ally_with = event_target:vardar
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:thessaly = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:thessaly }
 		1043 = { transfer_if_owned = yes } #South Macedonia
@@ -24368,9 +25308,21 @@ country_event = { #Fate of East Aegan Islands
 			has_event_target = smyrna
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:smyrna }
+				OR = {
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:smyrna = { is_subject = yes }
 			}
 		}
 
@@ -24385,8 +25337,24 @@ country_event = { #Fate of East Aegan Islands
 			is_subject = no
 			has_event_target = attica
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:attica }
+				OR = {
+					is_ally_with = event_target:smyrna
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:attica = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:attica }
 		1046 = { transfer_if_owned = yes } #East Aegan Islands
@@ -24485,9 +25453,22 @@ country_event = { #Fate of Dodecanese
 			has_event_target = mugla
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:mugla }
+				OR = {
+					is_ally_with = event_target:crete
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:mugla = { is_subject = yes }
 			}
 		}
 
@@ -24502,8 +25483,25 @@ country_event = { #Fate of Dodecanese
 			is_subject = no
 			has_event_target = crete
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:crete }
+				OR = {
+					is_ally_with = event_target:mugla
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:crete = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:crete }
 		164 = { transfer_if_owned = yes } #Dodecanese
@@ -24516,8 +25514,25 @@ country_event = { #Fate of Dodecanese
 			is_subject = no
 			has_event_target = attica
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:attica }
+				OR = {
+					is_ally_with = event_target:mugla
+					is_ally_with = event_target:crete
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:attica = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:attica }
 		164 = { transfer_if_owned = yes } #Dodecanese
@@ -24650,9 +25665,24 @@ country_event = { #Fate of Crete
 			has_event_target = attica
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:attica }
+				OR = {
+					is_ally_with = event_target:marsa
+					is_ally_with = event_target:cyprus
+					is_ally_with = event_target:dodecanese
+					is_ally_with = event_target:ionian
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:attica = { is_subject = yes }
 			}
 		}
 
@@ -24667,8 +25697,27 @@ country_event = { #Fate of Crete
 			is_subject = no
 			has_event_target = marsa
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:marsa }
+				OR = {
+					is_ally_with = event_target:attica
+					is_ally_with = event_target:cyprus
+					is_ally_with = event_target:dodecanese
+					is_ally_with = event_target:ionian
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:marsa = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:marsa }
 		182 = { transfer_if_owned = yes } #Crete
@@ -24681,8 +25730,27 @@ country_event = { #Fate of Crete
 			is_subject = no
 			has_event_target = cyprus
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:cyprus }
+				OR = {
+					is_ally_with = event_target:attica
+					is_ally_with = event_target:marsa
+					is_ally_with = event_target:dodecanese
+					is_ally_with = event_target:ionian
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:cyprus = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:cyprus }
 		182 = { transfer_if_owned = yes } #Crete
@@ -24695,8 +25763,27 @@ country_event = { #Fate of Crete
 			is_subject = no
 			has_event_target = dodecanese
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:dodecanese }
+				OR = {
+					is_ally_with = event_target:attica
+					is_ally_with = event_target:marsa
+					is_ally_with = event_target:cyprus
+					is_ally_with = event_target:ionian
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:dodecanese = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:dodecanese }
 		182 = { transfer_if_owned = yes } #Crete
@@ -24709,8 +25796,27 @@ country_event = { #Fate of Crete
 			is_subject = no
 			has_event_target = ionian
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ionian }
+				OR = {
+					is_ally_with = event_target:attica
+					is_ally_with = event_target:marsa
+					is_ally_with = event_target:cyprus
+					is_ally_with = event_target:dodecanese
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ionian = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:ionian }
 		182 = { transfer_if_owned = yes } #Crete
@@ -24812,9 +25918,22 @@ country_event = { #Fate of Epirus
 			has_event_target = akarnania
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:akarnania }
+				OR = {
+					is_ally_with = event_target:north_epirus
+					is_ally_with = event_target:corfu
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:akarnania = { is_subject = yes }
 			}
 		}
 
@@ -24829,8 +25948,25 @@ country_event = { #Fate of Epirus
 			is_subject = no
 			has_event_target = north_epirus
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:north_epirus }
+				OR = {
+					is_ally_with = event_target:akarnania
+					is_ally_with = event_target:corfu
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:north_epirus = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:north_epirus }
 		185 = { transfer_if_owned = yes } #Epirus
@@ -24843,8 +25979,25 @@ country_event = { #Fate of Epirus
 			is_subject = no
 			has_event_target = corfu
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:corfu }
+				OR = {
+					is_ally_with = event_target:akarnania
+					is_ally_with = event_target:north_epirus
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:corfu = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:corfu }
 		185 = { transfer_if_owned = yes } #Epirus
@@ -24943,9 +26096,22 @@ country_event = { #Fate of Troas
 			has_event_target = bursa
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bursa }
+				OR = {
+					is_ally_with = event_target:smyrna
+					is_ally_with = event_target:east_aegan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bursa = { is_subject = yes }
 			}
 		}
 
@@ -24960,8 +26126,25 @@ country_event = { #Fate of Troas
 			is_subject = no
 			has_event_target = smyrna
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:smyrna }
+				OR = {
+					is_ally_with = event_target:bursa
+					is_ally_with = event_target:east_aegan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:smyrna = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:smyrna }
 		822 = { transfer_if_owned = yes } #Troas
@@ -24974,8 +26157,25 @@ country_event = { #Fate of Troas
 			is_subject = no
 			has_event_target = east_aegan
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:east_aegan }
+				OR = {
+					is_ally_with = event_target:bursa
+					is_ally_with = event_target:smyrna
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_aegan = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:east_aegan }
 		822 = { transfer_if_owned = yes } #Troas
@@ -25086,9 +26286,23 @@ country_event = { #Fate of Smyrna
 			has_event_target = troas
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:troas }
+				OR = {
+					is_ally_with = event_target:alasehir
+					is_ally_with = event_target:east_aegan
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:troas = { is_subject = yes }
 			}
 		}
 
@@ -25103,8 +26317,26 @@ country_event = { #Fate of Smyrna
 			is_subject = no
 			has_event_target = alasehir
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alasehir }
+				OR = {
+					is_ally_with = event_target:troas
+					is_ally_with = event_target:east_aegan
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alasehir = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:alasehir }
 		339 = { transfer_if_owned = yes } #Smyrna
@@ -25117,8 +26349,26 @@ country_event = { #Fate of Smyrna
 			is_subject = no
 			has_event_target = east_aegan
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:east_aegan }
+				OR = {
+					is_ally_with = event_target:troas
+					is_ally_with = event_target:alasehir
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_aegan = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:east_aegan }
 		339 = { transfer_if_owned = yes } #Smyrna
@@ -25131,8 +26381,26 @@ country_event = { #Fate of Smyrna
 			is_subject = no
 			has_event_target = attica
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:attica }
+				OR = {
+					is_ally_with = event_target:troas
+					is_ally_with = event_target:alasehir
+					is_ally_with = event_target:east_aegan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:attica = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:attica }
 		339 = { transfer_if_owned = yes } #Smyrna
@@ -25243,9 +26511,23 @@ country_event = { #Fate of Aydin
 			has_event_target = smyrna
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:smyrna }
+				OR = {
+					is_ally_with = event_target:alasehir
+					is_ally_with = event_target:east_aegan
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:smyrna = { is_subject = yes }
 			}
 		}
 
@@ -25260,8 +26542,26 @@ country_event = { #Fate of Aydin
 			is_subject = no
 			has_event_target = alasehir
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alasehir }
+				OR = {
+					is_ally_with = event_target:smyrna
+					is_ally_with = event_target:east_aegan
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alasehir = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:alasehir }
 		823 = { transfer_if_owned = yes } #Aydin
@@ -25274,8 +26574,26 @@ country_event = { #Fate of Aydin
 			is_subject = no
 			has_event_target = east_aegan
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:east_aegan }
+				OR = {
+					is_ally_with = event_target:smyrna
+					is_ally_with = event_target:alasehir
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_aegan = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:east_aegan }
 		823 = { transfer_if_owned = yes } #Aydin
@@ -25288,8 +26606,26 @@ country_event = { #Fate of Aydin
 			is_subject = no
 			has_event_target = attica
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:attica }
+				OR = {
+					is_ally_with = event_target:smyrna
+					is_ally_with = event_target:alasehir
+					is_ally_with = event_target:east_aegan
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:attica = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:attica }
 		823 = { transfer_if_owned = yes } #Aydin
@@ -25389,7 +26725,23 @@ country_event = { #Fate of Corfu
 			}
 		}
 		ai_chance = {
-			base = 50
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ionian_isles }
+				OR = {
+					is_ally_with = event_target:epirus
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ionian_isles = { is_subject = yes }
+			}
 		}
 
 		set_temp_variable = { tag_to_release = ION }
@@ -25409,9 +26761,22 @@ country_event = { #Fate of Corfu
 			has_event_target = epirus
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:epirus }
+				OR = {
+					is_ally_with = event_target:ionian_isles
+					is_ally_with = event_target:attica
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:epirus = { is_subject = yes }
 			}
 		}
 
@@ -25426,8 +26791,25 @@ country_event = { #Fate of Corfu
 			is_subject = no
 			has_event_target = attica
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:attica }
+				OR = {
+					is_ally_with = event_target:ionian_isles
+					is_ally_with = event_target:epirus
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:attica = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:attica }
 		1229 = { transfer_if_owned = yes } #Corfu
@@ -25514,9 +26896,21 @@ country_event = { #Fate of the Ionian Isles
 			has_event_target = corfu
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:corfu }
+				OR = {
+					is_ally_with = event_target:akarnania
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:corfu = { is_subject = yes }
 			}
 		}
 
@@ -25531,8 +26925,24 @@ country_event = { #Fate of the Ionian Isles
 			is_subject = no
 			has_event_target = akarnania
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:akarnania }
+				OR = {
+					is_ally_with = event_target:corfu
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:akarnania = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:akarnania }
 		1210 = { transfer_if_owned = yes } #Ionian Isles
@@ -25619,9 +27029,21 @@ country_event = { #Fate of Kithira
 			has_event_target = corfu
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:corfu }
+				OR = {
+					is_ally_with = event_target:peloponnese
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:corfu = { is_subject = yes }
 			}
 		}
 
@@ -25636,8 +27058,24 @@ country_event = { #Fate of Kithira
 			is_subject = no
 			has_event_target = peloponnese
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:peloponnese }
+				OR = {
+					is_ally_with = event_target:corfu
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:peloponnese = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:peloponnese }
 		1230 = { transfer_if_owned = yes } #Kithira
@@ -25736,9 +27174,22 @@ country_event = { #Fate of Pirin
 			has_event_target = sofia
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:sofia }
+				OR = {
+					is_ally_with = event_target:pcinja
+					is_ally_with = event_target:vardar
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sofia = { is_subject = yes }
 			}
 		}
 
@@ -25753,8 +27204,25 @@ country_event = { #Fate of Pirin
 			is_subject = no
 			has_event_target = pcinja
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:pcinja }
+				OR = {
+					is_ally_with = event_target:sofia
+					is_ally_with = event_target:vardar
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:pcinja = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:pcinja }
 		1042 = { transfer_state_and_notify = yes } #Pirin
@@ -25767,8 +27235,25 @@ country_event = { #Fate of Pirin
 			is_subject = no
 			has_event_target = vardar
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:vardar }
+				OR = {
+					is_ally_with = event_target:sofia
+					is_ally_with = event_target:pcinja
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:vardar = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:vardar }
 		1042 = { transfer_state_and_notify = yes } #Pirin
@@ -25867,9 +27352,22 @@ country_event = { #Fate of Dobrudja
 			has_event_target = varna
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:varna }
+				OR = {
+					is_ally_with = event_target:muntenia
+					is_ally_with = event_target:constanta
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:varna = { is_subject = yes }
 			}
 		}
 
@@ -25884,8 +27382,25 @@ country_event = { #Fate of Dobrudja
 			is_subject = no
 			has_event_target = muntenia
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:muntenia }
+				OR = {
+					is_ally_with = event_target:varna
+					is_ally_with = event_target:constanta
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:muntenia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:muntenia }
 		77 = { transfer_state_and_notify = yes } #Dobrudja
@@ -25898,8 +27413,25 @@ country_event = { #Fate of Dobrudja
 			is_subject = no
 			has_event_target = constanta
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:constanta }
+				OR = {
+					is_ally_with = event_target:varna
+					is_ally_with = event_target:muntenia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:constanta = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:constanta }
 		77 = { transfer_state_and_notify = yes } #Dobrudja
@@ -25998,9 +27530,22 @@ country_event = { #Fate of Constanta
 			has_event_target = dobrudja
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:dobrudja }
+				OR = {
+					is_ally_with = event_target:tulcea
+					is_ally_with = event_target:muntenia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:dobrudja = { is_subject = yes }
 			}
 		}
 
@@ -26015,8 +27560,25 @@ country_event = { #Fate of Constanta
 			is_subject = no
 			has_event_target = tulcea
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tulcea }
+				OR = {
+					is_ally_with = event_target:dobrudja
+					is_ally_with = event_target:muntenia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tulcea = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:tulcea }
 		1038 = { transfer_state_and_notify = yes } #Constanta
@@ -26029,8 +27591,25 @@ country_event = { #Fate of Constanta
 			is_subject = no
 			has_event_target = muntenia
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:muntenia }
+				OR = {
+					is_ally_with = event_target:dobrudja
+					is_ally_with = event_target:tulcea
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:muntenia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:muntenia }
 		1038 = { transfer_state_and_notify = yes } #Constanta
@@ -26117,9 +27696,21 @@ country_event = { #Fate of Tulcea
 			has_event_target = gagauzia
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:gagauzia }
+				OR = {
+					is_ally_with = event_target:muntenia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:gagauzia = { is_subject = yes }
 			}
 		}
 
@@ -26134,8 +27725,24 @@ country_event = { #Fate of Tulcea
 			is_subject = no
 			has_event_target = muntenia
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:muntenia }
+				OR = {
+					is_ally_with = event_target:gagauzia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:muntenia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:muntenia }
 		1039 = { transfer_state_and_notify = yes } #Tulcea
@@ -26234,9 +27841,22 @@ country_event = { #Fate of Dalmatia
 			has_event_target = lika
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:lika }
+				OR = {
+					is_ally_with = event_target:ragusa
+					is_ally_with = event_target:west_herzegovina
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:lika = { is_subject = yes }
 			}
 		}
 
@@ -26251,8 +27871,25 @@ country_event = { #Fate of Dalmatia
 			is_subject = no
 			has_event_target = ragusa
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ragusa }
+				OR = {
+					is_ally_with = event_target:lika
+					is_ally_with = event_target:west_herzegovina
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ragusa = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:ragusa }
 		103 = { transfer_state_and_notify = yes } #Dalmatia
@@ -26265,8 +27902,25 @@ country_event = { #Fate of Dalmatia
 			is_subject = no
 			has_event_target = west_herzegovina
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:west_herzegovina }
+				OR = {
+					is_ally_with = event_target:lika
+					is_ally_with = event_target:ragusa
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:west_herzegovina = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:west_herzegovina }
 		103 = { transfer_state_and_notify = yes } #Dalmatia
@@ -26365,9 +28019,22 @@ country_event = { #Fate of Srem
 			has_event_target = vajdasag
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:vajdasag }
+				OR = {
+					is_ally_with = event_target:slavonija
+					is_ally_with = event_target:belgrade
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:vajdasag = { is_subject = yes }
 			}
 		}
 
@@ -26382,8 +28049,25 @@ country_event = { #Fate of Srem
 			is_subject = no
 			has_event_target = slavonija
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:slavonija }
+				OR = {
+					is_ally_with = event_target:vajdasag
+					is_ally_with = event_target:belgrade
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:slavonija = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:slavonija }
 		1026 = { transfer_state_and_notify = yes } #Srem
@@ -26396,8 +28080,25 @@ country_event = { #Fate of Srem
 			is_subject = no
 			has_event_target = belgrade
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:belgrade }
+				OR = {
+					is_ally_with = event_target:vajdasag
+					is_ally_with = event_target:slavonija
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:belgrade = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:belgrade }
 		1026 = { transfer_state_and_notify = yes } #Srem
@@ -26496,9 +28197,22 @@ country_event = { #Fate of Istria
 			has_event_target = friaul
 		}
 		ai_chance = {
-			base = 100
+			base = 60
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:friaul }
+				OR = {
+					is_ally_with = event_target:carinthia
+					is_ally_with = event_target:krain
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:friaul = { is_subject = yes }
 			}
 		}
 
@@ -26513,8 +28227,25 @@ country_event = { #Fate of Istria
 			is_subject = no
 			has_event_target = carinthia
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:carinthia }
+				OR = {
+					is_ally_with = event_target:friaul
+					is_ally_with = event_target:krain
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:carinthia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:carinthia }
 		736 = { transfer_state_and_notify = yes } #Istria
@@ -26527,8 +28258,25 @@ country_event = { #Fate of Istria
 			is_subject = no
 			has_event_target = krain
 		}
-
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:krain }
+				OR = {
+					is_ally_with = event_target:friaul
+					is_ally_with = event_target:carinthia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:krain = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:krain }
 		736 = { transfer_state_and_notify = yes } #Istria
@@ -26653,9 +28401,18 @@ country_event = { #Fate of East Transylvania/Hunyad
 			}
 		}
 		ai_chance = {
-			base = 100
+			base = 30
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					is_ally_with = event_target:alfold
+					is_ally_with = event_target:ploiesti
+					is_ally_with = event_target:iasi
+				}
 			}
 		}
 
@@ -26686,7 +28443,7 @@ country_event = { #Fate of East Transylvania/Hunyad
 			has_event_target = alfold
 		}
 		ai_chance = {
-			base = 40
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
@@ -26722,7 +28479,7 @@ country_event = { #Fate of East Transylvania/Hunyad
 			has_event_target = ploiesti
 		}
 		ai_chance = {
-			base = 40
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
@@ -26757,7 +28514,7 @@ country_event = { #Fate of East Transylvania/Hunyad
 			has_event_target = iasi
 		}
 		ai_chance = {
-			base = 40
+			base = 60
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
