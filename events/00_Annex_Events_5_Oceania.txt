@@ -382,6 +382,30 @@ country_event = { #Fate of Vrijhaven
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					522 = { is_claim_or_core_of_ROOT = yes } # New Holland
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		
+		# New Holland owner
+		if = {
+			limit = {
+				522 = {
+					owner = {
+						ROOT_can_grant_land = yes
+						original_tag = NBT
+					}
+				}
+			}
+			var:522.owner = { save_event_target_as = new_holland }
+		}
+	}
 
 	option = { #Release Vrijhaven Whole
 		log = "[GetLogInfo]: event annex.5005 option annex.5005.a"
@@ -390,7 +414,7 @@ country_event = { #Fate of Vrijhaven
 			is_subject = no
 		}
 		ai_chance = {
-			base = 100
+			base = 70
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
@@ -414,6 +438,36 @@ country_event = { #Fate of Vrijhaven
 			VRY = {
 				set_cosmetic_tag = VRY_Occupied_Republic
 			}
+		}
+    }
+	
+	option = { #Grant it to New Holland
+		log = "[GetLogInfo]: event annex.5005 option annex.5005.b"
+		name = annex.5005.b
+		trigger = {
+			is_subject = no
+			has_event_target = new_holland
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:new_holland }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:new_holland = { is_subject = yes }
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = event_target:new_holland }
+		every_owned_state = {
+			limit = { is_core_of = VRY }
+			transfer_state_and_notify = yes
 		}
     }
 
