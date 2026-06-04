@@ -3433,13 +3433,33 @@ country_event = { #Fate of South Japan
 
 country_event = { #Fate of Siberia
 	id = annex.7023
-	title = annexation_siberia
-	desc = annexation_siberia_desc
+	title = annexation_571
+	desc = annexation_571_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
-
+	
 	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						original_tag = RUS
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			every_state = {
+				remove_claim_by = SIB
+				if = {
+					limit = { is_siberia = yes }
+					add_core_of = SIB
+				}
+				else = {
+					remove_core_of = SIB
+				}
+			}
+		}
 	}
 
 	option = { #Release an independent Siberia
@@ -3449,7 +3469,19 @@ country_event = { #Fate of Siberia
 			is_subject = no
 		}
 		ai_chance = {
-			base = 10
+			base = 40
+			modifier = {
+				factor = 100
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0
+				AND = {
+					is_ally_with = RUS
+					RUS = { is_subject = no }
+					annexations_AI_country_wants_to_dismantle_russia = no
+				}
+			}
 		}
 
 		set_temp_variable = { tag_to_release = SIB }
@@ -3478,8 +3510,6 @@ country_event = { #Fate of Siberia
 				set_cosmetic_tag = SIB_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
 	option = { #Reintegrate Siberia into Russia
@@ -3492,19 +3522,29 @@ country_event = { #Fate of Siberia
 			}
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					is_ally_with = RUS
+					RUS = { is_subject = no }
+					annexations_AI_country_wants_to_dismantle_russia = no
+				}
+			}
 		}
-
-		every_state = {
+		
+		set_temp_variable = { tag_to_release = RUS }
+		every_owned_state = {
 			limit = {
-				is_core_of = SIB
+				is_siberia = yes
+				is_allowed_annexation_state = yes
 			}
-			RUS = {
-				transfer_state = PREV
-			}
+			transfer_state_and_notify = yes
 		}
-
-		recheck_annexations = yes
 	}
 	
 	option = { #Give to overlord
@@ -3514,15 +3554,40 @@ country_event = { #Fate of Siberia
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		SIB = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
+		every_owned_state = {
+			limit = {
+				is_siberia = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7023 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = {
+			base = 100
+		}
+		every_owned_state = {
+			limit = {
+				is_siberia = yes
+			}
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7023 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-		recheck_annexations = yes
+	}
+	
+	after = { 
+		recheck_annexations = yes 
 	}
 }
 
@@ -4497,13 +4562,34 @@ country_event = { #Fate of TURKMENISTAN
 
 country_event = { #Fate of Altai
 	id = annex.7028
-	title = annexation_altai
-	desc = annexation_altai_desc
+	title = annexation_40
+	desc = annexation_40_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					571 = { is_claim_or_core_of_ROOT = yes } #Omsk
+					original_tag = RUS
+					original_tag = SIB
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				571 = { #Omsk
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:571.owner = { save_event_target_as = omsk }
+		}
 	}
 
 	option = { #Release an independent Altai
@@ -4513,7 +4599,16 @@ country_event = { #Fate of Altai
 			is_subject = no
 		}
 		ai_chance = {
-			base = 5
+			base = 20
+			modifier = {
+				factor = 60
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:omsk
+			}
 		}
 
 		set_temp_variable = { tag_to_release = ALT }
@@ -4542,48 +4637,100 @@ country_event = { #Fate of Altai
 				set_cosmetic_tag = ALT_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Incorporate it into Siberia
+	option = { #Incorporate it into Omsk
 		log = "[GetLogInfo]: event annex.7028 option annex.7028.a"
-		name = annexation_events.asia.give_to_siberia
+		name = annex.give_to_omsk
 		trigger = {
 			is_subject = no
-			SIB = {
-				exists = yes
-			}
+			has_event_target = omsk
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 100
+				is_ally_with = event_target:omsk
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:omsk = { is_subject = yes }
+			}
 		}
+		
+		set_temp_variable = { tag_to_release = event_target:omsk }
+		40 = { transfer_state_and_notify = yes }
+	}
 
-		SIB = {
-			transfer_state = 40
-			add_state_core = 40
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7028 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
 		}
+		set_temp_variable = { tag_to_release = overlord }
+		40 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7028 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		40 = {
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7028 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Buryatia
 	id = annex.7029
-	title = annexation_buryatia
-	desc = annexation_buryatia_desc
+	title = annexation_566
+	desc = annexation_566_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					571 = { is_claim_or_core_of_ROOT = yes } #Omsk
+					original_tag = RUS
+					original_tag = SIB
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				571 = { #Omsk
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:571.owner = { save_event_target_as = omsk }
+		}
 	}
 
 	option = { #Release an independent Buryatia
@@ -4593,7 +4740,16 @@ country_event = { #Fate of Buryatia
 			is_subject = no
 		}
 		ai_chance = {
-			base = 5
+			base = 20
+			modifier = {
+				factor = 60
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:omsk
+			}
 		}
 
 		set_temp_variable = { tag_to_release = BRK }
@@ -4626,49 +4782,98 @@ country_event = { #Fate of Buryatia
 		recheck_annexations = yes
 	}
 
-	option = { #Incorporate it into Siberia
+	option = { #Incorporate it into Omsk
 		log = "[GetLogInfo]: event annex.7029 option annex.7029.a"
-		name = annexation_events.asia.give_to_siberia
+		name = annex.give_to_omsk
 		trigger = {
 			is_subject = no
-			SIB = {
-				exists = yes
-			}
+			has_event_target = omsk
 		}
 		ai_chance = {
-			base = 10
-		}
-
-		every_state = {
-			limit = {
-				is_core_of = BRK
+			base = 50
+			modifier = {
+				factor = 100
+				is_ally_with = event_target:omsk
 			}
-			SIB = {
-				transfer_state = PREV
-				add_state_core = PREV
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:omsk = { is_subject = yes }
 			}
 		}
+		
+		set_temp_variable = { tag_to_release = event_target:omsk }
+		566 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7029 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		566 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7029 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		566 = {
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7029 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Yakutia
 	id = annex.7030
-	title = annexation_yakutia
-	desc = annexation_yakutia_desc
+	title = annexation_565
+	desc = annexation_565_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					571 = { is_claim_or_core_of_ROOT = yes } #Omsk
+					original_tag = RUS
+					original_tag = SIB
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				571 = { #Omsk
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:571.owner = { save_event_target_as = omsk }
+		}
 	}
 
 	option = { #Release an independent Yakutia
@@ -4678,7 +4883,16 @@ country_event = { #Fate of Yakutia
 			is_subject = no
 		}
 		ai_chance = {
-			base = 5
+			base = 20
+			modifier = {
+				factor = 60
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:omsk
+			}
 		}
 
 		set_temp_variable = { tag_to_release = YEK }
@@ -4707,63 +4921,119 @@ country_event = { #Fate of Yakutia
 				set_cosmetic_tag = YEK_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Incorporate it into Siberia
+	option = { #Incorporate it into Omsk
 		log = "[GetLogInfo]: event annex.7030 option annex.7030.a"
-		name = annexation_events.asia.give_to_siberia
+		name = annex.give_to_omsk
 		trigger = {
 			is_subject = no
-			SIB = {
-				exists = yes
-			}
+			has_event_target = omsk
 		}
 		ai_chance = {
-			base = 10
-		}
-
-		every_state = {
-			limit = {
-				is_core_of = YEK
+			base = 50
+			modifier = {
+				factor = 100
+				is_ally_with = event_target:omsk
 			}
-			SIB = {
-				transfer_state = PREV
-				add_state_core = PREV
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:omsk = { is_subject = yes }
 			}
 		}
+		
+		set_temp_variable = { tag_to_release = event_target:omsk }
+		565 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7030 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		565 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7030 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		565 = {
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7030 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of the Far East
 	id = annex.7031
-	title = annexation_far_east
-	desc = annexation_far_east_desc
+	title = annexation_408
+	desc = annexation_408_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					571 = { is_claim_or_core_of_ROOT = yes } #Omsk
+					original_tag = RUS
+					original_tag = SIB
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				571 = { #Omsk
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:571.owner = { save_event_target_as = omsk }
+		}
 	}
 
-	option = { #Release an independent Far Eastern Republic
+	option = { #Release an independent Far East
 		log = "[GetLogInfo]: event annex.7031 option annex.7031.a"
 		name = annex.7031.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 5
+			base = 20
+			modifier = {
+				factor = 60
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:omsk
+			}
 		}
 
 		set_temp_variable = { tag_to_release = FER }
@@ -4792,315 +5062,503 @@ country_event = { #Fate of the Far East
 				set_cosmetic_tag = FER_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Incorporate it into Siberia
+	option = { #Incorporate it into Omsk
 		log = "[GetLogInfo]: event annex.7031 option annex.7031.a"
-		name = annexation_events.asia.give_to_siberia
+		name = annex.give_to_omsk
 		trigger = {
 			is_subject = no
-			SIB = {
-				exists = yes
-			}
+			has_event_target = omsk
 		}
 		ai_chance = {
-			base = 10
-		}
-
-		every_state = {
-			limit = {
-				is_core_of = FER
+			base = 50
+			modifier = {
+				factor = 100
+				is_ally_with = event_target:omsk
 			}
-			SIB = {
-				transfer_state = PREV
-				add_state_core = PREV
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:omsk = { is_subject = yes }
 			}
 		}
+		
+		set_temp_variable = { tag_to_release = event_target:omsk }
+		408 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7031 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		408 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7031 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		408 = {
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7031 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of North Sakhalin
 	id = annex.7032
-	title = annexation_north_sakhalin
-	desc = annexation_north_sakhalin_desc
+	title = annexation_655
+	desc = annexation_655_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-	}
-
-	option = { #Grant the Land to Siberia
-		log = "[GetLogInfo]: event annex.7032 option annex.7032.a"
-		name = annexation_events.asia.give_to_siberia
-		trigger = {
-			is_subject = no
-			SIB = {
-				exists = yes
+		if = {
+			limit = {
+				OR = {
+					408 = { is_claim_or_core_of_ROOT = yes } #Vladivostok
+					536 = { is_claim_or_core_of_ROOT = yes } #Hokkaido
+					original_tag = RUS
+					original_tag = SIB
+					original_tag = FER
+					original_tag = JAP
+				}
 			}
+			save_event_target_as = can_annex
 		}
-		ai_chance = {
-			base = 5
+		if = {
+			limit = {
+				408 = { #Vladivostok
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:408.owner = { save_event_target_as = vladivostok }
 		}
-
-		SIB = {
-			transfer_state = 655
+		if = {
+			limit = {
+				536 = { #Hokkaido
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:536.owner = { save_event_target_as = hokkaido }
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Grant the Land to the Far Eastern Republic
-		log = "[GetLogInfo]: event annex.7032 option annex.7032.b"
+	option = { #Grant it to Vladivostok
+		log = "[GetLogInfo]: event annex.7032 option annex.7032.a"
 		name = annex.7032.a
 		trigger = {
 			is_subject = no
-			FER = {
-				exists = yes
-			}
+			has_event_target = vladivostok
 		}
 		ai_chance = {
-			base = 5
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:vladivostok }
+				is_ally_with = event_target:hokkaido
+			}
+			modifier = {
+				factor = 0.1
+				event_target:vladivostok = { is_subject = yes }
+			}
 		}
 
-		FER = {
-			transfer_state = 655
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:vladivostok }
+		655 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Grant the Land to Japan
-		log = "[GetLogInfo]: event annex.7032 option annex.7032.c"
+	option = { #Grant it to Hokkaido
+		log = "[GetLogInfo]: event annex.7032 option annex.7032.b"
 		name = annex.7032.b
 		trigger = {
 			is_subject = no
-			JAP = {
-				exists = yes
-			}
+			has_event_target = hokkaido
 		}
 		ai_chance = {
-			base = 5
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:hokkaido }
+				is_ally_with = event_target:vladivostok
+			}
+			modifier = {
+				factor = 0.1
+				event_target:hokkaido = { is_subject = yes }
+			}
 		}
 
-		JAP = {
-			transfer_state = 655
-		}
-
-		655 = {
-			set_state_name = "North Karafuto"
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:vladivostok }
+		655 = { transfer_state_and_notify = yes }
 	}
 
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7032 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		655 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7032 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		655 = {
+			add_claim_of_ROOT = yes
+		}
+	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7032 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of South Sakhalin
 	id = annex.7033
-	title = annexation_south_sakhalin
-	desc = annexation_south_sakhalin_desc
+	title = annexation_537
+	desc = annexation_537_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
-	}
-
-	option = { #Grant the Land to Siberia
-		log = "[GetLogInfo]: event annex.7033 option annex.7033.a"
-		name = annexation_events.asia.give_to_siberia
-		trigger = {
-			is_subject = no
-			SIB = {
-				exists = yes
+		if = {
+			limit = {
+				OR = {
+					536 = { is_claim_or_core_of_ROOT = yes } #Hokkaido
+					655 = { is_claim_or_core_of_ROOT = yes } #North Sakhalin
+					original_tag = RUS
+					original_tag = SIB
+					original_tag = FER
+					original_tag = JAP
+				}
 			}
+			save_event_target_as = can_annex
 		}
-		ai_chance = {
-			base = 5
+		if = {
+			limit = {
+				536 = { #Hokkaido
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:536.owner = { save_event_target_as = hokkaido }
 		}
-
-		SIB = {
-			transfer_state = 537
+		if = {
+			limit = {
+				655 = { #North Sakhalin
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:655.owner = { save_event_target_as = north_sakhalin }
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Grant the Land to the Far Eastern Republic
-		log = "[GetLogInfo]: event annex.7033 option annex.7033.b"
+	option = { #Grant it to Hokkaido
+		log = "[GetLogInfo]: event annex.7033 option annex.7033.a"
 		name = annex.7033.a
 		trigger = {
 			is_subject = no
-			FER = {
-				exists = yes
-			}
+			has_event_target = hokkaido
 		}
 		ai_chance = {
-			base = 5
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:hokkaido }
+				is_ally_with = event_target:north_sakhalin
+			}
+			modifier = {
+				factor = 0.1
+				event_target:hokkaido = { is_subject = yes }
+			}
 		}
 
-		FER = {
-			transfer_state = 537
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:hokkaido }
+		537 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Grant the Land to Japan
-		log = "[GetLogInfo]: event annex.7033 option annex.7033.c"
+	option = { #Grant it to North Sakhalin
+		log = "[GetLogInfo]: event annex.7033 option annex.7033.b"
 		name = annex.7033.b
 		trigger = {
 			is_subject = no
-			JAP = {
-				exists = yes
-			}
+			has_event_target = north_sakhalin
 		}
 		ai_chance = {
-			base = 5
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:north_sakhalin }
+				is_ally_with = event_target:vladivostok
+			}
+			modifier = {
+				factor = 0.1
+				event_target:north_sakhalin = { is_subject = yes }
+			}
 		}
 
-		JAP = {
-			transfer_state = 537
-		}
-
-		537 = {
-			set_state_name = "South Karafuto"
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:north_sakhalin }
+		537 = { transfer_state_and_notify = yes }
 	}
 
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7033 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		537 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7033 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		537 = { add_claim_of_ROOT = yes }
+	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7033 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of the Kuril Islands
 	id = annex.7034
-	title = annexation_kuril_islands
-	desc = annexation_kuril_islands_desc
+	title = annexation_555
+	desc = annexation_555_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					408 = { is_claim_or_core_of_ROOT = yes } #Vladivostok
+					536 = { is_claim_or_core_of_ROOT = yes } #Hokkaido
+					original_tag = RUS
+					original_tag = SIB
+					original_tag = FER
+					original_tag = JAP
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				408 = { #Vladivostok
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:408.owner = { save_event_target_as = vladivostok }
+		}
+		if = {
+			limit = {
+				536 = { #Hokkaido
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:536.owner = { save_event_target_as = hokkaido }
+		}
 	}
 
-	option = { #Grant the Land to Siberia
+	option = { #Grant it to Vladivostok
 		log = "[GetLogInfo]: event annex.7034 option annex.7034.a"
 		name = annex.7034.a
 		trigger = {
 			is_subject = no
-			SIB = {
-				exists = yes
-			}
+			has_event_target = vladivostok
 		}
 		ai_chance = {
-			base = 5
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:vladivostok }
+				is_ally_with = event_target:hokkaido
+			}
+			modifier = {
+				factor = 0.1
+				event_target:vladivostok = { is_subject = yes }
+			}
 		}
 
-		SIB = {
-			transfer_state = 555
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:vladivostok }
+		555 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Grant the Land to the Far Eastern Republic
+	option = { #Grant it to Hokkaido
 		log = "[GetLogInfo]: event annex.7034 option annex.7034.b"
-		name = annex.7034.a
+		name = annex.7034.b
 		trigger = {
 			is_subject = no
-			FER = {
-				exists = yes
-			}
+			has_event_target = hokkaido
 		}
 		ai_chance = {
-			base = 5
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:hokkaido }
+				is_ally_with = event_target:vladivostok
+			}
+			modifier = {
+				factor = 0.1
+				event_target:hokkaido = { is_subject = yes }
+			}
 		}
 
-		FER = {
-			transfer_state = 555
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:vladivostok }
+		555 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Grant the Land to Japan
-		log = "[GetLogInfo]: event annex.7034 option annex.7034.c"
-		name = annex.7034.a
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7034 option annex.give_to_overlord"
+		name = annex.give_to_overlord
 		trigger = {
-			is_subject = no
-			JAP = {
-				exists = yes
-			}
+			annexations_should_give_lands_to_overlord = yes
 		}
-		ai_chance = {
-			base = 5
-		}
+		set_temp_variable = { tag_to_release = overlord }
+		555 = { transfer_state_and_notify = yes }
+	}
 
-		JAP = {
-			transfer_state = 555
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7034 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
 		}
-
+		ai_chance = { base = 100 }
+		
 		555 = {
-			set_state_name = "Chishima Islands"
+			add_claim_of_ROOT = yes
 		}
-
-		recheck_annexations = yes
 	}
-
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7034 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
 
 country_event = { #Fate of Tannu Tuva
 	id = annex.7035
-	title = annexation_tannu_tuva
-	desc = annexation_tannu_tuva_desc
+	title = annexation_329
+	desc = annexation_329_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					571 = { is_claim_or_core_of_ROOT = yes } #Omsk
+					original_tag = RUS
+					original_tag = SIB
+					original_tag = MON
+					original_tag = GAN
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				571 = { #Omsk
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:571.owner = { save_event_target_as = omsk }
+		}
 	}
 
-	option = { #Release an independent Tannu Tuva
+	option = { #Release Tannu Tuva
 		log = "[GetLogInfo]: event annex.7035 option annex.7035.a"
 		name = annex.7035.a
 		trigger = {
 			is_subject = no
 		}
 		ai_chance = {
-			base = 5
+			base = 20
+			modifier = {
+				factor = 60
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:omsk
+			}
 		}
 
 		set_temp_variable = { tag_to_release = TAN }
@@ -5129,40 +5587,66 @@ country_event = { #Fate of Tannu Tuva
 				set_cosmetic_tag = TAN_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Incorporate it into Siberia
+	option = { #Incorporate it into Omsk
 		log = "[GetLogInfo]: event annex.7035 option annex.7035.b"
-		name = annexation_events.asia.give_to_siberia
+		name = annex.give_to_omsk
 		trigger = {
 			is_subject = no
-			SIB = {
-				exists = yes
-			}
+			has_event_target = omsk
 		}
 		ai_chance = {
-			base = 10
-		}
-
-		every_state = {
-			limit = {
-				is_core_of = TAN
+			base = 50
+			modifier = {
+				factor = 100
+				is_ally_with = event_target:omsk
 			}
-			SIB = {
-				transfer_state = PREV
-				add_state_core = PREV
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:omsk }
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 0.1
+				event_target:omsk = { is_subject = yes }
 			}
 		}
+		
+		set_temp_variable = { tag_to_release = event_target:omsk }
+		329 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.7035 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		329 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.7035 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		329 = {
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.7035 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
