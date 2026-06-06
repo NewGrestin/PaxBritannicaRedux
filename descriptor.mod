@@ -53,6 +53,8 @@ replace_path="map/supplyareas"
 replace_path="tests"
 replace_path="gfx/fonts"
 replace_path="music"
+replace_path="tests"
+replace_path="tutorial"
 tags={
 	"Alternative History"
 	"National Focuses"
