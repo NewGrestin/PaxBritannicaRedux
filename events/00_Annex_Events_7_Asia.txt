@@ -18968,117 +18968,93 @@ country_event = { # Fate of Port Arthur
 
 	is_triggered_only = yes
 	
-	option = { #Leave it to the Taiping
-		log = "[GetLogInfo]: event annex.7116 option annex.7116.a"
-		name = annex.7116.a
-		trigger = {
-			is_subject = no
-			CHI = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					has_republican_government = yes
-					original_tag = CHI
-					original_tag = ROC
-					original_tag = MAN
+	immediate = { 
+		hidden_effect = { 
+			determine_chinese_ally = yes
+			if = {
+				limit = {
+					OR = {
+						is_chinese_tag = yes
+						original_tag = RUS
+						original_tag = MAN
+					}
 				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					716 = { #Liaotung
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = MAN
+							tag = RUS
+							tag = CHI
+							tag = ROC
+						}
+					}
+				}
+				var:716.owner = { save_event_target_as = manchuria }
 			}
 		}
+	}
+	
+	option = { #Give to China
+		log = "[GetLogInfo]: event annexation_events.7116 option annex.give_to_china"
+		name = annex.give_to_china
+		trigger = {
+			has_event_target = china
+		}
 		ai_chance = {
-			base = 100
+			base = 50
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0
-				original_tag = RUS
-				MAN = {
-					is_subject_of = RUS
+				AND = { 
+					is_major = yes
+					is_ally_with = event_target:manchuria
 				}
+				NOT = { is_ally_with = event_target:china }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:china = { is_subject = yes }
 			}
 		}
-
-		CHI = {
-			transfer_state = 745
-		}
-		745 = { add_claim_by = CHI }
+		
+		set_temp_variable = { tag_to_release = event_target:china }
+		745 = { transfer_state_and_notify = yes }
 	}
 	
-	option = { #Leave it to the Republic of China
+	option = { #Leave it to Manchuria
 		log = "[GetLogInfo]: event annex.7116 option annex.7116.b"
 		name = annex.7116.b
 		trigger = {
 			is_subject = no
-			ROC = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					has_monarchist_government = yes
-					original_tag = CHI
-					original_tag = ROC
-					original_tag = MAN
-				}
-			}
+			has_event_target = manchuria
 		}
 		ai_chance = {
-			base = 100
+			base = 30
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
 			}
 			modifier = {
 				factor = 0
-				original_tag = RUS
-				MAN = {
-					is_subject_of = RUS
-				}
+				is_ally_with = event_target:china
+				NOT = { is_ally_with = event_target:manchuria }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:manchuria = { is_subject = yes }
 			}
 		}
 
-		ROC = {
-			transfer_state = 745
-		}
-		745 = { add_claim_by = ROC }
-	}
-	
-	option = { #Leave it to Manchuria
-		log = "[GetLogInfo]: event annex.7116 option annex.7116.c"
-		name = annex.7116.c
-		trigger = {
-			is_subject = no
-			MAN = {
-				exists = yes
-			}
-			ROOT = {
-				NOT = {
-					original_tag = CHI
-					original_tag = ROC
-					original_tag = MAN
-				}
-			}
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				original_tag = RUS
-				MAN = {
-					is_subject_of = RUS
-				}
-			}
-		}
-
-		MAN = {
-			transfer_state = 745
-		}
-		745 = { add_claim_by = MON }
+		set_temp_variable = { tag_to_release = event_target:manchuria }
+		745 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Give to overlord
@@ -19094,35 +19070,10 @@ country_event = { # Fate of Port Arthur
 	option = { #Integrate
 		log = "[GetLogInfo]: event annex.7116 option annex.integration"
 		name = annex.integration
-		trigger = {
-			OR = {
-				annexations_can_annex = yes
-				original_tag = CHI
-				original_tag = ROC
-				original_tag = MAN
-				
-			}
-		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					OR = {
-						original_tag = CHI
-						original_tag = ROC
-						original_tag = MAN
-					}
-				}
-			}
-		}
-		745 = {
-			add_claim_of_ROOT = yes
-		}
+		trigger = { annexations_can_annex = yes }
+		ai_chance = { base = 100 }
+		
+		745 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { # Cancel
