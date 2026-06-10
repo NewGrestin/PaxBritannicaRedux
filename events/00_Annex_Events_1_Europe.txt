@@ -19277,7 +19277,7 @@ country_event = { #Fate of Russia
 			is_subject = no
 		}
 		ai_chance = {
-			base = 10
+			base = 50
 		}
 
 		set_temp_variable = { tag_to_release = RUS }
@@ -19844,7 +19844,7 @@ country_event = { #Fate of Crimea
 	}
 }
 
-country_event = { #Fate of Kuban
+country_event = { #Fate of Don Kuban
 	id = annex.1121
 	title = annexation_218
 	desc = annexation_218_desc
@@ -19854,7 +19854,7 @@ country_event = { #Fate of Kuban
 
 	immediate = {
 		1387 = { retain_state = yes } #Chernomorsk
-		1390 = { retain_state = yes } #Kuban
+		1390 = { retain_state = yes } #Kuban State
 		235 = { retain_state = yes } #Pyatigorsk
 		hidden_effect = { 
 			if = {
@@ -19877,6 +19877,17 @@ country_event = { #Fate of Kuban
 					}
 				}
 				var:200.owner = { save_event_target_as = ukraine }
+			}
+			if = {
+				limit = {
+					217 = { #Tsarytsin
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:217.owner = { save_event_target_as = tsarytsin }
 			}
 		}
 	}
@@ -19963,6 +19974,39 @@ country_event = { #Fate of Kuban
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = KUB_Occupied_Republic
 			}
+		}
+	}
+	
+	option = { #Grant Don Kuban to Tsarytsin
+		log = "[GetLogInfo]: event annex.1121 option annex.1121.e"
+		name = annex.1121.e
+		trigger = {
+			is_subject = no
+			has_event_target = tsarytsin
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_russia = yes
+			}
+			modifier = {
+				factor = 90
+				AND = {
+					is_ally_with = RUS
+					RUS = { is_subject = no }
+					annexations_AI_country_wants_to_dismantle_russia = no
+				}
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = event_target:tsarytsin }
+		every_owned_state = {
+			limit = {
+				is_don_kuban = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
 		}
 	}
 
@@ -20248,13 +20292,11 @@ country_event = { #Fate of Volga Germany
 				set_cosmetic_tag = VGE_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
 	option = { #Give it back to Russia
 		log = "[GetLogInfo]: event annex.1124 option annex.1123.b"
-		name = annex.1123.c
+		name = annex.1123.b
 		trigger = {
 			is_subject = no
 			has_event_target = russia
@@ -20285,6 +20327,9 @@ country_event = { #Fate of Volga Germany
 		log = "[GetLogInfo]: event annex.1123 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -20412,7 +20457,9 @@ country_event = { #Fate of Chernomorsk
 					OR = {
 						original_tag = RUS
 						original_tag = KUB
+						original_tag = GEO
 						1390 = { is_claim_or_core_of_ROOT = yes }
+						1088 = { is_claim_or_core_of_ROOT = yes }
 					}
 				}
 				save_event_target_as = can_annex
@@ -20427,6 +20474,17 @@ country_event = { #Fate of Chernomorsk
 					}
 				}
 				var:1390.owner = { save_event_target_as = kuban }
+			}
+			if = {
+				limit = {
+					1088 = { #Sukhum
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1088.owner = { save_event_target_as = sukhum }
 			}
 		}
 	}
@@ -20488,6 +20546,33 @@ country_event = { #Fate of Chernomorsk
 		1387 = { transfer_state_and_notify = yes }
 	}
 	
+	option = { #Give it to Sukhum
+		log = "[GetLogInfo]: event annex.1125 option annex.1125.c"
+		name = annex.1125.c
+		trigger = {
+			is_subject = no
+			has_event_target = sukhum
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:sukhum }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:sukhum = { is_subject = yes }
+			}
+		}
+		
+		set_temp_variable = { tag_to_release = event_target:sukhum }
+		1387 = { transfer_state_and_notify = yes }
+	}
+	
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.1125 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -20530,6 +20615,27 @@ country_event = { #Fate of Kalmykia
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					217 = { is_claim_or_core_of_ROOT = yes } #Tsarytsin
+					original_tag = RUS
+					original_tag = KUB
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				217 = { #Tsarytsin
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:217.owner = { save_event_target_as = tsarytsin }
+		}
 	}
 
 	option = { #Release Kalmykia
@@ -20539,7 +20645,11 @@ country_event = { #Fate of Kalmykia
 			is_subject = no
 		}
 		ai_chance = {
-			base = 0
+			base = 70
+			modifier = {
+				factor = 40
+				is_ally_with = event_target:tsarytsin
+			}
 		}
 
 		set_temp_variable = { tag_to_release = KAM }
@@ -20560,34 +20670,60 @@ country_event = { #Fate of Kalmykia
 				set_cosmetic_tag = KAM_Occupied_Republic
 			}
 		}
-
-		recheck_annexations = yes
 	}
 
-	option = { #Give it to Russia
+	option = { #Grant the land to Valdikavkaz
 		log = "[GetLogInfo]: event annex.1126 option annex.1126.b"
 		name = annex.1126.b
 		trigger = {
 			is_subject = no
-			RUS = {
-				exists = yes
-			}
+			has_event_target = tsarytsin
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tsarytsin }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tsarytsin = { is_subject = yes }
+			}
 		}
 
-		RUS = {
-			transfer_state = 237
-		}
+		set_temp_variable = { tag_to_release = event_target:tsarytsin }
+		237 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1126 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		
+		set_temp_variable = { tag_to_release = overlord }
+		237 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1126 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		237 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1126 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -20654,57 +20790,124 @@ country_event = { #Fate of the Pyatigorsk
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					1391 = { is_claim_or_core_of_ROOT = yes } #Stavropol
+					233 = { is_claim_or_core_of_ROOT = yes } #Valdikavkaz
+					original_tag = RUS
+					original_tag = MRP
+					original_tag = KUB
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1391 = { #Stavropol
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1391.owner = { save_event_target_as = stavropol }
+		}
+		if = {
+			limit = {
+				233 = { #Valdikavkaz
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:233.owner = { save_event_target_as = valdikavkaz }
+		}
 	}
 
-	option = { #Grant the land to the Mountain Republic
+	option = { #Grant the land to Stavropol
 		log = "[GetLogInfo]: event annex.1128 option annex.1128.a"
 		name = annex.1128.a
 		trigger = {
 			is_subject = no
-			MRP = {
-				exists = yes
-			}
+			has_event_target = stavropol
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:stavropol }
+				OR = { is_ally_with = event_target:valdikavkaz }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:stavropol = { is_subject = yes }
+			}
 		}
 
-		MRP = {
-			transfer_state = 235
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:stavropol }
+		235 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Grant the land to Kuban
+	option = { #Grant the land to Valdikavkaz
 		log = "[GetLogInfo]: event annex.1128 option annex.1128.b"
-		name = annex.1128.a
+		name = annex.1128.b
 		trigger = {
 			is_subject = no
-			KUB = {
-				exists = yes
-			}
+			has_event_target = valdikavkaz
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:valdikavkaz }
+				OR = { is_ally_with = event_target:stavropol }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:valdikavkaz = { is_subject = yes }
+			}
 		}
 
-		KUB = {
-			transfer_state = 235
-		}
+		set_temp_variable = { tag_to_release = event_target:valdikavkaz }
+		235 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1128 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		
+		set_temp_variable = { tag_to_release = overlord }
+		235 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1128 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		235 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1128 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
 
-country_event = { #Fate of the Cherkesiya
+country_event = { #Fate of Kuban
 	id = annex.1129
 	title = annexation_1390
 	desc = annexation_1390_desc
@@ -20713,52 +20916,119 @@ country_event = { #Fate of the Cherkesiya
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					1391 = { is_claim_or_core_of_ROOT = yes } #Stavropol
+					235 = { is_claim_or_core_of_ROOT = yes } #Piatygorsk
+					original_tag = RUS
+					original_tag = MRP
+					original_tag = KUB
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				1391 = { #Stavropol
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:1391.owner = { save_event_target_as = stavropol }
+		}
+		if = {
+			limit = {
+				235 = { #Piatygorsk
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+					}
+				}
+			}
+			var:235.owner = { save_event_target_as = piatygorsk }
+		}
 	}
 
-	option = { #Grant the land to the Mountain Republic
+	option = { #Grant the land to Stavropol
 		log = "[GetLogInfo]: event annex.1129 option annex.1129.a"
 		name = annex.1129.a
 		trigger = {
 			is_subject = no
-			MRP = {
-				exists = yes
-			}
+			has_event_target = stavropol
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:stavropol }
+				OR = { is_ally_with = event_target:piatygorsk }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:stavropol = { is_subject = yes }
+			}
 		}
 
-		MRP = {
-			transfer_state = 1390
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:stavropol }
+		1390 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Grant the land to Kuban
+	option = { #Grant the land to Piatygorsk
 		log = "[GetLogInfo]: event annex.1129 option annex.1129.b"
-		name = annex.1129.a
+		name = annex.1129.b
 		trigger = {
 			is_subject = no
-			KUB = {
-				exists = yes
-			}
+			has_event_target = piatygorsk
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:piatygorsk }
+				OR = { is_ally_with = event_target:stavropol }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:piatygorsk = { is_subject = yes }
+			}
 		}
 
-		KUB = {
-			transfer_state = 1390
-		}
+		set_temp_variable = { tag_to_release = event_target:piatygorsk }
+		1390 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1129 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		
+		1390 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1129 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		1390 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1129 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -20772,6 +21042,28 @@ country_event = { #Fate of the Dagestan
 	is_triggered_only = yes
 
 	immediate = {
+		if = {
+			limit = {
+				OR = {
+					original_tag = RUS
+					original_tag = MRP
+				}
+			}
+			save_event_target_as = can_annex
+		}
+		if = {
+			limit = {
+				237 = { #Kalmykia
+					annexations_state_owner_is_valid_grant_target = yes
+					owner = {
+						ROOT_can_grant_land = yes
+						tag = RUS
+						tag = TRS
+					}
+				}
+			}
+			var:237.owner = { save_event_target_as = kalmykia }
+		}
 	}
 
 	option = { #Release an independent Dagestan
@@ -20795,14 +21087,76 @@ country_event = { #Fate of the Dagestan
 			drop_cosmetic_tag = yes
 			set_cosmetic_tag = DAG_Occupied
 		}
+	}
+	
+	option = { #Grant the land to Kalmykia
+		log = "[GetLogInfo]: event annex.1130 option annex.1130.b"
+		name = annex.1130.b
+		trigger = {
+			is_subject = no
+			has_event_target = kalmykia
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:kalmykia }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:kalmykia = { is_subject = yes }
+			}
+		}
 
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:kalmykia }
+		every_owned_state = {
+			limit = {
+				is_dagestan = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1130 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_dagestan = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1130 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		every_owned_state = {
+			limit = {
+				is_dagestan = yes
+			}
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1130 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+	
+	after = {
 		recheck_annexations = yes
 	}
 }
@@ -30676,8 +31030,8 @@ country_event = { #Fate of St. Petersburg
 	}
 
 	option = { #Give to Russia
-		log = "[GetLogInfo]: event annex.1199 option annex.1199.a"
-		name = annex.1199.a
+		log = "[GetLogInfo]: event annex.1199 option annex.1199.b"
+		name = annex.1199.b
 		trigger = {
 			has_event_target = gatchina
 		}
