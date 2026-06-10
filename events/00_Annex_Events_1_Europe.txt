@@ -24044,7 +24044,9 @@ country_event = { #Fate of Romagna
 		}
 		ai_chance = { base = 0 }
 		set_temp_variable = { tag_to_release = event_target:modena }
-		161 = { transfer_if_owned = yes } #Romagna
+		161 = { transfer_if_owned = yes 
+		add_core_of = event_target:modena
+		} #Romagna
 	}
 
 	option = { #Give to PAP
@@ -24056,7 +24058,9 @@ country_event = { #Fate of Romagna
 		}
 		ai_chance = { base = 0 }
 		set_temp_variable = { tag_to_release = PAP }
-		161 = { transfer_if_owned = yes } #Romagna
+		161 = { transfer_if_owned = yes 
+		add_core_of = event_target:papacy
+		} #Romagna
 	}
 
 	option = { #Give to Tuscany
@@ -24068,7 +24072,9 @@ country_event = { #Fate of Romagna
 		}
 		ai_chance = { base = 0 }
 		set_temp_variable = { tag_to_release = event_target:tuscany }
-		161 = { transfer_if_owned = yes } #Romagna
+		161 = { transfer_if_owned = yes
+				add_core_of = event_target:tuscany
+			} #Romagna
 	}
 
 
@@ -30713,6 +30719,159 @@ country_event = { #Fate of St. Petersburg
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1199 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Marche-Umbria
+	id = annex.1200
+	title = annexation_157
+	desc = annexation_157_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			annexations_reset_italy = yes
+			if = {
+				limit = { is_italian_tag = yes }
+				save_event_target_as = can_annex
+			}
+			annexations_create_italian_targets = yes
+			if = {
+				limit = {
+					var:2.owner = { #Latium
+						ROOT_can_grant_land = yes
+					}
+				}
+				var:2.owner = { save_event_target_as = latium }
+			}
+			if = {
+				limit = {
+					var:162.owner = { #Tuscany
+						ROOT_can_grant_land = yes
+					}
+				}
+				var:162.owner = { save_event_target_as = tuscany }
+			}
+		}
+	}
+
+	option = { #Give to Latium
+		log = "[GetLogInfo]: event annex.1200 option annex.1200.a"
+		name = annex.1200.a
+		trigger = {
+			annexations_can_release_italian_splinters = yes
+			has_event_target = latium
+			NOT = {
+				has_event_target = italy 
+				has_event_target = italy_soc
+			}
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = event_target:latium }
+		every_owned_state = {
+			limit = {
+				is_central_italy_country = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		add_core_of = event_target:latium
+			} #Marche
+	}
+
+	option = { #Give to PAP
+		log = "[GetLogInfo]: event annex.1200 option annex.1200.b"
+		name = annex.1200.b
+		trigger = {
+			annexations_can_release_italian_splinters = yes
+			has_event_target = papacy
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = PAP }
+		every_owned_state = {
+			limit = {
+				is_central_italy_country = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to Tuscany
+		log = "[GetLogInfo]: event annex.1200 option annex.1200.c"
+		name = annex.1200.c
+		trigger = {
+			annexations_can_release_italian_splinters = yes
+			has_event_target = tuscany
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = event_target:tuscany }
+		every_owned_state = {
+			limit = {
+				is_central_italy_country = yes
+				is_allowed_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+
+	option = { #Give to Italy
+		log = "[GetLogInfo]: event annex.1200 option annex.europe.give_to_italy"
+		name = annex.europe.give_to_italy
+		trigger = {
+			OR = {
+				has_event_target = italy
+				has_event_target = italy_soc
+			}
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = {
+					OR = {
+						is_ally_with = event_target:italy 
+						is_ally_with = event_target:italy_soc
+					}
+				}
+			}
+		}
+		annexations_give_italy_to_target = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1200 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		161 = { transfer_if_owned = yes } #Romagna
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1159 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		161 = { add_claim_of_ROOT = yes } #Romagna
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1200 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
