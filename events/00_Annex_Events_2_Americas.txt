@@ -76,6 +76,7 @@
 # annex.2058 - Fate of Alaska
 # annex.2059 - Fate of Alaska
 # annex.2060 - Fate of Monterrey
+# annex.2061 - Fate of Greenland
 
 add_namespace = annex
 
@@ -6696,6 +6697,263 @@ country_event = { #Fate of Monterrey
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.2060 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+		
+    }
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Greenland
+	id = annex.2061
+	title = annexation_101
+	desc = annexation_101_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						is_nordic_tag = yes
+						original_tag = ENG
+						original_tag = AME
+						original_tag = SCA
+						original_tag = QUE
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			
+			#Greater Montreal
+			if = {
+				limit = {
+					1462 = { 
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = QUE
+							tag = AME
+							tag = SCA
+						}
+					}
+				}
+				var:1462.owner = { save_event_target_as = montreal }
+			}
+			
+			#New England / Maine
+			if = {
+				limit = {
+					357 = { 
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = QUE
+							tag = AME
+							tag = SCA
+						}
+					}
+				}
+				var:357.owner = { save_event_target_as = new_england }
+			}
+			
+			#Denmark
+			if = {
+				limit = {
+					37 = { 
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = DEN
+						}
+					}
+				}
+				var:37.owner = { save_event_target_as = denmark }
+			}
+			
+			#Norway
+			if = {
+				limit = {
+					110 = { 
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							tag = NOR
+							tag = SWE
+						}
+					}
+				}
+				var:110.owner = { save_event_target_as = norway }
+			}
+		}
+	}
+	
+	option = { #Give to Greater Montreal
+		log = "[GetLogInfo]: event annex.2061 option annex.2061.a"
+		name = annex.2061.a
+		trigger = {
+			has_event_target = montreal
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:montreal }
+				OR = {
+					is_ally_with = event_target:new_england
+					is_ally_with = event_target:denmark
+					is_ally_with = event_target:norway
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:montreal = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:montreal }
+		every_owned_state = {
+			limit = { is_greenland = yes }
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to New England
+		log = "[GetLogInfo]: event annex.2061 option annex.2061.b"
+		name = annex.2061.b
+		trigger = {
+			has_event_target = new_england
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:new_england }
+				OR = {
+					is_ally_with = event_target:montreal
+					is_ally_with = event_target:denmark
+					is_ally_with = event_target:norway
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:new_england = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:new_england }
+		every_owned_state = {
+			limit = { is_greenland = yes }
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to Denmark
+		log = "[GetLogInfo]: event annex.2061 option annex.2061.c"
+		name = annex.2061.c
+		trigger = {
+			has_event_target = denmark
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:denmark }
+				OR = {
+					is_ally_with = event_target:montreal
+					is_ally_with = event_target:new_england
+					is_ally_with = event_target:norway
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:denmark = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:denmark }
+		every_owned_state = {
+			limit = { is_greenland = yes }
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to Norway
+		log = "[GetLogInfo]: event annex.2061 option annex.2061.e"
+		name = annex.2061.e
+		trigger = {
+			has_event_target = norway
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:norway }
+				OR = {
+					is_ally_with = event_target:montreal
+					is_ally_with = event_target:new_england
+					is_ally_with = event_target:denmark
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:norway = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:norway }
+		every_owned_state = {
+			limit = { is_greenland = yes }
+			transfer_state_and_notify = yes
+		}
+	}
+	
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.2061 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }		
+		every_owned_state = {
+			limit = { is_greenland = yes }
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #integration
+		log = "[GetLogInfo]: event annex.2061 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		every_owned_state = {
+			limit = { is_greenland = yes}
+			add_claim_of_ROOT = yes
+		}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.2061 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 		
