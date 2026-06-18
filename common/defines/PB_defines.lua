@@ -1,5 +1,5 @@
 -- Game
-NDefines.NGame.START_DATE = "1933.1.1.11"
+NDefines.NGame.START_DATE = "1933.1.1.12"
 NDefines.NGame.END_DATE = "2000.1.1.1"
 NDefines.NGame.HANDS_OFF_START_TAG = "MTA" -- Mount Athos is and will not be involved in anything yet
 NDefines.NCountry.BASE_MAX_COMMAND_POWER = 150.0

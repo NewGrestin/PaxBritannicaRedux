@@ -712,7 +712,7 @@ country_event = { #Fate of Ireland
 			modifier = {
 				factor = 0
 				has_event_target = britain
-				is_ally_with = event_target:england
+				is_ally_with = event_target:britain
 			}
 		}
 
@@ -775,7 +775,7 @@ country_event = { #Fate of Ireland
 			modifier = {
 				factor = 0
 				has_event_target = britain
-				is_ally_with = event_target:england
+				is_ally_with = event_target:britain
 			}
 		}
 
@@ -829,8 +829,8 @@ country_event = { #Fate of Ireland
 			modifier = {
 				factor = 0
 				OR = {
-					NOT = { is_ally_with = event_target:england }
-					event_target:england = {
+					NOT = { is_ally_with = event_target:britain }
+					event_target:britain = {
 						is_subject = yes
 						NOT = { is_subject_of = ROOT }
 					}
@@ -838,11 +838,11 @@ country_event = { #Fate of Ireland
 			}
 			modifier = {
 				factor = 0.1
-				event_target:england = { is_subject = yes }
+				event_target:britain = { is_subject = yes }
 			}
 		}
 
-		set_temp_variable = { tag_to_release = event_target:england }
+		set_temp_variable = { tag_to_release = event_target:britain }
 		every_owned_state = {
 			limit = { is_ireland = yes }
 			transfer_if_owned = yes
@@ -1910,6 +1910,7 @@ country_event = { #Fate of France
 							state = 855 #Dunkerque Corridor
 							state = 1206 #Moselle
 							state = 1207 #Verdun
+							state = 972 #Neuchatel
 						}
 					} 
 					remove_core_of = FRA
@@ -3588,15 +3589,7 @@ country_event = { #Fate of Portugal
 					}
 				}
 				save_event_target_as = can_annex
-			}
-		if = {
-			limit = { AME = { ROOT_can_grant_land = yes } }
-			POR = { save_event_target_as = ml_portugual }
-		}
-		if = {
-			limit = { AME = { ROOT_can_grant_land = yes } }
-			PEF = { save_event_target_as = af_portugual }
-		}			
+			}			
 			if = {
 				limit = { NOT = { has_event_target = spain } }
 				if = {
@@ -3612,11 +3605,6 @@ country_event = { #Fate of Portugal
 		log = "[GetLogInfo]: event annex.1016 option annex.1016.a"
 		name = annex.1016.a
 		trigger = {
-			NOT = { country_exists = PEF }
-			NOT = {
-				original_tag = POR
-				original_tag = PEF
-			}
 			is_subject = no
 		}
 		ai_chance = {
@@ -3625,26 +3613,25 @@ country_event = { #Fate of Portugal
 				factor = 0
 				annexations_AI_release_puppet_default_logic = yes
 			}
+			modifier = {
+				factor = 10
+				is_in_faction_with = PEF
+			}
 		}
 		
-		set_temp_variable = { tag_to_release = event_target:af_portugual }
-		every_state = {
+
+		set_temp_variable = { tag_to_release = PEF }
+		every_owned_state = {
 			limit = { is_portugal = yes }
-			add_core_of = var:tag_to_release
-			hidden_effect = { remove_claim_by = var:tag_to_release }
-		}
-		release_targeted_tag = yes				
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes
+		}			
 	}
 
 	option = { #Restore portugual
 		log = "[GetLogInfo]: event annex.1016 option annex.1016.b"
 		name = annex.1016.b
 		trigger = {
-			NOT = { country_exists = POR }
-			NOT = {
-				original_tag = POR
-				original_tag = PEF
-			}
 			is_subject = no
 		}
 		ai_chance = {
@@ -3654,13 +3641,13 @@ country_event = { #Fate of Portugal
 				annexations_AI_release_puppet_default_logic = yes
 			}
 		}		
-		set_temp_variable = { tag_to_release = event_target:ml_portugual }
-		every_state = {
+
+		set_temp_variable = { tag_to_release = POR }
+		every_owned_state = {
 			limit = { is_portugal = yes }
-			add_core_of = var:tag_to_release
-			hidden_effect = { remove_claim_by = var:tag_to_release }
-		}
-		release_targeted_tag = yes		
+			transfer_if_owned = yes
+			remove_claim_and_add_core_of_target = yes
+		}		
 		
 	}
 
@@ -7434,7 +7421,7 @@ country_event = { #Fate of Hesse
 		set_temp_variable = { tag_to_release = event_target:bavaria }
 		every_owned_state = {
 			limit = {
-				is_rhineland = yes
+				is_hesse = yes
 				is_valid_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -7473,7 +7460,7 @@ country_event = { #Fate of Hesse
 		set_temp_variable = { tag_to_release = event_target:westphalia }
 		every_owned_state = {
 			limit = {
-				is_rhineland = yes
+				is_hesse = yes
 				is_valid_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -10905,8 +10892,8 @@ country_event = { #Fate of Holstein
 	}
 
 	option = { #Give to German tag 2 (owner of lubeck)
-		log = "[GetLogInfo]: event annexation_events.1060 option annexation_events.1116.a"
-		name = annexation_events.1116.a
+		log = "[GetLogInfo]: event annexation_events.1060 option annex.1060.a"
+		name = annex.1060.f
 		trigger = {
 			has_event_target = lubeck
 		}
@@ -12718,6 +12705,7 @@ country_event = { #Fate of Serbia
 		1027 = { retain_state = yes }
 		105 = { retain_state = yes }
 		1242 = { retain_state = yes }
+		1231 = { retain_state = yes }
 	}
 
 	option = { #Release Serbia
@@ -18090,7 +18078,7 @@ country_event = { #Fate of Poland
 		95 = { retain_state = yes } #Nowogordek
 		784 = { retain_state = yes } #Vilnius
 		96 = { retain_state = yes } #Wilijeka
-		1471 = { retain_state = yes} #Opole Silesia
+		1461 = {retain_state = yes} #Opolo Silesia
 	}
 
 	option = { #Release Poland
@@ -18636,8 +18624,8 @@ country_event = { #Fate of Lithuania
 
 country_event = { #Fate of Latvia
 	id = annex.1112
-	title = annexation_13
-	desc = annexation_13_desc
+	title = annexation_12
+	desc = annexation_12_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -18825,8 +18813,8 @@ country_event = { #Fate of Latvia
 
 country_event = { #Fate of Estonia
 	id = annex.1113
-	title = annexation_12
-	desc = annexation_12_desc
+	title = annexation_13
+	desc = annexation_13_desc
 	picture = GFX_report_PB_Peace_Deals_Europe
 
 	is_triggered_only = yes
@@ -24948,7 +24936,7 @@ country_event = { #Fate of Glukhov
 
 	option = { #Return to Russia
 		log = "[GetLogInfo]: event annex.1163 option annex.1163.a"
-		name = annex.europe.give_to_russia
+		name = annex.1163.a
 		trigger = {
 			has_event_target = bryansk
 		}
