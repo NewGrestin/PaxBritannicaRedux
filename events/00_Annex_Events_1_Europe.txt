@@ -21473,7 +21473,43 @@ country_event = { #Fate of Terek
 
 	is_triggered_only = yes
 
-	immediate = {
+	immediate = { 
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						original_tag = RUS
+						original_tag = KUB
+						original_tag = KAM
+						original_tag = DAG
+						original_tag = TRS
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					232 = { #Dagestan
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:232.owner = { save_event_target_as = dagestan }
+			}
+			if = {
+				limit = {
+					235 = { #Pyatigorsk
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:235.owner = { save_event_target_as = piatygorsk }
+			}
+		}
 	}
 
 	option = { #Grant the land to Dagestan
@@ -21481,45 +21517,85 @@ country_event = { #Fate of Terek
 		name = annex.1134.a
 		trigger = {
 			is_subject = no
-			DAG = {
-				exists = yes
-			}
+			has_event_target = dagestan
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:piatygorsk
+				NOT = { is_ally_with = event_target:dagestan }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:dagestan = { is_subject = yes }
+			}
 		}
 
-		DAG = {
-			transfer_state = 1389
-		}
-
-		recheck_annexations = yes
+		set_temp_variable = { tag_to_release = event_target:dagestan }
+		1389 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Grant the land Kuban
+	option = { #Grant the land to Piatygorsk
 		log = "[GetLogInfo]: event annex.1134 option annex.1134.b"
 		name = annex.1134.b
 		trigger = {
 			is_subject = no
-			KUB = {
-				exists = yes
-			}
+			has_event_target = piatygorsk
 		}
 		ai_chance = {
-			base = 10
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				is_ally_with = event_target:dagestan
+				NOT = { is_ally_with = event_target:piatygorsk }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:piatygorsk = { is_subject = yes }
+			}
 		}
 
-		KUB = {
-			transfer_state = 1389
-		}
+		set_temp_variable = { tag_to_release = event_target:piatygorsk }
+		1389 = { transfer_state_and_notify = yes }
+	}
 
-		recheck_annexations = yes
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1134 option annex.europe.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1389 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1134 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		ai_chance = { base = 100 }
+		
+		1389 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1134 option annex.cancel"
+		log = "[GetLogInfo]: event annex.1134 annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
+	}
+
+	after = {
 		recheck_annexations = yes
 	}
 }
