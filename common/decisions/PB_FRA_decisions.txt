@@ -1,16 +1,14 @@
 #Domestic Policy
 PB_FRA_Domestic_Policy = {
 
-	PB_Rearmament_Goals = {
+	FRA_rearmament_of_military = {
 
 		icon = GFX_decision_ger_military_buildup
 
-        activation = { 
-			has_completed_focus = PB_FRA_Rearmament_Campaigns
-        }
+        activation = { has_completed_focus = FRA_rearmament_campaigns }
 
 		available = {
-			num_of_military_factories > 24
+			num_of_military_factories > 39
 		}  
 
 		selectable_mission = no
@@ -21,29 +19,25 @@ PB_FRA_Domestic_Policy = {
 
 		complete_effect = {
 			add_stability = 0.1
-			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.06
-			}
+			set_temp_variable = { number = -6 }
+			FRA_factionalism_change = yes
+			set_temp_variable = { number = -6 }
+			FRA_factionalism_change = yes
         }
 
 		timeout_effect = {
 			add_stability = -0.1
-			custom_effect_tooltip = FRA_Factionalism_0.06_increase
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = 0.06
-			}
+			set_temp_variable = { number = 6 }
+			FRA_factionalism_change = yes
         }
 	}
 
-	PB_Autometro = {
+	FRA_autometro_decision = {
 
 		icon = GFX_decision_generic_construction
 
         activation = { 
-			has_completed_focus = PB_FRA_Autometro
+			has_completed_focus = FRA_autometro
         }
 
 		available = {
@@ -58,20 +52,14 @@ PB_FRA_Domestic_Policy = {
 
 		complete_effect = {
 			add_stability = 0.1
-			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.06
-			}
+			set_temp_variable = { number = -6 }
+			FRA_factionalism_change = yes
         }
 
 		timeout_effect = {
 			add_stability = -0.1
-			custom_effect_tooltip = FRA_Factionalism_0.06_increase
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = 0.06
-			}
+			set_temp_variable = { number = 6 }
+			FRA_factionalism_change = yes
         }
 	}
 
@@ -86,13 +74,13 @@ PB_FRA_Domestic_Policy = {
 			modifier = {
 				factor = 0
 				check_variable = {
-					FRA_Factionalism < 0.4
+					FRA_factionalism_var < 40
 				}
 			}
 			modifier = {
 				factor = 10
 				check_variable = {
-					FRA_Factionalism > 0.4
+					FRA_factionalism_var > 40
 				}
 			}
 		}
@@ -104,7 +92,7 @@ PB_FRA_Domestic_Policy = {
 		}
 		visible = {
 			check_variable = {
-				FRA_Factionalism > 0.25
+				FRA_factionalism_var > 25
 			}
 		}
 
@@ -113,11 +101,8 @@ PB_FRA_Domestic_Policy = {
 		days_re_enable = 10
 
 		remove_effect = {
-			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.06
-			}
+			set_temp_variable = { number = -6 }
+			FRA_factionalism_change = yes
 		}
 	}
 
@@ -132,7 +117,7 @@ PB_FRA_Domestic_Policy = {
 			modifier = {
 				factor = 0
 				check_variable = {
-					FRA_Nationalistic_Fervour > 0.8
+					FRA_fervour_var > 80
 				}
 			}
 		}
@@ -144,7 +129,7 @@ PB_FRA_Domestic_Policy = {
 		}
 		visible = {
 			check_variable = {
-				FRA_Nationalistic_Fervour < 0.9
+				FRA_fervour_var < 90
 			}
 		}
 
@@ -153,11 +138,8 @@ PB_FRA_Domestic_Policy = {
 		days_re_enable = 10
 
 		remove_effect = {
-			custom_effect_tooltip = FRA_Nationalistic_Fervour_0.06_increase
-			add_to_variable = {
-				var = FRA_Nationalistic_Fervour
-				value = 0.06
-			}
+			set_temp_variable = { number = 6 }
+			FRA_fervour_change = yes
 		}
 	}
 
@@ -453,7 +435,7 @@ PB_FRA_Domestic_Policy = {
 		}
 	}
 
-	PB_World_City_Paris = {
+	FRA_nouveau_plan_de_paris = {
 
 		icon = generic_construction
 
@@ -464,23 +446,26 @@ PB_FRA_Domestic_Policy = {
 		}
 		allowed = { original_tag = FRA }
 		available = {
-			ROOT = {
-				is_subject = no
-			}
-			has_completed_focus = PB_FRA_All_Roads_Lead_To_Paris
+			ROOT = { is_subject = no }
+			has_completed_focus = FRA_all_roads_lead_to_paris
 		}
 
 		modifier = {
-			civilian_factory_use = 2
+			civilian_factory_use = 5
 		}
 
 		days_remove = 724
 
  		fire_only_once = yes
+
+		complete_effect = {
+			16 = { add_dynamic_modifier = { modifier = FRA_nouveau_plan_de_paris_idea } }
+		}
      
 		remove_effect = {
 			add_stability = 0.1
 			16 = {
+				remove_dynamic_modifier = { modifier = FRA_nouveau_plan_de_paris_idea }
 				add_building_construction = {
 					type = arms_factory
 					level = 2
@@ -499,45 +484,9 @@ PB_FRA_Domestic_Policy = {
 					instant_build = yes
 				}
 			}
-
-			if = {
-				limit = {
-					has_government = ds
-				}
-				add_popularity = {
-					ideology = ds
-					popularity = 0.1
-				}
-			}
-
-			if = {
-				limit = {
-					has_government = ni
-				}
-				add_popularity = {
-					ideology = ni
-					popularity = 0.1
-				}
-			}
-			
-			if = {
-				limit = {
-					has_government = rc
-				}
-				add_popularity = {
-					ideology = rc
-					popularity = 0.05
-				}
-			}
-			
-			if = {
-				limit = {
-					has_government = ss
-				}
-				add_popularity = {
-					ideology = ss
-					popularity = 0.05
-				}
+			add_popularity = {
+				ideology = ROOT
+				popularity = 0.1
 			}
 		}
 	}
@@ -748,7 +697,7 @@ PB_FRA_Foreign_Policy = {
 		icon = GFX_decision_generic_nationalism
 
         visible = {
-            has_completed_focus = PB_FRA_Latin_Economic_Sphere
+            has_completed_focus = FRA_latin_economic_sphere
 			FRA = {
 				is_in_faction_with = SPR
 			}
@@ -805,7 +754,7 @@ PB_FRA_Foreign_Policy = {
 		icon = GFX_decision_generic_nationalism
 
         visible = {
-            has_completed_focus = PB_FRA_Latin_Economic_Sphere
+            has_completed_focus = FRA_latin_economic_sphere
 			FRA = {
 				is_in_faction_with = SPR
 			}
@@ -865,7 +814,7 @@ PB_FRA_Foreign_Policy = {
 		icon = GFX_decision_generic_nationalism
 
         visible = {
-            has_completed_focus = PB_FRA_Latin_Economic_Sphere
+            has_completed_focus = FRA_latin_economic_sphere
 			FRA = {
 				is_in_faction_with = IST
 			}
@@ -920,7 +869,7 @@ PB_FRA_Foreign_Policy = {
 		icon = GFX_decision_generic_nationalism
 
         visible = {
-            has_completed_focus = PB_FRA_Latin_Economic_Sphere
+            has_completed_focus = FRA_latin_economic_sphere
 			FRA = {
 				is_in_faction_with = SPR
 			}
@@ -1027,7 +976,7 @@ PB_FRA_Foreign_Policy = {
 		icon = GFX_decision_generic_nationalism
 
         visible = {
-            has_completed_focus = PB_FRA_Latin_Economic_Sphere
+            has_completed_focus = FRA_latin_economic_sphere
 			FRA = {
 				is_in_faction_with = SPR
 			}
@@ -1129,7 +1078,7 @@ PB_FRA_Foreign_Policy = {
 		icon = GFX_decision_generic_nationalism
 
         visible = {
-            has_completed_focus = PB_FRA_Latin_Economic_Sphere
+            has_completed_focus = FRA_latin_economic_sphere
 			FRA = {
 				is_in_faction_with = SPR
 			}
@@ -1198,7 +1147,7 @@ PB_FRA_Foreign_Policy = {
 		icon = GFX_decision_generic_nationalism
 
         visible = {
-            has_completed_focus = PB_FRA_Alliance_with_Denmark
+            has_completed_focus = FRA_alliance_with_denmark
             NOT = {
                 DEN = {
                     is_in_faction_with = FRA
@@ -1255,7 +1204,7 @@ PB_FRA_Foreign_Policy = {
 		allowed = { original_tag = FRA }
 		
 		visible = {
-			has_global_flag = Great_Balkan_War_Fired
+			gbw_started = yes
 			OR = {
 				has_country_leader = {
 					name = "Jacques Doriot"
@@ -1273,7 +1222,7 @@ PB_FRA_Foreign_Policy = {
 		}
 		
 		available = {
-			has_global_flag = Great_Balkan_War_Fired
+			gbw_started = yes
 			SER = {
 				OR = {
 					has_war_with = HUN
@@ -1338,7 +1287,7 @@ PB_FRA_Foreign_Policy = {
 		allowed = { original_tag = FRA }
 		
 		visible = {
-			has_global_flag = Great_Balkan_War_Fired
+			gbw_started = yes
 			OR = {
 				has_country_leader = {
 					name = "Jacques Doriot"
@@ -1360,7 +1309,7 @@ PB_FRA_Foreign_Policy = {
 		}
 		
 		available = {
-			has_global_flag = Great_Balkan_War_Fired
+			gbw_started = yes
 			MOL = {
 				OR = {
 					has_war_with = HUN
@@ -1425,7 +1374,7 @@ PB_FRA_Foreign_Policy = {
 		allowed = { original_tag = FRA }
 		
 		visible = {
-			has_global_flag = Great_Balkan_War_Fired
+			gbw_started = yes
 			has_country_leader = {
 				name = "Jacques Doriot"
 				ruling_only = yes
@@ -1437,7 +1386,7 @@ PB_FRA_Foreign_Policy = {
 		}
 		
 		available = {
-			has_global_flag = Great_Balkan_War_Fired
+			gbw_started = yes
 			HUN = {
 				OR = {
 					has_war_with = BUL
@@ -2011,28 +1960,40 @@ PB_FRA_A_New_Hegemon = {
 
 
 #Heavy Industry Planning
-PB_FRA_Fund_The_Steelworks_Cat = {
+FRA_heavy_industry_planning = {
 
-	PB_Heavy_Industry_In_Languedoc = {
-
+	FRA_heavy_industry_in_state = {
 		icon = GFX_decision_ger_military_buildup
-
 		cost = 40
-
 		ai_will_do = {
 			factor = 10
 		}
-
+		state_target = yes
 		allowed = { original_tag = FRA }
+		available = { num_of_civilian_factories_available_for_projects > 5 }
+		visible = { has_completed_focus = FRA_fund_the_steelworks }
 
-		days_remove = 30
-
+		days_remove = 60
 		fire_only_once = yes
+		modifier = { civilian_factory_use = 6 }
+		target_trigger = { FROM = { is_owned_and_controlled_by = FRA } }
+		cancel_trigger = { FROM = { NOT = { is_controlled_by = ROOT } } }
+
+		on_map_mode = map_and_decisions_view
+		targets = { 15 18 19 20 22 29 1206 }
+		highlight_states = {
+			highlight_state_targets = {
+				state = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
 
 		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			22 = {
-				add_extra_state_shared_building_slots = 4
+			set_temp_variable = { number = -0.15 }
+			FRA_unemployment_change = yes
+			FROM = {
+				add_extra_state_shared_building_slots = 3
 				add_building_construction = {
 					type = steel_mill
 					level = 1
@@ -2047,409 +2008,101 @@ PB_FRA_Fund_The_Steelworks_Cat = {
 		}
 	}
 
-	PB_Dig_Sites_In_Languedoc = {
-
+	FRA_dig_sites_in_state = {
 		icon = GFX_decision_steelworks
-
-		cost = 40
-
+		cost = 60
 		ai_will_do = {
 			factor = 10
 		}
+		state_target = yes
 		allowed = { original_tag = FRA }
-		available = {
-			has_completed_focus = PB_FRA_Dig_Sites
-		}
+		available = { num_of_civilian_factories_available_for_projects > 3 }
+		visible = { has_completed_focus = FRA_dig_for_resources }
 
-		days_remove = 30
-
+		days_remove = 40
 		fire_only_once = yes
+		modifier = { civilian_factory_use = 4 }
+		target_trigger = { FROM = { is_owned_and_controlled_by = FRA } }
+		cancel_trigger = { FROM = { NOT = { is_controlled_by = ROOT } } }
 
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			22 = {
-			    add_resource = {
-				    type = steel
-				    amount = 10
-			    }
+		on_map_mode = map_and_decisions_view
+		targets = { 15 18 19 20 22 29 1206 }
+		highlight_states = {
+			highlight_state_targets = {
+				state = FROM
 			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
 		}
-	}
-
-	PB_Heavy_Industry_In_Calais = {
-
-		icon = GFX_decision_ger_military_buildup
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		allowed = { original_tag = FRA }
-
-		days_remove = 30
-
-		fire_only_once = yes
 
 		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			29 = {
-				add_extra_state_shared_building_slots = 4
-				add_building_construction = {
-					type = steel_mill
-					level = 1
-					instant_build = yes
+			set_temp_variable = { number = -0.15 }
+			FRA_unemployment_change = yes
+			FROM = {
+				if = {
+					limit = { state = 15}
+					add_resource = {
+				    	type = steel
+				    	amount = 10
+			   		}
 				}
-				add_building_construction = {
-					type = arms_factory
-					level = 1
-					instant_build = yes
+				if = {
+					limit = { state = 18 }
+					add_resource = {
+				    	type = steel
+				    	amount = 6
+			   		}
 				}
-			}
-		}
-	}
-
-	PB_Dig_Sites_In_Calais = {
-
-		icon = GFX_decision_steelworks
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			has_completed_focus = PB_FRA_Dig_Sites
-		}
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			29 = {
-			    add_resource = {
-				    type = steel
-				    amount = 10
-			    }
-			}
-		}
-	}
-
-	PB_Heavy_Industry_In_Rhone = {
-
-		icon = GFX_decision_ger_military_buildup
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		allowed = { original_tag = FRA }
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			20 = {
-				add_extra_state_shared_building_slots = 4
-				add_building_construction = {
-					type = steel_mill
-					level = 1
-					instant_build = yes
+				if = {
+					limit = { state = 19 }
+					add_resource = {
+				    	type = aluminium
+				    	amount = 8
+			   		}
 				}
-				add_building_construction = {
-					type = arms_factory
-					level = 1
-					instant_build = yes
+				if = {
+					limit = { state = 20 }
+					add_resource = {
+				    	type = steel
+				    	amount = 5
+			   		}
+					add_resource = {
+				    	type = aluminium
+				    	amount = 5
+			   		}
 				}
-			}
-		}
-	}
-
-	PB_Dig_Sites_In_Rhone = {
-
-		icon = GFX_decision_steelworks
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			has_completed_focus = PB_FRA_Dig_Sites
-		}
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			20 = {
-			    add_resource = {
-				    type = steel
-				    amount = 10
-			    }
-			}
-		}
-	}
-
-	PB_Heavy_Industry_In_Alpes = {
-
-		icon = GFX_decision_ger_military_buildup
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		allowed = { original_tag = FRA }
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			32 = {
-				add_extra_state_shared_building_slots = 4
-				add_building_construction = {
-					type = steel_mill
-					level = 1
-					instant_build = yes
+				if = {
+					limit = { state = 22 }
+					add_resource = {
+				    	type = aluminium
+				    	amount = 10
+			   		}
 				}
-				add_building_construction = {
-					type = arms_factory
-					level = 1
-					instant_build = yes
+
+				if = {
+					limit = { state = 29 }
+					add_resource = {
+				    	type = steel
+				    	amount = 15
+			   		}
+					add_resource = {
+				    	type = coal
+				    	amount = 20
+			   		}
 				}
-			}
-		}
-	}
 
-	PB_Dig_Sites_In_Alpes = {
-
-		icon = GFX_decision_steelworks
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			has_completed_focus = PB_FRA_Dig_Sites
-		}
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			32 = {
-			    add_resource = {
-				    type = steel
-				    amount = 10
-			    }
-			}
-		}
-	}
-
-	PB_Heavy_Industry_In_Lorraine = {
-
-		icon = GFX_decision_ger_military_buildup
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		allowed = { original_tag = FRA }
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			17 = {
-				add_extra_state_shared_building_slots = 4
-				add_building_construction = {
-					type = steel_mill
-					level = 1
-					instant_build = yes
+				if = {
+					limit = { state = 1206 }
+					add_resource = {
+				    	type = steel
+				    	amount = 25
+			   		}
+					add_resource = {
+				    	type = coal
+				    	amount = 10
+			   		}
 				}
-				add_building_construction = {
-					type = arms_factory
-					level = 1
-					instant_build = yes
-				}
-			}
-		}
-	}
 
-	PB_Dig_Sites_In_Lorraine = {
-
-		icon = GFX_decision_steelworks
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			has_completed_focus = PB_FRA_Dig_Sites
-		}
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			17 = {
-			    add_resource = {
-				    type = steel
-				    amount = 10
-			    }
-			}
-		}
-	}
-
-	PB_Heavy_Industry_In_Normandy = {
-
-		icon = GFX_decision_ger_military_buildup
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		allowed = { original_tag = FRA }
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			15 = {
-				add_extra_state_shared_building_slots = 4
-				add_building_construction = {
-					type = steel_mill
-					level = 1
-					instant_build = yes
-				}
-				add_building_construction = {
-					type = arms_factory
-					level = 1
-					instant_build = yes
-				}
-			}
-		}
-	}
-
-	PB_Dig_Sites_In_Normandy = {
-
-		icon = GFX_decision_steelworks
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			has_completed_focus = PB_FRA_Dig_Sites
-		}
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			15 = {
-			    add_resource = {
-				    type = steel
-				    amount = 10
-			    }
-			}
-		}
-	}
-
-	PB_Heavy_Industry_In_Aquitaine = {
-
-		icon = GFX_decision_ger_military_buildup
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		allowed = { original_tag = FRA }
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			19 = {
-				add_extra_state_shared_building_slots = 4
-				add_building_construction = {
-					type = steel_mill
-					level = 1
-					instant_build = yes
-				}
-				add_building_construction = {
-					type = arms_factory
-					level = 1
-					instant_build = yes
-				}
-			}
-		}
-	}
-
-	PB_Dig_Sites_In_Aquitaine = {
-
-		icon = GFX_decision_steelworks
-
-		cost = 40
-
-		ai_will_do = {
-			factor = 10
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			has_completed_focus = PB_FRA_Dig_Sites
-		}
-
-		days_remove = 30
-
-		fire_only_once = yes
-
-		remove_effect = {
-			PB_FRA_unemployment_variable_minus0.05 = yes
-			19 = {
-			    add_resource = {
-				    type = steel
-				    amount = 10
-			    }
 			}
 		}
 	}
@@ -2526,1015 +2179,9 @@ PB_FRA_European_Commonwealth = {
 		}
 	}
 }
-#interservice rivalry
-PB_FRA_Interservice_Rivalry = {                            
 
-	FRA_SP_Coup_Timeout = {
-		icon = revolt
-		
-		available = {
-			OR = {
-				has_country_flag = FRA_SP_IN_POWER
-				has_country_flag = FRA_MIL_IN_POWER
-				has_country_flag = FRA_DISABLE_ALL_MECHANICS
-				has_country_flag = FRA_Rivalry_Decision_MIL_Active
-			}
-		}
-
-		activation = {    
-			NOT = {
-				has_country_flag = FRA_Rivalry_Decision_MIL_Active
-			}  
-			has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-			has_country_flag = FRA_Refused_SP_Demands
-		}
-
-		is_good = no
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		days_mission_timeout = 14
-
-		timeout_effect = {
-
-			FRA = {
-				country_event = { id = French.43 } 
-			}
-		}
-	}
-
-	FRA_Military_Coup_Timeout = {
-		icon = revolt
-
-		available = {
-			OR = {
-				has_country_flag = FRA_SP_IN_POWER
-				has_country_flag = FRA_MIL_IN_POWER
-				has_country_flag = FRA_DISABLE_ALL_MECHANICS
-				has_country_flag = FRA_Rivalry_Decision_MIL_Active
-			}
-		}
-
-		activation = {   
-			NOT = {
-				has_country_flag = FRA_Rivalry_Decision_MIL_Active
-			}    
-			has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant                         
-			has_country_flag = FRA_Refused_Military_Demands
-		}
-
-		is_good = no
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		days_mission_timeout = 14
-
-		timeout_effect = {
-
-			FRA = {
-				country_event = { id = French.44 } 
-			}
-		}
-	}
-
-	FRA_SP_Protest_Timeout = {
-		icon = generic_operation
-
-		available = {
-			OR = {
-				has_country_flag = FRA_SP_IN_POWER
-				has_country_flag = FRA_MIL_IN_POWER
-				has_country_flag = FRA_DISABLE_ALL_MECHANICS
-				has_country_flag = FRA_Rivalry_Decision_SP_Active
-			}
-		}
-
-		activation = {   
-			NOT = {
-				has_country_flag = FRA_Rivalry_Decision_SP_Active
-			}                      
-			OR = {
-				has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-			}     
-		}
-
-		is_good = no
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		days_mission_timeout = 25
-
-		timeout_effect = {
-
-			FRA = {
-				country_event = { id = French.41 } 
-			}
-		}
-	}
-
-	FRA_Militarist_Protest_Timeout = {
-		icon = generic_operation
-
-		available = {
-			OR = {
-				has_country_flag = FRA_SP_IN_POWER
-				has_country_flag = FRA_MIL_IN_POWER
-				has_country_flag = FRA_DISABLE_ALL_MECHANICS
-				has_country_flag = FRA_Rivalry_Decision_MIL_Active
-			}
-		}
-
-		activation = {   
-			NOT = {
-				has_country_flag = FRA_Rivalry_Decision_MIL_Active
-			}                         
-			OR = {
-				has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-			}       
-		}
-
-		is_good = no
-
-		ai_will_do = {
-			factor = 10
-		}
-
-		days_mission_timeout = 25
-
-		timeout_effect = {
-
-			FRA = {
-				country_event = { id = French.42 } 
-			}
-		}
-	}
-
-	FRA_SP_Recruitment_Campaign = {
-		icon = generic_prepare_civil_war
-		allowed = { original_tag = FRA }
-		available = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-
-			custom_trigger_tooltip = {
-				tooltip = FRA_Rivalry_Decision_Active_tt
-				NOT = {
-					ROOT = {
-						has_country_flag = FRA_Rivalry_Decision_Active
-					}
-				}
-			}
-
-			NOT = {
-				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-			}
-
-			NOT = {
-				has_idea = FRA_Military_Total_Control
-			}
-		}
-		cost = 50
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 30
-		days_re_enable = 60
-		remove_effect = {
-			add_war_support = 0.025
-			add_manpower = 10000
-
-			add_popularity = {
-				ideology = ni
-				popularity = 0.05
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-			clr_country_flag = FRA_Rivalry_Decision_SP_Active
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_SP_Active
-		}
-	}
-
-	FRA_SP_Political_Officers = {
-		icon = generic_prepare_civil_war
-		allowed = { original_tag = FRA }
-		available = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-			custom_trigger_tooltip = {
-				tooltip = FRA_Rivalry_Decision_Active_tt
-				NOT = {
-					ROOT = {
-						has_country_flag = FRA_Rivalry_Decision_Active
-					}
-				}
-			}
-
-			NOT = {
-				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-			}
-
-			NOT = {
-				has_idea = FRA_Military_Total_Control
-			}
-		}
-		cost = 150
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 30
-		fire_only_once = yes
-		remove_effect = {
-			add_ideas = FRA_SP_Political_Officers
-
-			add_popularity = {
-				ideology = ni
-				popularity = 0.1
-			}
-
-			custom_effect_tooltip = FRA_Factionalism_0.04_increase
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = 0.04
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-			clr_country_flag = FRA_Rivalry_Decision_SP_Active
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_SP_Active
-		}
-	}
-
-	FRA_SP_Integrate_SP_Military = {
-		icon = generic_prepare_civil_war
-		allowed = { original_tag = FRA }
-		available = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-
-			custom_trigger_tooltip = {
-				tooltip = FRA_Rivalry_Decision_Active_tt
-				NOT = {
-					ROOT = {
-						has_country_flag = FRA_Rivalry_Decision_Active
-					}
-				}
-			}
-
-			NOT = {
-				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-			}
-
-			NOT = {
-				has_idea = FRA_Military_Total_Control
-			}
-		}
-		cost = 180
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 80
-		fire_only_once = yes
-		remove_effect = {
-			add_ideas = FRA_SP_Army_Integration
-
-			add_popularity = {
-				ideology = ni
-				popularity = 0.1
-			}
-
-			custom_effect_tooltip = FRA_Factionalism_0.04_increase
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = 0.04
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-			clr_country_flag = FRA_Rivalry_Decision_SP_Active
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_SP_Active
-		}
-	}
-
-	FRA_SP_Purge_Militarists = {
-		icon = generic_prepare_civil_war
-		allowed = { original_tag = FRA }
-		available = {
-			has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-		}
-		visible = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-		}
-		cost = 200
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 80
-		fire_only_once = yes
-		remove_effect = {
-			add_ideas = FRA_SP_Total_Control
-			hidden_effect = {
-				remove_ideas = FRA_Military_Budget_Increased
-			}
-
-			add_popularity = {
-				ideology = ni
-				popularity = 0.1
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-
-			clr_country_flag = FRA_Rivalry_Decision_SP_Active
-
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_SP_Active
-		}
-	}
-
-	FRA_SP_Reassure_Generals = {
-		icon = generic_army_support
-		allowed = { original_tag = FRA }
-		available = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-			custom_trigger_tooltip = {
-				tooltip = FRA_Rivalry_Decision_Active_tt
-				NOT = {
-					ROOT = {
-						has_country_flag = FRA_Rivalry_Decision_Active
-					}
-				}
-			}
-
-			NOT = {
-				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-			}
-
-			NOT = {
-				has_idea = FRA_SP_Total_Control
-			}
-		}
-		cost = 25
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 30
-		days_re_enable = 60
-		remove_effect = {
-
-			add_popularity = {
-				ideology = ds
-				popularity = 0.05
-			}
-
-			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.06
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_MIL_Active
-		}
-	}
-
-	FRA_SP_Army_Funding = {
-		icon = generic_army_support
-		allowed = { original_tag = FRA }
-		available = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-			custom_trigger_tooltip = {
-				tooltip = FRA_Rivalry_Decision_Active_tt
-				NOT = {
-					ROOT = {
-						has_country_flag = FRA_Rivalry_Decision_Active
-					}
-				}
-			}
-
-			NOT = {
-				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-			}
-
-			NOT = {
-				has_idea = FRA_SP_Total_Control
-			}
-		}
-		cost = 50
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 30
-		days_re_enable = 180
-		remove_effect = {
-			add_timed_idea = {
-				idea = FRA_Military_Budget_Increased
-				days = 150
-			}
-
-			add_popularity = {
-				ideology = ds
-				popularity = 0.05
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_MIL_Active
-		}
-	}
-
-	FRA_SP_Depoliticize_Military = {
-		icon = generic_army_support
-		allowed = { original_tag = FRA }
-		available = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-			custom_trigger_tooltip = {
-				tooltip = FRA_Rivalry_Decision_Active_tt
-				NOT = {
-					ROOT = {
-						has_country_flag = FRA_Rivalry_Decision_Active
-					}
-				}
-			}
-
-			NOT = {
-				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-			}
-
-			NOT = {
-				has_idea = FRA_SP_Total_Control
-			}
-		}
-		cost = 150
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 60
-		fire_only_once = yes
-		remove_effect = {
-
-			add_stability = 0.025
-			
-			custom_effect_tooltip = FRA_Factionalism_0.06_decrease
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = -0.06
-			}
-
-			add_popularity = {
-				ideology = ds
-				popularity = 0.1
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
-					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			if = {
-				limit = {
-					FRA = {
-						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-						NOT = {
-							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
-						}
-					}
-				}
-				swap_ideas = {
-					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
-					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-				}
-				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
-			}
-
-			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_MIL_Active
-		}
-	}
-
-	FRA_SP_Purge_SP = {
-		icon = generic_army_support
-		allowed = { original_tag = FRA }
-		available = {
-			has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-		}
-		visible = {
-			NOT = {
-				OR = {
-				    has_completed_focus = PB_FRA_Military_Government
-				    has_completed_focus = PB_FRA_SP_Government
-			    }
-			}
-		}
-		cost = 200
-		ai_will_do = {
-			factor = 10
-
-		}
-		modifier = {
-			political_power_gain = -0.1
-		}
-		days_remove = 80
-		fire_only_once = yes
-		remove_effect = {
-			add_ideas = FRA_Military_Total_Control
-			hidden_effect = {
-				remove_ideas = PB_FRA_Public_Security
-			    remove_ideas = FRA_SP_Political_Officers
-			    remove_ideas = FRA_SP_Army_Integration
-			}
-
-			add_popularity = {
-				ideology = ds
-				popularity = 0.1
-			}
-
-			clr_country_flag = FRA_Rivalry_Decision_Active
-			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
-
-		}
-		complete_effect = {
-			set_country_flag = FRA_Rivalry_Decision_Active
-			set_country_flag = FRA_Rivalry_Decision_MIL_Active
-		}
-	}
-}
-
-PB_FRA_the_road_to_employment = {
-    PB_FRA_Our_Promise_To_Keep = {
+FRA_the_road_to_employment = {
+    FRA_our_promise_to_keep = {
 
 		icon = GFX_decision_generic_decision
 
@@ -3544,10 +2191,8 @@ PB_FRA_the_road_to_employment = {
 
 		available = {
             custom_trigger_tooltip = {
-	            tooltip = FRA_Unemployment_Variable_Less_Than_One
-                OR = {
-			        check_variable = { FRA_unemployment_variable < 1 }
-                } 
+	            tooltip = FRA_unempoyment_less_than_one
+                check_variable = { FRA_unemployment_variable < 1 }
 			}  
 		}
 
@@ -3573,46 +2218,38 @@ PB_FRA_the_road_to_employment = {
         }
     }
 
-	PB_FRA_invest_in_infrastructure = {
+	FRA_invest_in_infrastructure = {
 
 		icon = GFX_decision_generic_construction
-
 		cost = 40
-
 		ai_will_do = {
 			base = 10
 			modifier = {
 				factor = 2
-				check_variable = {
-					FRA_unemployment_variable > 1
-				}
+				check_variable = { FRA_unemployment_variable > 1 }
 			}
 		}
 		allowed = { original_tag = FRA }
 		available = {
-            custom_trigger_tooltip = {
-	            tooltip = FRA_unemployment_not_active
-                NOT = {
-			        has_country_flag = FRA_unemployment_decision_being_taken
-                } 
-			}  
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 2
 		}
-		modifier = {
-			civilian_factory_use = 3
-		}
-
+		modifier = { civilian_factory_use = 3 }
 		fixed_random_seed = no
-
-		days_remove = 15
-
-		days_re_enable = 20
-		complete_effect = {
-			set_country_flag = FRA_unemployment_decision_being_taken
-		}
+		days_remove = 25
+		days_re_enable = 30
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
 		remove_effect = {
 			random_owned_controlled_state = {
 				limit = {
 					infrastructure < 5
+					is_core_of = FRA
+					is_in_europe = yes
 				}
 				add_building_construction = {
 					type = infrastructure
@@ -3620,54 +2257,54 @@ PB_FRA_the_road_to_employment = {
 					instant_build = yes
 				}
 			}
-			PB_FRA_unemployment_variable_minus0.1 = yes
+			set_temp_variable = { number = -0.15 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.05 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.025 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.025 }
+			SD_ECON_custom_change = yes
 			clr_country_flag = FRA_unemployment_decision_being_taken
 		}
 	}
 
-	PB_FRA_heavily_invest_in_infrastructure = {
+	FRA_heavily_invest_in_infrastructure = {
 
 		icon = GFX_decision_generic_construction
-
 		cost = 70
-
 		ai_will_do = {
 			base = 10
 			modifier = {
 				factor = 3
-				check_variable = {
-					FRA_unemployment_variable > 1
-				}
+				check_variable = { FRA_unemployment_variable > 1 }
 			}
 		}
 		allowed = { original_tag = FRA }
+		visible = { has_completed_focus = FRA_autometro }
 		available = {
-            custom_trigger_tooltip = {
-	            tooltip = FRA_unemployment_not_active
-                NOT = {
-			        has_country_flag = FRA_unemployment_decision_being_taken
-                } 
-			}  
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			has_completed_focus = FRA_autometro
+			num_of_civilian_factories_available_for_projects > 4
 		}
-
-		modifier = {
-			civilian_factory_use = 3
-		}
-
+		modifier = { civilian_factory_use = 5 }
 		fixed_random_seed = no
-
-		days_remove = 30
-
-		days_re_enable = 40
-
-		complete_effect = {
-			set_country_flag = FRA_unemployment_decision_being_taken
-		}
-
+		days_remove = 50
+		days_re_enable = 60
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
 		remove_effect = {
-			random_owned_controlled_state = {
+			every_controlled_state = {
+				random_select_amount = 2
+				display_individual_scopes = yes
 				limit = {
 					infrastructure < 5
+					is_core_of = FRA
+					is_in_europe = yes
 				}
 				add_building_construction = {
 					type = infrastructure
@@ -3675,50 +2312,160 @@ PB_FRA_the_road_to_employment = {
 					instant_build = yes
 				}
 			}
-			PB_FRA_unemployment_variable_minus0.25 = yes
+			set_temp_variable = { number = -0.3 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.075 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.035 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.035 }
+			SD_ECON_custom_change = yes
 			clr_country_flag = FRA_unemployment_decision_being_taken
 		}
 	}
 
-	PB_FRA_invest_in_military_factories = {
+	FRA_invest_in_civilian_industry = {
 
 		icon = GFX_decision_generic_construction
-
 		cost = 40
-
 		ai_will_do = {
-			base = 10
+			base = 15
 			modifier = {
-				factor = 4
-				check_variable = {
-					FRA_unemployment_variable > 1
-				}
+				factor = 2
+				check_variable = { FRA_unemployment_variable > 1 }
 			}
 		}
 		allowed = { original_tag = FRA }
 		available = {
-            custom_trigger_tooltip = {
-	            tooltip = FRA_unemployment_not_active
-                NOT = {
-			        has_country_flag = FRA_unemployment_decision_being_taken
-                } 
-			}  
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 4
 		}
-
-		modifier = {
-			civilian_factory_use = 4
-		}
-
+		modifier = { civilian_factory_use = 5 }
 		fixed_random_seed = no
-
-		days_remove = 20
-
-		days_re_enable = 25
-
-		complete_effect = {
-			set_country_flag = FRA_unemployment_decision_being_taken
+		days_remove = 40
+		days_re_enable = 50
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
+		remove_effect = {
+			random_owned_controlled_state = {
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 0
+						include_locked = yes
+					}
+					is_core_of = FRA
+					is_in_europe = yes
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_extra_state_shared_building_slots = 1
+			}
+			set_temp_variable = { number = -0.175 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.075 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.04 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.04 }
+			SD_ECON_custom_change = yes
+			clr_country_flag = FRA_unemployment_decision_being_taken
 		}
+	}
 
+	FRA_heavily_invest_in_civilian_industry = {
+
+		icon = GFX_decision_generic_construction
+		cost = 70
+		ai_will_do = {
+			base = 15
+			modifier = {
+				factor = 3
+				check_variable = { FRA_unemployment_variable > 1 }
+			}
+		}
+		allowed = { original_tag = FRA }
+		visible = { has_completed_focus = FRA_the_new_cities_plan }
+		available = {
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			has_completed_focus = FRA_the_new_cities_plan
+			num_of_civilian_factories_available_for_projects > 7
+		}
+		modifier = { civilian_factory_use = 8 }
+		fixed_random_seed = no
+		days_remove = 80
+		days_re_enable = 100
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
+		remove_effect = {
+			every_controlled_state = {
+				random_select_amount = 2
+				display_individual_scopes = yes
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 0
+						include_locked = yes
+					}
+					is_core_of = FRA
+					is_in_europe = yes
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+				add_extra_state_shared_building_slots = 1
+			}
+			set_temp_variable = { number = -0.35 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.1 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.05 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.05 }
+			SD_ECON_custom_change = yes
+			clr_country_flag = FRA_unemployment_decision_being_taken
+		}
+	}
+
+	FRA_invest_in_military_industry = {
+
+		icon = GFX_decision_generic_construction
+		cost = 40
+		ai_will_do = {
+			base = 13
+			modifier = {
+				factor = 2
+				check_variable = { FRA_unemployment_variable > 1 }
+			}
+		}
+		allowed = { original_tag = FRA }
+		available = {
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 3
+		}
+		modifier = { civilian_factory_use = 4 }
+		fixed_random_seed = no
+		days_remove = 30
+		days_re_enable = 40
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
 		remove_effect = {
 			random_owned_controlled_state = {
 				limit = {
@@ -3727,105 +2474,204 @@ PB_FRA_the_road_to_employment = {
 						size > 0
 						include_locked = yes
 					}
-					OR = {
-						is_in_home_area = yes
-						NOT = {
-							owner = {
-								any_owned_state = {
-									free_building_slots = {
-										building = arms_factory
-										size > 0
-										include_locked = yes
-									}
-									is_in_home_area = yes
-								}
-							}
-						}
-					}
+					is_demilitarized_zone = no
+					is_core_of = FRA
+					is_in_europe = yes
 				}
-				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = arms_factory
 					level = 1
 					instant_build = yes
 				}
+				add_extra_state_shared_building_slots = 1
 			}
-			PB_FRA_unemployment_variable_minus0.25 = yes
+			set_temp_variable = { number = -0.15 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.06 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.03 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.075 }
+			SD_MIL_custom_change = yes
 			clr_country_flag = FRA_unemployment_decision_being_taken
 		}
 	}
 
-	PB_FRA_heavily_invest_in_military_factories = {
+	FRA_heavily_invest_in_military_industry = {
 
 		icon = GFX_decision_generic_construction
-
 		cost = 70
-
 		ai_will_do = {
-			base = 10
+			base = 13
 			modifier = {
-				factor = 5
-				check_variable = {
-					FRA_unemployment_variable > 1
-				}
+				factor = 3
+				check_variable = { FRA_unemployment_variable > 1 }
 			}
 		}
 		allowed = { original_tag = FRA }
+		visible = { has_completed_focus = FRA_rearmament_campaigns }
 		available = {
-            custom_trigger_tooltip = {
-	            tooltip = FRA_unemployment_not_active
-                NOT = {
-			        has_country_flag = FRA_unemployment_decision_being_taken
-                } 
-			}  
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			has_completed_focus = FRA_rearmament_campaigns
+			num_of_civilian_factories_available_for_projects > 6
 		}
-
-		modifier = {
-			civilian_factory_use = 4
-		}
-
+		modifier = { civilian_factory_use = 7 }
 		fixed_random_seed = no
-
-		days_remove = 40
-
-		days_re_enable = 50
-
-		complete_effect = {
-			set_country_flag = FRA_unemployment_decision_being_taken
-		}
-
+		days_remove = 60
+		days_re_enable = 80
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
 		remove_effect = {
-			random_owned_controlled_state = {
+			every_controlled_state = {
+				random_select_amount = 2
+				display_individual_scopes = yes
 				limit = {
 					free_building_slots = {
 						building = arms_factory
 						size > 0
 						include_locked = yes
 					}
-					OR = {
-						is_in_home_area = yes
-						NOT = {
-							owner = {
-								any_owned_state = {
-									free_building_slots = {
-										building = arms_factory
-										size > 0
-										include_locked = yes
-									}
-									is_in_home_area = yes
-								}
-							}
-						}
-					}
+					is_demilitarized_zone = no
+					is_core_of = FRA
+					is_in_europe = yes
 				}
-				add_extra_state_shared_building_slots = 2
 				add_building_construction = {
 					type = arms_factory
-					level = 2
+					level = 1
 					instant_build = yes
 				}
+				add_extra_state_shared_building_slots = 1
 			}
-			PB_FRA_unemployment_variable_minus0.5 = yes
+			set_temp_variable = { number = -0.3 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.08 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.04 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.1 }
+			SD_MIL_custom_change = yes
+			clr_country_flag = FRA_unemployment_decision_being_taken
+		}
+	}
+
+	FRA_invest_in_naval_industry = {
+
+		icon = GFX_decision_generic_construction
+		cost = 40
+		ai_will_do = {
+			base = 11
+			modifier = {
+				factor = 2
+				check_variable = { FRA_unemployment_variable > 1 }
+			}
+		}
+		allowed = { original_tag = FRA }
+		available = {
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			num_of_civilian_factories_available_for_projects > 3
+		}
+		modifier = { civilian_factory_use = 4 }
+		fixed_random_seed = no
+		days_remove = 30
+		days_re_enable = 40
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
+		remove_effect = {
+			random_owned_controlled_state = {
+				limit = {
+					free_building_slots = {
+						building = dockyard
+						size > 0
+						include_locked = yes
+					}
+					is_demilitarized_zone = no
+					is_core_of = FRA
+					is_in_europe = yes
+				}
+				add_building_construction = {
+					type = dockyard
+					level = 1
+					instant_build = yes
+				}
+				add_extra_state_shared_building_slots = 1
+			}
+			set_temp_variable = { number = -0.15 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.06 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.04 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.05 }
+			SD_MIL_custom_change = yes
+			clr_country_flag = FRA_unemployment_decision_being_taken
+		}
+	}
+
+	FRA_heavily_invest_in_naval_industry = {
+
+		icon = GFX_decision_generic_construction
+		cost = 70
+		ai_will_do = {
+			base = 11
+			modifier = {
+				factor = 3
+				check_variable = { FRA_unemployment_variable > 1 }
+			}
+		}
+		allowed = { original_tag = FRA }
+		visible = { has_completed_focus = FRA_rearmament_campaigns }
+		available = {
+			NOT = {
+				custom_override_tooltip = {
+					tooltip = FRA_unemployment_decision_being_taken_tt
+					has_country_flag = FRA_unemployment_decision_being_taken
+				}
+			}
+			has_completed_focus = FRA_rearmament_campaigns
+			num_of_civilian_factories_available_for_projects > 6
+		}
+		modifier = { civilian_factory_use = 7 }
+		fixed_random_seed = no
+		days_remove = 60
+		days_re_enable = 80
+		complete_effect = { set_country_flag = FRA_unemployment_decision_being_taken }
+		remove_effect = {
+			every_controlled_state = {
+				random_select_amount = 2
+				display_individual_scopes = yes
+				limit = {
+					free_building_slots = {
+						building = dockyard
+						size > 0
+						include_locked = yes
+					}
+					is_demilitarized_zone = no
+					is_core_of = FRA
+					is_in_europe = yes
+				}
+				add_building_construction = {
+					type = dockyard
+					level = 1
+					instant_build = yes
+				}
+				add_extra_state_shared_building_slots = 1
+			}
+			set_temp_variable = { number = -0.3 }
+			FRA_unemployment_change = yes
+			set_temp_variable = { number = 0.08 }
+			SD_POV_custom_change = yes
+			set_temp_variable = { number = 0.06 }
+			SD_IND_custom_change = yes
+			set_temp_variable = { number = 0.075 }
+			SD_MIL_custom_change = yes
 			clr_country_flag = FRA_unemployment_decision_being_taken
 		}
 	}
@@ -4229,25 +3075,26 @@ PB_FRA_the_new_european_system = {
 
 		available = {
 			custom_trigger_tooltip = {
-				tooltip = FRA_control_southern_germany
-				MGE = {
-					OR = {
-						is_subject_of = FRA
-						is_in_faction_with = FRA
-					}
-					OR = {
-						controls_state = 50
-						controls_state = 52
-						controls_state = 53
-						controls_state = 54
-					}
+				tooltip = FRA_control_germany
+				FROM = {
+					controls_all_owned_states = yes
 				}
 			}
 		}
+		
+		target_array = subjects
 
-		visible = {
+		target_root_trigger = {
 			has_country_flag = FRA_germany_collab_decisions_unlock
-			country_exists = MGE
+		}
+
+		target_trigger = {
+			FROM = {
+				is_greater_german_tag = yes
+				any_owned_state = {
+					is_germany = yes
+				}
+			}
 		}
 
 		fixed_random_seed = no
@@ -4256,162 +3103,18 @@ PB_FRA_the_new_european_system = {
 
 
 		remove_effect = {
+			set_temp_variable = { german_target = FROM }
 			PB_FRA_south_germany_invest = yes
 		}
-	}
 
-	PB_FRA_invest_in_westphalia = {
-
-		icon = GFX_decision_generic_construction
-
-		cost = 25
-
-		ai_will_do = {
-			factor = 1000
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			custom_trigger_tooltip = {
-				tooltip = FRA_control_westphalia
-				OR = {
-					MGE = {
-					    OR = {
-						    is_subject_of = FRA
-						    is_in_faction_with = FRA
-					    }
-					    OR = {
-						    controls_state = 55
-					        controls_state = 60
-						    controls_state = 57
-						    controls_state = 59
-						    controls_state = 56
-						}
-					}
-					HAN = {
-					    OR = {
-						    is_subject_of = FRA
-						    is_in_faction_with = FRA
-					    }
-					    OR = {
-						    controls_state = 55
-					        controls_state = 60
-						    controls_state = 57
-						    controls_state = 59
-						    controls_state = 56
-						}
-					}
-				}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
 			}
-		}
-
-		visible = {
-			has_country_flag = FRA_germany_collab_decisions_unlock
-			OR = {
-				country_exists = MGE
-				country_exists = HAN
-			}
-		}
-
-		fixed_random_seed = no
-
-		days_remove = 15
-
-
-		remove_effect = {
-			PB_FRA_westphalia_invest = yes
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
 		}
 	}
-
-	PB_FRA_invest_in_austria = {
-
-		icon = GFX_decision_generic_construction
-
-		cost = 50
-
-		ai_will_do = {
-			factor = 1000
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			custom_trigger_tooltip = {
-				tooltip = FRA_control_austria
-				MGE = {
-					OR = {
-						is_subject_of = FRA
-						is_in_faction_with = FRA
-					}
-					OR = {
-						controls_state = 153
-						controls_state = 152
-						controls_state = 4
-						controls_state = 102
-						controls_state = 736
-						controls_state = 39
-					}
-				}
-			}
-		}
-
-		visible = {
-			has_country_flag = FRA_germany_collab_decisions_unlock
-			country_exists = MGE
-		}
-
-		fixed_random_seed = no
-
-		days_remove = 15
-
-
-		remove_effect = {
-			PB_FRA_austria_invest = yes
-		}
-	}
-
-	PB_FRA_invest_in_hanover = {
-
-		icon = GFX_decision_generic_construction
-
-		cost = 50
-
-		ai_will_do = {
-			factor = 1000
-		}
-		allowed = { original_tag = FRA }
-		available = {
-			custom_trigger_tooltip = {
-				tooltip = FRA_control_hanover
-				MGE = {
-					OR = {
-						is_subject_of = FRA
-						is_in_faction_with = FRA
-					}
-					OR = {
-						controls_state = 57
-						controls_state = 59
-						controls_state = 56
-					}
-				}
-			}
-		}
-
-		visible = {
-			has_country_flag = FRA_germany_collab_decisions_unlock
-			OR = {
-				country_exists = MGE
-				country_exists = HAN
-			}
-		}
-
-		fixed_random_seed = no
-
-		days_remove = 15
-
-
-		remove_effect = {
-			PB_FRA_hanover_invest = yes
-		}
-	}
-
 
 	PB_FRA_the_land_of_rome = {
 
@@ -4810,40 +3513,37 @@ PB_FRA_Military_Tribunal = {
 		}
 	}
 
-	PB_FRA_Release_The_SP = {
-
-		icon = GFX_decision_generic_special_forces
-
-		cost = 25
-
-		ai_will_do = {
-			factor = 1000
-		}
-
-		available = {
-			NOT = {
-				has_completed_focus = PB_FRA_Military_Government
-			}
-		}
-
-		allowed = { original_tag = FRA }
-		days_remove = 15
-
-		days_re_enable = 60
-
-		remove_effect = {
-			custom_effect_tooltip = German_Liberation_Front_Presence_minus_2_tt
-			add_to_variable = {
-	            var = FRA_GLFP
-	            value = -2
-            }
-            custom_effect_tooltip = FRA_Factionalism_0.02_increase
-			add_to_variable = {
-				var = FRA_Factionalism
-				value = 0.02
-			}
-		}
-	}
+	#PB_FRA_Release_The_SP = {
+#
+	#	icon = GFX_decision_generic_special_forces
+#
+	#	cost = 25
+#
+	#	ai_will_do = {
+	#		factor = 1000
+	#	}
+#
+	#	available = {
+	#		NOT = {
+	#			has_completed_focus = FRA_military_government
+	#		}
+	#	}
+#
+	#	allowed = { original_tag = FRA }
+	#	days_remove = 15
+#
+	#	days_re_enable = 60
+#
+	#	remove_effect = {
+	#		custom_effect_tooltip = German_Liberation_Front_Presence_minus_2_tt
+	#		add_to_variable = {
+	#            var = FRA_GLFP
+	#            value = -2
+    #        }
+    #        set_temp_variable = { number = 2 }
+	#		FRA_factionalism_change = yes
+	#	}
+	#}
 
 	PB_FRA_Commit_To_A_Show_Of_Strength = {
 
@@ -4948,8 +3648,10 @@ PB_FRA_Military_Tribunal = {
 		days_re_enable = 60
 
 		remove_effect = {
-			MGE = {
-				add_war_support = 0.01
+			every_subject_country = {
+				limit = { is_greater_german_tag = yes }
+				add_stability = 0.05
+				add_war_support = 0.03
 			}
 			custom_effect_tooltip = German_Liberation_Front_Presence_minus_2_tt
 			add_to_variable = {
@@ -5102,7 +3804,8 @@ PB_FRA_Military_Tribunal = {
 	            max = 100
             }
             activate_mission = PB_FRA_German_Partisans
-			MGE = {
+			every_subject_country = {
+				limit = { is_greater_german_tag = yes }
 				add_stability = -0.01
 				random_owned_controlled_state = {
 				    damage_building = {
@@ -5553,3 +4256,1002 @@ PB_FRA_Military_Tribunal = {
 #	}
 #
 #}
+
+
+
+
+
+
+# PB_FRA_Interservice_Rivalry = {                            
+
+# 	FRA_SP_Coup_Timeout = {
+# 		icon = revolt
+		
+# 		available = {
+# 			OR = {
+# 				has_country_flag = FRA_SP_IN_POWER
+# 				has_country_flag = FRA_MIL_IN_POWER
+# 				has_country_flag = FRA_DISABLE_ALL_MECHANICS
+# 				has_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 			}
+# 		}
+
+# 		activation = {    
+# 			NOT = {
+# 				has_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 			}  
+# 			has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 			has_country_flag = FRA_Refused_SP_Demands
+# 		}
+
+# 		is_good = no
+
+# 		ai_will_do = {
+# 			factor = 10
+# 		}
+
+# 		days_mission_timeout = 14
+
+# 		timeout_effect = {
+
+# 			FRA = {
+# 				country_event = { id = French.43 } 
+# 			}
+# 		}
+# 	}
+
+# 	FRA_Military_Coup_Timeout = {
+# 		icon = revolt
+
+# 		available = {
+# 			OR = {
+# 				has_country_flag = FRA_SP_IN_POWER
+# 				has_country_flag = FRA_MIL_IN_POWER
+# 				has_country_flag = FRA_DISABLE_ALL_MECHANICS
+# 				has_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 			}
+# 		}
+
+# 		activation = {   
+# 			NOT = {
+# 				has_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 			}    
+# 			has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant                         
+# 			has_country_flag = FRA_Refused_Military_Demands
+# 		}
+
+# 		is_good = no
+
+# 		ai_will_do = {
+# 			factor = 10
+# 		}
+
+# 		days_mission_timeout = 14
+
+# 		timeout_effect = {
+
+# 			FRA = {
+# 				country_event = { id = French.44 } 
+# 			}
+# 		}
+# 	}
+
+# 	FRA_SP_Protest_Timeout = {
+# 		icon = generic_operation
+
+# 		available = {
+# 			OR = {
+# 				has_country_flag = FRA_SP_IN_POWER
+# 				has_country_flag = FRA_MIL_IN_POWER
+# 				has_country_flag = FRA_DISABLE_ALL_MECHANICS
+# 				has_country_flag = FRA_Rivalry_Decision_SP_Active
+# 			}
+# 		}
+
+# 		activation = {   
+# 			NOT = {
+# 				has_country_flag = FRA_Rivalry_Decision_SP_Active
+# 			}                      
+# 			OR = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 			}     
+# 		}
+
+# 		is_good = no
+
+# 		ai_will_do = {
+# 			factor = 10
+# 		}
+
+# 		days_mission_timeout = 25
+
+# 		timeout_effect = {
+
+# 			FRA = {
+# 				country_event = { id = French.41 } 
+# 			}
+# 		}
+# 	}
+
+# 	FRA_Militarist_Protest_Timeout = {
+# 		icon = generic_operation
+
+# 		available = {
+# 			OR = {
+# 				has_country_flag = FRA_SP_IN_POWER
+# 				has_country_flag = FRA_MIL_IN_POWER
+# 				has_country_flag = FRA_DISABLE_ALL_MECHANICS
+# 				has_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 			}
+# 		}
+
+# 		activation = {   
+# 			NOT = {
+# 				has_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 			}                         
+# 			OR = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 			}       
+# 		}
+
+# 		is_good = no
+
+# 		ai_will_do = {
+# 			factor = 10
+# 		}
+
+# 		days_mission_timeout = 25
+
+# 		timeout_effect = {
+
+# 			FRA = {
+# 				country_event = { id = French.42 } 
+# 			}
+# 		}
+# 	}
+
+# 	FRA_SP_Recruitment_Campaign = {
+# 		icon = generic_prepare_civil_war
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+
+# 			custom_trigger_tooltip = {
+# 				tooltip = FRA_Rivalry_Decision_Active_tt
+# 				NOT = {
+# 					ROOT = {
+# 						has_country_flag = FRA_Rivalry_Decision_Active
+# 					}
+# 				}
+# 			}
+
+# 			NOT = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 			}
+
+# 			NOT = {
+# 				has_idea = FRA_Military_Total_Control
+# 			}
+# 		}
+# 		cost = 50
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 30
+# 		days_re_enable = 60
+# 		remove_effect = {
+# 			add_war_support = 0.025
+# 			add_manpower = 10000
+
+# 			add_popularity = {
+# 				ideology = ni
+# 				popularity = 0.05
+# 			}
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+# 			clr_country_flag = FRA_Rivalry_Decision_SP_Active
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_SP_Active
+# 		}
+# 	}
+
+# 	FRA_SP_Political_Officers = {
+# 		icon = generic_prepare_civil_war
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 			custom_trigger_tooltip = {
+# 				tooltip = FRA_Rivalry_Decision_Active_tt
+# 				NOT = {
+# 					ROOT = {
+# 						has_country_flag = FRA_Rivalry_Decision_Active
+# 					}
+# 				}
+# 			}
+
+# 			NOT = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 			}
+
+# 			NOT = {
+# 				has_idea = FRA_Military_Total_Control
+# 			}
+# 		}
+# 		cost = 150
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 30
+# 		fire_only_once = yes
+# 		remove_effect = {
+# 			add_ideas = FRA_SP_Political_Officers
+
+# 			add_popularity = {
+# 				ideology = ni
+# 				popularity = 0.1
+# 			}
+
+# 			set_temp_variable = { number = 4 }
+# 			FRA_factionalism_change = yes
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+# 			clr_country_flag = FRA_Rivalry_Decision_SP_Active
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_SP_Active
+# 		}
+# 	}
+
+# 	FRA_SP_Integrate_SP_Military = {
+# 		icon = generic_prepare_civil_war
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+
+# 			custom_trigger_tooltip = {
+# 				tooltip = FRA_Rivalry_Decision_Active_tt
+# 				NOT = {
+# 					ROOT = {
+# 						has_country_flag = FRA_Rivalry_Decision_Active
+# 					}
+# 				}
+# 			}
+
+# 			NOT = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 			}
+
+# 			NOT = {
+# 				has_idea = FRA_Military_Total_Control
+# 			}
+# 		}
+# 		cost = 180
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 80
+# 		fire_only_once = yes
+# 		remove_effect = {
+# 			add_ideas = FRA_SP_Army_Integration
+
+# 			add_popularity = {
+# 				ideology = ni
+# 				popularity = 0.1
+# 			}
+
+# 			set_temp_variable = { number = 4 }
+# 			FRA_factionalism_change = yes
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+# 			clr_country_flag = FRA_Rivalry_Decision_SP_Active
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_SP_Active
+# 		}
+# 	}
+
+# 	FRA_SP_Purge_Militarists = {
+# 		icon = generic_prepare_civil_war
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 		}
+# 		visible = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 		}
+# 		cost = 200
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 80
+# 		fire_only_once = yes
+# 		remove_effect = {
+# 			add_ideas = FRA_SP_Total_Control
+# 			hidden_effect = {
+# 				remove_ideas = FRA_Military_Budget_Increased
+# 			}
+
+# 			add_popularity = {
+# 				ideology = ni
+# 				popularity = 0.1
+# 			}
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+
+# 			clr_country_flag = FRA_Rivalry_Decision_SP_Active
+
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_SP_Active
+# 		}
+# 	}
+
+# 	FRA_SP_Reassure_Generals = {
+# 		icon = generic_army_support
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 			custom_trigger_tooltip = {
+# 				tooltip = FRA_Rivalry_Decision_Active_tt
+# 				NOT = {
+# 					ROOT = {
+# 						has_country_flag = FRA_Rivalry_Decision_Active
+# 					}
+# 				}
+# 			}
+
+# 			NOT = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 			}
+
+# 			NOT = {
+# 				has_idea = FRA_SP_Total_Control
+# 			}
+# 		}
+# 		cost = 25
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 30
+# 		days_re_enable = 60
+# 		remove_effect = {
+
+# 			add_popularity = {
+# 				ideology = ds
+# 				popularity = 0.05
+# 			}
+
+# 			set_temp_variable = { number = -6 }
+# 			FRA_factionalism_change = yes
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+# 			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 		}
+# 	}
+
+# 	FRA_SP_Army_Funding = {
+# 		icon = generic_army_support
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 			custom_trigger_tooltip = {
+# 				tooltip = FRA_Rivalry_Decision_Active_tt
+# 				NOT = {
+# 					ROOT = {
+# 						has_country_flag = FRA_Rivalry_Decision_Active
+# 					}
+# 				}
+# 			}
+
+# 			NOT = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 			}
+
+# 			NOT = {
+# 				has_idea = FRA_SP_Total_Control
+# 			}
+# 		}
+# 		cost = 50
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 30
+# 		days_re_enable = 180
+# 		remove_effect = {
+# 			add_timed_idea = {
+# 				idea = FRA_Military_Budget_Increased
+# 				days = 150
+# 			}
+
+# 			add_popularity = {
+# 				ideology = ds
+# 				popularity = 0.05
+# 			}
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+# 			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 		}
+# 	}
+
+# 	FRA_SP_Depoliticize_Military = {
+# 		icon = generic_army_support
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 			custom_trigger_tooltip = {
+# 				tooltip = FRA_Rivalry_Decision_Active_tt
+# 				NOT = {
+# 					ROOT = {
+# 						has_country_flag = FRA_Rivalry_Decision_Active
+# 					}
+# 				}
+# 			}
+
+# 			NOT = {
+# 				has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 			}
+
+# 			NOT = {
+# 				has_idea = FRA_SP_Total_Control
+# 			}
+# 		}
+# 		cost = 150
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 60
+# 		fire_only_once = yes
+# 		remove_effect = {
+
+# 			add_stability = 0.025
+			
+# 			set_temp_variable = { number = -6 }
+# 			FRA_factionalism_change = yes
+
+# 			add_popularity = {
+# 				ideology = ds
+# 				popularity = 0.1
+# 			}
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+# 			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Dominant
+# 					add_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_SP_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Balanced
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			if = {
+# 				limit = {
+# 					FRA = {
+# 						has_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 						NOT = {
+# 							has_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 						}
+# 					}
+# 				}
+# 				swap_ideas = {
+# 					remove_idea = PB_FRA_Military_SP_Rivalry_Military_Favored
+# 					add_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 				}
+# 				set_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 			}
+
+# 			clr_country_flag = PB_FRA_Inter_Rivalry_idea_check
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 		}
+# 	}
+
+# 	FRA_SP_Purge_SP = {
+# 		icon = generic_army_support
+# 		allowed = { original_tag = FRA }
+# 		available = {
+# 			has_idea = PB_FRA_Military_SP_Rivalry_Military_Dominant
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 		}
+# 		visible = {
+# 			NOT = {
+# 				OR = {
+# 				    has_completed_focus = FRA_military_government
+# 				    has_completed_focus = FRA_sp_government
+# 			    }
+# 			}
+# 		}
+# 		cost = 200
+# 		ai_will_do = {
+# 			factor = 10
+
+# 		}
+# 		modifier = {
+# 			political_power_gain = -0.1
+# 		}
+# 		days_remove = 80
+# 		fire_only_once = yes
+# 		remove_effect = {
+# 			add_ideas = FRA_Military_Total_Control
+# 			hidden_effect = {
+# 				remove_ideas = PB_FRA_Public_Security
+# 			    remove_ideas = FRA_SP_Political_Officers
+# 			    remove_ideas = FRA_SP_Army_Integration
+# 			}
+
+# 			add_popularity = {
+# 				ideology = ds
+# 				popularity = 0.1
+# 			}
+
+# 			clr_country_flag = FRA_Rivalry_Decision_Active
+# 			clr_country_flag = FRA_Rivalry_Decision_MIL_Active
+
+# 		}
+# 		complete_effect = {
+# 			set_country_flag = FRA_Rivalry_Decision_Active
+# 			set_country_flag = FRA_Rivalry_Decision_MIL_Active
+# 		}
+# 	}
+# }

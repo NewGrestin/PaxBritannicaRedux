@@ -1,72 +1,207 @@
-PB_FRA_unemployment_variable_minus0.05 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_minus0.05_tt
-	subtract_from_variable = {
-		var = FRA_unemployment_variable
-		value = 0.05
+FRA_factionalism_change = {
+	add_to_variable = { FRA_factionalism_var = number }
+	custom_effect_tooltip = FRA_factionalism_change_tt
+}
+
+FRA_fervour_change = {
+	add_to_variable = { FRA_fervour_var = number }
+	custom_effect_tooltip = FRA_fervour_change_tt
+}
+
+FRA_calculate_weekly_factionalism = {
+	clamp_variable = {
+	    var = FRA_factionalism_var
+	    min = 0
+	    max = 100
+    }
+	if = {
+		limit = {
+			check_variable = { var = FRA_factionalism_var value = 75 compare = greater_than_or_equals }
+			NOT = { has_idea = FRA_high_factionalism }
+		}
+		hidden_effect = {
+			remove_ideas = {
+				FRA_low_factionalism
+				FRA_medium_fervour
+			}
+			add_ideas = FRA_medium_factionalism
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { FRA_factionalism_var < 75 }
+			check_variable = { FRA_factionalism_var > 50 }
+			NOT = { has_idea = FRA_medium_factionalism }
+		}
+		hidden_effect = {
+			remove_ideas = {
+				FRA_low_factionalism
+				FRA_high_factionalism
+			}
+			add_ideas = FRA_medium_factionalism
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { var = FRA_factionalism_var value = 50 compare = less_than_or_equals }
+			NOT = { has_idea = FRA_low_factionalism }
+		}
+		hidden_effect = {
+			remove_ideas = {
+				FRA_medium_factionalism
+				FRA_high_factionalism
+			}
+			add_ideas = FRA_low_factionalism
+		}
 	}
 }
 
-PB_FRA_unemployment_variable_minus0.1 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_minus0.1_tt
-	subtract_from_variable = {
-		var = FRA_unemployment_variable
-		value = 0.1
+FRA_calculate_weekly_fervour = {
+	clamp_variable = {
+	    var = FRA_fervour_var
+	    min = 0
+	    max = 100
+    }
+	if = {
+		limit = {
+			check_variable = { var = FRA_fervour_var value = 75 compare = greater_than_or_equals }
+			NOT = { has_idea = FRA_high_fervour }
+		}
+		hidden_effect = {
+			remove_ideas = {
+				FRA_low_fervour
+				FRA_medium_fervour
+			}
+			add_ideas = FRA_high_fervour
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { FRA_fervour_var < 75 }
+			check_variable = { FRA_fervour_var > 50 }
+			NOT = { has_idea = FRA_medium_fervour }
+		}
+		hidden_effect = {
+			remove_ideas = {
+				FRA_low_fervour
+				FRA_high_fervour
+			}
+			add_ideas = FRA_medium_fervour
+		}
+	}
+	else_if = {
+		limit = {
+			check_variable = { var = FRA_fervour_var value = 50 compare = less_than_or_equals }
+			NOT = { has_idea = FRA_low_fervour }
+		}
+		hidden_effect = {
+			remove_ideas = {
+				FRA_medium_fervour
+				FRA_high_fervour
+			}
+			add_ideas = FRA_low_fervour
+		}
 	}
 }
 
-PB_FRA_unemployment_variable_minus0.25 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_minus0.25_tt
-	subtract_from_variable = {
-		var = FRA_unemployment_variable
-		value = 0.25
+FRA_doriot_coup_power_increase = {
+	custom_override_tooltip = {
+		tooltip = FRA_doriot_coup_power_increase_tt
+		add_to_variable = { FRA_doriot_plot_power = 1 }
+	}
+}
+FRA_doriot_coup_power_decrease = {
+	custom_override_tooltip = {
+		tooltip = FRA_doriot_coup_power_decrease_tt
+		add_to_variable = { FRA_doriot_plot_power = -1 }
 	}
 }
 
-PB_FRA_unemployment_variable_minus0.5 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_minus0.5_tt
-	subtract_from_variable = {
-		var = FRA_unemployment_variable
-		value = 0.5
-	}
+FRA_unemployment_change = {
+	add_to_variable = { FRA_unemployment_variable = number }
+	custom_effect_tooltip = FRA_unemployment_change_tt
 }
 
-PB_FRA_unemployment_variable_minus1 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_minus1_tt
-	subtract_from_variable = {
-		var = FRA_unemployment_variable
-		value = 1
+FRA_define_doriot_dissonance = {
+	if = {
+		limit = {
+			check_variable = { FRA_doriot_dissonance_left > 1 }
+			check_variable = { FRA_doriot_dissonance_left < 3 }
+			check_variable = { FRA_doriot_dissonance_right < 2 }
+		}
+		FRA = { save_event_target_as = political_dissonance_left }
 	}
-}
-
-PB_FRA_unemployment_variable_plus0.1 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_plus0.1_tt
-	add_to_variable = {
-		var = FRA_unemployment_variable
-		value = 0.1
+	
+	if = {
+		limit = {
+			check_variable = { FRA_doriot_dissonance_left > 2 }
+			check_variable = { FRA_doriot_dissonance_right < 1 }
+		}
+		FRA = { save_event_target_as = political_dissonance_far_left }
 	}
-}
-
-PB_FRA_unemployment_variable_plus0.25 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_plus0.25_tt
-	add_to_variable = {
-		var = FRA_unemployment_variable
-		value = 0.25
+	
+	if = {
+		limit = {
+			check_variable = { FRA_doriot_dissonance_left < 2 }
+			check_variable = { FRA_doriot_dissonance_right > 1 }
+			check_variable = { FRA_doriot_dissonance_right < 3 }
+		}
+		FRA = { save_event_target_as = political_dissonance_right }
 	}
-}
-
-PB_FRA_unemployment_variable_plus0.5 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_plus0.5_tt
-	add_to_variable = {
-		var = FRA_unemployment_variable
-		value = 0.5
+	
+	if = {
+		limit = {
+			check_variable = { FRA_doriot_dissonance_left < 1 }
+			check_variable = { FRA_doriot_dissonance_right > 2 }
+		}
+		FRA = { save_event_target_as = political_dissonance_far_right }
 	}
-}
-
-PB_FRA_unemployment_variable_plus1 = {
-	custom_effect_tooltip = PB_FRA_unemployment_variable_plus1_tt
-	add_to_variable = {
-		var = FRA_unemployment_variable
-		value = 1
+	
+	if = {
+		limit = {
+			check_variable = { FRA_doriot_dissonance_left < 2 }
+			check_variable = { FRA_doriot_dissonance_right < 2 }
+			OR = {
+				NOT = {
+					AND = {
+						has_completed_focus = FRA_audace
+						has_completed_focus = FRA_la_terre
+					}
+					AND = {
+						has_completed_focus = FRA_plebeians_tribune
+						has_completed_focus = FRA_nation_first_son
+					}
+				}
+			}
+		}
+		FRA = { save_event_target_as = political_dissonance_center }
+	}
+	
+	if = {
+		limit = {
+			check_variable = { FRA_doriot_dissonance_left > 0 }
+			check_variable = { FRA_doriot_dissonance_left < 3 }
+			check_variable = { FRA_doriot_dissonance_right > 0 }
+			check_variable = { FRA_doriot_dissonance_right < 3 }
+			NOT = {
+				AND = {
+					has_completed_focus = FRA_class_collaboration
+					OR = {
+						has_completed_focus = FRA_plebeians_tribune
+						has_completed_focus = FRA_nation_first_son
+					}
+				}
+			}
+		}
+		FRA = { save_event_target_as = political_dissonance_corporatist }
+	}
+	
+	if = {
+		limit = {
+			check_variable = { FRA_doriot_dissonance_left > 2 }
+			check_variable = { FRA_doriot_dissonance_right > 2 }
+		}
+		FRA = { save_event_target_as = political_dissonance_confusion }
 	}
 }
 
@@ -461,7 +596,7 @@ PB_FRA_westphalia_invest = {
 PB_FRA_south_germany_invest = {
 	random_list = {
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 						infrastructure < 5
@@ -475,7 +610,7 @@ PB_FRA_south_germany_invest = {
 			}
 		}
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 					}
@@ -489,7 +624,7 @@ PB_FRA_south_germany_invest = {
 			}
 		}
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 					}
@@ -508,7 +643,7 @@ PB_FRA_south_germany_invest = {
 PB_FRA_austria_invest = {
 	random_list = {
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 						infrastructure < 5
@@ -522,7 +657,7 @@ PB_FRA_austria_invest = {
 			}
 		}
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 					}
@@ -536,7 +671,7 @@ PB_FRA_austria_invest = {
 			}
 		}
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 					}
@@ -555,7 +690,7 @@ PB_FRA_austria_invest = {
 PB_FRA_hanover_invest = {
 	random_list = {
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 						infrastructure < 5
@@ -569,7 +704,7 @@ PB_FRA_hanover_invest = {
 			}
 		}
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 					}
@@ -583,7 +718,7 @@ PB_FRA_hanover_invest = {
 			}
 		}
 		1 = {
-			HAN = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 					}
@@ -597,7 +732,7 @@ PB_FRA_hanover_invest = {
 			}
 		}
 		1 = {
-			MGE = {
+			var:german_target = {
 				random_owned_controlled_state = {
 					limit = {
 					}

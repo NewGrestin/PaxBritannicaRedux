@@ -189,25 +189,118 @@ can_release_17 = { #Meurthe
 	}
 }
 
-#Savoy - annexation_savoy
-can_release_735 = {
-	735 = { annexations_state_is_tied_to_annexation_decision = yes } #Savoy
+#Champagne
+can_release_18 = {
+	18 = { annexations_state_is_tied_to_annexation_decision = yes } #Champagne
 	ROOT = {
 		OR = {
-			OFA = { ROOT_can_grant_land = yes }
-			FRA = { ROOT_can_grant_land = yes }
-			735 = { #Savoy
+			27 = { is_claim_or_core_of_ROOT = yes } #Bourgogne
+			16 = { is_claim_or_core_of_ROOT = yes } #Alsace
+			27 = { #Bourgogne
 				annexations_state_owner_is_valid_grant_target = yes
-				owner = { ROOT_can_grant_land = yes }
+				owner = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			16 = { #ile-de-france
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+					NOT = { tag = event_target:bourgogne }
+				}
 			}
 		}
 	}
 	add_state_to_resistance_target_array = yes
 	ROOT = {
 		should_release_france_first = yes
-		should_release_occitania_first = yes
+		should_release_burgundy_first = yes
 	}
 }
+
+
+#Geneve and Vaud
+can_release_940 = {
+	940 = { annexations_state_is_tied_to_annexation_decision = yes } #Geneve and Vaud
+	ROOT = {
+		OR = {
+			AND = {
+				27 = { is_claim_or_core_of_ROOT = yes } #Bourgogne
+				owns_state = 972 #Nauchatel
+			}
+			3 = { is_claim_or_core_of_ROOT = yes } #Swiss
+			27 = { #Bourgogne
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+					972 = { annexations_required_state_is_owned_by_either_side = yes } #Nauchatel
+				}
+			}
+			3 = { #Swiss
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+					NOT = { tag = event_target:bourgogne }
+				}
+			}
+		}
+	}
+	add_state_to_resistance_target_array = yes
+	ROOT = {
+		should_release_burgundy_first = yes
+		should_release_switzerland_first = yes
+	}
+}
+
+#Grisons
+can_release_971 = {
+	971 = { annexations_state_is_tied_to_annexation_decision = yes } #Grisons
+	ROOT = {
+		OR = {
+			AND = {
+				153 = { is_claim_or_core_of_ROOT = yes } #Tyrol
+				owns_state = 1189 #Voralburg
+				owns_state = 39 #South Tyrol
+			}
+			AND = {
+				159 = { is_claim_or_core_of_ROOT = yes } #Lombardy
+				owns_state = 1403 #Ticino
+			}
+			3 = { is_claim_or_core_of_ROOT = yes } #Swiss
+			153 = { #Tyrol
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+					1189 = { annexations_required_state_is_owned_by_either_side = yes } #Voralburg
+					39 = { annexations_required_state_is_owned_by_either_side = yes } #South Tyrol
+				}
+			}
+			159 = { #Lombardy
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+					1403 = { annexations_required_state_is_owned_by_either_side = yes } #Ticino
+					NOT = { tag = event_target:austria }
+				}
+			}
+			3 = { #Swiss
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+					NOT = { tag = event_target:austria }
+					NOT = { tag = event_target:italy }
+				}
+			}
+		}
+	}
+	add_state_to_resistance_target_array = yes
+	ROOT = {
+		should_release_austria_first = yes
+		should_release_italy_first = yes
+		should_release_switzerland_first = yes
+	}
+}
+
 
 #Neuchatel - annexation_972
 can_release_972 = {
@@ -281,6 +374,16 @@ can_release_171 = {
 
 can_release_195 = {
 	195 = { annexations_state_is_tied_to_annexation_decision = yes } #St. Petersburg
+	NOT = { country_exists = PET }
+	ROOT = { is_russian_tag = no }
+	add_state_to_resistance_target_array = yes
+	ROOT = { 
+		should_release_russia_first = yes
+	}
+}
+
+can_release_219 = {
+	219 = { annexations_state_is_tied_to_annexation_decision = yes } #Moscow
 	NOT = { country_exists = RUS }
 	ROOT = { is_russian_tag = no }
 	add_state_to_resistance_target_array = yes
@@ -363,6 +466,8 @@ can_release_1387 = {
 	add_state_to_resistance_target_array = yes
 	ROOT = {
 		should_release_russia_first = yes
+		should_release_georgia_first = yes
+		should_release_kuban_state_first = yes
 	}
 }
 
@@ -438,6 +543,7 @@ can_release_232 = {
 	add_state_to_resistance_target_array = yes
 	ROOT = {
 		should_release_russia_first = yes
+		should_release_kalmykia_first = yes
 	}
 }
 
@@ -648,19 +754,15 @@ can_release_1404 = { #valais
 	1404 = { annexations_state_is_tied_to_annexation_decision = yes } #Valais
 	ROOT = {
 		OR = {
-			is_subject = yes
-			original_tag = SWI
 			SWI = { ROOT_can_grant_land = yes }
 			3 = { #Western Cantons
 				annexations_state_owner_is_valid_grant_target = yes
 				owner = { ROOT_can_grant_land = yes }
 			}
-			3 = { is_claim_or_core_of_ROOT = yes } #Western Cantons
-			AND = {
-				832 = { is_claim_or_core_of_ROOT = yes } #Upper Savoy
-				940 = { is_claim_or_core_of_ROOT = yes } #Geneva & Vaud
+			3 = { #Western Cantons
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = { ROOT_can_grant_land = yes }
 			}
-			
 		}
 	}
 	add_state_to_resistance_target_array = yes
@@ -1209,12 +1311,31 @@ can_release_102 = {
 	102 = { annexations_state_is_tied_to_annexation_decision = yes } #Krain
 	ROOT = {
 		OR = {
-			GER = { ROOT_can_grant_land = yes }
-			AUS = { ROOT_can_grant_land = yes }
-			country_exists = SLV
-			102 = { 
+			1185 = { #Frankfurt
 				annexations_state_owner_is_valid_grant_target = yes
-				owner = { ROOT_can_grant_land = yes }
+				owner = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			1188 = { #Carinthia
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			109 = { #Croatia
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+					original_tag = SER
+					1188 = { is_claim_or_core_of_PREV = yes } #Carinthia
+					OR = {
+						has_cosmetic_tag = SER_Yugoslav_Empire
+						has_cosmetic_tag = SER_Yugoslav_Republic
+						has_cosmetic_tag = SER_Yugoslav_Federation
+						has_cosmetic_tag = SER_Yugoslav_RUS
+					}
+				}
 			}
 		}
 	}
@@ -1370,17 +1491,24 @@ can_release_28 = {
 	28 = { annexations_state_is_tied_to_annexation_decision = yes } #alsace
 	ROOT = {
 		OR = {
-			GER = { ROOT_can_grant_land = yes }
-			country_exists = FRK
-			28 = { 
+			16 = { #Ile de France
 				annexations_state_owner_is_valid_grant_target = yes
-				owner = { ROOT_can_grant_land = yes }
+				owner = {
+					ROOT_can_grant_land = yes
+				}
+			}
+			1185 = { #Frankfurt
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = {
+					ROOT_can_grant_land = yes
+				}
 			}
 		}
 	}
 	add_state_to_resistance_target_array = yes
 	ROOT = {
 		should_release_germany_first = yes
+		should_release_france_first = yes
 	}
 }
 
@@ -1507,7 +1635,30 @@ can_release_141 = {
 can_release_1366 = {
 	1366 = { annexations_state_is_tied_to_annexation_decision = yes } #Lappland
 	NOT = { country_exists = MEN }
+	ROOT = { 
+		OR = { 
+			1362 = { is_claim_or_core_of_ROOT = yes } #
+			1011 = { is_claim_or_core_of_ROOT = yes } #
+			1366 = { is_claim_or_core_of_ROOT = yes } #
+			1362 = { 
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = { ROOT_can_grant_land = yes }
+			}
+			1011 = { 
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = { ROOT_can_grant_land = yes }
+				1019 = { annexations_required_state_is_owned_by_either_side = yes } #jamtland
+			}
+			38 = { 
+				annexations_state_owner_is_valid_grant_target = yes
+				owner = { ROOT_can_grant_land = yes }
+			}
+		}
+	}
 	add_state_to_resistance_target_array = yes
+	ROOT = { 
+		should_release_sweden_first = yes
+	}
 }
 
 can_release_1467 = {
@@ -1568,6 +1719,9 @@ can_release_1011 = {
 				annexations_state_owner_is_valid_grant_target = yes
 				owner = { ROOT_can_grant_land = yes }
 			}
+			NOT = { 
+				original_tag = SWE
+			}
 		}
 	}
 	1011 = { annexations_state_is_tied_to_annexation_decision = yes } #Nordland
@@ -1575,6 +1729,28 @@ can_release_1011 = {
 	ROOT = {
 		should_release_nordland_first = yes
 		should_release_norway_first = yes
+	}
+}
+
+can_release_1079 = {
+	1079 = { annexations_state_is_tied_to_annexation_decision = yes } #Nordland
+	ROOT = {
+        OR = {
+            SWE = { ROOT_can_grant_land = yes }
+            NOR = { ROOT_can_grant_land = yes }
+            MEN = { ROOT_can_grant_land = yes }
+            DEN = { ROOT_can_grant_land = yes }
+            1079 = { 
+                annexations_state_owner_is_valid_grant_target = yes
+                owner = { ROOT_can_grant_land = yes }
+            }
+        }
+    }
+	add_state_to_resistance_target_array = yes
+	ROOT = {
+		should_release_nordland_first = yes
+		should_release_norway_first = yes
+		should_release_iceland_first = yes
 	}
 }
 
@@ -1945,7 +2121,6 @@ can_release_45 = {
 	ROOT = {
 		should_release_hungary_first = yes
 		should_release_serbia_first = yes
-		should_release_west_banat_first = yes
 	}
 }
 
@@ -1954,6 +2129,8 @@ can_release_82 = {
 	NOT = {
 		country_exists = BNA
 	}
+	764 = { annexations_state_has_valid_annexation = no } #West Banat
+	add_state_to_resistance_target_array = yes
 	ROOT = {
 		should_release_hungary_first = yes
 		should_release_serbia_first = yes
@@ -1977,7 +2154,7 @@ can_release_764 = {
 	add_state_to_resistance_target_array = yes
 	ROOT = {
 		should_release_hungary_first = yes
-		should_release_banat_first = yes
+		45 = { annexations_state_has_valid_annexation = no } #Vojvodina
 		should_release_serbia_first = yes
 	}
 }
@@ -2937,6 +3114,7 @@ can_release_1389 = {
 	ROOT = {
 		OR = {
 			DAG = { ROOT_can_grant_land = yes }
+			RUS = { ROOT_can_grant_land = yes }
 			1389 = { 
 				annexations_state_owner_is_valid_grant_target = yes
 				owner = { ROOT_can_grant_land = yes }
@@ -3073,16 +3251,12 @@ can_release_118 = { #Gibraltar
 
 can_release_1363 = {
 	1363 = { annexations_state_is_tied_to_annexation_decision = yes } #Kemi
+	NOT = { country_exists = MEN }
 	ROOT = {
 		OR = {
 			should_release_norrland_first = yes
 			should_release_finland_first = yes
-			AND = {
-				should_release_sweden_first = yes
-				SWE = {
-					owns_state = 1366
-				}
-			}
+			should_release_sweden_first = yes
 		}
 	}
 }
@@ -3322,20 +3496,76 @@ should_release_russia_first = {
 should_release_dagestan_first = {
 	OR = {
 		country_exists = DAG
+		TRS = {
+			AND = {
+				exists = yes
+				owns_state = 232
+			}
+		}
 		232 = { annexations_state_has_valid_annexation = no } #Vladikavkaz
+	}
+}
+
+should_release_georgia_first = {
+	OR = {
+		country_exists = GEO
+		TRS = {
+			AND = {
+				exists = yes
+				owns_state = 231
+			}
+		}
+		231 = { annexations_state_has_valid_annexation = no } #Tiflis
 	}
 }
 
 should_release_kuban_first = {
 	OR = {
 		country_exists = KUB
+		TRS = {
+			AND = {
+				exists = yes
+				owns_state = 218
+			}
+		}
 		218 = { annexations_state_has_valid_annexation = no } #Vladikavkaz
+	}
+}
+
+should_release_kalmykia_first = {
+	OR = {
+		country_exists = KAM
+		TRS = {
+			AND = {
+				exists = yes
+				owns_state = 237
+			}
+		}
+		237 = { annexations_state_has_valid_annexation = no } #Kalmykia
+	}
+}
+
+should_release_kuban_state_first = {
+	OR = {
+		TRS = {
+			AND = {
+				exists = yes
+				owns_state = 1390
+			}
+		}
+		1390 = { annexations_state_has_valid_annexation = no } #Kuban
 	}
 }
 
 should_release_mountain_Republic_first = {
 	OR = {
 		country_exists = MRP
+		TRS = {
+			AND = {
+				exists = yes
+				owns_state = 233
+			}
+		}
 		233 = { annexations_state_has_valid_annexation = no } #Rostov
 	}
 }
@@ -3411,13 +3641,6 @@ should_release_hungary_first = {
 			country_exists = HWA
 			43 = { annexations_state_has_valid_annexation = no } #Budapest
 		}
-	}
-}
-
-should_release_banat_first = {
-	OR = {
-		country_exists = BNA
-		82 = { annexations_state_has_valid_annexation = no } #Budapest
 	}
 }
 

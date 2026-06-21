@@ -3,12 +3,12 @@ PB_India_War = {
 	IND_Declare_national_government = {
 		icon = GFX_decision_generic_form_nation
 		allowed = {
-			always =yes
+			is_indian_tag = yes	
 		}
 		available = {
-			num_of_controlled_states > 6
+			has_completed_focus = RAJ_declare_government
 		}
-        cost = 20
+        cost = 100
 		ai_will_do = {
 			factor = 4000
 		}
@@ -25,32 +25,21 @@ PB_India_War = {
 	PB_attack_India = {
 		icon = GFX_decision_generic_operation
 		cost = 20
-
+		ai_will_do = {
+			factor = 100
+		}
 		allowed = {
-			OR = {
-				original_tag = MUG
-				original_tag = AWD
-				original_tag = MAR
-				original_tag = SIN
-				original_tag = BDK
-				original_tag = FOM
-				original_tag = BAN
-				original_tag = HYD
-				original_tag = BHP
-				original_tag = NEP
-				original_tag = ORI
-				original_tag = MDR
-				original_tag = MYS
-				original_tag = JKM
-			}
+			is_indian_tag = yes
 		}
 		available = {
+			is_indian_tag = yes
+			is_subject = no
 			has_war = no
 
 			hidden_trigger = {
 				OR = { 
 					date > 1934.02.01
-					has_country_flag = India_Debug
+					has_global_flag = India_Debug
 				}
 			}
 			custom_trigger_tooltip = {
@@ -62,12 +51,24 @@ PB_India_War = {
 					}
 				}
 			}
+			if = { 
+				limit = { 
+					FROM = { 
+						is_subject = yes
+					}
+				}
+				second_great_war_started = yes
+				#has_proclaimed_indian_government = yes
+			}
     	}
 		visible = {
 			is_neighbor_of = FROM			
+			NOT = { 
+				is_subject_of = ROOT
+				is_ally_with = ROOT
+			}
 		}
-
-		targets = { JKM MYS MDR ORI NEP BHP FOM BAN HYD SIN MAR AWD MUG BDK FOM }
+		targets = { NEP JKM BHP BHP BDK JBP TRV SIN MDR ORI MYS FOM HYD BAN RAJ AWD MAR GUJ PAK MUG }
     	targets_dynamic = yes
 		war_with_target_on_remove = yes
 		complete_effect = {
@@ -87,6 +88,78 @@ PB_India_War = {
 					has_war_with = ROOT
 				}
 			}
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+	PB_seek_protection = {
+		icon = GFX_decision_generic_operation
+		cost = 20
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 10
+				has_same_government_as_ROOT = yes
+			}
+			modifier = { 
+				factor = 0 
+				FROM = { 
+					has_army_size = {
+						size < 20
+					}
+					NOT = { 
+						is_neighbor_of = ROOT
+					}
+				}
+			}
+		}
+		allowed = {
+			is_indian_tag = yes
+		}
+		available = {
+			#make it so raj can puppet, and remember to clear the unifier status after
+			is_indian_tag = yes
+			is_subject = no
+			has_war = no
+			FROM = { 
+				if = { 
+					limit = { NOT = { tag = RAJ } } 
+					NOT = { 
+						is_subject = yes 
+					}
+				}
+			}
+    	}
+		target_root_trigger = {
+			has_completed_focus = RAJ_align_with_the_indian_hegemon
+		}
+		target_trigger = { 
+			FROM =  {
+				is_indian_unifier = yes
+			}
+		}
+		targets = { NEP JKM BHP BHP BDK JBP TRV SIN MDR ORI MYS FOM HYD BAN RAJ AWD MAR GUJ PAK MUG }
+    	targets_dynamic = yes
+		remove_effect = {
+			FROM = { 
+				country_event = { id = mar.1 days = 1 }
+			}
+		}
+		days_remove = 15
+		cancel_trigger = {
+			has_war = yes
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
 		}
 	}
 }

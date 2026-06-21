@@ -1,5 +1,5 @@
 -- Game
-NDefines.NGame.START_DATE = "1933.1.1.11"
+NDefines.NGame.START_DATE = "1933.1.1.12"
 NDefines.NGame.END_DATE = "2000.1.1.1"
 NDefines.NGame.HANDS_OFF_START_TAG = "MTA" -- Mount Athos is and will not be involved in anything yet
 NDefines.NCountry.BASE_MAX_COMMAND_POWER = 150.0
@@ -23,7 +23,7 @@ NDefines.NCountry.MIN_WAR_SUPPORT = -1.0
 NDefines.NMilitary.MAX_ARMY_EXPERIENCE = 750
 NDefines.NMilitary.MAX_NAVY_EXPERIENCE = 750
 NDefines.NMilitary.MAX_AIR_EXPERIENCE = 750
-NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2
+--NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2
 NDefines.NMilitary.SLOWEST_SPEED = 2 -- yes i had to change this
 -- Buildings
 NDefines.NBuildings.MAX_SHARED_SLOTS = 30

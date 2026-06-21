@@ -1,4 +1,16 @@
 on_actions = {
+	#ROOT is winner, FROM is loser (called for all winners against all losers)
+	on_before_peace_conference_start = {
+		effect = {
+			if = {
+				limit = {
+					tag = IMP
+					FROM = { tag = RUS }
+				}
+				#RUS_set_up_peace_conference_with_lon = yes
+			}
+		}
+	}
 	on_capitulation_immediate = {
 		effect = { 
 			if = { #GER COLLAPSE
@@ -187,10 +199,29 @@ on_actions = {
 						original_tag = COL
 					}
 				}
-				COL = { 
+				VEN = { 
 					declare_war_on = {
 						target = CHR
 						type = annex_everything
+					}
+				}
+			}
+			else_if = {# Ulster War
+				limit = {
+					ROOT = { 
+						original_tag = ICA
+					}
+				}
+				if = { 
+					limit = { 
+						ULS = { exists = yes }
+						IRE = { is_subject_of = ENG }
+					}
+					IRE = { 
+						annex_country = { 
+							target = ULS
+							transfer_troops = yes
+						}
 					}
 				}
 			}
@@ -238,6 +269,199 @@ on_actions = {
 					}
 					log = "[GetLogInfo]: SPR Peace with ENG succesful"
 				}
+			}
+			else_if = { #Philippine Victory Effects
+				limit = {
+					ROOT = { 
+						original_tag = DAS
+					}
+					PHI = { 
+						exists = yes
+						NOT = { has_global_flag = DAS_PHI_peace_out }
+					}
+				}
+				PHI_victory_effects = yes
+				set_global_flag = DAS_PHI_peace_out
+			}
+			else_if = {# MEXICO Defeated
+				limit = {
+					ROOT = { 
+						original_tag = MEX
+					}
+					FROM = { 
+						OR = { 
+							tag = NMX
+							is_in_faction_with = NMX
+							tag = SMX
+							is_in_faction_with = SMX
+						}
+					}
+				}
+				if = { 
+					limit = { 
+						NMX = { exists = yes } 
+					}
+					NMX = {
+						every_country = {
+							limit = {
+								OR = {
+									is_in_faction_with = NMX
+									is_in_faction_with = SMX
+								}
+								NOT = { tag = NMX } # don't annex yourself
+							}
+							annex_country = { target = PREV transfer_troops = yes }
+							every_core_state = {
+								add_core_of = NMX
+							}
+						}
+						set_cosmetic_tag = CAL_United_States_Of_Mexico
+					}
+				}
+				else_if = { 
+					limit = { 
+						NMX = { exists = no } 
+					}
+					SMX = {
+						every_country = {
+							limit = {
+								OR = {
+									is_in_faction_with = NMX #would this even make a difference tbh
+									is_in_faction_with = SMX
+								}
+								NOT = { tag = SMX } # don't annex yourself
+							}
+							annex_country = { target = PREV transfer_troops = yes }
+							every_core_state = {
+								add_core_of = SMX
+							}
+						}
+						set_cosmetic_tag = CAL_United_States_Of_Mexico
+					}
+				}
+				news_event = { id = PBNews.120 days = 1 } # Coalition Victory Event
+			}
+			else_if = { #MEXICO VICTORY
+				limit = {
+					ROOT = { 
+						original_tag = MEX
+					}
+					FROM = { 
+						OR = { 
+							tag = NMX
+							is_in_faction_with = NMX
+							tag = SMX
+							is_in_faction_with = SMX
+						}
+					}
+				}
+				if = { 
+					limit = { 
+						AND = { 
+							NMX = { exists = no } 
+							SMX = { exists = no } 
+						}
+					}
+					news_event = { id = PBNews.119 days = 1 }
+				}
+			}
+			
+			else_if = { # 2nd Southern Expedition - Heavenly Kingdom Victory
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = CHI
+							original_tag = CHI
+						}
+					}
+					ROOT = {
+						original_tag = ROC
+					}
+				}
+
+				CHI = {
+					set_cosmetic_tag = CHI_Reunified
+
+					country_event = GenChina.5
+				}
+			}
+
+			else_if = { # 2nd Southern Expedition - Republican Victory
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = ROC
+							original_tag = ROC
+						}
+					}
+					ROOT = {
+						original_tag = CHI
+					}
+				}
+
+				ROC = {
+					set_cosmetic_tag = ROC_Reunified
+
+					country_event = GenChina.4
+					country_event = GenChina.8
+				}
+			}
+
+			else_if = { # Manchuria beats Imperial China
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = MAN
+							original_tag = MAN
+						}
+					}
+					ROOT = {
+						OR = { 
+							original_tag = CHI
+							original_tag = ROC
+						}
+					}
+				}
+				every_state = {
+					if = {
+						limit = { is_china = no }
+						remove_core_of = MAN
+					}
+					else = {
+						add_claim_by = MAN
+					}
+				}
+				MAN = {
+					set_cosmetic_tag = MAN_Reunified
+				}
+			}
+			else_if = { # QuadCom beats Imperials
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = SGH
+							original_tag = SGH
+						}
+					}
+					ROOT = {
+						OR = { 
+							original_tag = CHI
+							original_tag = ROC
+						}
+					}
+				}
+
+				SGH = {
+					set_autonomy = {
+						target = CHI
+						autonomous_state = autonomy_client_state
+						freedom_level = 0.5
+					}
+				}
+				CHI = {
+					set_cosmetic_tag = SGH_Reunified
+				}
+				set_global_flag = skip_default_capitulation
 			}
 		}
 	}
