@@ -31271,3 +31271,310 @@ country_event = { #Fate of Marche-Umbria
 		recheck_annexations = yes
 	}
 }
+country_event = { #Fate of Germany (BLANKET DECISION)
+	id = annex.1999
+	title = annexation_1185
+	desc = annexation_1185_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			annexations_reset_german_tags = yes
+			every_state = {
+				if = {
+					limit = {
+						is_germany = yes 
+					}
+					add_core_of = GER
+				}
+				else = {
+					remove_core_of = GER
+					remove_claim_by = GER
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						is_german_unifier_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+
+			every_owned_state = {
+				limit = {
+					is_rhineland = yes
+				} 
+				retain_state = yes
+			}
+			
+			annexations_create_german_event_targets = yes
+			if = {
+				limit = { annexations_germany_is_independent_ally_or_puppet_of_ROOT = no }
+				if = {
+					limit = {
+						52 = { #Bavaria
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:germany }
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:52.owner = { save_event_target_as = bavaria add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+				if = {
+					limit = {
+						57 = { #_pphalia
+							annexations_state_owner_is_valid_grant_target = yes
+							owner = {
+								NOT = { tag = event_target:germany }
+								NOT = { tag = event_target:bavaria }
+								51 = { annexations_required_state_is_owned_by_either_side = yes } #Eastern Rhineland
+								ROOT_can_grant_land = yes
+							}
+						}
+					}
+					var:57.owner = { save_event_target_as = westphalia add_to_array = { ROOT.potential_grant_targets = THIS } }
+				}
+			}
+		}
+	}
+
+	option = { #Release German Puppet
+		log = "[GetLogInfo]: event annex.1999 option annexation_events.europe.release_germany"
+		name = annexation_events.europe.release_germany
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+		}
+		annexations_release_MGE_germany = yes
+	}
+
+	option = { #Release the Kingdoms Seperately
+		log = "[GetLogInfo]: event annex.1999 option annex.1999.b"
+		name = annex.1999.b
+		trigger = {
+			is_subject = no
+		}
+
+		ai_chance = {
+			base = 0
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				add = 60
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = FRK }
+		release_targeted_tag = yes
+
+		set_temp_variable = { tag_to_release = BAV }
+		release_targeted_tag = yes
+
+		set_temp_variable = { tag_to_release = SAX }
+		release_targeted_tag = yes
+
+		set_temp_variable = { tag_to_release = WRT }
+		release_targeted_tag = yes
+
+		set_temp_variable = { tag_to_release = HAN }
+		release_targeted_tag = yes
+
+		set_temp_variable = { tag_to_release = BRN }
+		release_targeted_tag = yes
+	}
+
+	option = { #Give to Germany
+		log = "[GetLogInfo]: event annexation_events.1999 option annexation_events.europe.give_to_germany"
+		name = annexation_events.europe.give_to_germany
+		trigger = {
+			has_event_target = germany
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = { #prevent giving your half of germany
+				factor = 0
+				OR = { 
+					tag = RUS
+					tag = FRA
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+				OR = {
+					is_ally_with = event_target:bavaria
+					is_ally_with = event_target:westphalia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:germany }
+		every_owned_state = {
+			limit = {
+				is_germany = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+		
+	}
+
+	option = { #Give to German tag 1 (owner of bavaria)
+		log = "[GetLogInfo]: event annexation_events.1999 option annex.1999.c"
+		name = annex.1999.c
+		trigger = {
+			has_event_target = bavaria
+		}
+		ai_chance = {
+			base = 75
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bavaria }
+				OR = {
+					is_ally_with = event_target:germany
+					is_ally_with = event_target:westphalia
+				}
+			}
+			modifier = { #prevent giving your half of germany
+				factor = 0
+				OR = { 
+					tag = RUS
+					tag = FRA
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bavaria = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:bavaria }
+		every_owned_state = {
+			limit = {
+				is_germany = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to German tag 2 (owner of Westphalia)
+		log = "[GetLogInfo]: event annexation_events.1999 option annex.1999.e"
+		name = annex.1999.e
+		trigger = {
+			has_event_target = westphalia
+		}
+		ai_chance = {
+			base = 25
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				annexations_AI_country_wants_to_dismantle_germany = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:westphalia }
+				OR = {
+					is_ally_with = event_target:germany
+					is_ally_with = event_target:bavaria
+				}
+			}
+			modifier = { #prevent giving your half of germany
+				factor = 0
+				OR = { 
+					tag = RUS
+					tag = FRA
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:westphalia = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:westphalia }
+		every_owned_state = {
+			limit = {
+				is_germany = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1999 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		every_owned_state = {
+			limit = {
+				is_germany = yes
+				is_valid_annexation_state = yes
+			}
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1999 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		every_state = {
+				limit = { is_germany = yes }
+				add_claim_of_ROOT = yes
+			}
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1999 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
