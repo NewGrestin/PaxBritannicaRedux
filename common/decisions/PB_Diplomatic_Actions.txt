@@ -55,7 +55,162 @@ PB_Diplomacy_Decisions = {
 		}
 	}
 	# ABANDON ALL HOPE, ALL YE WHO ENTER 
+	#ASIA
 
+	Asia_join_Japan = {
+		icon = generic_nationalism
+
+		allowed = {
+			is_in_east_asia = yes
+		}
+
+		available = {
+			OR = {
+				has_war = no
+				all_enemy_country = { has_war_with = JAP }
+			}
+			NOT = { has_country_flag = PB_Faction_Cuck }
+		}
+
+		visible = {
+			date > 1938.01.01
+			is_in_faction = no
+			is_subject = no
+			FROM = {
+				is_faction_leader = yes
+				NOT = { has_war_with = ROOT }
+			}
+			OR = { 
+				has_government = jc
+				has_idea = PB_revolutionary_republic
+				has_idea = PB_workers_republic
+				AND = { 
+					tag = VIN
+					has_government = ss
+				}
+			}
+			NOT = { 
+				tag = CCO
+			}
+		}
+
+		target_root_trigger = {
+			is_in_faction = no
+		}
+
+		targets = { JAP }
+
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				add = 5
+				
+			}
+		}
+
+		target_trigger = {
+			FROM = {
+				is_faction_leader = yes
+				NOT = { has_war_with = ROOT }
+			}
+		}
+
+		fire_only_once = yes
+
+		cost = 0
+
+		complete_effect = {
+			set_country_flag = { flag = PB_Faction_Cuck days = 6 value = 1 }
+			FROM = { 
+				country_event = { id = PB_DA_generic.1 days = 1}
+				custom_effect_tooltip = if_they_accept_tt
+				effect_tooltip = { faction_leader = { add_to_faction = ROOT } }
+			}
+		}
+
+		fixed_random_seed = no
+	}
+
+	#CHINA
+
+	China_invade_west = {
+		icon = GFX_decision_generic_colonial_hat_german
+
+		allowed = {
+			OR = { 
+				original_tag = CHI
+				original_tag = ROC
+				original_tag = MAN
+				original_tag = SGH
+			}
+		}
+
+		available = {
+			is_neighbor_of = FROM
+			NOT = { has_non_aggression_pact_with = FROM }
+			FROM = {
+				is_tag_in_china = yes
+			}
+			can_declare_war_on = FROM
+		}
+
+		visible = {
+			OR = { 
+				has_cosmetic_tag = SGH_Reunified
+				has_cosmetic_tag = ROC_Reunified
+				has_cosmetic_tag = CHI_Reunified
+				has_cosmetic_tag = MAN_Reunified
+			}
+		}
+
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				NOT = { FROM = { is_tag_in_china = yes } }
+				NOT = { is_neighbor_of = FROM }
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+
+		targets = { CHI ROC MAN SGH YUN XSM KUM TIB ETR TIB SIK TAI HNK }
+
+		target_trigger = {
+			can_declare_war_on = FROM
+			FROM = {
+				is_tag_in_china = yes
+			}
+		}
+
+		cost = 0
+		days_remove = 30
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			base = 100
+			modifier = {
+				factor = 0
+				OR = { 
+					ROOT = { has_war = yes }
+					FROM = { 
+						OR = { 
+							is_subject = yes
+							is_in_faction = yes
+						}
+					}
+				}
+			}
+		}
+
+		remove_effect = {
+			ROOT = {
+				declare_war_on = {
+					target = FROM
+					type = annex_everything
+				}
+			}
+		}
+	}
 
 	###################
 	# GERMAN EAST ASIA #

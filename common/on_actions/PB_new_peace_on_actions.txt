@@ -29,9 +29,12 @@ on_actions = {
 				log = "Germany Capitulated"
 
 				FRA = { 
+					country_event = { 
+						id = annex.1999 days = 5
+					}
 					country_event = germany.25
 					country_event = { id = French_postwar.5 days = 14 }	
-					country_event = { id = French.95 days = 3 } 
+					#country_event = { id = French.95 days = 3 } 
 					add_ideas = FRA_German_Liberation_Front_Presence_High
 					set_country_flag = FRA_Cucked_Germany
 					if = {
@@ -68,9 +71,8 @@ on_actions = {
 								transfer_state = PREV
 							}
 						}
-						country_event = {
-							id = Russian_Foreign_Policy.3
-							days = 3
+						country_event = { 
+							id = annex.1999 days = 5
 						}
 					}
 
@@ -364,6 +366,104 @@ on_actions = {
 					}
 					news_event = { id = PBNews.119 days = 1 }
 				}
+			}
+			
+			else_if = { # 2nd Southern Expedition - Heavenly Kingdom Victory
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = CHI
+							original_tag = CHI
+						}
+					}
+					ROOT = {
+						original_tag = ROC
+					}
+				}
+
+				CHI = {
+					set_cosmetic_tag = CHI_Reunified
+
+					country_event = GenChina.5
+				}
+			}
+
+			else_if = { # 2nd Southern Expedition - Republican Victory
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = ROC
+							original_tag = ROC
+						}
+					}
+					ROOT = {
+						original_tag = CHI
+					}
+				}
+
+				ROC = {
+					set_cosmetic_tag = ROC_Reunified
+
+					country_event = GenChina.4
+					country_event = GenChina.8
+				}
+			}
+
+			else_if = { # Manchuria beats Imperial China
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = MAN
+							original_tag = MAN
+						}
+					}
+					ROOT = {
+						OR = { 
+							original_tag = CHI
+							original_tag = ROC
+						}
+					}
+				}
+				every_state = {
+					if = {
+						limit = { is_china = no }
+						remove_core_of = MAN
+					}
+					else = {
+						add_claim_by = MAN
+					}
+				}
+				MAN = {
+					set_cosmetic_tag = MAN_Reunified
+				}
+			}
+			else_if = { # QuadCom beats Imperials
+				limit = {
+					FROM = {
+						OR = {
+							is_in_faction_with = SGH
+							original_tag = SGH
+						}
+					}
+					ROOT = {
+						OR = { 
+							original_tag = CHI
+							original_tag = ROC
+						}
+					}
+				}
+
+				SGH = {
+					set_autonomy = {
+						target = CHI
+						autonomous_state = autonomy_client_state
+						freedom_level = 0.5
+					}
+				}
+				CHI = {
+					set_cosmetic_tag = SGH_Reunified
+				}
+				set_global_flag = skip_default_capitulation
 			}
 		}
 	}
