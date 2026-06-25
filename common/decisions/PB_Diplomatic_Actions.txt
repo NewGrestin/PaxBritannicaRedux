@@ -54,14 +54,16 @@ PB_Diplomacy_Decisions = {
 			country_event = PB_DA_generic.4
 		}
 	}
-	# ABANDON ALL HOPE, ALL YE WHO ENTER 
+	#ABANDON ALL HOPE, ALL YE WHO ENTER 
 	#ASIA
 
 	Asia_join_Japan = {
 		icon = generic_nationalism
 
 		allowed = {
-			is_in_east_asia = yes
+			limit = {
+				is_in_east_asia = yes
+			}
 		}
 
 		available = {
@@ -69,11 +71,11 @@ PB_Diplomacy_Decisions = {
 				has_war = no
 				all_enemy_country = { has_war_with = JAP }
 			}
-			NOT = { has_country_flag = PB_Faction_Cuck }
+			NOT = { has_country_flag = PB_Asked_for_faction_membership }
 		}
 
 		visible = {
-			date > 1938.01.01
+			has_global_flag = second_great_war_started
 			is_in_faction = no
 			is_subject = no
 			FROM = {
@@ -84,10 +86,7 @@ PB_Diplomacy_Decisions = {
 				has_government = jc
 				has_idea = PB_revolutionary_republic
 				has_idea = PB_workers_republic
-				AND = { 
-					tag = VIN
-					has_government = ss
-				}
+				has_country_flag = Tag_in_Japanese_Sphere
 			}
 			NOT = { 
 				tag = CCO
@@ -120,15 +119,13 @@ PB_Diplomacy_Decisions = {
 		cost = 0
 
 		complete_effect = {
-			set_country_flag = { flag = PB_Faction_Cuck days = 6 value = 1 }
+			set_country_flag = { flag = PB_Asked_for_faction_membership days = 6 value = 1 }
 			FROM = { 
 				country_event = { id = PB_DA_generic.1 days = 1}
 				custom_effect_tooltip = if_they_accept_tt
 				effect_tooltip = { faction_leader = { add_to_faction = ROOT } }
 			}
 		}
-
-		fixed_random_seed = no
 	}
 
 	#CHINA
@@ -1206,7 +1203,7 @@ PB_Diplomacy_Decisions = {
 				}
 				all_enemy_country = { has_war_with = FRA }
 			}
-			NOT = { has_country_flag = PB_Faction_Cuck }
+			NOT = { has_country_flag = PB_Asked_for_faction_membership }
 		}
 
 		visible = {
@@ -1236,7 +1233,7 @@ PB_Diplomacy_Decisions = {
 		cost = 0
 
 		complete_effect = {
-			set_country_flag = { flag = PB_Faction_Cuck days = 6 value = 1 }
+			set_country_flag = { flag = PB_Asked_for_faction_membership days = 6 value = 1 }
 			FROM = { 
 				country_event = { id = PB_DA_generic.1 days = 1}
 				custom_effect_tooltip = if_they_accept_tt
@@ -1256,70 +1253,142 @@ PB_Diplomacy_Decisions = {
 	###############
 	# Germany #
 	###############
-	GER_demand_schleswig = {
+	GER_invite_to_hamburg_league = {
 		icon = influence_cold_war
 		allowed = { original_tag = GER }
-
+		target_root_trigger = {
+			has_government = ss
+			has_completed_focus = GER_europe_alliance_network
+		}
+		target_trigger = {
+			FROM = { has_war = no }
+			NOT = { has_idea = Hamburg_Membership }
+		}
 		available = {
-			OR = {
-				is_in_faction = no
-				is_faction_leader = yes
-			}
-			NOT = { has_non_aggression_pact_with = FROM }
-			NOT = { has_guaranteed = FROM }
-			second_great_war_started = no	
+			FROM = { has_war = no }
+			second_great_war_started = no
 		}
-
-		cancel_trigger = {
-			OR = {
-				NOT = { can_declare_war_on = FROM }
-				is_subject = yes
-				is_in_faction_but_not_leader = yes
-				has_non_aggression_pact_with = FROM
-				has_guaranteed = FROM
-			}
-		}
-
-		target_trigger = { 
-			any_state = {
-				is_holstein = yes
-				is_owned_by = FROM
-			}
-		}
-
-		visible = {
-			can_declare_war_on = FROM
-			is_subject = no
-		}
-		targets = { SCH }
-		cost = 40
-		days_remove = 25
+		targets = {  }
+		on_map_mode = map_and_decisions_view
+		cost = 50
 		fire_only_once = yes
-		war_with_target_on_remove = yes
-
 		ai_will_do = {
-			factor = 100
+			base = 100
 		}
-
-		on_map_mode = map_and_decisions_view 
-
 		complete_effect = {
-			every_state = { 
-				limit = { is_holstein = yes }
-				add_claim_of_ROOT = yes
-			}
-		}
-		remove_effect = {
-		}
-
+			upgrade_hamburg_membership = yes
+	    } 
 		highlight_states = {
 			highlight_states_trigger = {
-				is_holstein = yes
+				is_owned_by = FROM
 			}
 			highlight_color_while_active = 3
 			highlight_color_before_active = 2
 		}
 	}
+
+	PB_Cause_Instability_Danish_Holstein = {
+
+		icon = generic_form_nation
+		allowed = { original_tag = GER }
+		available = {
+			SCH = {
+				has_war = no
+			}
+			second_great_war_started = no
+		}
+
+		visible = {
+			has_completed_focus = GER_black_diplomacy
+		}
+
+		cost = 40
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		#highlight_state_targets = { state = 42 }
+
+		on_map_mode = map_and_decisions_view 
+
+		modifier = {
+			political_power_gain = -0.1
+		}
+        #
+		days_remove = 20
+		#
+		fire_only_once = yes
+
+		complete_effect = {
+	    } 
+
+		remove_effect = {
+			SCH = {
+                country_event = { id = germany.130 days = 1 } 
+		    }
+			DEN = {
+                country_event = { id = germany.130 days = 1 } 
+		    }
+			custom_effect_tooltip =  PB_GER_holstein_instability
+	    } 
+	}
+
+	PB_Suspiscios_Support_German_Danish = {
+
+		icon = generic_guns_and_bullets
+		allowed = { original_tag = GER }
+		available = {
+		   second_great_war_started = no
+			SCH = {
+				has_idea = PB_GER_Kiel_German_Unrest
+			}
+		}
+
+		visible = {
+			has_completed_focus = GER_black_diplomacy
+		}
+
+		cost = 25
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		#highlight_state_targets = { state = 42 }
+
+		on_map_mode = map_and_decisions_view 
+
+		modifier = {
+			political_power_gain = -0.01
+		}
+        #
+		days_remove = 20
+		#
+		fire_only_once = yes
+
+		complete_effect = {
+			add_political_power = -10
+	    } 
+
+		remove_effect = {
+			hidden_effect = {
+			SCH = {
+                country_event = { id = germany.131 days = 5 } 
+		    }
+			DEN = {
+                country_event = { id = germany.131 days = 5 } 
+		    }
+			custom_effect_tooltip =  PB_GER_holstein_instability
+		    }
+			add_equipment_to_stockpile = {
+				type = infantry_equipment_0
+				amount = -250
+			}
+			add_political_power = -25
+	    } 
+	}
+
 	GER_attack_Hungary = {
 		icon = generic_tank
 		allowed = { original_tag = GER }
@@ -1331,9 +1400,6 @@ PB_Diplomacy_Decisions = {
 			}
 			NOT = { has_non_aggression_pact_with = FROM }
 			NOT = { has_guaranteed = FROM }
-			gbw_concluded = yes
-			second_great_war_started = no	
-			gbw_danubian_victory = yes
 		}
 
 		cancel_trigger = {
@@ -1352,6 +1418,9 @@ PB_Diplomacy_Decisions = {
 			FROM = { 
 				has_government = jc
 			}
+			gbw_concluded = yes
+			second_great_war_started = no	
+			gbw_danubian_victory = yes
 		}
 		targets = { HUN }
 		cost = 40
@@ -1407,9 +1476,6 @@ PB_Diplomacy_Decisions = {
 				is_in_faction = no
 				is_faction_leader = yes
 			}
-			gbw_concluded = yes
-			second_great_war_started = no	
-			gbw_danubian_victory = no
 		}
 
 		cancel_trigger = {
@@ -1421,6 +1487,9 @@ PB_Diplomacy_Decisions = {
 		visible = {
 			can_declare_war_on = FROM
 			is_subject = no
+			gbw_concluded = yes
+			second_great_war_started = no	
+			gbw_danubian_victory = no
 			NOT = { 
 				FROM = { 
 					has_government = jc

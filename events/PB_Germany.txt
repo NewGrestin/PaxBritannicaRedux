@@ -5066,6 +5066,7 @@ country_event = {		#GermanDanishHolsteinUltimatum
 		    country_event = { id = germany.135 days = 5 }
         }
 	}
+	
 }
 
 
@@ -5080,11 +5081,26 @@ country_event = {		#DanishGiveUp
 
 	option = { 
 		name = germany.135.a
-		annex_country = {
-			target = SCH
-			transfer_troops = yes
+		if = { 
+			DEN = { 
+				every_owned_state = {
+					limit = { 
+						is_holstein = yes
+					}
+					transfer_state_to = GER
+					add_claim_by = GER
+				}
+				every_subject_country = {
+					every_owned_state = {
+						limit = { 
+							is_holstein = yes
+						}
+						transfer_state_to = GER
+						add_claim_by = GER
+					}
+				}
+			}
 		}
-		add_state_core = 58
 		add_stability = 0.1
 		add_political_power = 150
 	}	
@@ -5557,6 +5573,109 @@ country_event = {		#HabsburgEuropeSpeech
 	}	
 }
 
+# new foreign policy stuff v 1.4
+country_event = {	#Lipošćak affair
+	id = germany.186
+	title = germany.186.t
+	desc = germany.186.d
+	picture = GFX_report_PB_Conference2
+
+	fire_only_once = yes
+	is_triggered_only = yes
+
+
+	option = { #Coup Succeeds
+		name = germany.186.a 
+		ai_chance = {
+			base = 70
+		}
+		add_political_power = -50
+		FROM = {
+			set_autonomy = {
+				target = ROOT
+				autonomous_state = autonomy_client_state
+				freedom_level = 0.50
+			}
+	
+			country_event = { 
+				id = germany.187
+				hours = 1
+			}
+		
+		}
+		ROOT = { 
+			set_politics = { 
+				ruling_party = ds
+			}
+
+			add_popularity = {
+				ideology = ds
+				popularity = 0.3
+			}
+
+			kill_country_leader = yes
+			create_country_leader = {
+				name = "Anton Lipošćak"
+				desc = "PB_Ragnar_Skancke_DESC"
+				picture = GFX_Portrait_SPR_regency_civilian_large
+				expire = "1965.1.1"
+				ideology = DS_VARIANT_12
+			}
+			drop_cosmetic_tag = yes
+			set_cosmetic_tag = DAL_GER
+		}
+		hidden_effect = {
+			#news_event = {
+            #    id = PBNews.202
+            #    days = 1
+            #}
+		}
+	}	
+	option = { #Coup Fails
+		name = germany.186.b
+		ai_chance = {
+			base = 30
+			modifier = { 
+				factor = 0
+				GER = { is_ai = no }
+			}
+		}
+		add_political_power = 30
+		ROOT = { 
+			add_opinion_modifier = {
+				target = FROM
+				modifier = protest_action_strong
+			}
+		}
+		#hidden_effect = {
+		#	news_event = {
+        #        id = PBNews.202
+        #        days = 1
+        #    }
+		#}
+	}	
+}
+
+country_event = {	#Lipošćak affair - GER reaction - you only really need an event for this since it always fires if not ai
+	id = germany.187
+	title = germany.187.t
+	desc = germany.187.d
+	picture = GFX_report_PB_Conference2
+
+	fire_only_once = yes
+	is_triggered_only = yes
+
+
+	option = { #Coup Succeeded - Establish the Kingdom
+		name = germany.187.a 
+		FROM = { 
+			set_cosmetic_tag = DAL_GER_Kingdom
+		}
+	} 
+	option = { #Coup Succeeded - Retain the Military Administration
+		name = germany.187.b 
+	} 
+}
 #########################################################
 ######## GERMANY EXILE EVENTS
 #########################################################

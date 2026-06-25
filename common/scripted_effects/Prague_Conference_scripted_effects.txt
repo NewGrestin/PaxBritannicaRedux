@@ -1,37 +1,86 @@
 Prague_Conf_determine_diplo_weight_effect = {
 	#GERMANY#
-	add_to_array = { major_vp = 1185 } #Frankfurt
-	add_to_array = { major_vp = 64 } #Brandenburg
-	add_to_array = { major_vp = 917 } #Hamburg
-	add_to_array = { major_vp = 9 } #Bohemia
-	add_to_array = { major_vp = 52 } #Oberbayern
-	add_to_array = { major_vp = 4 } #Lower Austria
+	1185 = { add_to_array = { global.major_vp = THIS.id }} #Frankfurt
+	64 = { add_to_array = { global.major_vp = THIS.id }} #Hamburg
+	917  = { add_to_array = { global.major_vp = THIS.id }} #Frankfurt
+	9 = { add_to_array = { global.major_vp = THIS.id }} #Bohemia
+	52 = { add_to_array = { global.major_vp = THIS.id }} #Oberbayern
+	4 = { add_to_array = { global.major_vp = THIS.id }} #Lower Austria
 	
 	#ITALY#
-	add_to_array = { major_vp = 159 } #Lombardy
-	add_to_array = { major_vp = 158 } #Piedmont
-	add_to_array = { major_vp = 2} #Latium
-	add_to_array = { major_vp = 117} #Campania
+	159 = { add_to_array = { global.major_vp = THIS.id }} #Lombardy
+	158 = { add_to_array = { global.major_vp = THIS.id }} #Piedmont
+	2 = { add_to_array = { global.major_vp = THIS.id }} #Latium
+	117 = { add_to_array = { global.major_vp = THIS.id }} #Campania
 	
 	#SWEDEN#
-	add_to_array = { major_vp = 141} #Svealand
-	add_to_array = { major_vp = 140} #Vastergotaland
+	141 = { add_to_array = { global.major_vp = THIS.id }} #Svealand
+	140 = { add_to_array = { global.major_vp = THIS.id }} #Vastergotaland
 	
 	#NETHERLANDS#
-	add_to_array = { major_vp = 7} #Holland
-	
-	add_to_array = { minor_vp = 1}
+	7 = { add_to_array = { global.major_vp = THIS.id }} #Holland
 	
 	for_each_loop = {
-		array = major_vp
-		value = current_vp
+		array = global.major_vp
 		if = {
 			limit = {
-				ROOT = { 
-					controls_state = current_vp
+				meta_trigger = {
+					text = {
+						owns_state = [STATE_ID]
+					}
+					STATE_ID = "[?v.GetID]"
 				}
 			}
-			add_to_variable = {ROOT.diplo_weight = 2}
+			log = "[ROOT.GetName] controls the following state:[?v.GetID]"
+			add_to_variable = { ROOT.diplo_weight = 2 }
+		}
+	}
+}
+
+Prague_Conf_determine_leading_tag = {
+	if = {
+		limit = {
+			tag = FRA
+			FRA.diplo_weight > RUS.diplo_weight
+		}
+		FRA = {
+			country_event = {
+				id = Prague_Conference.5
+				days = 3
+			}
+		}
+	}
+	if = {
+		limit = {
+			tag = RUS
+			RUS.diplo_weight > FRA.diplo_weight
+		}
+		RUS = {
+			country_event = {
+				id = Prague_Conference.5
+				days = 3
+			}
+		}
+	}
+	else = {
+		fixed_random_seed = no
+		random_list = {
+			50 = {
+				FRA = {
+					country_event = {
+						id = Prague_Conference.5
+						days = 3
+					}
+				}
+			}
+			50 = {
+				RUS = {
+					country_event = {
+						id = Prague_Conference.5
+						days = 3
+					}
+				}
+			}
 		}
 	}
 }
