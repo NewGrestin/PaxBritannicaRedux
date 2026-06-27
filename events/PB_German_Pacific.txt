@@ -11,6 +11,7 @@ add_namespace = DAS_Zitronella_Raid
 add_namespace = DAS_FarEastCrisis
 add_namespace = DAS_Diplomacy
 add_namespace = DAS_CondorClub
+add_namespace = DAS_WeaponsTesting
 
 country_event = { # German East Asia Intro
 	id = DAS.1
@@ -2284,4 +2285,341 @@ country_event = {
 	picture = GFX_report_PB_PHI_Aperture
 	is_triggered_only = yes
 	option = { name = DAS_CondorClub.4.a }
+}
+
+#######################
+### Weapons Testing ###
+#######################
+
+country_event = { # German Weapons Manufacturers Approach Us
+	id = DAS_WeaponsTesting.1
+	title = DAS_WeaponsTesting.1.t
+	desc = DAS_WeaponsTesting.1.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = {
+		name = DAS_WeaponsTesting.1.a # Mauser's Experimental Automatic Rifle
+		ai_chance = {
+			base = 33
+		}
+		activate_mission = DAS_Weaons_Testing_Mauser
+		division_template = {
+			name = "Experimental Rifle Division"
+			is_locked = yes
+			division_cap = 1
+			priority = 1
+			template_counter = 0
+			regiments = {
+				elite_infantry = { x = 0 y = 0 }
+				elite_infantry = { x = 0 y = 1 }
+				elite_infantry = { x = 0 y = 2 }
+			}
+		}
+		627 = {
+			create_unit = {
+				division = "name = \"Experimental Rifle Division\" division_template = \"Experimental Rifle Division\" start_experience_factor = 0.5"
+				owner = DAS
+				count = 1
+				allow_spawning_on_enemy_provs = yes
+				id = 67
+				prioritize_location = 4241
+			}
+		}
+	}
+	option = {
+		name = DAS_WeaponsTesting.1.b # Rheinmetall's Experimental Recoilless Gun
+		ai_chance = {
+			base = 33
+		}
+		activate_mission = DAS_Weapons_Testing_Rheinmetall
+		division_template = {
+			name = "Experimental Artillery Division"
+			is_locked = yes
+			division_cap = 1
+			priority = 1
+			template_counter = 0
+			regiments = {
+				light_infantry = { x = 0 y = 0 }
+				light_infantry = { x = 0 y = 1 }
+				light_infantry = { x = 0 y = 2 }
+			}
+			regimental_support = {
+				field_guns = { x = 0 y = 0 }
+			}
+		}
+		627 = {
+			create_unit = {
+				division = "name = \"Experimental Artillery Division\" division_template = \"Experimental Artillery Division\" start_experience_factor = 0.5"
+				owner = DAS
+				count = 1
+				allow_spawning_on_enemy_provs = yes
+				id = 68
+				prioritize_location = 4241
+			}
+		}
+	}
+	option = {
+		name = DAS_WeaponsTesting.1.c # Horch's Experimental Armored Car --- will be replaced by motorized if the player doesn't have La Resistance
+		ai_chance = {
+			base = 33
+		}
+		activate_mission = DAS_Weapons_Testing_Horch
+		if = {
+			limit = {
+				has_dlc = "La Resistance"
+			}
+			division_template = {
+				name = "Experimental Armoured Car Division"
+				is_locked = yes
+				division_cap = 1
+				priority = 1
+				template_counter = 0
+				regiments = {
+					armored_car = { x = 0 y = 0 }
+					armored_car = { x = 0 y = 1 }
+					armored_car = { x = 0 y = 2 }
+				}
+			}
+			627 = {
+				create_unit = {
+					division = "name = \"Experimental Armoured Car Division\" division_template = \"Experimental Armoured Car Division\" start_experience_factor = 0.5"
+					owner = DAS
+					count = 1
+					allow_spawning_on_enemy_provs = yes
+					id = 69
+					prioritize_location = 4241
+				}
+			}
+		}
+		else = {
+			division_template = {
+				name = "Experimental Motorized Division"
+				is_locked = yes
+				division_cap = 1
+				priority = 0
+				template_counter = 0
+				regiments = {
+					motorized = { x = 0 y = 0 }
+					motorized = { x = 0 y = 1 }
+					motorized = { x = 0 y = 2 }
+				}
+			}
+			627 = {
+				create_unit = {
+					division = "name = \"Experimental Motorized Division\" division_template = \"Experimental Motorized Division\" start_experience_factor = 0.5"
+					owner = DAS
+					count = 1
+					allow_spawning_on_enemy_provs = yes
+					id = 69
+					prioritize_location = 4241
+				}
+			}
+			custom_effect_tooltip = DAS_No_La_Resistance_DLC_tt
+		}
+	}
+}
+
+country_event = { # Mauser - Successful Contract
+	id = DAS_WeaponsTesting.2
+	title = DAS_WeaponsTesting.2.t
+	desc = DAS_WeaponsTesting.2.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = {
+		name = DAS_WeaponsTesting.2.a # Good (gives GER and DAS buffs)
+		ai_chance = {
+			base = 100
+		}
+		GER = {
+			army_experience = 10
+			if = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				mio:GER_mauser_organization = {
+					add_mio_funds = 100
+				}
+				add_tech_bonus = {
+					bonus = 0.1
+					uses = 1
+					category = infantry_weapons
+				}
+			}
+			else = {
+				add_tech_bonus = {
+					bonus = 0.1
+					uses = 2
+					category = infantry_weapons
+				}
+			}
+		}
+		army_experience = 20
+		add_tech_bonus = {
+			bonus = 0.1
+			uses = 1
+			category = infantry_weapons
+		}
+		add_political_power = 40
+		delete_unit_template_and_units = {
+			division_template = "Experimental Rifle Division"
+			disband = no
+		}
+	}
+}
+
+country_event = { # Rheinmetall - Successful Contract
+	id = DAS_WeaponsTesting.3
+	title = DAS_WeaponsTesting.3.t
+	desc = DAS_WeaponsTesting.3.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = {
+		name = DAS_WeaponsTesting.3.a # Good (gives GER and DAS buffs)
+		ai_chance = {
+			base = 100
+		}
+		GER = {
+			army_experience = 10
+			if = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				mio:GER_rheinmetall_organization = {
+					add_mio_funds = 100
+				}
+				add_tech_bonus = {
+					bonus = 0.1
+					uses = 1
+					category = artillery
+				}
+			}
+			else = {
+				add_tech_bonus = {
+					bonus = 0.1
+					uses = 2
+					category = artillery
+				}
+			}
+		}
+		army_experience = 20
+		add_tech_bonus = {
+			bonus = 0.1
+			uses = 1
+			category = artillery
+		}
+		add_political_power = 40
+		delete_unit_template_and_units = {
+			division_template = "Experimental Artillery Division"
+			disband = no
+		}
+	}
+}
+
+country_event = { # Horch - Successful Contract
+	id = DAS_WeaponsTesting.4
+	title = DAS_WeaponsTesting.4.t
+	desc = DAS_WeaponsTesting.4.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = {
+		name = DAS_WeaponsTesting.4.a # Good (gives GER and DAS buffs)
+		ai_chance = {
+			base = 100
+		}
+		GER = {
+			army_experience = 10
+			if = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				mio:GER_horch_organization = {
+					add_mio_funds = 100
+				}
+				add_tech_bonus = {
+					bonus = 0.1
+					uses = 1
+					category = mio_cat_tech_all_armor_and_modules
+				}
+			}
+			else = {
+				add_tech_bonus = {
+					bonus = 0.1
+					uses = 2
+					category = mio_cat_tech_all_armor_and_modules
+				}
+			}
+		}
+		army_experience = 20
+		add_tech_bonus = {
+			bonus = 0.1
+			uses = 1
+			category = mio_cat_tech_all_armor_and_modules
+		}
+		add_political_power = 40
+		if = {
+			limit = {
+				has_dlc = "La Resistance"
+			}
+			delete_unit_template_and_units = {
+				division_template = "Experimental Armoured Car Division"
+				disband = no
+			}
+		}
+		else = {
+			delete_unit_template_and_units = {
+				division_template = "Experimental Motorized Division"
+				disband = no
+			}
+		}
+	}
+}
+
+country_event = { # Generic - Unsuccessful Contract (not really worth making unique events for failing the mission imo)
+	id = DAS_WeaponsTesting.5
+	title = DAS_WeaponsTesting.5.t
+	desc = DAS_WeaponsTesting.5.d
+	picture = GFX_report_PB_PHI_Aperture
+
+	is_triggered_only = yes
+	fire_only_once = yes
+
+	option = {
+		name = DAS_WeaponsTesting.5.a # Whatever (gives GER and DAS very small rewards)
+		ai_chance = {
+			base = 100
+		}
+		GER = {
+			army_experience = 5
+		}
+		army_experience = 10
+		add_political_power = 20
+		delete_unit_template_and_units = {
+			division_template = "Experimental Rifle Division"
+			disband = no
+		}
+		delete_unit_template_and_units = {
+			division_template = "Experimental Artillery Division"
+			disband = no
+		}
+		delete_unit_template_and_units = {
+			division_template = "Experimental Armoured Car Division"
+			disband = no
+		}
+		delete_unit_template_and_units = {
+			division_template = "Experimental Motorized Division"
+			disband = no
+		}
+	}
 }
