@@ -53,6 +53,8 @@ replace_path="map/supplyareas"
 replace_path="tests"
 replace_path="gfx/fonts"
 replace_path="music"
+replace_path="tests"
+replace_path="tutorial"
 tags={
 	"Alternative History"
 	"National Focuses"
@@ -61,4 +63,4 @@ tags={
 }
 picture="Pax_Brit.png"
 version="1.4_dev_build"
-supported_version="1.17.*"
+supported_version="1.19.*"

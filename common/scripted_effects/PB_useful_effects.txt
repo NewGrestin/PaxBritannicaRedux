@@ -2,25 +2,19 @@ update_custom_state_pop_growth = {
 	every_state = { 
 		limit = { 
 			OR = {
-				has_state_flag = custom_state_pop_growth
 				medical_center > 0
 				has_dynamic_modifier = {
 					modifier = PB_state_focus_modifiers_8 #population investments
 				}
 			}
 		}
-
 		set_temp_variable = { modified_pop_growth = state_population_k } 
-		log = "Current state population of [THIS.Getname] is [?state_population_k]/[?state_population]"
 		set_temp_variable = { custom_pop_growth = 1 }
 		add_to_temp_variable = { custom_pop_growth = modifier@state_monthly_population } 
 		multiply_temp_variable = { custom_pop_growth = 0.125 } 
 		multiply_temp_variable = { modified_pop_growth = custom_pop_growth }
 		multiply_temp_variable = { modified_pop_growth = 1 }
-		log = "Custom growth of [THIS.Getname] is [?custom_pop_growth]"
-		log = "The population of [THIS.Getname] will be changed by [?modified_pop_growth] people"
 		add_manpower = var:modified_pop_growth
-		log = "Current state population of [THIS.Getname] is [?state_population]"
 	}
 }
 
@@ -522,3 +516,18 @@ open_opening_screen = {
 		set_variable_to_random = PB_opening_screen_reload
 	}
 }
+
+transfer_state_during_war = {
+	if = {
+		limit = { is_fully_controlled_by = owner }
+		transfer_state_to = var:target
+	}
+	else = {
+		set_state_owner_to = var:target
+		set_state_province_controller = {
+			controller = owner
+			limit = { NOT = { has_war_with = PREV.owner } }
+		}
+	}
+}
+

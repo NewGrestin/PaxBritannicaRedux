@@ -1,4 +1,211 @@
 PB_Diplomacy_Decisions = {
+	
+	return_cores_to_ally = {
+		icon = generic_agreement
+
+		available = {
+			has_war = no
+			hidden_trigger = {
+				NOT = { has_country_flag = KR_returning_land }
+				can_select_annexation_decision = yes
+			}
+		}
+
+		target_array = faction_members
+		target_array = subjects
+
+		target_trigger = {
+			is_ally_with = FROM
+			any_owned_state = {
+				is_claim_or_core_of_FROM = yes
+				is_claim_or_core_of_ROOT = no
+				NOT = { has_variable = can_integrate_@ROOT }
+				NOT = { has_state_flag = KR_keeping_state@ROOT }
+				NOT = { has_state_flag = annexation_recent_transfer_@ROOT }
+				OR = {
+					is_coastal = yes
+					any_neighbor_state = { is_owned_by = FROM }
+				}
+			}
+		}
+
+		cost = 0
+		fire_only_once = no
+
+		ai_will_do = {
+			factor = 1
+			modifier = {
+				factor = 0
+				check_variable = { active_annexation_decisions < 1 } #deal with annexations first
+			}
+			modifier = {
+				factor = 0.1
+				FROM = {
+					is_subject = yes
+					NOT = { is_subject_of = ROOT }
+				}
+			}
+		}
+
+		complete_effect = {
+			log = "[GetLogRoot][GetLogFrom]: Decision return_cores_to_ally"
+			set_country_flag = KR_returning_land
+			FROM = { save_event_target_as = return_to }
+			country_event = PB_DA_generic.4
+		}
+	}
+	#ABANDON ALL HOPE, ALL YE WHO ENTER 
+	#ASIA
+
+	Asia_join_Japan = {
+		icon = generic_nationalism
+
+		available = {
+			OR = {
+				has_war = no
+				all_enemy_country = { has_war_with = JAP }
+			}
+			NOT = { has_country_flag = PB_Asked_for_faction_membership }
+		}
+
+		visible = {
+			capital_scope = {
+				is_in_east_asia = yes
+			}
+			has_global_flag = second_great_war_started
+			is_in_faction = no
+			is_subject = no
+			FROM = {
+				is_faction_leader = yes
+				NOT = { has_war_with = ROOT }
+			}
+			OR = { 
+				has_government = jc
+				has_idea = PB_revolutionary_republic
+				has_idea = PB_workers_republic
+				has_country_flag = Tag_in_Japanese_Sphere
+			}
+			NOT = { 
+				tag = CCO
+			}
+		}
+
+		target_root_trigger = {
+			is_in_faction = no
+		}
+
+		targets = { JAP }
+
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				add = 5
+				
+			}
+		}
+
+		target_trigger = {
+			FROM = {
+				is_faction_leader = yes
+				NOT = { has_war_with = ROOT }
+			}
+		}
+
+		fire_only_once = yes
+
+		cost = 0
+
+		complete_effect = {
+			set_country_flag = { flag = PB_Asked_for_faction_membership days = 6 value = 1 }
+			FROM = { 
+				country_event = { id = PB_DA_generic.1 days = 1}
+				custom_effect_tooltip = if_they_accept_tt
+				effect_tooltip = { faction_leader = { add_to_faction = ROOT } }
+			}
+		}
+	}
+
+	#CHINA
+
+	China_invade_west = {
+		icon = GFX_decision_generic_colonial_hat_german
+
+		allowed = {
+			OR = { 
+				original_tag = CHI
+				original_tag = ROC
+				original_tag = MAN
+				original_tag = SGH
+			}
+		}
+
+		available = {
+			is_neighbor_of = FROM
+			NOT = { has_non_aggression_pact_with = FROM }
+			FROM = {
+				is_tag_in_china = yes
+			}
+			can_declare_war_on = FROM
+		}
+
+		visible = {
+			OR = { 
+				has_cosmetic_tag = SGH_Reunified
+				has_cosmetic_tag = ROC_Reunified
+				has_cosmetic_tag = CHI_Reunified
+				has_cosmetic_tag = MAN_Reunified
+			}
+		}
+
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				NOT = { FROM = { is_tag_in_china = yes } }
+				NOT = { is_neighbor_of = FROM }
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+
+		targets = { CHI ROC MAN SGH YUN XSM KUM TIB ETR TIB SIK TAI HNK }
+
+		target_trigger = {
+			can_declare_war_on = FROM
+			FROM = {
+				is_tag_in_china = yes
+			}
+		}
+
+		cost = 0
+		days_remove = 30
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			base = 100
+			modifier = {
+				factor = 0
+				OR = { 
+					ROOT = { has_war = yes }
+					FROM = { 
+						OR = { 
+							is_subject = yes
+							is_in_faction = yes
+						}
+					}
+				}
+			}
+		}
+
+		remove_effect = {
+			ROOT = {
+				declare_war_on = {
+					target = FROM
+					type = annex_everything
+				}
+			}
+		}
+	}
+
 	###################
 	# GERMAN EAST ASIA #
 	###################
@@ -21,7 +228,7 @@ PB_Diplomacy_Decisions = {
 		}
 
 		visible = {
-			has_completed_focus = PB_DAS_The_Second_Batavia_Expedition
+			has_completed_focus = DAS_the_second_batavia_expedition
 			ROOT = {
 				has_government = ds
 			}
@@ -40,7 +247,7 @@ PB_Diplomacy_Decisions = {
 
 		targets = { 1354.OWNER 1353.OWNER }
 		target_root_trigger = {
-			has_completed_focus = PB_DAS_Gunboat_Diplomacy
+			has_completed_focus = DAS_gunboat_diplomacy
 		}
 		target_trigger = {
 			can_declare_war_on = FROM
@@ -70,7 +277,7 @@ PB_Diplomacy_Decisions = {
 	
 	DAS_invite_condor_club_decision = {
 		target_root_trigger = {
-			has_completed_focus = PB_DAS_Condor
+			has_completed_focus = DAS_condor
 		}
 		targets = { INS SUL BOR SWK DEL BFE RAJ HNK }
 		targets_dynamic = yes
@@ -109,7 +316,7 @@ PB_Diplomacy_Decisions = {
 		}
 		visible ={
 			can_declare_war_on = CCO
-			has_completed_focus = PB_DAS_Scuttle_The_Frankenstein_Of_The_Sea
+			has_completed_focus = DAS_scuttle_the_frankenstein_of_the_sea
 		}
 		targets = {
 			CCO
@@ -158,7 +365,7 @@ PB_Diplomacy_Decisions = {
 		allowed = { original_tag = DAS }
 		visible = {
 			country_exists = INS
-			has_completed_focus = PB_DAS_The_Second_Batavia_Expedition
+			has_completed_focus = DAS_the_second_batavia_expedition
 			NOT = { has_war_with = INS }
 			can_declare_war_on = FROM
 		}
@@ -259,40 +466,1112 @@ PB_Diplomacy_Decisions = {
 	###############
 	# ENGLAND #
 	###############
-	ENG_Escalate_BFE = {
-		allowed = {
-			original_tag = ENG
+		PB_Emergency_Defense_Measures = {
+
+		icon = infiltrate_state
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 4000
 		}
+		allowed = { original_tag = ENG }
 		available = {
-			BFE = {
-				surrender_progress > 0.8
-			}
-		}
-		cancel_trigger = {
-			OR = {
-				NOT = { can_declare_war_on = FROM }
-				has_non_aggression_pact_with = FROM
-				has_guaranteed = FROM
-			}
-		}
-		targets = {
-			VIN
-		}
-		
-		days_remove = 10
-		
-		remove_effect = {
 			ENG = {
-				declare_war_on = {
-					target = VIN
+				has_war = yes
+			}
+            custom_trigger_tooltip = {
+                tooltip = ENG_Emergency_Defense_Measures_tt
+				any_enemy_country = {
+					OR = {
+						divisions_in_state = {
+                        	type = infantry
+					   	 	size > 0
+					    	state = 123
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 127
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 338
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 126
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 125
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 129
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 128
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 122
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 130
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 132
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 131
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 121
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 133
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 136
+						}
+						divisions_in_state = {
+							type = infantry
+							size > 0
+							state = 120
+						}
+					}
 				}
-				set_autonomy = {
-					target = BFE
-					autonomous_state = autonomy_constituent_dominion
-					freedom_level = 0.75
-					end_wars = no
+            }
+		}
+
+		days_remove = 365
+
+		fire_only_once = yes
+
+		complete_effect = {
+			add_war_support = 0.1
+			add_political_power = 100
+			add_command_power = 50
+			hidden_effect = {
+				load_oob = "ENG_Emergency_Militia"
+			}
+			custom_effect_tooltip = ENG_Emergency_Militia_tt
+		}
+
+		modifier = {
+			army_core_attack_factor = 0.15
+			army_core_defence_factor = 0.15
+        }
+	}
+	
+
+	PB_Operation_Heligoland = {
+
+		icon = generic_naval
+		
+		cost = 100
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			FRA = {
+			has_war_with = GER
+			}
+			ENG = {
+			has_war_with = FRA
+			is_in_faction_with = ENG
+			}
+			GER = {
+			surrender_progress > 0.8
+			}
+		}
+
+		days_remove = 25
+
+		fire_only_once = yes
+
+		targets = { GER }
+
+		remove_effect = {
+			GER = {
+				country_event = {
+					id = britain.3101
+					days = 0
 				}
 			}
 		}
 	}
+
+	PB_Operation_Plantagenet = {
+
+		icon = infiltrate_state
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			FRA = {
+				has_war_with = GER
+			}
+			ENG = {
+				has_war_support > 0.5
+				NOT = {
+					has_war_with = FRA
+				}
+			}
+			NOT = {
+				ENG = {
+					has_war_with = FRA
+				}
+			}
+		}
+
+		targets = { FRA }
+
+		days_remove = 10
+
+		war_with_on_remove = FRA
+		war_with_on_remove = SPR
+		war_with_on_remove = RUS
+
+		fire_only_once = yes
+
+		remove_effect = {
+			GER = {
+				country_event = {
+					id = britain.52
+					days = 3
+				}
+			}
+		}
+	}
+
+	PB_Operation_Cromwell = {
+
+		icon = infiltrate_state
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			IRE = {
+				has_war_with = ICA
+			}
+			ENG = {
+				NOT = {
+					has_war_with = ICA
+				}
+			}
+		}
+
+		targets = { ICA }
+
+		fire_only_once = yes
+
+		complete_effect = {
+			ENG = {
+				add_to_war = { 
+					targeted_alliance = IRE 
+					enemy = ICA 
+				}
+
+				add_ideas = IRE_Irish_War_Britian
+
+				set_country_flag = ENG_Irish_Secession_Crisis_Intervention
+			}
+		}
+	}
+
+	PB_Operation_Cromwell_Failure = {
+
+		icon = infiltrate_state
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		visible = {
+			ENG = {
+				has_war_with = ICA
+			}
+			IRE = {
+				has_capitulated = yes
+			}
+		}
+		available = {
+			ENG = {
+				has_war_with = ICA
+			}
+			IRE = {
+				has_capitulated = yes
+			}
+		}
+
+		targets = { ICA }
+
+		fire_only_once = yes
+
+		war_with_on_complete = ICA
+
+		complete_effect = {
+			ENG = {
+				country_event = {
+					id = britain.64
+					days = 1
+				}
+				
+			}
+		}
+	}
+	
+	PB_Resolute_Support_Mission = {
+		
+		icon = infiltrate_state
+		
+		cost = 100
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			ROOT = {
+				has_war_with = RUS
+			}
+			AFG = {
+				OR = {
+					is_ally_with = RUS
+					is_subject_of = RUS
+				}
+				has_idea = PB_AFG_Protracted_War
+			}
+		}
+
+		targets = { AFG }
+
+		days_remove = 10
+
+		war_with_on_remove = AFG
+
+		fire_only_once = yes
+
+		remove_effect = {
+			AFG = {
+				country_event = {
+					id = afghanistan_civil_war.15
+					days = 1
+				}
+			}
+		}
+	}
+	PB_Iceland_Occupation = {
+    
+		icon = infiltrate_state
+		
+		cost = 0
+    
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			ENG = {
+				has_war_with = FRA
+			}
+			SCH = {
+				is_subject_of = FRA
+				owns_state = 100
+				owns_state = 337
+				owns_state = 101
+			}
+		}
+
+		targets = { ICE }
+
+		days_remove = 25
+
+		fire_only_once = yes
+
+		remove_effect = {
+			ENG = {
+				country_event = {
+					id = britain.61
+					days = 3
+				}
+			}
+		}
+	}
+
+	PB_Support_Taiping = {
+
+		icon = generic_operation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			CHI = {
+				has_war_with = ROC
+			}
+			ENG = {
+				OR = {
+					has_equipment = {
+						infantry_equipment_0 > 2000
+					}
+					has_equipment = {
+						infantry_equipment_1 > 2000
+					}
+				}
+			}
+		}
+
+		modifier = {
+			civilian_factory_use = 3
+		}
+		targets = { CHI }
+		days_remove = 25
+		days_re_enable = 50
+
+		complete_effect = {
+			CHI = {
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					amount = 2000
+					producer = ENG
+				}
+
+				country_event = {
+					id = britain.60
+					days = 3
+				}
+			}
+		}
+	}
+	PB_Request_Portuguese_Military_Access = {
+
+		icon = generic_form_nation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			ENG = {
+				has_war_with = SPR
+			}
+			POR = {
+				exists = yes
+				is_subject = no 
+				NOT = {
+					is_in_faction_with = ENG
+					has_war_with = ENG
+				}
+			}
+		}
+
+		targets = { POR }
+
+		fire_only_once = yes
+
+		remove_effect = {
+			POR = {
+				country_event = {
+					id = portugal.1
+					days = 3
+				}
+			}
+		}
+	}
+
+	PB_Invite_Denmark = {
+
+		icon = generic_form_nation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			ENG = {
+				has_war_with = FRA
+			}
+			DEN = {
+				exists = yes
+				is_subject = no 
+				has_war_with = FRA
+				NOT = {
+					is_in_faction_with = ENG
+					has_war_with = ENG
+				}
+			}
+		}
+
+		targets = { DEN }
+
+		fire_only_once = yes
+
+		remove_effect = {
+			DEN = {
+				country_event = {
+					id = britain.59
+					days = 3
+				}
+			}
+		}
+	}
+
+	PB_Invite_Sweden = {
+
+		icon = generic_form_nation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			ENG = {
+				has_war_with = FRA
+			}
+			SWE = {
+				exists = yes
+				is_subject = no 
+				has_war_with = FRA
+				NOT = {
+					is_in_faction_with = ENG
+					has_war_with = ENG
+				}
+			}
+		}
+
+		targets = { SWE }
+
+		fire_only_once = yes
+
+		remove_effect = {
+			SWE = {
+				country_event = {
+					id = britain.59
+					days = 3
+				}
+			}
+			
+			if = {
+				limit = {
+					SWE = {
+						exists = yes
+					}
+				}
+				SWE = {
+					country_event = {
+						id = britain.59
+						days = 3
+					}
+				}
+			}
+		}
+	}
+
+	PB_Invite_Ottomans = {
+
+		icon = generic_form_nation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 100
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			ENG = {
+				has_war_with = FRA
+			}
+			TUR = {
+				exists = yes
+				is_subject = no 
+				has_war_with = RUS
+			}
+		}
+		targets = { TUR }
+		fire_only_once = yes
+
+		remove_effect = {
+			TUR = {
+				country_event = {
+					id = britain.59
+					days = 3
+				}
+			}
+		}
+	}
+
+	PB_Invite_Prussians = {
+
+		icon = generic_form_nation
+		
+		cost = 0
+
+		ai_will_do = {
+			factor = 4000
+		}
+		allowed = { original_tag = ENG }
+		available = {
+			ENG = {
+				has_war_with = FRA
+			}
+			PRS = {
+				exists = yes
+				is_subject = no 
+				has_war_with = FRA
+				NOT = {
+					is_in_faction_with = ENG
+				}
+				OR = {
+					has_government = an
+					has_government = cn
+					has_government = rc
+					has_government = ds
+				}
+			}
+		}
+		targets = { PRS}
+		fire_only_once = yes
+
+		remove_effect = {
+			PRS = {
+				country_event = {
+					id = britain.59
+					days = 1
+				}
+			}
+		}
+	}
+	###############
+	# IBERIA #
+	###############
+	POR_attack_Spain = {
+		icon = generic_prepare_civil_war
+		allowed = { original_tag = POR }
+
+		available = {
+			OR = {
+				is_in_faction = no
+				is_faction_leader = yes
+			}
+			NOT = { has_non_aggression_pact_with = FROM }
+			NOT = { has_guaranteed = FROM }
+			second_great_war_started = yes
+		}
+
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				is_subject = yes
+				is_in_faction_but_not_leader = yes
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+
+		visible = {
+			can_declare_war_on = FROM
+			is_subject = no
+		}
+		targets = { SPR }
+		cost = 0
+		days_remove = 25
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		complete_effect = {
+			add_war_support = 0.10
+		}
+		remove_effect = {
+			declare_war_on = {
+				target = SPR
+				type = annex_everything
+			}
+		}
+	}
+
+	SPR_attack_portugal = {
+		
+		icon = generic_prepare_civil_war
+		allowed = { original_tag = SPR }
+
+		available = {
+			OR = {
+				is_in_faction = no
+				is_faction_leader = yes
+			}
+			NOT = { has_non_aggression_pact_with = FROM }
+			NOT = { has_guaranteed = FROM }
+			second_great_war_started = yes
+		}
+
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				is_subject = yes
+				is_in_faction_but_not_leader = yes
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+
+		visible = {
+			can_declare_war_on = FROM
+			is_subject = no
+		}
+		targets = { POR }
+		cost = 0
+		days_remove = 25
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		complete_effect = {
+			add_war_support = 0.10
+		}
+		remove_effect = {
+			declare_war_on = {
+				target = POR
+				type = annex_everything
+			}
+		}
+	}
+	#AUSTRALIE
+	AST_join_pacte = {
+		icon = generic_nationalism
+
+		allowed = { tag = AST }
+
+		available = {
+			second_great_war_started = yes
+			OR = {
+				AND = {
+					has_war = no
+					NOT = { any_claim = yes }
+				}
+				all_enemy_country = { has_war_with = FRA }
+			}
+			NOT = { has_country_flag = PB_Asked_for_faction_membership }
+		}
+
+		visible = {
+			is_in_faction = no
+			is_subject = no
+			FROM = {
+				is_faction_leader = yes
+				NOT = { has_war_with = ROOT }
+			}
+		}
+
+		target_root_trigger = {
+			is_in_faction = no
+		}
+
+		targets = { FRA }
+
+		target_trigger = {
+			FROM = {
+				is_faction_leader = yes
+				NOT = { has_war_with = ROOT }
+			}
+		}
+
+		fire_only_once = yes
+
+		cost = 0
+
+		complete_effect = {
+			set_country_flag = { flag = PB_Asked_for_faction_membership days = 6 value = 1 }
+			FROM = { 
+				country_event = { id = PB_DA_generic.1 days = 1}
+				custom_effect_tooltip = if_they_accept_tt
+				effect_tooltip = { faction_leader = { add_to_faction = ROOT } }
+			}
+		}
+
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				factor = 5
+				date < 1938.01.01
+			}
+		}
+		fixed_random_seed = no
+	}
+	###############
+	# Germany #
+	###############
+	GER_invite_to_hamburg_league = {
+		icon = influence_cold_war
+		allowed = { original_tag = GER }
+		target_root_trigger = {
+			has_government = ss
+			has_completed_focus = GER_europe_alliance_network
+		}
+		target_trigger = {
+			FROM = { has_war = no }
+			NOT = { has_idea = Hamburg_Membership }
+		}
+		available = {
+			FROM = { has_war = no }
+			second_great_war_started = no
+		}
+		targets = {  }
+		on_map_mode = map_and_decisions_view
+		cost = 50
+		fire_only_once = yes
+		ai_will_do = {
+			base = 100
+		}
+		complete_effect = {
+			upgrade_hamburg_membership = yes
+	    } 
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+
+	PB_Cause_Instability_Danish_Holstein = {
+
+		icon = generic_form_nation
+		allowed = { original_tag = GER }
+		available = {
+			SCH = {
+				has_war = no
+			}
+			second_great_war_started = no
+		}
+
+		visible = {
+			has_completed_focus = GER_black_diplomacy
+		}
+
+		cost = 40
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		#highlight_state_targets = { state = 42 }
+
+		on_map_mode = map_and_decisions_view 
+
+		modifier = {
+			political_power_gain = -0.1
+		}
+        #
+		days_remove = 20
+		#
+		fire_only_once = yes
+
+		complete_effect = {
+	    } 
+
+		remove_effect = {
+			SCH = {
+                country_event = { id = germany.130 days = 1 } 
+		    }
+			DEN = {
+                country_event = { id = germany.130 days = 1 } 
+		    }
+			custom_effect_tooltip =  PB_GER_holstein_instability
+	    } 
+	}
+
+	PB_Suspiscios_Support_German_Danish = {
+
+		icon = generic_guns_and_bullets
+		allowed = { original_tag = GER }
+		available = {
+		   second_great_war_started = no
+			SCH = {
+				has_idea = PB_GER_Kiel_German_Unrest
+			}
+		}
+
+		visible = {
+			has_completed_focus = GER_black_diplomacy
+		}
+
+		cost = 25
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		#highlight_state_targets = { state = 42 }
+
+		on_map_mode = map_and_decisions_view 
+
+		modifier = {
+			political_power_gain = -0.01
+		}
+        #
+		days_remove = 20
+		#
+		fire_only_once = yes
+
+		complete_effect = {
+			add_political_power = -10
+	    } 
+
+		remove_effect = {
+			hidden_effect = {
+			SCH = {
+                country_event = { id = germany.131 days = 5 } 
+		    }
+			DEN = {
+                country_event = { id = germany.131 days = 5 } 
+		    }
+			custom_effect_tooltip =  PB_GER_holstein_instability
+		    }
+			add_equipment_to_stockpile = {
+				type = infantry_equipment_0
+				amount = -250
+			}
+			add_political_power = -25
+	    } 
+	}
+
+	GER_attack_Hungary = {
+		icon = generic_tank
+		allowed = { original_tag = GER }
+
+		available = {
+			OR = {
+				is_in_faction = no
+				is_faction_leader = yes
+			}
+			NOT = { has_non_aggression_pact_with = FROM }
+			NOT = { has_guaranteed = FROM }
+		}
+
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				is_subject = yes
+				is_in_faction_but_not_leader = yes
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+
+		visible = {
+			can_declare_war_on = FROM
+			is_subject = no
+			FROM = { 
+				has_government = jc
+			}
+			gbw_concluded = yes
+			second_great_war_started = no	
+			gbw_danubian_victory = yes
+		}
+		targets = { HUN }
+		cost = 40
+		days_remove = 25
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		on_map_mode = map_and_decisions_view 
+
+		complete_effect = {
+			GER = {
+				set_country_flag = GER_War_Hungary
+			}
+			hidden_effect = {
+				HUN = {
+			    country_event = { id = germany.120 days = 2 } 
+			    }
+				add_ai_strategy = {
+					type = conquer 
+					id = HUN
+					value = 100
+				}
+			}
+		}
+		remove_effect = {
+			custom_effect_tooltip = PB_GER_rec_war_hun
+			set_country_flag = ger_reactionary_ulti_hun
+			hidden_effect = {
+				HUN = {
+                country_event = { id = germany.121 days = 1 } 
+			    }
+			}
+		}
+
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+	GER_approach_weakened_hungary = {
+		icon = influence_cold_war
+		allowed = { original_tag = GER }
+
+		available = {
+			OR = {
+				is_in_faction = no
+				is_faction_leader = yes
+			}
+		}
+
+		cancel_trigger = {
+			OR = {
+				is_subject = yes
+			}
+		}
+
+		visible = {
+			can_declare_war_on = FROM
+			is_subject = no
+			gbw_concluded = yes
+			second_great_war_started = no	
+			gbw_danubian_victory = no
+			NOT = { 
+				FROM = { 
+					has_government = jc
+				}
+			}
+		}
+		targets = { HUN HWA }
+		cost = 40
+		days_remove = 25
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		on_map_mode = map_and_decisions_view 
+
+		complete_effect = {
+		}
+		remove_effect = {
+		}
+
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
+	GER_german_wallonian_military_visitation_treaty = {
+		icon = influence_cold_war
+		allowed = { original_tag = GER }
+
+		available = {
+			OR = {
+				is_in_faction = no
+				is_faction_leader = yes
+			}
+			second_great_war_started = no	
+		}
+
+		cancel_trigger = {
+			OR = {
+				is_subject = yes
+				FROM = { has_war = yes }
+			}
+		}
+
+		visible = {
+			can_declare_war_on = FROM
+			is_subject = no
+			NOT = { 
+				FROM = { 
+					has_government = jc
+				}
+			}
+		}
+
+		targets = { WAL }
+		cost = 20
+		days_remove = 25
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		on_map_mode = map_and_decisions_view 
+
+		remove_effect = {
+			WAL = { 
+				give_military_access = GER
+			}
+		}
+
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
 }
+	
