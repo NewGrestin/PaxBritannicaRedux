@@ -12280,16 +12280,27 @@ country_event = { #Fate of Croatia
 
 	immediate = {
 		annexations_reset_yugoslavian_cores_claims = yes
-		1235 = { retain_state = yes }
+		
 		hidden_effect = {
 			if = {
 				limit = {
 					OR = {
+						original_tag = SLA
+						tag_is_yugoslavia = yes
 						794 = { is_claim_or_core_of_ROOT = yes } #Lika
-						107 = { is_claim_or_core_of_ROOT = yes } #Belgrade
 					}
 				}
 				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					SER = {
+						tag_is_yugoslavia = yes
+						annexations_state_owner_is_valid_grant_target = yes
+						ROOT_can_grant_land = yes
+					}
+				}
+				SER = { save_event_target_as = yugoslavia }
 			}
 		}
 	}
@@ -12304,8 +12315,9 @@ country_event = { #Fate of Croatia
 			base = 100
 			modifier = {
 				factor = 30
-				original_tag = SER
-				original_tag = GER
+				OR = { 
+					original_tag = SER
+				}
 			}
 			modifier = {
 				factor = 0
@@ -12313,9 +12325,9 @@ country_event = { #Fate of Croatia
 			}
 		}
 
-		set_temp_variable = { tag_to_release = SLA }
+		set_temp_variable = { tag_to_release = CRO }
 		every_owned_state = {
-			limit = { is_core_of = SLA}
+			limit = { is_core_of = CRO}
 			transfer_if_owned = yes
 		}		
 		release_targeted_tag = yes
@@ -12327,14 +12339,14 @@ country_event = { #Fate of Croatia
 		
 		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
-			SLA = {
-				set_cosmetic_tag = SLA_Occupied_Monarchy
+			CRO = {
+				set_cosmetic_tag = CRO_Occupied_Monarchy
 			}
 		}
 
 		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
-			SLA = {
+			CRO = {
 				drop_cosmetic_tag = yes
 			}
 		}
@@ -12355,17 +12367,17 @@ country_event = { #Fate of Croatia
 			}
 		}
 
-		set_temp_variable = { tag_to_release = SLA }
+		set_temp_variable = { tag_to_release = CRO }
 		release_targeted_tag = yes
 
 		1235 = { clear_retain_state = yes }
 
-		45 = { retain_state = yes }
-		764 = { retain_state = yes }
-		163 = { retain_state = yes }
-		1231 = { retain_state = yes }
 		108 = { retain_state = yes }
 		106 = { retain_state = yes }
+		1231 = { retain_state = yes }
+		163 = { retain_state = yes }
+		45 = { retain_state = yes }
+		764 = { retain_state = yes }
 
 		every_state = {
 			limit = { is_yugoslavia = yes }
@@ -12387,7 +12399,7 @@ country_event = { #Fate of Croatia
 		}
 		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
-			SLA = {
+			CRO = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SER_Yugoslav_Empire
 			}
@@ -12404,7 +12416,7 @@ country_event = { #Fate of Croatia
 					} 
 				}
 			}
-			SLA = {
+			CRO = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SER_Yugoslav_Federation
 			}
@@ -12419,37 +12431,31 @@ country_event = { #Fate of Croatia
 					}
 				}
 			}
-			SLA = {
+			CRO = {
 				drop_cosmetic_tag = yes
 				set_cosmetic_tag = SER_Yugoslav_Republic
 			}
 		}
 	}
 	
-	option = { #Transfer it to Serbia
+	option = { #Transfer it to Yugoslavia
 		log = "[GetLogInfo]: event annex.1071 option annex.1071.b"
 		name = annex.1071.b
 		trigger = {
 			is_subject = no
-			SER = {
-				exists = yes
-				tag_is_yugoslavia = yes 
-			}
+			has_event_target = yugoslavia
 		}
 		ai_chance = {
-			base = 0
+			base = 10
 			modifier = {
 				factor = 100
-				ROOT = {
-					OR = {
-						original_tag = RUS
-						is_ally_with = SER
-					}
+				OR = {
+					is_ally_with = event_target:yugoslavia
 				}
 			}
 		}
 
-		set_temp_variable = { tag_to_release = SER }
+		set_temp_variable = { tag_to_release = event_target:yugoslavia }
 		every_owned_state = {
 			limit = {
 				is_allowed_annexation_state = yes
@@ -12509,8 +12515,8 @@ country_event = { #Fate of Ragusa
 	is_triggered_only = yes
 	
 	immediate = {
-		103 = { retain_state = yes } #Dalmatia
 		hidden_effect = {
+			103 = { retain_state = yes } #Dalmatia
 			if = {
 				limit = {
 					OR = {
@@ -12550,14 +12556,6 @@ country_event = { #Fate of Ragusa
 		name = annex.1072.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				original_tag = CRO
-				original_tag = SLA
-				AND = {
-					original_tag = SER
-					owns_state = 105
-				}
-			}
 		}
 		ai_chance = {
 			base = 100
@@ -12565,9 +12563,8 @@ country_event = { #Fate of Ragusa
 				factor = 0
 				ROOT = {
 					OR = {
-						is_ally_with = SER
-						is_ally_with = CRO
-						is_ally_with = SLA
+						is_ally_with = event_target:crna_gora
+						is_ally_with = event_target:lika
 					}
 				}
 			}
@@ -12599,7 +12596,24 @@ country_event = { #Fate of Ragusa
 			has_event_target = crna_gora
 		}
 
-		ai_chance = { base = 100 }
+
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:crna_gora }
+				is_ally_with = event_target:lika
+			}
+			modifier = {
+				factor = 0.1
+				event_target:crna_gora = { is_subject = yes }
+			}
+		}
+		
 
 		set_temp_variable = { tag_to_release = event_target:crna_gora }
 		1243 = { transfer_if_owned = yes } #Ragusa
@@ -12613,7 +12627,22 @@ country_event = { #Fate of Ragusa
 			has_event_target = lika
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:lika }
+				is_ally_with = event_target:crna_gora
+			}
+			modifier = {
+				factor = 0.1
+				event_target:lika = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:lika }
 		1243 = { transfer_if_owned = yes } #Ragusa
@@ -12665,6 +12694,7 @@ country_event = { #Fate of Serbia
 		104 = { retain_state = yes }
 		1027 = { retain_state = yes }
 		105 = { retain_state = yes }
+		106 = { retain_state = yes }
 		1242 = { retain_state = yes }
 		1231 = { retain_state = yes }
 		45 = { retain_state = yes }
@@ -13772,7 +13802,7 @@ country_event = { #Fate of Vojvodina/Vajdasag
 			if = {
 				limit = {
 					OR = {
-						764 = { is_claim_or_core_of_ROOT = yes } #West Bansag
+						1026 = { is_claim_or_core_of_ROOT = yes } #Srem
 						1239 = { is_claim_or_core_of_ROOT = yes } #Bacs
 					}
 				}
@@ -13780,14 +13810,14 @@ country_event = { #Fate of Vojvodina/Vajdasag
 			}
 			if = {
 				limit = {
-					764 = { #West Bansag
+					1026 = { #Srem
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
 						}
 					}
 				}
-				var:764.owner = { save_event_target_as = west_bansag }
+				var:1026.owner = { save_event_target_as = west_bansag }
 			}
 			if = {
 				limit = {
@@ -13803,7 +13833,7 @@ country_event = { #Fate of Vojvodina/Vajdasag
 		}
 	}
 
-	option = { #Return it to West Bansag
+	option = { #Return it to Srem
 		log = "[GetLogInfo]: event annex.1081 option annex.1081.a"
 		name = annex.1081.a
 		trigger = {
@@ -13811,7 +13841,22 @@ country_event = { #Fate of Vojvodina/Vajdasag
 			has_event_target = west_bansag
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:west_bansag }
+				is_ally_with = event_target:bacs
+			}
+			modifier = {
+				factor = 0.1
+				event_target:west_bansag = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:west_bansag }
 		45 = { transfer_state_and_notify = yes } #Vojvodina/Vajdasag
@@ -13825,7 +13870,22 @@ country_event = { #Fate of Vojvodina/Vajdasag
 			has_event_target = bacs
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 10
+				NOT = { is_ally_with = event_target:bacs }
+				is_ally_with = event_target:west_bansag
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bacs = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:bacs }
 		45 = { transfer_state_and_notify = yes } #Vojvodina/Vajdasag
@@ -13923,20 +13983,18 @@ country_event = { #Fate of Banat/Bansag
 		name = annex.1082.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				original_tag = HUN
-				original_tag = HWA
-				original_tag = SER
-			}
 		}
 		ai_chance = {
 			base = 50
 			modifier = {
 				factor = 0
+				annexations_can_annex = yes
 			}
 		}
 
 		set_temp_variable = { tag_to_release = BNA }
+		764 = { remove_claim_and_add_core_of_target = yes }
+		82 = { remove_claim_and_add_core_of_target = yes }
 		release_targeted_tag = yes
 
 		if = {
@@ -13983,7 +14041,25 @@ country_event = { #Fate of Banat/Bansag
 			has_event_target = pomoravlje
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:pomoravlje }
+				OR = { 
+					is_ally_with = event_target:alfold
+					is_ally_with = event_target:partium
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:pomoravlje = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:pomoravlje }
 		82 = { transfer_if_owned = yes } #Bansag
@@ -13997,7 +14073,26 @@ country_event = { #Fate of Banat/Bansag
 			has_event_target = alfold
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alfold }
+				OR = { 
+					is_ally_with = event_target:pomoravlje
+					is_ally_with = event_target:partium
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alfold = { is_subject = yes }
+			}
+		}
+
 
 		set_temp_variable = { tag_to_release = event_target:alfold }
 		82 = { transfer_if_owned = yes } #Bansag
@@ -14011,7 +14106,25 @@ country_event = { #Fate of Banat/Bansag
 			has_event_target = partium
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:partium }
+				OR = { 
+					is_ally_with = event_target:pomoravlje
+					is_ally_with = event_target:alfold
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:partium = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:partium }
 		82 = { transfer_if_owned = yes } #Bansag
@@ -14103,6 +14216,61 @@ country_event = { #Fate of West Banat/Bansag
 		}
 	}
 
+	option = { #Release Banat
+		log = "[GetLogInfo]: event annex.1083 option annex.1083.a"
+		name = annex.1082.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = BNA }
+		764 = { remove_claim_and_add_core_of_target = yes }
+		82 = { remove_claim_and_add_core_of_target = yes }
+		release_targeted_tag = yes
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+					NOT = {
+						original_tag = GER
+					}
+				}
+			}
+			BNA = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BNA_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = {
+				ROOT = {
+					has_monarchist_government = yes
+					original_tag = GER
+				}
+			}
+			BNA = {
+				set_cosmetic_tag = BNA_Occupied_Monarchy_Kraut
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BNA = {
+				drop_cosmetic_tag = yes
+				set_cosmetic_tag = BNA_Occupied_Republic
+			}
+		}
+	}
+
 	option = { #Grant the land to Bansag
 		log = "[GetLogInfo]: event annex.1083 option annex.1083.a"
 		name = annex.1083.a
@@ -14111,7 +14279,25 @@ country_event = { #Fate of West Banat/Bansag
 			has_event_target = bansag
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bansag }
+				OR = { 
+					is_ally_with = event_target:alfold
+					is_ally_with = event_target:belgrad
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bansag = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:bansag }
 		764 = { transfer_state_and_notify = yes } #West Bansag
@@ -14125,7 +14311,25 @@ country_event = { #Fate of West Banat/Bansag
 			has_event_target = belgrad
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:belgrad }
+				OR = { 
+					is_ally_with = event_target:alfold
+					is_ally_with = event_target:bansag
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:belgrad = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:belgrad }
 		764 = { transfer_state_and_notify = yes } #West Bansag
@@ -14139,10 +14343,36 @@ country_event = { #Fate of West Banat/Bansag
 			has_event_target = alfold
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:alfold }
+				OR = { 
+					is_ally_with = event_target:belgrad
+					is_ally_with = event_target:bansag
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:alfold = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:alfold }
 		764 = { transfer_state_and_notify = yes } #West Bansag
+		if = { 
+			limit = { 
+				event_target:alfold = { 
+					owns_state = 84
+				}
+			}
+			82 = { transfer_state_and_notify = yes } #West Bansag
+		}
 	}
 
 	option = { #Give to overlord
@@ -14975,6 +15205,9 @@ country_event = { #Fate of Morava/Pcinja
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
+							NOT = { 
+								tag = event_target:sofia 
+							}
 						}
 					}
 				}
@@ -14986,6 +15219,8 @@ country_event = { #Fate of Morava/Pcinja
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:sofia }
+							NOT = { tag = event_target:vardar }
 						}
 					}
 				}
@@ -15010,6 +15245,7 @@ country_event = { #Fate of Morava/Pcinja
 
 		set_temp_variable = { tag_to_release = event_target:sofia }
 		108 = { transfer_state_and_notify = yes } #Pcinja
+		106 = { transfer_state_and_notify = yes } #Vardar
 	}
 
 	option = { #Transfer to Vardar
@@ -28967,11 +29203,6 @@ country_event = { #Fate of East Transylvania/Hunyad
 			TRA = {
 				exists = no
 			}
-			NOT = {
-				original_tag = ROM
-				original_tag = MOL
-				original_tag = HUN
-			}
 		}
 		ai_chance = {
 			base = 30
@@ -29038,8 +29269,10 @@ country_event = { #Fate of East Transylvania/Hunyad
 		set_temp_variable = { tag_to_release = event_target:alfold }
 		every_owned_state = {
 			limit = {
-				is_east_transylvania = yes
-				is_allowed_annexation_state = yes
+				OR = { 
+					is_north_transylvania = yes
+					is_east_transylvania = yes
+				}
 			}
 			transfer_state_and_notify = yes
 		}
