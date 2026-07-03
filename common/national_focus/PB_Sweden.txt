@@ -2016,7 +2016,7 @@ focus_tree = {
 
     focus = {
         id = SWE_learning_from_the_catastrophe
-        icon = GFX_goal_Generic_Elections
+        icon = GFX_goal_FRA_Focus_on_Military
         x = -9
         y = 1
         cost = 30
@@ -2033,7 +2033,7 @@ focus_tree = {
 			SD_MIL_growth_progress_small = yes
 			army_experience = 20
 			custom_effect_tooltip = tooltip_white_line
-            add_political_power = 30
+            add_political_power = 15
 		}
 
         search_filters = { FOCUS_FILTER_STABILITY }
@@ -2062,7 +2062,7 @@ focus_tree = {
         }
 
         completion_reward = {
-			army_experience = 15
+			SD_MIL_growth_progress_moderate = yes
 
 			IF = {
 				limit = {
@@ -2157,7 +2157,44 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
+            IF = {
+				limit = {
+					has_doctrine = doctrine_architecture_of_war
+				}
+				add_daily_mastery = {
+					name = Pax_placeholder_name
+					amount = 1
+					days = 75
+					track = armor
+				}
 
+			}
+			ELSE_IF = {
+				limit = {
+					OR = {
+					has_doctrine = doctrine_fire_and_fury
+					has_doctrine = doctrine_supremacy_of_steel
+					has_doctrine = doctrine_supremacy_of_flesh
+					}
+				}
+				add_daily_mastery = {
+					name = Pax_placeholder_name
+					amount = 1
+					days = 50
+					track = armor
+				}
+			}
+			ELSE = {
+				set_grand_doctrine = doctrine_architecture_of_war
+			}
+
+            custom_effect_tooltip = tooltip_white_line
+
+            add_ideas = PB_SWE_Infantry_Bonus_1
+
+            custom_effect_tooltip = tooltip_white_line
+
+            activate_advisor = SWE_mannerheim_army_chief
         }
     }
 
@@ -2183,12 +2220,15 @@ focus_tree = {
 
         completion_reward = {
 			add_tech_bonus = {
-                bonus = 0.5
-                uses = 2
+                bonus = 1
+                uses = 1
                 category = automat
             }
+
+            custom_effect_tooltip = tooltip_white_line
+
+            add_ideas = PB_SWE_Walkers_On_The_Ice_1
             #for when swedish mios are done some mio points should be awarded
-            #IM NOT DONE WITH THIS FOCUS EFFECT, I PUSHED THIS BECAUSE I GOT BUSY AND DIDN'T WANT TO DEAL WITH MERGE CONFLICTS
 		}
     }
 
@@ -2214,12 +2254,15 @@ focus_tree = {
 
         completion_reward = {
             add_tech_bonus = {
-                bonus = 0.5
-                uses = 2
+                bonus = 1
+                uses = 1
                 category = armor
             }
+
+            custom_effect_tooltip = tooltip_white_line
+
+            add_ideas = PB_SWE_Landship_Bonus_1
             #for when swedish mios are done some mio points should be awarded
-            #IM NOT DONE WITH THIS FOCUS EFFECT, I PUSHED THIS BECAUSE I GOT BUSY AND DIDN'T WANT TO DEAL WITH MERGE CONFLICTS
         }
     }
 
@@ -2243,13 +2286,31 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
+            1017 = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = arms_factory
+					level = 2
+					instant_build = yes
+				}
+			}
 
+            custom_effect_tooltip = tooltip_white_line
+
+            add_tech_bonus = {
+                bonus = 0.5
+                uses = 2
+                category = artillery
+            }
+
+            #for when swedish mios are done some mio points should be awarded
+            # THIS SHOULD ADD DECISIONS!!!!!!!!!
         }
     }
 
     focus = {
         id = SWE_totalforsvaret
-        icon = GFX_goal_Generic_Elections
+        icon = GFX_goal_FRA_Rearmament_Campaigns
         x = 3
         y = 1
         cost = 30
@@ -2261,19 +2322,55 @@ focus_tree = {
         relative_position_id = SWE_contract_bofors
 
         available = { 
-            
+            has_war = yes
+            date > 1939.01.01
         }
 
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
+            custom_effect_tooltip = PB_SWE_air_upgrade_tt
+            if = {
+				limit = {
+				    has_idea = PB_SWE_Walkers_On_The_Ice_1
+				}
+                swap_ideas = {
+		            remove_idea = PB_SWE_Walkers_On_The_Ice_1
+		            add_idea = PB_SWE_Walkers_On_The_Ice_2
+		        }
+			}
+		    else_if = {
+			    limit = {
+			        has_idea = PB_SWE_Landship_Bonus_1
+			    }
+			    swap_ideas = {
+			    	remove_idea = PB_SWE_Landship_Bonus_1
+			    	add_idea = PB_SWE_Landship_Bonus_2
+			    }
+			}
+            else_if = {
+			    limit = {
+			        has_idea = PB_SWE_Infantry_Bonus_3
+			    }
+			    swap_ideas = {
+			    	remove_idea = PB_SWE_Infantry_Bonus_3
+			    	add_idea = PB_SWE_Infantry_Bonus_4
+			    }
+			}
 
+            custom_effect_tooltip = tooltip_white_line
+            
+            swap_ideas = {
+			    remove_idea = PB_SWE_Gustavian_Legacy
+			    add_idea = PB_SWE_Gustavian_Legacy_2
+			}
+            # THIS SHOULD ADD DECISIONS!!!!!!!!!
         }
     }
 
     focus = {
         id = SWE_prepare_landstormen
-        icon = GFX_goal_Generic_Elections
+        icon = GFX_goal_agrarian_soldiers
         x = 0
         y = 1
         cost = 30
@@ -2290,7 +2387,61 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
+            swap_ideas = {
+			    remove_idea = PB_SWE_Infantry_Bonus_1
+			    add_idea = PB_SWE_Infantry_Bonus_2
+			}
 
+            division_template = {
+                name = "Landstormen"
+                regiments = {
+                    light_infantry = { x = 0 y = 0 }
+		            light_infantry = { x = 0 y = 1 }
+		            light_infantry = { x = 0 y = 2 }
+                    light_infantry = { x = 1 y = 0 }
+		            light_infantry = { x = 1 y = 1 }
+		            light_infantry = { x = 1 y = 2 }
+                }
+                support = { 
+                    engineer = { x = 0 y = 0 }
+                } 
+            }
+		    random_owned_controlled_state = {
+		    	limit = {
+		    		is_in_home_area = yes
+		    	}
+                create_unit = {
+                    division = "name = \"Landstormen\" division_template = \"Landstormen\" start_experience_factor = 0.3 start_equipment_factor = 0.8"
+                    owner = SWE
+                }
+            }
+            random_owned_controlled_state = {
+		    	limit = {
+		    		is_in_home_area = yes
+		    	}
+                create_unit = {
+                    division = "name = \"Landstormen\" division_template = \"Landstormen\" start_experience_factor = 0.3 start_equipment_factor = 0.8"
+                    owner = SWE
+                }
+            }
+            random_owned_controlled_state = {
+		    	limit = {
+		    		is_in_home_area = yes
+		    	}
+                create_unit = {
+                    division = "name = \"Landstormen\" division_template = \"Landstormen\" start_experience_factor = 0.3 start_equipment_factor = 0.8"
+                    owner = SWE
+                }
+            }
+            random_owned_controlled_state = {
+		    	limit = {
+		    		is_in_home_area = yes
+		    	}
+                create_unit = {
+                    division = "name = \"Landstormen\" division_template = \"Landstormen\" start_experience_factor = 0.3 start_equipment_factor = 0.8"
+                    owner = SWE
+                }
+            }
         }
     }
 
@@ -2314,13 +2465,18 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
+            swap_ideas = {
+                remove_idea = PB_SWE_Infantry_Bonus_2
+                add_idea = PB_SWE_Infantry_Bonus_3
+			}
 
+            # THIS SHOULD ADD DECISIONS!!!!!!!!!
         }
     }
 
     focus = {
         id = SWE_revamp_conscription
-        icon = GFX_goal_Generic_Elections
+        icon = GFX_goal_Generic_Army_Focus_Red02
         x = 0
         y = 1
         cost = 30
@@ -2337,7 +2493,20 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
+            if = {
+				limit = {
+					OR = {
+						has_idea = volunteer_only
+						has_idea = limited_conscription
+					}
+				}
+				add_ideas = extensive_conscription
+			}
 
+            custom_effect_tooltip = tooltip_white_line
+
+            add_war_support = 0.05
+            add_stability = -0.05
         }
     }
 
@@ -2366,7 +2535,7 @@ focus_tree = {
 
     focus = {
         id = SWE_kungliga_armestaben
-        icon = GFX_goal_Generic_Elections
+        icon = GFX_goal_SWE_army
         x = 0
         y = 1
         cost = 30
@@ -2383,7 +2552,13 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
+            add_political_power = 30
+            custom_effect_tooltip = tooltip_white_line
 
+            add_ideas = PB_SWE_Forged_In_Steel_1
+            custom_effect_tooltip = tooltip_white_line
+
+            army_experience = 20
         }
     }
 
@@ -2429,13 +2604,14 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
-
+            add_ideas = PB_SWE_Christmas_Presents
+            #give a special event every christmas :)
         }
     }
 
     focus = {
         id = SWE_militarized_society
-        icon = GFX_goal_Generic_Elections
+        icon = GFX_goal_SWE_pansartrupperna
         x = 0
         y = 2
         cost = 30
@@ -2455,13 +2631,16 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
-
+            swap_ideas = {
+                remove_idea = PB_SWE_Forged_In_Steel_1
+                add_idea = PB_SWE_Forged_In_Steel_2
+			}
         }
     }
 
     focus = {
         id = SWE_a_worthy_carolean_successor
-        icon = GFX_goal_Generic_Elections
+        icon = GFX_goal_SWE_jagers
         x = -2
         y = 1
         cost = 30
@@ -2481,7 +2660,10 @@ focus_tree = {
         search_filters = { FOCUS_FILTER_STABILITY }
 
         completion_reward = {
-
+            swap_ideas = {
+                remove_idea = PB_SWE_Forged_In_Steel_2
+                add_idea = PB_SWE_Forged_In_Steel_3
+			}
         }
     }
 
