@@ -31,7 +31,7 @@ country_event = {#Country Invited to the Prague Conference
 
 	is_triggered_only = yes
 
-	option = { 
+	option = {
 		name = Prague_Conference.1.a
 		ai_chance = {
 			base = 0
@@ -255,39 +255,71 @@ country_event = { #Choice of topic
 			base = 50
 		}
 		
+		add_to_variable = { Central_Europe_prague_conf = 1 }
+		
 		if = {
-			AND = {
-				FRA = {
-					has_variable = { FRA.prague_conf_choice = 1 }
-				}
-				RUS = {
-					has_variable = { RUS.prague_conf_choice = 1 }
+			limit = {
+				AND = {
+					FRA = {
+						has_variable = { FRA.prague_conf_choice = 1 }
+					}
+					RUS = {
+						has_variable = { RUS.prague_conf_choice = 1 }
+					}
 				}
 			}
-			ROOT = {
-				country_event = {
-					id = Prague_Conference.6
-					days = 1
+			if = {
+				limit = {
+					Central_Europe_prague_conf > 1
+				}
+				ROOT = {
+					country_event = {
+						id = Prague_Conference.6
+						days = 1
+					}
 				}
 			}
 		}
 		else_if = {
-			OR = {
-				FRA = {
-					has_variable = { FRA.prague_conf_choice = 1 }
+			limit = {
+				AND = {
+					FRA = {
+						has_variable = { FRA.prague_conf_choice = 1 }
+					}
+					NOT = {
+						RUS = {
+							has_variable = { RUS.prague_conf_choice = 1 }
+						}
+					}
 				}
 				RUS = {
-					has_variable = { RUS.prague_conf_choice = 1 }
-				}
-			}
-			ROOT = {
-				country_event = {
-					id = Prague_Conference.5
-					days = 1
+					country_event = {
+						id = Prague_Conference.5
+						days = 1
+					}
 				}
 			}
 		}
-		
+		else_if = {
+			limit = {
+				AND = {
+					RUS = {
+						has_variable = { FRA.prague_conf_choice = 1 }
+					}
+					NOT = {
+						FRA = {
+							has_variable = { RUS.prague_conf_choice = 1 }
+						}
+					}
+				}
+				FRA = {
+					country_event = {
+						id = Prague_Conference.5
+						days = 1
+					}
+				}
+			}
+		}
 	}
 	
 	option = { #Tackle the matter of the Balkans
@@ -298,6 +330,8 @@ country_event = { #Choice of topic
 		ai_chance = {
 			base = 50
 		}
+		
+		add_to_variable = { ROOT.Balkans_prague_conf = 1 }
 	}
 	
 	option = { #Tackle the matter of Scandinavia
@@ -308,6 +342,8 @@ country_event = { #Choice of topic
 		ai_chance = {
 			base = 50
 		}
+		
+		add_to_variable = { ROOT.Scandinavia_prague_conf = 1 }
 	}
 	
 	option = { #Tackle the matter of the Levant
@@ -318,6 +354,8 @@ country_event = { #Choice of topic
 		ai_chance = {
 			base = 50
 		}
+		
+		add_to_variable = { ROOT.Levant_prague_conf = 1 }
 	}
 	
 	option = { #Let the other chose to preserve our leverages
@@ -328,6 +366,12 @@ country_event = { #Choice of topic
 		ai_chance = {
 			base = 50
 		}
+		
+		add_to_variable = { ROOT.diplo_weight = 5 }
+	}
+	
+	after = {
+		add_to_variable = { ROOT.prague_conf_choice = 1 }
 	}
 }
 
@@ -377,6 +421,7 @@ country_event = { #Fate of Central Europe
 	
 	after = {
 		country_event = { id = Prague_Conference.7 days = 2 }
+		set_global_flag = PragueConf_Central_Europe
 	}
 }
 
