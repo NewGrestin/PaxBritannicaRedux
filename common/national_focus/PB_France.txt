@@ -1766,6 +1766,7 @@ focus_tree = {
 		}
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 	}
+	###DORIOT LEFT-WING TREE
 	focus = {
 		id = FRA_cultural_revival
 		icon = GFX_goal_Focus_FRA_Carolingian_Legacy
@@ -1786,9 +1787,17 @@ focus_tree = {
 			}
 		}
 		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_left
+				has_country_flag = FRA_Doriot_center
+			}
+		}
+		
 		prerequisite = {
 			focus = FRA_new_france
 		}
+		
 		select_effect = {
 			hidden_effect = {
 				add_ideas = FRA_cultural_reconstruction
@@ -1807,8 +1816,8 @@ focus_tree = {
 		}
 		search_filters = {FOCUS_FILTER_STABILITY}
 	}
-		focus = {
-		id = FRA_propose_european_commonwealth
+	focus = {
+		id = FRA_enlightened_race
 		icon = GFX_goal_Generic_German_Soldiers2
 		cost = 30
 
@@ -1830,15 +1839,50 @@ focus_tree = {
 		prerequisite = {
 			focus = FRA_cultural_revival
 		}
+		
 		completion_reward = {
-			add_political_power = 50
-			set_temp_variable = { number = -4 }
-			FRA_factionalism_change = yes
+			set_temp_variable = { number = 5 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			16 = {
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			19 = {
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			32 = {
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			custom_effect_tooltip = tooltip_white_line
+			if = {
+				limit = { has_idea = PB_minority_ethnic_segregation }
+				swap_ideas = {
+					remove_idea = PB_minority_ethnic_segregation
+					add_idea = PB_minority_forceful_integration
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_minority_forceful_integration }
+				add_political_power = 150
+			}
+			else = { add_ideas = PB_minority_forceful_integration }
 		}
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
-		id = FRA_the_state_that_gives
+		id = FRA_mythical_task
 		icon = GFX_goal_Generic_Army_Unity
 		cost = 30
 
@@ -1858,8 +1902,88 @@ focus_tree = {
 		}
 		
 		prerequisite = {
-			focus = FRA_propose_european_commonwealth
+			focus = FRA_enlightened_race
 		}
+		completion_reward = {
+			SD_MIL_growth_progress_moderate = yes
+			country_event = { id = france_foreign_policy_events.1 days = 1 }
+			hidden_effect = {
+				GER = { country_event = { id = france_foreign_policy_events.1 days = 1 } }
+			}
+		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY FOCUS_FILTER_RESEARCH FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_rally_technocrats
+		icon = GFX_goal_Focus_Examine_Foreign_Science
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		
+		x = 1
+		y = 6
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_left
+				has_country_flag = FRA_Doriot_corporatist
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_new_france
+		}
+		
+		completion_reward = {
+			SD_ECON_growth_progress_small = yes
+			SD_IND_growth_progress_small = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_to_variable = { FRA_PD_research_speed_factor = 0.05 tooltip = research_speed_factor_tt }
+			add_to_variable = { FRA_PD_production_factory_efficiency_gain_factor = 0.05 tooltip = production_factory_efficiency_gain_factor_tt }
+			custom_effect_tooltip = tooltip_white_line
+			set_temp_variable = { number = -10 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_popularity = { ideology = ds popularity = 0.05 }
+			add_popularity = { ideology = an popularity = 0.03 }
+		}
+		search_filters = { FOCUS_FILTER_RESEARCH }
+	}
+	focus = {
+		id = FRA_solidarism
+		icon = GFX_Focus_Focus_Generic_Molotov
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 7
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_rally_technocrats
+		}
+		
 		completion_reward = {
 			SD_POV_growth_progress_small = yes
 			SD_ECON_growth_progress_small = yes
@@ -1880,93 +2004,10 @@ focus_tree = {
 			}
 			else = { add_ideas = PB_moderate_state_welfare }
 		}
-		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY FOCUS_FILTER_RESEARCH FOCUS_FILTER_FACTIONALISM }
-	}
-	focus = {
-		id = FRA_racial_science
-		icon = GFX_goal_Focus_Examine_Foreign_Science
-		cost = 30
-
-		relative_position_id = FRA_doriot_takeover
-		x = 1
-		y = 6
-		
-		ai_will_do = {
-			factor = 100
-		}
-
-		available = {
-			has_country_leader = {
-				character = FRA_jacques_doriot
-				ruling_only = yes
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_new_france
-		}
-		completion_reward = {
-			if = {
-				limit = { has_idea = PB_minority_ethnic_segregation }
-				swap_ideas = {
-					remove_idea = PB_minority_ethnic_segregation
-					add_idea = PB_minority_ethnic_hierarchy
-				}
-			}
-			else_if = {
-				limit = { has_idea = PB_minority_ethnic_hierarchy }
-				add_political_power = 150
-			}
-			else = { add_ideas = PB_minority_ethnic_hierarchy }
-
-			if = {
-				limit = { has_idea = PB_sociogenetics_system_illnesses }
-				swap_ideas = {
-					remove_idea = PB_sociogenetics_system_illnesses
-					add_idea = PB_sociogenetics_system_undesirables
-				}
-			}
-			else_if = {
-				limit = { has_idea = PB_sociogenetics_system_undesirables }
-				add_political_power = 150
-			}
-			else = { add_ideas = PB_sociogenetics_system_undesirables }
-		}
-		search_filters = { FOCUS_FILTER_RESEARCH }
-	}
-	focus = {
-		id = FRA_purge_catholic_influence
-		icon = GFX_Focus_Focus_Generic_Molotov
-		cost = 30
-
-		relative_position_id = FRA_doriot_takeover
-		x = 1
-		y = 7
-		
-		ai_will_do = {
-			factor = 100
-		}
-
-		available = {
-			has_country_leader = {
-				character = FRA_jacques_doriot
-				ruling_only = yes
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_racial_science
-		}
-		completion_reward = {
-			add_stability = -0.1
-			add_popularity = { ideology = ni popularity = 0.2 }
-			set_temp_variable = { number = -8 }
-			FRA_fervour_change = yes
-		}
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_NATIONALISM FOCUS_FILTER_STABILITY }
 	}
 	focus = {
-		id = FRA_expel_germans
+		id = FRA_regional_synchronicity
 		icon = GFX_goal_FRA_kill_the_eagle
 		cost = 20
 
@@ -1986,18 +2027,271 @@ focus_tree = {
 		}
 		
 		prerequisite = {
-			focus = FRA_purge_catholic_influence
+			focus = FRA_solidarism
 		}
+		
 		completion_reward = {
-			add_stability = -0.05
-			country_event = { id = france_foreign_policy_events.1 days = 1 }
-			hidden_effect = {
-				GER = { country_event = { id = france_foreign_policy_events.1 days = 1 } }
+			set_temp_variable = { number = 3 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			PB_state_focus_upgrade = yes
+			custom_effect_tooltip = tooltip_white_line
+			every_owned_state = {
+				limit = {
+					is_core_of = FRA
+				}
+				add_state_modifier = {
+					add_dynamic_modifier = { modifier = FRA_regional_synchronicity_modifier }
+				}
 			}
 		}
 		search_filters = { FOCUS_FILTER_FOREIGN_POLICY FOCUS_FILTER_STABILITY }
 	}
-		focus = {
+	###DORIOT RIGHT-WING TREE
+	focus = {
+		id = FRA_pillar_of_decency
+		icon = GFX_goal_Focus_FRA_Carolingian_Legacy
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 6
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_right
+				has_country_flag = FRA_Doriot_corporatist
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_new_france
+		}
+		
+		select_effect = {
+			
+		}
+		completion_reward = {
+			if = {
+				limit = { has_idea = PB_minority_ethnic_segregation }
+				swap_ideas = {
+					remove_idea = PB_minority_ethnic_segregation
+					add_idea = PB_minority_ethnic_hierarchy
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_minority_ethnic_hierarchy }
+				add_political_power = 150
+			}
+			else = { add_ideas = PB_minority_ethnic_hierarchy }
+		}
+		search_filters = {FOCUS_FILTER_STABILITY}
+	}
+	focus = {
+		id = FRA_party_mythos
+		icon = GFX_goal_Generic_German_Soldiers2
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 7
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_pillar_of_decency
+		}
+		
+		completion_reward = {
+			set_temp_variable = { number = 5 }
+			FRA_fervour_change = yes
+		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_labour_family_country
+		icon = GFX_goal_Generic_Army_Unity
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 8
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_party_mythos
+		}
+		completion_reward = {
+			unlock_decision_tooltip = FRA_Extended_Shifts
+			unlock_decision_tooltip = FRA_Restore_Social_Laws
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_labour_family_country
+			custom_effect_tooltip = tooltip_white_line
+			if = {
+				limit = { has_idea = volunteer_only }
+				swap_ideas = {
+					remove_idea = volunteer_only
+					add_idea = limited_conscription
+				}
+			}
+			else_if = {
+				limit = { has_idea = limited_conscription }
+				swap_ideas = {
+					remove_idea = limited_conscription
+					add_idea = extensive_conscription
+				}
+			}
+			else_if = {
+				limit = { has_idea = extensive_conscription }
+				swap_ideas = {
+					remove_idea = extensive_conscription
+					add_idea = service_by_requirement
+				}
+			}
+			else = { add_political_power = 150 add_war_support = 0.05 }
+		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY FOCUS_FILTER_RESEARCH FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_rally_ultras
+		icon = GFX_goal_Focus_Examine_Foreign_Science
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		
+		x = 1
+		y = 6
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_right
+				has_country_flag = FRA_Doriot_center
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_new_france
+		}
+		
+		completion_reward = {
+			set_temp_variable = { number = -10 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			army_experience = 25
+			air_experience = 10
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = FRA_Camelots_tt
+			custom_effect_tooltip = tooltip_white_line
+			add_popularity = { ideology = rc popularity = 0.05 }
+			add_popularity = { ideology = ds popularity = 0.03 }
+			hidden_effect = {
+				load_oob = FRA_Camelots
+			}
+		}
+		search_filters = { FOCUS_FILTER_RESEARCH }
+	}
+	focus = {
+		id = FRA_crownless_king
+		icon = GFX_Focus_Focus_Generic_Molotov
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 7
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_rally_ultras
+		}
+		completion_reward = {
+			add_country_leader_trait = PB_FRA_Crownless_King_trait
+		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_NATIONALISM FOCUS_FILTER_STABILITY }
+	}
+	focus = {
+		id = FRA_three_bodies_one_nation
+		icon = GFX_goal_FRA_kill_the_eagle
+		cost = 20
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 8
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_crownless_king
+		}
+		completion_reward = {
+			unlock_decision_tooltip = FRA_Empower_Provincial_Council
+			unlock_decision_tooltip = FRA_Empower_Corporations_Council
+			unlock_decision_tooltip = FRA_Empower_Imperial_Council
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = FRA_Three_Bodies_One_Nation_tt
+		}
+		search_filters = { FOCUS_FILTER_FOREIGN_POLICY FOCUS_FILTER_STABILITY }
+	}
+	focus = {
 		id = FRA_manifest_destiny
 		icon = GFX_goal_Focus_FRA_Manifest_Destiny
 		cost = 30
@@ -2018,10 +2312,10 @@ focus_tree = {
 		}
 		
 		prerequisite = {
-			focus = FRA_the_state_that_gives
-		}
-		prerequisite = {
-			focus = FRA_expel_germans
+			focus = FRA_mythical_task
+			focus = FRA_labour_family_country
+			focus = FRA_three_bodies_one_nation
+			focus = FRA_regional_synchronicity
 		}
 		completion_reward = {
 			set_temp_variable = { number = -10 }
@@ -2190,6 +2484,7 @@ focus_tree = {
 		prerequisite = {
 			focus = FRA_year_one_constitution
 		}
+		
 		completion_reward = {
 			SD_POV_growth_progress_moderate = yes
 			custom_effect_tooltip = tooltip_white_line
