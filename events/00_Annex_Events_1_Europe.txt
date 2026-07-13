@@ -3679,7 +3679,7 @@ country_event = { #Fate of Portugal
 		set_temp_variable = { tag_to_release = overlord }
 		every_owned_state = {
 			limit = {
-				is_france = yes
+				is_portugal = yes
 				is_allowed_annexation_state = yes
 			}
 			transfer_state_and_notify = yes
@@ -3693,7 +3693,7 @@ country_event = { #Fate of Portugal
 			annexations_can_annex = yes
 		}
 		every_owned_state = {
-			limit = { is_france = yes }
+			limit = { is_portugal = yes }
 			add_claim_of_ROOT = yes
 		}
 	}
@@ -5273,20 +5273,39 @@ country_event = { #Fate of Flanders
 			}
 			if = {
 				limit = {
-					var:34.owner = { #Hainaut
-						ROOT_can_grant_land = yes
+					34= { #Hainaut
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { 
+							ROOT_can_grant_land = yes
+						}
 					}
 				}
-				var:34.owner = { save_event_target_as = hainaut }
+				var:34.owner = { save_event_target_as = hainaut add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					7 = { #Holland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { 
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:hainaut }
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
 			}
 			if = {
 				limit = {
 					35 = { #North Brabant
 						annexations_state_owner_is_valid_grant_target = yes
-						owner = { ROOT_can_grant_land = yes }
+						owner = { 
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:netherlands }
+							NOT = { tag = event_target:hainaut }
+						}
 					}
 				}
-				var:35.owner = { save_event_target_as = brabant }
+				var:35.owner = { save_event_target_as = brabant add_to_array = { ROOT.potential_grant_targets = THIS } }
 			}
 		}
 	}
@@ -5302,6 +5321,14 @@ country_event = { #Fate of Flanders
 			modifier = {
 				factor = 0
 				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = netherlands
+				OR = {
+					is_major = no
+					is_ally_with = event_target:netherlands
+				}
 			}
 			modifier = {
 				factor = 0
@@ -5322,6 +5349,8 @@ country_event = { #Fate of Flanders
 		}
 
 		set_temp_variable = { tag_to_release = FLA }
+		6 = { remove_claim_and_add_core_of_target = yes } #Flanders
+		1405 = { remove_claim_and_add_core_of_target = yes } #Flanders
 		release_targeted_tag = yes
 
 		if = {
@@ -5330,6 +5359,40 @@ country_event = { #Fate of Flanders
 				set_cosmetic_tag = FLA_Occupied_Monarchy
 			}
 		}
+	}
+	
+	option = { #Give to Netherlands
+		log = "[GetLogInfo]: event annex.1028 option annex.1028.e"
+		name = annex.1028.e
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 40
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				OR = { 
+					is_ally_with = event_target:brabant
+					is_ally_with = event_target:hainaut
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		6 = { transfer_if_owned = yes } #Flanders
+		1405 = { transfer_if_owned = yes } #Limburg
+		35 = { transfer_if_owned = yes } #Brabant
+		911 = { transfer_if_owned = yes } #Betuweland
+		1580 = { transfer_if_owned = yes } #Zeeland
+		910 = { transfer_if_owned = yes } #Zeeuws-Vlaanderen
 	}
 
 	option = { #Give to Hainaut
@@ -6386,7 +6449,7 @@ country_event = { #Fate of Piedmont
 		if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			SAV = {
-				drop_cosmetic_tag = yes
+				set_cosmetic_tag = SAV_Occupied_Republic
 			}
 		}
 
@@ -6394,35 +6457,6 @@ country_event = { #Fate of Piedmont
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SAV = {
 				set_cosmetic_tag = SAV_Occupied_Monarchy
-			}
-		}
-	}
-
-	option = { #Puppet Sardinia-Piedmont
-		log = "[GetLogInfo]: event annex.1036 option annex.1036.b"
-		name = annex.1036.b
-		trigger = {
-			NOT = { country_exists = SRD }
-			annexations_can_release_italian_splinters = yes
-		}
-		ai_chance = { base = 0 }
-		set_temp_variable = { tag_to_release = SRD }
-		114 = { remove_claim_and_add_core_of_target = yes } #Sardinia
-		158 = { remove_claim_and_add_core_of_target = yes } #Piedmont
-		1023 = { remove_claim_and_add_core_of_target = yes } #Liguria
-		release_targeted_tag = yes
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			SRD = {
-				set_cosmetic_tag = SRD_piedmont
-			}
-		}
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			SRD = {
-				set_cosmetic_tag = SRD_piedmont
 			}
 		}
 	}
@@ -7857,6 +7891,10 @@ country_event = { #Fate of Rhineland
 				factor = 10
 				annexations_AI_country_wants_to_dismantle_germany = yes
 			}
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
 		}
 
 		set_temp_variable = { tag_to_release = RHH }
@@ -8043,6 +8081,10 @@ country_event = { #Fate of Rhineland
 		ai_chance = { 
 			base = 0 
 			modifier = {
+				factor = 10
+				annexations_can_annex = yes
+			}
+			modifier = {
 				factor = 0
 				NOT = { is_ally_with = event_target:germany }
 				OR = {
@@ -8075,6 +8117,10 @@ country_event = { #Fate of Rhineland
 		ai_chance = { 
 			base = 0 
 			modifier = {
+				factor = 10
+				annexations_can_annex = yes
+			}
+			modifier = {
 				factor = 0
 				NOT = { is_ally_with = event_target:nassau }
 				OR = {
@@ -8105,6 +8151,10 @@ country_event = { #Fate of Rhineland
 		}
 		ai_chance = { 
 			base = 0 
+			modifier = {
+				factor = 10
+				annexations_can_annex = yes
+			}
 			modifier = {
 				factor = 0
 				NOT = { is_ally_with = event_target:westphalia }
@@ -10925,6 +10975,7 @@ country_event = { #Fate of Denmark
 					remove_claim_by = DEN
 				}
 			}
+			795 = { retain_state = yes }
 		}
 	}
 
@@ -12207,7 +12258,25 @@ country_event = { #Fate of West Herzegovina
 			has_event_target = dalmatia
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:dalmatia }
+				OR = {
+					is_ally_with = event_target:east_herzegovina
+					is_ally_with = event_target:tropolje
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:dalmatia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:dalmatia }
 		1232 = { transfer_if_owned = yes } #West Herzegovina
@@ -12221,7 +12290,25 @@ country_event = { #Fate of West Herzegovina
 			has_event_target = east_herzegovina
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:east_herzegovina }
+				OR = {
+					is_ally_with = event_target:dalmatia
+					is_ally_with = event_target:tropolje
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:east_herzegovina = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:east_herzegovina }
 		1232 = { transfer_if_owned = yes } #West Herzegovina
@@ -12235,7 +12322,25 @@ country_event = { #Fate of West Herzegovina
 			has_event_target = tropolje
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:tropolje }
+				OR = {
+					is_ally_with = event_target:east_herzegovina
+					is_ally_with = event_target:dalmatia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:tropolje = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:tropolje }
 		1232 = { transfer_if_owned = yes } #West Herzegovina
@@ -13091,7 +13196,25 @@ country_event = { #Fate of Banja Luka
 			has_event_target = bosnia
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bosnia }
+				OR = {
+					is_ally_with = event_target:posavina
+					is_ally_with = event_target:krajina
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bosnia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:bosnia }
 		1028 = { transfer_state_and_notify = yes } #Banja Luka
@@ -13105,7 +13228,25 @@ country_event = { #Fate of Banja Luka
 			has_event_target = posavina
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:posavina }
+				OR = {
+					is_ally_with = event_target:posavina
+					is_ally_with = event_target:bosnia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:posavina = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:posavina }
 		1028 = { transfer_state_and_notify = yes } #Banja Luka
@@ -13119,7 +13260,25 @@ country_event = { #Fate of Banja Luka
 			has_event_target = krajina
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:krajina }
+				OR = {
+					is_ally_with = event_target:posavina
+					is_ally_with = event_target:bosnia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:krajina = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:krajina }
 		1028 = { transfer_state_and_notify = yes } #Banja Luka
@@ -13218,7 +13377,25 @@ country_event = { #Fate of East Herzegovina
 			has_event_target = crna_gora
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:crna_gora }
+				OR = {
+					is_ally_with = event_target:ragusa
+					is_ally_with = event_target:bosnia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:crna_gora = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:crna_gora }
 		1027 = { transfer_if_owned = yes } #East Herzegovina
@@ -13232,7 +13409,25 @@ country_event = { #Fate of East Herzegovina
 			has_event_target = bosnia
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:bosnia }
+				OR = {
+					is_ally_with = event_target:ragusa
+					is_ally_with = event_target:crna_gora
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:bosnia = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:bosnia }
 		1027 = { transfer_if_owned = yes } #East Herzegovina
@@ -13246,7 +13441,25 @@ country_event = { #Fate of East Herzegovina
 			has_event_target = ragusa
 		}
 
-		ai_chance = { base = 100 }
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:ragusa }
+				OR = {
+					is_ally_with = event_target:crna_gora
+					is_ally_with = event_target:bosnia
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:ragusa = { is_subject = yes }
+			}
+		}
 
 		set_temp_variable = { tag_to_release = event_target:ragusa }
 		1027 = { transfer_if_owned = yes } #East Herzegovina
@@ -18714,6 +18927,8 @@ country_event = { #Fate of Lithuania
 		trigger = {
 			is_subject = no
 			NOT = { country_exists = BAL }
+			NOT = { country_exists = LAT }
+			NOT = { country_exists = EST }
 		}
 		ai_chance = {
 			base = 10
@@ -18904,6 +19119,7 @@ country_event = { #Fate of Latvia
 		trigger = {
 			is_subject = no
 			NOT = { country_exists = BAL }
+			NOT = { country_exists = EST }
 		}
 		ai_chance = {
 			base = 10
@@ -19092,6 +19308,7 @@ country_event = { #Fate of Estonia
 		trigger = {
 			is_subject = no
 			NOT = { country_exists = BAL }
+			NOT = { country_exists = LAT }
 		}
 		ai_chance = {
 			base = 10
@@ -28980,6 +29197,7 @@ country_event = { #Fate of Istria
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:friaul }
 						}
 					}
 				}
@@ -28991,6 +29209,8 @@ country_event = { #Fate of Istria
 						annexations_state_owner_is_valid_grant_target = yes
 						owner = {
 							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:carinthia }
+							NOT = { tag = event_target:friaul }
 						}
 					}
 				}
