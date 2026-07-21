@@ -8,6 +8,8 @@ add_namespace = sweden_bills
 add_namespace = sweden_civilian
 add_namespace = sweden_national
 add_namespace = sweden_statare
+add_namespace = sweden_paskkravallerna
+
 country_event = { #Landed Nobility Demand Concessions!
 	id = sweden_statare.1
 	title = sweden_statare.1.t
@@ -18,9 +20,9 @@ country_event = { #Landed Nobility Demand Concessions!
 	
 	option = { #perhaps let Krueger replace them?
 		trigger = { 
-			check_variable = {
-				var = SWE_economic_credits > 1
-			}
+			#check_variable = {
+			#	var = SWE_economic_credits > 1
+			#}
 		}
 		name = sweden_statare.1.a
 		add_to_variable = {
@@ -194,18 +196,294 @@ country_event = { #Final Choice of the Interior Ministry
 	}
 }  
 country_event = { #March of the Opposition
-	id = sweden_national.7
-	title = sweden_national.7.t
-	desc = sweden_national.7.d
+	id = sweden_paskkravallerna.1
+	title = sweden_paskkravallerna.1.t
+	desc = sweden_paskkravallerna.1.d
 	#picture = 
 
 	is_triggered_only = yes
-	
+	immediate = { 
+		hidden_effect = { 
+			add_to_variable = { 
+				var = SWE_revolt_escalation
+				value = 20
+			}
+			add_to_variable = { 
+				var = SWE_revolt_resources
+				value = 70
+			}
+			add_to_variable = { 
+				var = SWE_revolt_legitimacy
+				value = 50
+			}
+			activate_mission = SWE_debug_trigger_state_mission 
+			country_event = { id = sweden_paskkravallerna.2 days = 19} 
+		}
+	}
 	option = { #Lunden
-		name = sweden_national.7.a
-		activate_mission = SWE_debug_trigger_state_mission
+		name = sweden_paskkravallerna.1.a
+		play_song = "razormaiden"
+		activate_targeted_decision = { target = THIS decision = SWE_declare_martial_law }
+		activate_targeted_decision = { target = THIS decision = SWE_deputize_civic_guard }
+		activate_targeted_decision = { target = THIS decision = SWE_form_self_defense_leagues }
+		activate_targeted_decision = { target = THIS decision = SWE_impose_press_censorship }
+		activate_targeted_decision = { target = THIS decision = SWE_offer_paid_holiday }
+		activate_targeted_decision = { target = THIS decision = SWE_conduct_joint_condemnation }
 	}
 }  
+country_event = { #The Lund Standoff
+	id = sweden_paskkravallerna.2
+	title = sweden_paskkravallerna.2.t
+	desc = sweden_paskkravallerna.2.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.7 days = 2}
+			country_event = { id = sweden_paskkravallerna.3 days = 9} 
+		}
+	}
+	option = { #Attempt to difuse the situation
+		name = sweden_paskkravallerna.2.a
+		add_to_variable = { 
+			var = SWE_revolt_escalation
+			value = -5
+			tooltip = SWE_revolt_escalation_reduce_tt
+		}
+	}
+	option = { #Fire!
+		name = sweden_paskkravallerna.2.a
+		
+	}
+}  
+country_event = { #Stockholm Riots
+	id = sweden_paskkravallerna.3
+	title = sweden_paskkravallerna.3.t
+	desc = sweden_paskkravallerna.3.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.4 days = 13} 
+			country_event = { id = sweden_paskkravallerna.5 days = 15}
+		}
+	}
+	option = { #Lunden
+		name = sweden_paskkravallerna.3.a
+	}
+}  
+country_event = { #Stockholm Police Chief Resigns
+	id = sweden_paskkravallerna.4
+	title = sweden_paskkravallerna.4.t
+	desc = sweden_paskkravallerna.4.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		
+	}
+	option = { #Lunden
+		name = sweden_paskkravallerna.4.a
+	}
+}  
+country_event = { #Stockholm Stockade
+	id = sweden_paskkravallerna.5
+	title = sweden_paskkravallerna.5.t
+	desc = sweden_paskkravallerna.5.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			141 = { 
+				set_demilitarized_zone = yes
+			}
+			activate_mission = SWE_sweden_stockade 
+			set_country_flag = SWE_stockholm_revolt
+			country_event = { id = sweden_paskkravallerna.6 days = 2}
+		}
+	}
+	option = { #Lunden
+		name = sweden_paskkravallerna.5.a
+		activate_targeted_decision = { target = THIS decision = SWE_cutoff_radio_to_stockholm }
+		activate_targeted_decision = { target = THIS decision = SWE_blockade_stockholm }
+	}
+}  
+country_event = { #Security Forces flee to bornholm
+	id = sweden_paskkravallerna.6
+	title = sweden_paskkravallerna.6.t
+	desc = sweden_paskkravallerna.6.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.8 days = 2}
+		}
+	}
+	option = { #Lunden
+		name = sweden_paskkravallerna.6.a
+		141 = { 
+			teleport_armies = {
+				limit = {
+					tag = SWE
+				}
+				to_state = 124
+			}
+		}
+	}
+}  
+
+country_event = { #Lund Massacre
+	id = sweden_paskkravallerna.7
+	title = sweden_paskkravallerna.7.t
+	desc = sweden_paskkravallerna.7.d
+	#picture = 
+
+	is_triggered_only = yes
+
+	option = { #Lunden
+		name = sweden_paskkravallerna.7.a
+		add_to_variable = { 
+			var = SWE_revolt_escalation
+			value = 10
+			tooltip = SWE_revolt_escalation_add_tt
+		}
+		add_manpower = -15
+		138 = { add_manpower = -73 }
+	}
+}  
+
+country_event = { #Queen Evacuated, mannerheim takes control of Stockholm
+	id = sweden_paskkravallerna.8
+	title = sweden_paskkravallerna.8.t
+	desc = sweden_paskkravallerna.8.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.9 days = 2}
+		}
+	}
+	option = { #Lunden
+		name = sweden_paskkravallerna.8.a
+	}
+}  
+
+country_event = { #Riksdag Occupied
+	id = sweden_paskkravallerna.9
+	title = sweden_paskkravallerna.9.t
+	desc = sweden_paskkravallerna.9.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.10 days = 2}
+		}
+	}
+	option = { #Lunden
+		name = sweden_paskkravallerna.9.a
+	}
+}  
+country_event = { #Stockholm Flotilla
+	id = sweden_paskkravallerna.10
+	title = sweden_paskkravallerna.10.t
+	desc = sweden_paskkravallerna.10.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.10 days = 2}
+		}
+	}
+	option = { #Demand the Germans clamp down!
+		name = sweden_paskkravallerna.9.a
+		add_to_variable = { 
+			var = SWE_revolt_resources
+			value = 25
+			tooltip = SWE_revolt_resources_add_tt
+		}
+		GER = { 
+			country_event = { id = sweden_paskkravallerna.13 days = 2}
+		}
+	}
+}  
+country_event = { #The Sverige in Harbour
+	id = sweden_paskkravallerna.11
+	title = sweden_paskkravallerna.11.t
+	desc = sweden_paskkravallerna.11.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.12 days = 2}
+		}
+	}
+	option = { #Bombard Stockholm and anyone who blocks our path out!
+		name = sweden_paskkravallerna.9.a
+	}
+	option = { #Surrender the Sverige
+		name = sweden_paskkravallerna.9.b
+	}
+}  
+country_event = { #Sweden Requests flotilla is supressed
+	id = sweden_paskkravallerna.13
+	title = sweden_paskkravallerna.13.t
+	desc = sweden_paskkravallerna.13.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		
+	}
+	option = { #Sir yes sir!
+		name = sweden_paskkravallerna.9.a
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.14 days = 2}
+		}
+	}
+	option = { #No screw you
+		name = sweden_paskkravallerna.9.b
+		hidden_effect = { 
+			country_event = { id = sweden_paskkravallerna.15 days = 2}
+		}
+	}
+} 
+country_event = { #Flotilla Supressed
+	id = sweden_paskkravallerna.14
+	title = sweden_paskkravallerna.14.t
+	desc = sweden_paskkravallerna.14.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		
+	}
+	option = { #Sir yes sir!
+		name = sweden_paskkravallerna.14.a
+	}
+}  
+country_event = { #Flotila allowed to go
+	id = sweden_paskkravallerna.15
+	title = sweden_paskkravallerna.15.t
+	desc = sweden_paskkravallerna.15.d
+	#picture = 
+
+	is_triggered_only = yes
+	immediate = { 
+		
+	}
+	option = { #what the fuck man!
+		name = sweden_paskkravallerna.15.a
+	}
+
+}   
 country_event = { #coalition m
 	id = sweden_civilian.1
 	title = sweden_civilian.1.t
@@ -512,7 +790,8 @@ country_event = { #Kirunaavtalet
 	}
 	option = { #Cross your fingers...
 		name = sweden.13.b
-		
+		country_event = { id = sweden.31 days = 5 }
+		country_event = { id = sweden.32 days = 9 }
 	}
 }
 
@@ -874,7 +1153,28 @@ country_event = { #No Swede Left
 		name = sweden.30.a
 	}
 }
+country_event = { # Kiruna 1 
+	id = sweden.31
+	title = sweden.31.t
+	desc = sweden.31.d
+	#picture = GFX_report_event_generic
+	is_triggered_only = yes
 
+	option = { #Calm down!
+		name = sweden.31.a
+	}
+}
+country_event = { # Kiruna 2
+	id = sweden.32
+	title = sweden.32.t
+	desc = sweden.32.d
+	#picture = GFX_report_event_generic
+	is_triggered_only = yes
+
+	option = { #Calm down!
+		name = sweden.32.a
+	}
+}
 country_event = { #Women's Suffrage Passed
 	id = sweden_bills.1
 	title = sweden_bills.1.t
