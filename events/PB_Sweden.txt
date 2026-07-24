@@ -10,6 +10,7 @@ add_namespace = sweden_national
 add_namespace = sweden_statare
 add_namespace = sweden_paskkravallerna
 add_namespace = sweden_luddite
+add_namespace = sweden_trade_war
 
 country_event = { #Landed Nobility Demand Concessions!
 	id = sweden_statare.1
@@ -1561,44 +1562,28 @@ country_event = { # Trygger's Fall
 	}
 }
 
-country_event = { # Dutch-Swedish Trade War
+country_event = { # Sweden Attempts to Bypass Us! (Dutch)
 	id = sweden_trade_war.1
 	title = sweden_trade_war.1.t
 	desc = sweden_trade_war.1.d
 	picture = GFX_report_event_PB_SWE_Trygger
 	is_triggered_only = yes
 
-	option = { #
+	option = { # hey fuck you sweden
 		name = sweden_trade_war.1.a
-		HOL = { 
-			country_event = { id = sweden_trade_war.2 days = 2 }
-		}
-		
-	}
-
-}
-country_event = { # Sweden Imposes Trade Regulations!
-	id = sweden_trade_war.2
-	title = sweden_trade_war.2.t
-	desc = sweden_trade_war.2.d
-	picture = GFX_report_event_PB_SWE_Trygger
-	is_triggered_only = yes
-
-	option = { # Hey, fuck you!
-		name = sweden_trade_war.2.a
 		ai_chance = {
 			base = 70
 
 			# Sweden has a big fleet -> less willing to fight back
 			modifier = {
 				add = -30
-				SWE = { has_navy_size = { size > 100 type = convoy } }
+				SWE = { has_navy_size = { size > 150 type = convoy } }
 			}
 			modifier = {
 				add = -15
 				SWE = {
-					has_navy_size = { size > 60 type = convoy }
-					NOT = { has_navy_size = { size > 100 type = convoy } }
+					has_navy_size = { size > 75 type = convoy }
+					NOT = { has_navy_size = { size > 150 type = convoy } }
 				}
 			}
 
@@ -1606,55 +1591,409 @@ country_event = { # Sweden Imposes Trade Regulations!
 			modifier = {
 				add = 20
 				SWE = {
-					NOT = { has_navy_size = { size > 60 type = convoy } }
+					NOT = { has_navy_size = { size > 75 type = convoy } }
 				}
 			}
 		}
-		DEN = { 
-			country_event = { id = sweden_trade_war.4 days = 2 }
-		}
-		SWE = { 
-			country_event = { id = sweden_trade_war.3 days = 2 }
+		add_political_power = -10
+		hidden_effect = {
+			SWE = { 
+				country_event = { id = sweden_trade_war.3 days = 2 }
+			}
 		}
 	}
-	option = { # It's their choice...
-		name = sweden_trade_war.2.b
+	option = { # oh well
+		name = sweden_trade_war.1.b
 		ai_chance = {
 			base = 30
 
 			# Mirror logic - big Swedish fleet makes conceding more attractive
 			modifier = {
 				add = 30
-				SWE = { has_navy_size = { size > 100 type = convoy } }
+				SWE = { has_navy_size = { size > 150 type = convoy } }
 			}
 			modifier = {
 				add = 15
 				SWE = {
-					has_navy_size = { size > 60 type = convoy }
-					NOT = { has_navy_size = { size > 100 type = convoy } }
+					has_navy_size = { size > 75 type = convoy }
+					NOT = { has_navy_size = { size > 150 type = convoy } }
 				}
 			}
 			modifier = {
 				add = -20
 				SWE = {
-					NOT = { has_navy_size = { size > 60 type = convoy } }
+					NOT = { has_navy_size = { size > 75 type = convoy } }
 				}
+			}
+		}
+		hidden_effect = {
+			SWE = { 
+				country_event = { id = sweden_trade_war.2 days = 2 }
 			}
 		}
 	}
 }
+country_event = { # The Dutch Bend the Knee (Sweden; Sweden wins without fight)
+	id = sweden_trade_war.2
+	title = sweden_trade_war.2.t
+	desc = sweden_trade_war.2.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
 
-country_event = { # Dutch-Swedish Trade War
+	option = { # Sweden is free from foreign middlemen!
+		name = sweden_trade_war.2.a
+		add_popularity = {
+            ideology = ROOT
+            popularity = 0.10
+        }
+        SD_ECON_growth_progress_high = yes
+        SD_IND_growth_progress_moderate = yes
+        add_timed_idea = {
+            idea = SWE_tariff_war_won
+            days = 150
+        }
+	}
+}
+
+country_event = { # The Dutch Hold Fast (Sweden; Dutch fight back)
 	id = sweden_trade_war.3
 	title = sweden_trade_war.3.t
 	desc = sweden_trade_war.3.d
 	picture = GFX_report_event_PB_SWE_Trygger
 	is_triggered_only = yes
 
-	option = { #
+	option = { # meet with the Dutch
 		name = sweden_trade_war.3.a
-		news_event = PBNews.380
-
+		ai_chance = {
+			base = 50
+		}
+		HOL = {
+			country_event = { id = sweden_trade_war.4 days = 2 }
+		}
 	}
+	option = { # no, fuck you back Dutchies
+		name = sweden_trade_war.3.b
+		ai_chance = {
+			base = 50
+		}
+		hidden_effect = {
+			news_event = { id = PBNews.380 days = 2 }
+			HOL = {
+				country_event = { id = sweden_trade_war.7 days = 2 }
+			}
+		}
+	}
+}
 
+country_event = { # Swedes Seek Diplomacy (Dutch; Sweden wants to talk)
+	id = sweden_trade_war.4
+	title = sweden_trade_war.4.t
+	desc = sweden_trade_war.4.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # okay, but we want concessions
+		name = sweden_trade_war.4.a
+		hidden_effect = {
+			SWE = {
+				country_event = { id = sweden_trade_war.5 days = 5 }
+			}
+		}
+	}
+}
+
+country_event = { # Conference in Doggerland (Sweden; Dutch agree to talks)
+	id = sweden_trade_war.5
+	title = sweden_trade_war.5.t
+	desc = sweden_trade_war.5.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # fine, take your concessions
+		name = sweden_trade_war.5.a
+		ai_chance = {
+			base = 50
+		}
+		add_popularity = {
+            ideology = ROOT
+            popularity = 0.05
+        }
+        SD_ECON_growth_progress_moderate = yes
+        SD_IND_growth_progress_low = yes
+        add_timed_idea = {
+            idea = SWE_tariff_war_partial_win
+            days = 150
+        }
+		hidden_effect = {
+			HOL = {
+				country_event = { id = sweden_trade_war.6 days = 3 }
+			}
+		}
+	}
+	option = { # nah man we want the full buffs
+		name = sweden_trade_war.5.b
+		ai_chance = {
+			base = 50
+		}
+		hidden_effect = {
+			news_event = { id = PBNews.380 days = 2 }
+			HOL = {
+				country_event = { id = sweden_trade_war.7 days = 2 }
+			}
+		}
+	}
+}
+
+country_event = { # Sweden Accepts Our Offer (Dutch; Sweden Accepts)
+	id = sweden_trade_war.6
+	title = sweden_trade_war.6.t
+	desc = sweden_trade_war.6.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # yippee
+		name = sweden_trade_war.6.a
+		add_political_power = 25
+	}
+}
+
+country_event = { # Swedes Fight Back (Dutch; Sweden Stands Firm)
+	id = sweden_trade_war.7
+	title = sweden_trade_war.7.t
+	desc = sweden_trade_war.7.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # we won't back down
+		name = sweden_trade_war.7.a
+		ai_chance = {
+			base = 75
+		}
+		add_political_power = -25
+		hidden_effect = {
+			SWE = {
+				country_event = { id = sweden_trade_war.9 days = 7 }
+			}
+		}
+	}
+	option = { # FUUUUUUU
+		name = sweden_trade_war.7.b
+		ai_chance = {
+			base = 25
+		}
+		hidden_effect = {
+			SWE = {
+				country_event = { id = sweden_trade_war.8 days = 3 }
+			}
+		}
+	}
+}
+
+country_event = { # Dutch Capitulation (Sweden; Dutch Back Down)
+	id = sweden_trade_war.8
+	title = sweden_trade_war.8.t
+	desc = sweden_trade_war.8.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # hell yeah
+		name = sweden_trade_war.8.a
+		add_popularity = {
+            ideology = ROOT
+            popularity = 0.10
+        }
+        SD_ECON_growth_progress_high = yes
+        SD_IND_growth_progress_moderate = yes
+        add_timed_idea = {
+            idea = SWE_tariff_war_won
+            days = 150
+        }
+		hidden_effect = {
+			news_event = PBNews.381
+		}
+	}
+}
+
+country_event = { # The Dutch Return the Favor (Sweden; Dutch Fight Back)
+	id = sweden_trade_war.9
+	title = sweden_trade_war.9.t
+	desc = sweden_trade_war.9.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # kill the bastards
+		name = sweden_trade_war.9.a
+		ai_chance = {
+			base = 40
+		}
+		hidden_effect = {
+			HOL = {
+				country_event = { id = sweden_trade_war.10 days = 7 }
+			}
+		}
+	}
+	option = { # let's talk more tariffs
+		name = sweden_trade_war.9.b
+		ai_chance = {
+			base = 60
+		}
+		hidden_effect = {
+			HOL = {
+				country_event = { id = sweden_trade_war.13 days = 7 }
+			}
+		}
+	}
+}
+
+country_event = { # Swedish Threats (Dutch; Sweden Threatens WAR!!)
+	id = sweden_trade_war.10
+	title = sweden_trade_war.10.t
+	desc = sweden_trade_war.10.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # not worth the risk
+		name = sweden_trade_war.10.a
+		ai_chance = {
+			base = 60
+		}
+		hidden_effect = {
+			SWE = {
+				country_event = { id = sweden_trade_war.12 days = 7 }
+			}
+		}
+	}
+	option = { # they're bluffing
+		name = sweden_trade_war.10.b
+		ai_chance = {
+			base = 40
+		}
+		hidden_effect = {
+			SWE = {
+				country_event = { id = sweden_trade_war.11 days = 7 }
+			}
+		}
+	}
+}
+
+country_event = { # The Dutch Don't Blink (Sweden; Dutch call the bluff)
+	id = sweden_trade_war.11
+	title = sweden_trade_war.11.t
+	desc = sweden_trade_war.11.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # fuuuuuuuuuu
+		name = sweden_trade_war.11.a
+		SD_ECON_growth_regress_moderate = yes
+        add_timed_idea = {
+            idea = SWE_tariff_war_lose
+            days = 150
+        }
+		add_political_power = -50
+		hidden_effect = {
+			news_event = PBNews.382
+		}
+	}
+}
+
+country_event = { # Peace for Our Time (Sweden; Dutch get scared)
+	id = sweden_trade_war.12
+	title = sweden_trade_war.12.t
+	desc = sweden_trade_war.12.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # yeaaaaaaaaaaaa
+		name = sweden_trade_war.12.a
+		add_popularity = {
+            ideology = ROOT
+            popularity = 0.10
+        }
+        SD_ECON_growth_progress_high = yes
+        SD_IND_growth_progress_moderate = yes
+        add_timed_idea = {
+            idea = SWE_tariff_war_won
+            days = 150
+        }
+		hidden_effect = {
+			news_event = PBNews.381
+		}
+	}
+}
+
+country_event = { # The Swedes Push Their Luck (Dutch; Sweden Raises Tariffs MORE)
+	id = sweden_trade_war.13
+	title = sweden_trade_war.13.t
+	desc = sweden_trade_war.13.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # raise tariffs more more
+		name = sweden_trade_war.13.a
+		ai_chance = {
+			base = 60
+		}
+		hidden_effect = {
+			SWE = {
+				country_event = { id = sweden_trade_war.14 days = 7 }
+			}
+		}
+	}
+	option = { # just let it go
+		name = sweden_trade_war.13.b
+		ai_chance = {
+			base = 40
+		}
+		hidden_effect = {
+			SWE = {
+				country_event = { id = sweden_trade_war.15 days = 7 }
+			}
+		}
+	}
+}
+
+country_event = { # No Rest for the Wicked (Sweden; Dutch raise tariffs MORE)
+	id = sweden_trade_war.14
+	title = sweden_trade_war.14.t
+	desc = sweden_trade_war.14.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # fuuuuuuuuuu
+		name = sweden_trade_war.14.a
+		SD_ECON_growth_regress_moderate = yes
+        add_timed_idea = {
+            idea = SWE_tariff_war_lose
+            days = 150
+        }
+		hidden_effect = {
+			news_event = PBNews.382
+		}
+	}
+}
+
+country_event = { # The Dutch Cave In (Sweden; Dutch let it go)
+	id = sweden_trade_war.15
+	title = sweden_trade_war.15.t
+	desc = sweden_trade_war.15.d
+	picture = GFX_report_event_PB_SWE_Trygger
+	is_triggered_only = yes
+
+	option = { # yeaaaaaaaaaaaa
+		name = sweden_trade_war.15.a
+		add_popularity = {
+            ideology = ROOT
+            popularity = 0.10
+        }
+        SD_ECON_growth_progress_high = yes
+        SD_IND_growth_progress_moderate = yes
+        add_timed_idea = {
+            idea = SWE_tariff_war_won
+            days = 150
+        }
+		hidden_effect = {
+			news_event = PBNews.381
+		}
+	}
 }
