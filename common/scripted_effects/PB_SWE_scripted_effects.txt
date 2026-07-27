@@ -55,3 +55,508 @@ SWE_revolt_republic_path = {
 SWE_revolt_victory_path = { 
 	
 }
+SWE_mannerheim_coup_effect = { 
+    remove_ideas = { 
+    #WAIT
+    }
+    retire_current_country_leader = yes
+    set_politics = { #
+        ruling_party = ds
+        elections_allowed = no
+    }
+    ban_party_cn = yes
+    ban_party_rc = yes
+    ban_party_ni = yes
+    complete_national_focus = SWE_mannerheim_coup
+    SWE_mannerheim = { 
+        promote_character = {
+            ideology = DS_VARIANT_06
+        }
+    }
+}
+SWE_courtyard_camarilla_totals = {
+    # Combine Hedin + Kron political power contributions
+    set_temp_variable = { SWE_pp_total_temp = hedin_political_variable }
+    add_to_temp_variable = { SWE_pp_total_temp = kron_political_variable }
+    set_variable = { SWE_courtyard_total_political_power_gain = SWE_pp_total_temp }
+
+    # Combine Hedin + Kron stability contributions
+    set_temp_variable = { SWE_stab_total_temp = hedin_stab_variable }
+    add_to_temp_variable = { SWE_stab_total_temp = kron_stability_variable }
+    set_variable = { SWE_courtyard_total_stability_factor = SWE_stab_total_temp }
+}
+SWE_hedin_loyalists_calculations = {   # - ppgain - stability
+
+    if = {
+        limit = { check_variable = { SWE_HedinLoyalists_Banned = 1 } }
+        set_variable = { hedin_political_variable = 0 }
+        set_variable = { hedin_stab_variable = 0 }
+    }
+    else = {
+        # Political Power
+        set_temp_variable = {
+            hedin_political_variable_temp = {
+                value = SWE_HedinLoyalists_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { hedin_political_variable = hedin_political_variable_temp }
+
+        # Stability
+        set_temp_variable = {
+            hedin_stab_variable_temp = {
+                value = SWE_HedinLoyalists_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { hedin_stab_variable = hedin_stab_variable_temp }
+    }
+
+    SWE_courtyard_camarilla_totals = yes
+}
+
+SWE_lund_conservatives_calculations = {   # - drift - warsupport
+
+    if = {
+        limit = { check_variable = { SWE_LundConservatives_Banned = 1 } }
+        set_variable = { lund_drift_variable = 0 }
+        set_variable = { lund_warsupport_variable = 0 }
+    }
+    else = {
+        # Drift Defence
+        set_temp_variable = {
+            lund_drift_variable_temp = {
+                value = SWE_LundConservatives_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { lund_drift_variable = lund_drift_variable_temp }
+
+        # War Support
+        set_temp_variable = {
+            lund_warsupport_variable_temp = {
+                value = SWE_LundConservatives_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { lund_warsupport_variable = lund_warsupport_variable_temp }
+    }
+}
+
+SWE_kronparteit_calculations = {   # - stability - polpower
+
+    if = {
+        limit = { check_variable = { SWE_Kronparteit_Banned = 1 } }
+        set_variable = { kron_stability_variable = 0 }
+        set_variable = { kron_political_variable = 0 }
+    }
+    else = {
+        # Stability
+        set_temp_variable = {
+            kron_stability_variable_temp = {
+                value = SWE_Kronparteit_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { kron_stability_variable = kron_stability_variable_temp }
+
+        # Political Power
+        set_temp_variable = {
+            kron_political_variable_temp = {
+                value = SWE_Kronparteit_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { kron_political_variable = kron_political_variable_temp }
+    }
+
+    SWE_courtyard_camarilla_totals = yes
+}
+
+SWE_nobility_calculations = {   # - polpower - export
+
+    if = {
+        limit = { check_variable = { SWE_Nobility_Banned = 1 } }
+        set_variable = { nobility_political_variable = 0 }
+        set_variable = { nobility_export_variable = 0 }
+    }
+    else = {
+        # Political Power
+        set_temp_variable = {
+            nobility_political_variable_temp = {
+                value = SWE_Nobility_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { nobility_political_variable = nobility_political_variable_temp }
+
+        # Export
+        set_temp_variable = {
+            nobility_export_variable_temp = {
+                value = SWE_Nobility_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { nobility_export_variable = nobility_export_variable_temp }
+    }
+}
+
+SWE_luddites_calculations = {   # - construction - factory
+
+    if = {
+        limit = { check_variable = { SWE_Luddites_Banned = 1 } }
+        set_variable = { ludd_construction_variable = 0 }
+        set_variable = { ludd_factory_variable = 0 }
+    }
+    else = {
+        # Construction Speed
+        set_temp_variable = {
+            ludd_construction_variable_temp = {
+                value = SWE_Luddites_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { ludd_construction_variable = ludd_construction_variable_temp }
+
+        # Factory Output
+        set_temp_variable = {
+            ludd_factory_variable_temp = {
+                value = SWE_Luddites_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { ludd_factory_variable = ludd_factory_variable_temp }
+    }
+}
+
+SWE_transcendentalists_calculations = {   # research - armyexp
+
+    if = {
+        limit = { check_variable = { SWE_Transcendentalists_Banned = 1 } }
+        set_variable = { trans_research_variable = 0 }
+        set_variable = { trans_exp_variable = 0 }
+    }
+    else = {
+        # Research Speed
+        set_temp_variable = {
+            trans_research_variable_temp = {
+                value = SWE_Transcendentalists_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { trans_research_variable = trans_research_variable_temp }
+
+        # Army Experience
+        set_temp_variable = {
+            trans_exp_variable_temp = {
+                value = SWE_Transcendentalists_Support
+                add = -50
+                divide = 250
+            }
+        }
+        set_variable = { trans_exp_variable = trans_exp_variable_temp }
+    }
+}
+SWE_Increase_HedinLoyalists_Support = {
+custom_effect_tooltip = SWE_Increase_HedinLoyalists_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_HedinLoyalists_Support
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_HedinLoyalists_Support
+            min = 0
+            max = 100
+        }
+		SWE_hedin_loyalists_calculations = yes
+	}
+}
+
+SWE_Decrease_HedinLoyalists_Support = {
+custom_effect_tooltip = SWE_Decrease_HedinLoyalists_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_HedinLoyalists_Support
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_HedinLoyalists_Support
+            min = 0
+            max = 100
+        }
+		SWE_hedin_loyalists_calculations = yes
+	}
+}
+
+SWE_Increase_LundConservatives_Support = {
+custom_effect_tooltip = SWE_Increase_LundConservatives_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_LundConservatives_Support
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_LundConservatives_Support
+            min = 0
+            max = 100
+        }
+		SWE_lund_conservatives_calculations = yes
+	}
+}
+
+SWE_Decrease_LundConservatives_Support = {
+custom_effect_tooltip = SWE_Decrease_LundConservatives_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_LundConservatives_Support
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_LundConservatives_Support
+            min = 0
+            max = 100
+        }
+		SWE_lund_conservatives_calculations = yes
+	}
+}
+
+SWE_Increase_Kronparteit_Support = {
+custom_effect_tooltip = SWE_Increase_Kronparteit_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Kronparteit_Support
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Kronparteit_Support
+            min = 0
+            max = 100
+        }
+		SWE_kronparteit_calculations = yes
+	}
+}
+
+SWE_Decrease_Kronparteit_Support = {
+custom_effect_tooltip = SWE_Decrease_Kronparteit_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Kronparteit_Support
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Kronparteit_Support
+            min = 0
+            max = 100
+        }
+		SWE_kronparteit_calculations = yes
+	}
+}
+
+SWE_Increase_Nobility_Support = {
+custom_effect_tooltip = SWE_Increase_Nobility_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Nobility_Support
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Nobility_Support
+            min = 0
+            max = 100
+        }
+		SWE_nobility_calculations = yes
+	}
+}
+
+SWE_Decrease_Nobility_Support = {
+custom_effect_tooltip = SWE_Decrease_Nobility_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Nobility_Support
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Nobility_Support
+            min = 0
+            max = 100
+        }
+		SWE_nobility_calculations = yes
+	}
+}
+
+SWE_Increase_Luddites_Support = {
+custom_effect_tooltip = SWE_Increase_Luddites_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Luddites_Support
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Luddites_Support
+            min = 0
+            max = 100
+        }
+		SWE_luddites_calculations = yes
+	}
+}
+
+SWE_Decrease_Luddites_Support = {
+custom_effect_tooltip = SWE_Decrease_Luddites_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Luddites_Support
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Luddites_Support
+            min = 0
+            max = 100
+        }
+		SWE_luddites_calculations = yes
+	}
+}
+
+SWE_Increase_Transcendentalists_Support = {
+custom_effect_tooltip = SWE_Increase_Transcendentalists_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Transcendentalists_Support
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Transcendentalists_Support
+            min = 0
+            max = 100
+        }
+		SWE_transcendentalists_calculations = yes
+	}
+}
+
+SWE_Decrease_Transcendentalists_Support = {
+custom_effect_tooltip = SWE_Decrease_Transcendentalists_Support_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Transcendentalists_Support
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Transcendentalists_Support
+            min = 0
+            max = 100
+        }
+		SWE_transcendentalists_calculations = yes
+	}
+}
+SWE_Ban_HedinLoyalists_Support = {
+    custom_effect_tooltip = SWE_Ban_HedinLoyalists_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_HedinLoyalists_Support = 0 }
+        set_variable = { SWE_HedinLoyalists_Banned = 1 }
+        SWE_hedin_loyalists_calculations = yes
+    }
+}
+SWE_Unban_HedinLoyalists_Support = {
+    custom_effect_tooltip = SWE_Unban_HedinLoyalists_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_HedinLoyalists_Banned = 0 }
+        set_variable = { SWE_HedinLoyalists_Support = 50 }
+        SWE_hedin_loyalists_calculations = yes
+    }
+}
+
+SWE_Ban_LundConservatives_Support = {
+    custom_effect_tooltip = SWE_Ban_LundConservatives_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_LundConservatives_Support = 0 }
+        set_variable = { SWE_LundConservatives_Banned = 1 }
+        SWE_lund_conservatives_calculations = yes
+    }
+}
+SWE_Unban_LundConservatives_Support = {
+    custom_effect_tooltip = SWE_Unban_LundConservatives_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_LundConservatives_Banned = 0 }
+        set_variable = { SWE_LundConservatives_Support = 50 }
+        SWE_lund_conservatives_calculations = yes
+    }
+}
+
+SWE_Ban_Kronparteit_Support = {
+    custom_effect_tooltip = SWE_Ban_Kronparteit_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Kronparteit_Support = 0 }
+        set_variable = { SWE_Kronparteit_Banned = 1 }
+        SWE_kronparteit_calculations = yes
+    }
+}
+SWE_Unban_Kronparteit_Support = {
+    custom_effect_tooltip = SWE_Unban_Kronparteit_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Kronparteit_Banned = 0 }
+        set_variable = { SWE_Kronparteit_Support = 50 }
+        SWE_kronparteit_calculations = yes
+    }
+}
+
+SWE_Ban_Nobility_Support = {
+    custom_effect_tooltip = SWE_Ban_Nobility_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Nobility_Support = 0 }
+        set_variable = { SWE_Nobility_Banned = 1 }
+        SWE_nobility_calculations = yes
+    }
+}
+SWE_Unban_Nobility_Support = {
+    custom_effect_tooltip = SWE_Unban_Nobility_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Nobility_Banned = 0 }
+        set_variable = { SWE_Nobility_Support = 50 }
+        SWE_nobility_calculations = yes
+    }
+}
+
+SWE_Ban_Luddites_Support = {
+    custom_effect_tooltip = SWE_Ban_Luddites_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Luddites_Support = 0 }
+        set_variable = { SWE_Luddites_Banned = 1 }
+        SWE_luddites_calculations = yes
+    }
+}
+SWE_Unban_Luddites_Support = {
+    custom_effect_tooltip = SWE_Unban_Luddites_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Luddites_Banned = 0 }
+        set_variable = { SWE_Luddites_Support = 50 }
+        SWE_luddites_calculations = yes
+    }
+}
+
+SWE_Ban_Transcendentalists_Support = {
+    custom_effect_tooltip = SWE_Ban_Transcendentalists_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Transcendentalists_Support = 0 }
+        set_variable = { SWE_Transcendentalists_Banned = 1 }
+        SWE_transcendentalists_calculations = yes
+    }
+}
+SWE_Unban_Transcendentalists_Support = {
+    custom_effect_tooltip = SWE_Unban_Transcendentalists_Support_tt
+    hidden_effect = {
+        set_variable = { SWE_Transcendentalists_Banned = 0 }
+        set_variable = { SWE_Transcendentalists_Support = 50 }
+        SWE_transcendentalists_calculations = yes
+    }
+}
