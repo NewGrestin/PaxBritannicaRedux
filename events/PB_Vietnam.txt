@@ -12,34 +12,113 @@ country_event = {#Cambodian Garrison Overhtrown by Issarak Partisans
 	picture = GFX_report_PB_Paris_Event
 
 	is_triggered_only = yes
-
 	fire_only_once = yes
-	
-	immediate = {
+	option = { #Hurray for our Khmers brethren!
+		name = vietnam_associates.1.a
+		ai_chance = { base = 100 }
+
 		VIN = {
-			create_faction = VIN_united_front
+			create_faction_from_template = faction_template_mekong_front
+			add_to_faction = CAM
+			custom_effect_tooltip = tooltip_white_line
+			add_war_support = 0.03
+			add_political_power = 15
 		}
-		if = {
-			limit = {
-				AND = {
-					741 = {
-						is_controlled_by = BFE
-					}
-					VIN = {
-						AND = {
-							has_war_with = BFE
-						}
+		custom_effect_tooltip = tooltip_white_line
+		CAM = {
+			add_equipment_to_stockpile = {
+			    type = infantry_equipment_0
+			    amount = 350
+			    producer = VIN
+			}
+			add_equipment_to_stockpile = {
+			    type = field_kits_equipment_0
+			    amount = 500
+			    producer = VIN
+			}
+			custom_effect_tooltip = tooltip_white_line
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_create_division_template
+					NAME = "Khmer Resistance"
+					LINE_1 = { localization_key = line_battalion_tt NAME = infantry ICON = GFX_unit_infantry_icon_small COUNT = 3 }
+					LINE_2 = { localization_key = line_battalion_tt NAME = light_infantry ICON = GFX_unit_light_infantry_icon_small COUNT = 3 }
+				}
+				if = {
+					limit = { has_template = "Khmer Resistance" }
+					delete_unit_template_and_units = { division_template = "Khmer Resistance" disband = yes } #no cheating
+				}
+				division_template = {
+					name = "Khmer Resistance"
+					is_locked = yes
+					regiments = {
+						infantry = { x = 0 y = 0 }
+						infantry = { x = 0 y = 1 }
+						infantry = { x = 0 y = 2 }
+						light_infantry = { x = 1 y = 0 }
+						light_infantry = { x = 1 y = 1 }
+						light_infantry = { x = 1 y = 2 }
 					}
 				}
 			}
-			CAM = {
-				transfer_state = 741
-				load_oob = "CAM_1933"
-				set_cosmetic_tag = CAM_Insurgency
+			custom_effect_tooltip = tooltip_white_line
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_create_division_template
+					NAME = "Khmer Volunteers"
+					LINE_1 = { localization_key = line_battalion_tt NAME = militia ICON = GFX_unit_militia_icon_small COUNT = 6 }
+				}
+				if = {
+					limit = { has_template = "Khmer Volunteers" }
+					delete_unit_template_and_units = { division_template = "Khmer Volunteers" disband = yes } #no cheating
+				}
+				division_template = {
+					name = "Khmer Volunteers"
+					is_locked = yes
+					regiments = {
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
+						militia = { x = 1 y = 0 }
+						militia = { x = 1 y = 1 }
+						militia = { x = 1 y = 2 }
+					}
+				}
 			}
-			VIN = { 
-				add_to_faction = CAM
+		}
+		custom_effect_tooltip = tooltip_white_line
+		741 = {
+			transfer_state_to = CAM
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_spawn_units
+					COUNT = 1
+					TYPE = "Khmer Resistance"
+				}
+				create_unit = {
+					division = "division_template = \"Khmer Resistance\" start_experience_factor = 0.3 start_equipment_factor = 0.5"
+					owner = CAM
+					count = 1
+					allow_spawning_on_enemy_provs = yes
+					prioritize_location = 7376 #Phnom Penh
+				}
 			}
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_spawn_units
+					COUNT = 4
+					TYPE = "Khmer Volunteers"
+				}
+				create_unit = {
+					division = "division_template = \"Khmer Volunteers\" start_experience_factor = 0.2 start_equipment_factor = 0.3"
+					owner = CAM
+					count = 4
+					allow_spawning_on_enemy_provs = yes
+				}
+			}
+		}
+
+		hidden_effect = {
 			BFE = {
 				declare_war_on = {
 					target = CAM
@@ -47,26 +126,12 @@ country_event = {#Cambodian Garrison Overhtrown by Issarak Partisans
 				}
 			}
 		}
-		country_event = {
-			id = vietnam_associates.2
-			days = 22
-		}
-		BFE = {
-			country_event = {
-				id = british_far_east_insurgencies.1
-				hours = 2
-			}
-		}
+
 	}
-
-	option = { #Hurray for our Khmers brethren!
-		name = vietnam_associates.1.a
-		
-		add_war_support = 0.03
-		add_political_power = 15
-
-		ai_chance = {
-			base = 100
+	after = {
+		hidden_effect = {
+			country_event = { id = vietnam_associates.2 days = 17 random_days = 10 }
+			BFE = { country_event = { id = british_far_east_insurgencies.1 hours = 2 } }
 		}
 	}
 }
