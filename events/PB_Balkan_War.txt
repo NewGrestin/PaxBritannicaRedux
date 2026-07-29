@@ -4,7 +4,7 @@
 
 add_namespace = balkwar
 
-country_event = { #Balkan War Trigger
+country_event = { #Balkan War Trigger - HUN/BUL vs the coalition
 	id = balkwar.1
 	title = balkwar.1.t
 	desc = balkwar.1.d
@@ -774,6 +774,7 @@ country_event = { #Hungary got magacucked
 	trigger = {
 		tag = HNG
 		has_war_with = SER
+		NOT = { has_global_flag = GBW_grand_coalition_started }
 		gbw_concluded = no
 		surrender_progress > 0.4
 	}
@@ -980,5 +981,164 @@ country_event = { #Albanian Jacobin Revolution
 				elections_allowed = no
 			}
 		}
+	}
+}
+country_event = { #Bulgaria join jacobins or foment a grand coalition
+	id = balkwar.29
+	title = balkwar.29.t
+	desc = balkwar.29.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+
+	option = { # Coalition
+		name = balkwar.29.a # 
+		trigger = { 
+			HNG = { 
+				original_tag = HUN
+			}
+		}
+		country_event = { id = balkwar.30 days = 360 }
+	}
+	option = { # Join the HUngarians!
+		name = balkwar.29.b # 
+		country_event = { id = balkwar.1 days = 360 }
+	}
+}
+country_event = { #Balkan war v2.0
+	id = balkwar.30
+	title = balkwar.30.t
+	desc = balkwar.30.d
+	picture = GFX_report_AC_Edison_Mining
+	is_triggered_only = yes
+	immediate = {
+		HNG = { 
+			declare_war_on = {
+				target = SER
+				type = annex_everything
+			}
+		}
+		SER = { 
+			create_faction = anti_hungarian_pact_faction
+			add_to_faction = BUL
+		}
+	}
+	option = { # Coalition
+		name = balkwar.30.a # 
+		hidden_effect = {
+			every_country = {
+				set_temp_variable = { superevent_temp = token:great_balkan_war }
+				PB_Fire_Super_Event = yes
+			}
+			set_global_flag = GBW_grand_coalition_started
+		}
+	}
+}
+country_event = { #Balkan Coalition - Hungary Defeated
+	id = balkwar.31
+	title = balkwar.31.t
+	desc = balkwar.31.d
+	picture = GFX_report_AC_Edison_Mining
+	fire_only_once = yes
+	trigger = {
+		tag = HNG
+		has_war_with = SER
+		has_global_flag = GBW_grand_coalition_started
+		gbw_concluded = no
+		surrender_progress > 0.4
+	}
+
+	option = {
+		name = balkwar.31.a # 
+		HNG = { 
+			leave_faction = yes
+			if = {
+				limit = { is_faction_leader = yes }
+				dismantle_faction = yes
+			}
+			white_peace_with_ROOT = yes
+			every_owned_state = {
+				limit = { 
+					OR = { 
+						is_croatia = yes
+						is_bosnia = yes
+					}
+				} 
+				transfer_state_to = SER
+			}
+			if = { # If Croatia exists
+				limit = { 
+					CRO = { is_subject_of = HUN }
+				}
+				CRO = {
+					leave_faction = yes
+					every_owned_state = {
+						limit = { 
+							OR = { 
+								region = 24 
+							}
+						}
+						if = { 
+							limit = { NOT = { is_core_of = SER } }
+							add_claim_by = SER
+						}
+						transfer_state_to = SER
+					}
+				}
+			}
+			every_owned_state = {
+				limit = {
+					OR = {
+						state = 1034
+						state = 84
+						state = 1035
+					}
+				}
+				add_core_of = ROM
+				transfer_state_to = ROM
+			}
+			#the baby states
+			every_owned_state = { # Burgenland
+				limit = {
+					OR = {
+						state = 1190
+					}
+				}
+				transfer_state_to = var:4.owner
+				add_core_of = var:4.owner
+			}
+			every_owned_state = { # The other tiny thing
+				limit = {
+					OR = {
+						state = 1241
+						
+					}
+				}
+				transfer_state_to = var:102.owner
+				add_core_of = var:102.owner
+			}
+			clr_country_flag = HNG_true_hungary
+		}
+		every_state = { 
+			limit = {
+				is_core_of = HUN
+			}
+			add_core_of = HWA
+		}
+		ROM = { 
+			#set_cosmetic_tag = 
+		}
+		SER = { 
+			dismantle_faction = yes
+		}
+		HWA = { 
+			set_country_flag = HNG_true_hungary
+			set_cosmetic_tag = HUN_kingdom_restored
+			annex_country = {
+				target = HUN
+				transfer_troops = yes
+			}
+		}
+		news_event = PBNews.362
+		set_global_flag = gbw_concluded
 	}
 }
