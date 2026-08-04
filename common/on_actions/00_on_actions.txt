@@ -1,0 +1,29 @@
+on_actions = {
+	#ROOT is winner, FROM is loser (called for all winners against all losers)
+	on_peaceconference_started = {
+		effect = {
+			log = "on_peaceconference_started [GetLogRoot] [GetLogFrom]"
+
+			#set up PC country arrays
+			if = {
+				limit = { NOT = { is_in_array = { global.pc_winners_array = ROOT } } }
+				add_to_array = { global.pc_winners_array = ROOT }
+				if = {
+					limit = { is_major = yes }
+					set_global_flag = pc_has_major_winner
+				}
+				if = {
+					limit = { is_subject = no }
+					set_global_flag = pc_has_non_subject_winner
+				}
+				FROM = {
+					if = {
+						limit = { NOT = { is_in_array = { global.pc_losers_array = THIS } } }
+						add_to_array = { global.pc_losers_array = THIS }
+						every_owned_state = { add_to_array = { PREV.pc_owned_states = THIS } }
+					}
+				}
+			}
+		}
+	}
+}
