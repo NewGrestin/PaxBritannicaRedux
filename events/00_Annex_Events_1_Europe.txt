@@ -58,6 +58,9 @@
 #			Dunkirk
 #		Low Countries
 #			Netherlands
+#			Flanders
+#			Waloonia
+#			Brabant
 
 #			Masuria
 #			Memel
@@ -5139,7 +5142,7 @@ country_event = { #Fate of Channel Islands
 				event_target:britain = { is_subject = yes }
 			}
 		}
-		set_temp_variable = { tag_to_release = event_target:england }
+		set_temp_variable = { tag_to_release = event_target:britain }
 		973 = { transfer_state_and_notify = yes } #Channel Islands
 	}
 	option = { #Give to Normandy
@@ -6650,8 +6653,10 @@ country_event = { #Fate of Dunkirk
 			if = {
 				limit = {
 					OR = {
-						29 = { is_claim_or_core_of_ROOT = yes } #Calais
-						34 = { is_claim_or_core_of_ROOT = yes } #Hainaut
+						any_state_of = {
+							target = { 29 34 785 } #Calais, Hainaut, Picardy
+							is_claim_or_core_of_ROOT = yes
+						}
 						AND = {
 							6 = { is_claim_or_core_of_ROOT = yes } #Flanders
 							owns_state = 34 #Hainaut
@@ -6768,6 +6773,1416 @@ country_event = { #Fate of Dunkirk
 	}
 
 	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Netherlands
+	id = annex.1027
+	title = annexation_7
+	desc = annexation_7_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_netherlands = yes }
+					add_core_of = HOL
+				}
+				else = {
+					remove_core_of = HOL
+				}
+				remove_claim_by = HOL
+			}
+			6 = { retain_state = yes } #Flanders
+			35 = { retain_state = yes } #Brabant
+			910 = { retain_state = yes } #Zeeuws-Vlandeeren
+			911 = { retain_state = yes } #Betuweland
+			1405 = { retain_state = yes } #Limburg
+			1580 = { retain_state = yes } #Zeeland
+			1581 = { retain_state = yes } #Vierteenland
+		}
+		
+	}
+
+	option = { #Puppet HOL
+		log = "[GetLogInfo]: event annex.1027 option annex.1027.a"
+		name = annex.1027.a
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+			}
+		}
+
+		set_temp_variable = { tag_to_release = HOL }
+		release_targeted_tag = yes
+
+		if = { 
+			limit = { has_custom_puppet_HOL = yes }
+			setup_custom_puppet_HOL = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			HOL = { set_cosmetic_tag = HOL_Occupied_Republic }
+		}
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			HOL = { set_cosmetic_tag = HOL_Occupied_Monarchy }
+		}
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1027 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		HOL = { set_transfer_target_cores = yes }
+		transfer_targeted_territory = yes
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1027 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Flanders
+	id = annex.1028
+	title = annexation_6
+	desc = annexation_6_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { 
+					OR = {
+						any_state_of = {
+							target = { 34 35 855 } #Hainaut, Brabant, Dunkirk
+							is_claim_or_core_of_ROOT = yes
+						}
+						is_belgian_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					7 = { #Holland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { 
+							ROOT_can_grant_land = yes
+							35 = { annexations_required_state_is_owned_by_either_side = yes } #Brabant
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					785 = { #Picardy
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { 
+							ROOT_can_grant_land = yes
+							34 = { annexations_required_state_is_owned_by_either_side = yes } #Hainaut
+							NOT = { tag = event_target:netherlands }
+						}
+					}
+				}
+				var:785.owner = { save_event_target_as = france add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			1405 = { retain_state = yes } #Limburg
+		}
+	}
+
+	option = { #Puppet BEL (flanders-wallonia)
+		log = "[GetLogInfo]: event annex.1028 option annex.1028.a"
+		name = annex.1028.a
+		trigger = {
+			34 = { is_valid_annexation_state = yes }
+			is_subject = no
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = wallonia
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = netherlands
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = france
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+		}
+
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_belgium = yes }
+					add_core_of = BEL
+				}
+				else = {
+					remove_core_of = BEL
+					remove_claim_by = BEL
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = BEL }
+		release_targeted_tag = yes
+		var:tag_to_release = { hidden_effect = { BEL_setup = yes } }
+		6 = { transfer_if_owned = yes } #Flanders
+		34 = { transfer_if_owned = yes } #Hainaut
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			BEL = { set_cosmetic_tag = BEL_Occupied_Monarchy }
+		}
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BEL = { set_cosmetic_tag = BEL_Occupied_Republic }
+		}
+	}
+
+	option = { #Puppet Flanders
+		log = "[GetLogInfo]: event annex.1028 option annex.1028.b"
+		name = annex.1028.b
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				34 = { is_valid_annexation_state = yes } #Hainaut
+				annexations_can_annex = no
+			}
+			modifier = {
+				factor = 0
+				has_event_target = wallonia
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = netherlands
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = france
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+		}
+
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_flanders = yes }
+					add_core_of = FLA
+				}
+				else = {
+					remove_core_of = FLA
+					remove_claim_by = FLA
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = FLA }
+		6 = { remove_claim_and_add_core_of_target = yes } #Flanders
+		release_targeted_tag = yes
+		var:tag_to_release = { FLA_setup = yes }
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			FLA = { set_cosmetic_tag = FLA_Occupied_Monarchy }
+		}
+	}
+	
+	option = { #Give to Netherlands
+		log = "[GetLogInfo]: event annex.1028 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		6 = { transfer_if_owned = yes } #Flanders
+		35 = { transfer_if_owned = yes } #Brabant
+		910 = { transfer_if_owned = yes } #Zeeuws-Vlaanderen
+		911 = { transfer_if_owned = yes } #Betuweland
+		1580 = { transfer_if_owned = yes } #Zeeland
+	}
+
+	option = { #Give to France
+		log = "[GetLogInfo]: event annex.1028 option annex.europe.give_to_france"
+		name = annex.europe.give_to_france
+		trigger = {
+			has_event_target = france
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:france }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		6 = { transfer_if_owned = yes } #Flanders
+		34 = { transfer_if_owned = yes } #Hainaut
+	}
+
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1028 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		6 = { transfer_if_owned = yes } #Flanders
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1028 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		6 = { add_claim_of_ROOT = yes } #Flanders
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1028 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Wallonia
+	id = annex.1025
+	title = annexation_34
+	desc = annexation_34_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						AND = {
+							7 = {is_claim_or_core_of_ROOT = yes } #Holland
+							owns_state = 6 #Flanders
+						}
+						785 = { is_claim_or_core_of_ROOT = yes } #Picardy
+						is_belgian_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					6 = { #Flanders
+					annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					785 = { #Picardy
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes 
+							NOT = { tag = event_target:flanders }
+						}
+					}
+				}
+				var:785.owner = { save_event_target_as = france add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					7 = { #Holland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes 
+							NOT = { tag = event_target:flanders }
+							NOT = { tag = event_target:france }
+							6 = { annexations_required_state_is_owned_by_either_side = yes } #Flanders
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			788 = { retain_state = yes } #Walloon Luxemburg
+			855 = { retain_state = yes } #Dunkirk
+		}
+		
+	}
+
+	option = { #Puppet BEL (flanders-wallonia)
+		log = "[GetLogInfo]: event annex.1025 option annex.1025.a"
+		name = annex.1025.a
+		trigger = {
+			6 = { is_valid_annexation_state = yes }
+			is_subject = no
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				has_event_target = wallonia
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = netherlands
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = france
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+		}
+
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_belgium = yes }
+					add_core_of = BEL
+				}
+				else = {
+					remove_core_of = BEL
+					remove_claim_by = BEL
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = BEL }
+		release_targeted_tag = yes
+		var:tag_to_release = { hidden_effect = { BEL_setup = yes } }
+		6 = { transfer_if_owned = yes } #Flanders
+		34 = { transfer_if_owned = yes } #Hainaut
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			BEL = { set_cosmetic_tag = BEL_Occupied_Monarchy }
+		}
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			BEL = { set_cosmetic_tag = BEL_Occupied_Republic }
+		}
+	}
+
+	option = { #Puppet Wallonia
+		log = "[GetLogInfo]: event annex.1025 option annex.1025.b"
+		name = annex.1025.b
+		trigger = {
+			is_subject = no
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				34 = { is_valid_annexation_state = yes } #Hainaut
+				annexations_can_annex = no
+			}
+			modifier = {
+				factor = 0
+				has_event_target = wallonia
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = netherlands
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+			modifier = {
+				factor = 0
+				has_event_target = france
+				OR = {
+					is_major = no
+					any_of_scopes = {
+						array = potential_grant_targets
+						is_ally_with = ROOT
+					}
+				}
+			}
+		}
+
+		hidden_effect = {
+			every_state = {
+				if = {
+					limit = { is_wallonia = yes }
+					add_core_of = WAL
+				}
+				else = {
+					remove_core_of = WAL
+					remove_claim_by = WAL
+				}
+			}
+		}
+
+		set_temp_variable = { tag_to_release = WAL }
+		34 = { remove_claim_and_add_core_of_target = yes } #Hainaut
+		release_targeted_tag = yes
+		var:tag_to_release = { WAL_setup = yes }
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			WAL = { set_cosmetic_tag = WAL_Occupied_Monarchy }
+		}
+	}
+
+	option = { #Give to France
+		log = "[GetLogInfo]: event annex.1025 option annex.europe.give_to_france"
+		name = annex.europe.give_to_france
+		trigger = {
+			has_event_target = france
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:france }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:france = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:france }
+		34 = { transfer_if_owned = yes } #Hainaut
+	}
+	
+	option = { #Give to Netherlands
+		log = "[GetLogInfo]: event annex.1025 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		34 = { transfer_if_owned = yes } #Hainaut
+	}
+
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1025 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		34 = { transfer_if_owned = yes } #Hainaut
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1025 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		34 = { add_claim_of_ROOT = yes } #Hainaut
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1025 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Brabant
+	id = annex.1165
+	title = annexation_35
+	desc = annexation_35_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					any_state_of = {
+						target = { 6 7 911 } #Flanders, Holland, Betuweland
+						is_claim_or_core_of_ROOT = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					7 = { #Holland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			else_if = {
+				limit = {
+					7 = { #Holland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							911 = { annexations_required_state_is_owned_by_either_side = yes } #Betuweland
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					6 = { #Flanders
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:netherlands }
+						}
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+		option = { #Give it to Netherlands
+		log = "[GetLogInfo]: event annex.1165 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				is_ally_with = event_target:flanders
+				
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:netherlands }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		35 = { transfer_if_owned = yes } #Gelderland
+		1580 = { transfer_if_owned = yes } #Zeeland
+		911 = { transfer_if_owned = yes } #Betuweland		
+	}
+	option = { #Give it to Flanders
+		log = "[GetLogInfo]: event annex.1165 option annex.1165.a"
+		name = annex.1165.a
+		trigger = {
+			has_event_target = flanders
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:flanders }
+				is_ally_with = event_target:netherlands
+				
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:flanders }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:flanders = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:flanders }
+		35 = { transfer_if_owned = yes } #Brabant
+		910 = { transfer_if_owned = yes } #Zeeuws-Vlanders
+		1580 = { transfer_if_owned = yes } #Zeeland
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1165 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		35 = { transfer_if_owned = yes } #Brabant
+		1580 = { transfer_if_owned = yes } #Zeeland
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1165 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		35 = { add_claim_of_ROOT = yes } #Brabant
+		1580 = { add_claim_of_ROOT = yes } #Zeeland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1165 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Betuweland
+	id = annex.1166
+	title = annexation_911
+	desc = annexation_911_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						7 = { is_claim_or_core_of_ROOT = yes } #Holland
+						AND = {
+							6 = { is_claim_or_core_of_ROOT = yes } #Flanders
+							owns_state = 35 #Brabant
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					7 = { #Holland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					6 = { #Flanders
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:netherlands }
+							35 = { annexations_required_state_is_owned_by_either_side = yes } #Brabant
+						}
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+		option = { #Give it to Netherlands
+		log = "[GetLogInfo]: event annex.1166 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				is_ally_with = event_target:flanders
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:netherlands }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		911 = { transfer_if_owned = yes } #Betuweland
+	}
+
+	option = { #Give to Flanders
+		log = "[GetLogInfo]: event annex.1166 option annex.1166.a"
+		name = annex.1166.a
+		trigger = {
+			has_event_target = flanders
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:flanders }
+				is_ally_with = event_target:netherlands
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:flanders }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:flanders = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:flanders }
+		911 = { transfer_if_owned = yes } #Betuweland
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1166 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		911 = { transfer_if_owned = yes } #Betuweland
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1166 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		911 = { add_claim_of_ROOT = yes } #Betuweland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1166 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Zeeuws-Flanders
+	id = annex.1167
+	title = annexation_910
+	desc = annexation_910_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					any_state_of = {
+						target = { 6 1580 } #Flanders, Zeeland
+						is_claim_or_core_of_ROOT = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					1580 = { #Zeeland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1580.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS }  }
+			}
+			if = {
+				limit = {
+					6 = { #flanders
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+							NOT = { tag = event_target:netherlands }
+						}
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+		}
+	}
+
+	option = { #Give to netherlands
+		log = "[GetLogInfo]: event annex.1167 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				is_ally_with = event_target:flanders
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:netherlands }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		910 = { transfer_if_owned = yes } #Zeeuws-Flanders
+	}
+
+	option = { #Give it to flanders
+		log = "[GetLogInfo]: event annex.1167 option annex.1167.a"
+		name = annex.1167.a
+		trigger = {
+			has_event_target = flanders
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:flanders }
+				is_ally_with = event_target:netherlands
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:flanders }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:flanders = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:flanders }
+		910 = { transfer_if_owned = yes } #Zeeuws-Flanders
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1167 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		910 = { transfer_if_owned = yes } #Zeeuws-Flanders
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1167 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		910 = { add_claim_of_ROOT = yes } #Zeeuws-Flanders
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1167 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Vierteenland
+	id = annex.1201
+	title = annexation_1581
+	desc = annexation_1581_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						7 = { is_claim_or_core_of_ROOT = yes } #Holland
+						annexations_major_can_annex_strategic_territories = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					7 = { #Zeeland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS }  }
+			}
+		}
+	}
+
+	option = { #Give to netherlands
+		log = "[GetLogInfo]: event annex.1201 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+			}
+			modifier = {
+				factor = 0
+				is_major = yes
+				NOT = { is_ally_with = event_target:netherlands }
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		1581 = { transfer_if_owned = yes } #Vierteenland
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1201 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1581 = { transfer_if_owned = yes } #Vierteenland
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1201 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1581 = { add_claim_of_ROOT = yes } #Vierteenland
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1201 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
+		recheck_annexations = yes
+	}
+}
+
+country_event = { #Fate of Limburg
+	id = annex.1202
+	title = annexation_1405
+	desc = annexation_1405_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = { 
+			if = {
+				limit = {
+					OR = {
+						6 = { is_claim_or_core_of_ROOT = yes } #Flanders
+						AND = {
+							7 = { is_claim_or_core_of_ROOT = yes } #Holland
+							owns_state = 35 #Brabant
+						}
+						AND = {
+							909 = { is_claim_or_core_of_ROOT = yes } #West Rhineland
+							original_tag = GER
+						}
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					6 = { #Zeeland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:6.owner = { save_event_target_as = flanders add_to_array = { ROOT.potential_grant_targets = THIS }  }
+			}
+			if = {
+				limit = {
+					7 = { #Holland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:flanders }
+							ROOT_can_grant_land = yes
+							35 = { annexations_required_state_is_owned_by_either_side = yes } #Brabant
+						}
+					}
+				}
+				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS }  }
+			}
+			if = {
+				limit = {
+					909 = { #West Rhineland
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:flanders }
+							NOT = { tag = event_target:netherlands }
+							ROOT_can_grant_land = yes
+							original_tag = GER
+						}
+					}
+				}
+				var:909.owner = { save_event_target_as = germany add_to_array = { ROOT.potential_grant_targets = THIS }  }
+			}
+		}
+	}
+
+	option = { #Give to netherlands
+		log = "[GetLogInfo]: event annex.1202 option annex.europe.give_to_netherlands"
+		name = annex.europe.give_to_netherlands
+		trigger = {
+			has_event_target = netherlands
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:netherlands }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:netherlands = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:netherlands }
+		1405 = { transfer_if_owned = yes } #Limburg
+	}
+
+	option = { #Give to Flanders
+		log = "[GetLogInfo]: event annex.1202 option annex.1202.a"
+		name = annex.1202.a
+		trigger = {
+			has_event_target = flanders
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:flanders }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:flanders = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:flanders }
+		1405 = { transfer_if_owned = yes } #Limburg
+	}
+
+	option = { #Give to Germany
+		log = "[GetLogInfo]: event annex.1202 option annex.europe.give_to_germany"
+		name = annex.europe.give_to_germany
+		trigger = {
+			has_event_target = germany
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:germany }
+				any_of_scopes = {
+					array = potential_grant_targets
+					is_ally_with = ROOT
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:germany = { is_subject = yes }
+			}
+		}
+
+		set_temp_variable = { tag_to_release = event_target:germany }
+		1405 = { transfer_if_owned = yes } #Limburg
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1202 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		1405 = { transfer_if_owned = yes } #Limburg
+	}
+
+	option = { #Integrate
+		log = "[GetLogInfo]: event annex.1202 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		1405 = { add_claim_of_ROOT = yes } #Limburg
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1202 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+	after = { 
 		recheck_annexations = yes
 	}
 }
@@ -7398,658 +8813,6 @@ country_event = { #Fate of Valais
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1024 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Netherlands
-	id = annex.1027
-	title = annexation_7
-	desc = annexation_7_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			every_state = {
-				if = {
-					limit = { is_netherlands = yes }
-					add_core_of = HOL
-				}
-				else = {
-					remove_core_of = HOL
-				}
-				remove_claim_by = HOL
-			}
-			6 = { retain_state = yes } #Flanders
-			35 = { retain_state = yes } #Brabant
-			910 = { retain_state = yes } #Zeeuws-Vlandeeren
-			911 = { retain_state = yes } #Betuweland
-			1405 = { retain_state = yes } #Limburg
-			1580 = { retain_state = yes } #Zeeland
-			1581 = { retain_state = yes } #Vierteenland
-		}
-		
-	}
-
-	option = { #Puppet HOL
-		log = "[GetLogInfo]: event annex.1027 option annex.1027.a"
-		name = annex.1027.a
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		set_temp_variable = { tag_to_release = HOL }
-		release_targeted_tag = yes
-
-		if = { 
-			limit = { has_custom_puppet_HOL = yes }
-			setup_custom_puppet_HOL = yes
-			custom_effect_tooltip = has_custom_puppet
-		}
-
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			HOL = { set_cosmetic_tag = HOL_Occupied_Republic }
-		}
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			HOL = { set_cosmetic_tag = HOL_Occupied_Monarchy }
-		}
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1027 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		HOL = { set_transfer_target_cores = yes }
-		transfer_targeted_territory = yes
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1027 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Flanders
-	id = annex.1028
-	title = annexation_6
-	desc = annexation_6_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			if = {
-				limit = { 
-					OR = {
-						any_state_of = {
-							target = { 34 35 855 } #Hainaut, Brabant, Dunkirk
-							is_claim_or_core_of_ROOT = yes
-						}
-						is_belgian_tag = yes
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			if = {
-				limit = {
-					34 = { #Hainaut
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = { 
-							ROOT_can_grant_land = yes
-						}
-					}
-				}
-				var:34.owner = { save_event_target_as = wallonia add_to_array = { ROOT.potential_grant_targets = THIS } }
-			}
-			if = {
-				limit = {
-					7 = { #Holland
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = { 
-							ROOT_can_grant_land = yes
-							35 = { annexations_required_state_is_owned_by_either_side = yes } #Brabant
-							NOT = { tag = event_target:wallonia }
-						}
-					}
-				}
-				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
-			}
-			if = {
-				limit = {
-					785 = { #Picardy
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = { 
-							ROOT_can_grant_land = yes
-							34 = { annexations_required_state_is_owned_by_either_side = yes } #Hainaut
-							NOT = { tag = event_target:wallonia }
-							NOT = { tag = event_target:netherlands }
-						}
-					}
-				}
-				var:785.owner = { save_event_target_as = france add_to_array = { ROOT.potential_grant_targets = THIS } }
-			}
-			1405 = { retain_state = yes } #Limburg
-		}
-	}
-
-	option = { #Puppet BEL (flanders-wallonia)
-		log = "[GetLogInfo]: event annex.1028 option annex.1028.a"
-		name = annex.1028.a
-		trigger = {
-			34 = { is_valid_annexation_state = yes }
-			is_subject = no
-		}
-		ai_chance = {
-			base = 70
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				has_event_target = wallonia
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = netherlands
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = france
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = BEL }
-		release_targeted_tag = yes
-		var:tag_to_release = { hidden_effect = { BEL_setup = yes } }
-		6 = { transfer_if_owned = yes } #Flanders
-		34 = { transfer_if_owned = yes } #Hainaut
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			BEL = { set_cosmetic_tag = BEL_Occupied_Monarchy }
-		}
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			BEL = { set_cosmetic_tag = BEL_Occupied_Republic }
-		}
-	}
-
-	option = { #Puppet Flanders
-		log = "[GetLogInfo]: event annex.1028 option annex.1028.b"
-		name = annex.1028.b
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 70
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				34 = { is_valid_annexation_state = yes } #Hainaut
-				annexations_can_annex = no
-			}
-			modifier = {
-				factor = 0
-				has_event_target = wallonia
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = netherlands
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = france
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = FLA }
-		6 = { remove_claim_and_add_core_of_target = yes } #Flanders
-		release_targeted_tag = yes
-		var:tag_to_release = { FLA_setup = yes }
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			FLA = { set_cosmetic_tag = FLA_Occupied_Monarchy }
-		}
-	}
-	
-	option = { #Give to Netherlands
-		log = "[GetLogInfo]: event annex.1028 option annex.europe.give_to_netherlands"
-		name = annex.europe.give_to_netherlands
-		trigger = {
-			has_event_target = netherlands
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:netherlands }
-				any_of_scopes = {
-					array = potential_grant_targets
-					is_ally_with = ROOT
-				}
-			}
-			modifier = {
-				factor = 0.1
-				event_target:netherlands = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:netherlands }
-		6 = { transfer_if_owned = yes } #Flanders
-		35 = { transfer_if_owned = yes } #Brabant
-		910 = { transfer_if_owned = yes } #Zeeuws-Vlaanderen
-		911 = { transfer_if_owned = yes } #Betuweland
-		1580 = { transfer_if_owned = yes } #Zeeland
-	}
-
-	option = { #Give to France
-		log = "[GetLogInfo]: event annex.1028 option annex.europe.give_to_france"
-		name = annex.europe.give_to_france
-		trigger = {
-			has_event_target = france
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:france }
-				any_of_scopes = {
-					array = potential_grant_targets
-					is_ally_with = ROOT
-				}
-			}
-			modifier = {
-				factor = 0.1
-				event_target:france = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:france }
-		6 = { transfer_if_owned = yes } #Flanders
-		34 = { transfer_if_owned = yes } #Hainaut
-	}
-
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1028 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		6 = { transfer_if_owned = yes } #Flanders
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1028 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		6 = { add_claim_of_ROOT = yes } #Flanders
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1028 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-
-	after = {
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Wallonia
-	id = annex.1025
-	title = annexation_34
-	desc = annexation_34_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			if = {
-				limit = {
-					OR = {
-						AND = {
-							7 = {is_claim_or_core_of_ROOT = yes } #Holland
-							owns_state = 6 #Flanders
-						}
-						785 = { is_claim_or_core_of_ROOT = yes } #Picardy
-						is_belgian_tag = yes
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			if = {
-				limit = {
-					6 = { #Flanders
-						owner = {
-							ROOT_can_grant_land = yes
-						}
-					}
-				}
-				var:6.owner = { save_event_target_as = flanders add_to_array = { ROOT.potential_grant_targets = THIS } }
-			}
-			if = {
-				limit = {
-					785 = { #Picardy
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes 
-							NOT = { tag = event_target:flanders }
-						}
-					}
-				}
-				var:785.owner = { save_event_target_as = france add_to_array = { ROOT.potential_grant_targets = THIS } }
-			}
-			if = {
-				limit = {
-					7 = { #Holland
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes 
-							NOT = { tag = event_target:flanders }
-							NOT = { tag = event_target:france }
-							6 = { annexations_required_state_is_owned_by_either_side = yes } #Flanders
-						}
-					}
-				}
-				var:7.owner = { save_event_target_as = netherlands add_to_array = { ROOT.potential_grant_targets = THIS } }
-			}
-			788 = { retain_state = yes } #Walloon Luxemburg
-			855 = { retain_state = yes } #Dunkirk
-		}
-		
-	}
-
-	option = { #Puppet BEL (flanders-wallonia)
-		log = "[GetLogInfo]: event annex.1025 option annex.1025.a"
-		name = annex.1025.a
-		trigger = {
-			6 = { is_valid_annexation_state = yes }
-			is_subject = no
-		}
-		ai_chance = {
-			base = 70
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				has_event_target = wallonia
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = netherlands
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = france
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = BEL }
-		release_targeted_tag = yes
-		var:tag_to_release = { hidden_effect = { BEL_setup = yes } }
-		6 = { transfer_if_owned = yes } #Flanders
-		34 = { transfer_if_owned = yes } #Hainaut
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			BEL = { set_cosmetic_tag = BEL_Occupied_Monarchy }
-		}
-		if = {
-			limit = { ROOT = { has_republican_government = yes } }
-			BEL = { set_cosmetic_tag = BEL_Occupied_Republic }
-		}
-	}
-
-	option = { #Puppet Wallonia
-		log = "[GetLogInfo]: event annex.1025 option annex.1025.b"
-		name = annex.1025.b
-		trigger = {
-			is_subject = no
-		}
-		ai_chance = {
-			base = 70
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				34 = { is_valid_annexation_state = yes } #Hainaut
-				annexations_can_annex = no
-			}
-			modifier = {
-				factor = 0
-				has_event_target = wallonia
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = netherlands
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-			modifier = {
-				factor = 0
-				has_event_target = france
-				OR = {
-					is_major = no
-					any_of_scopes = {
-						array = potential_grant_targets
-						is_ally_with = ROOT
-					}
-				}
-			}
-		}
-
-		set_temp_variable = { tag_to_release = WAL }
-		34 = { remove_claim_and_add_core_of_target = yes } #Hainaut
-		release_targeted_tag = yes
-		var:tag_to_release = { WAL_setup = yes }
-
-		if = {
-			limit = { ROOT = { has_monarchist_government = yes } }
-			WAL = { set_cosmetic_tag = WAL_Occupied_Monarchy }
-		}
-	}
-
-	option = { #Give to France
-		log = "[GetLogInfo]: event annex.1025 option annex.europe.give_to_france"
-		name = annex.europe.give_to_france
-		trigger = {
-			has_event_target = france
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:france }
-				any_of_scopes = {
-					array = potential_grant_targets
-					is_ally_with = ROOT
-				}
-			}
-			modifier = {
-				factor = 0.1
-				event_target:france = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:france }
-		34 = { transfer_if_owned = yes } #Hainaut
-	}
-	
-	option = { #Give to Netherlands
-		log = "[GetLogInfo]: event annex.1025 option annex.europe.give_to_netherlands"
-		name = annex.europe.give_to_netherlands
-		trigger = {
-			has_event_target = netherlands
-		}
-		ai_chance = {
-			base = 30
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:netherlands }
-				any_of_scopes = {
-					array = potential_grant_targets
-					is_ally_with = ROOT
-				}
-			}
-			modifier = {
-				factor = 0.1
-				event_target:netherlands = { is_subject = yes }
-			}
-		}
-		set_temp_variable = { tag_to_release = event_target:netherlands }
-		34 = { transfer_if_owned = yes } #Hainaut
-	}
-
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1025 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		34 = { transfer_if_owned = yes } #Hainaut
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1025 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		34 = { add_claim_of_ROOT = yes } #Hainaut
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1025 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
@@ -26786,453 +27549,6 @@ country_event = { #Fate of Voralberg
 
 	option = { #Cancel
 		log = "[GetLogInfo]: event annex.1164 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-	after = { 
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Brabant
-	id = annex.1165
-	title = annexation_35
-	desc = annexation_35_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = {
-			if = {
-				limit = {
-					OR = {
-						911 = { is_claim_or_core_of_ROOT = yes } #betuweland
-						6 = { is_claim_or_core_of_ROOT = yes } #flanders
-						7 = { is_claim_or_core_of_ROOT = yes } #Holland
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			if = {
-				limit = {
-					911 = { #betuweland
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-						}
-					}
-				}
-				var:911.owner = { save_event_target_as = betuweland }
-			}
-			if = {
-				limit = {
-					6 = { #flanders
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-							NOT = { tag = event_target:betuweland }
-						}
-					}
-				}
-				var:6.owner = { save_event_target_as = flanders }
-			}
-			if = {
-				limit = {
-					7 = { #Holland
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-							tag = HOL
-						}
-					}
-				}
-				var:7.owner = { save_event_target_as = holland }
-			}
-		}
-	}
-
-	option = { #Return to betuweland
-		log = "[GetLogInfo]: event annex.1165 option annex.1165.a"
-		name = annex.1165.a
-		trigger = {
-			has_event_target = betuweland
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:betuweland }
-				OR = { 
-					is_ally_with = event_target:holland
-					is_ally_with = event_target:flanders
-				}
-				
-			}
-			modifier = {
-				factor = 0
-				is_major = yes
-				NOT = { is_ally_with = event_target:betuweland }
-			}
-			modifier = {
-				factor = 0.1
-				event_target:betuweland = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:betuweland }
-		35 = { transfer_if_owned = yes } #Gelderland
-		1580 = { transfer_if_owned = yes } #Zeeland
-		911 = { transfer_if_owned = yes } #Betuweland		
-	}
-
-	option = { #Give it to The flanders
-		log = "[GetLogInfo]: event annex.1165 option annex.1165.b"
-		name = annex.1165.b
-		trigger = {
-			has_event_target = flanders
-		}
-
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:flanders }
-				OR = { 
-					is_ally_with = event_target:holland
-					is_ally_with = event_target:betuweland
-				}
-				
-			}
-			modifier = {
-				factor = 0
-				is_major = yes
-				NOT = { is_ally_with = event_target:flanders }
-			}
-			modifier = {
-				factor = 0.1
-				event_target:flanders = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:flanders }
-		35 = { transfer_if_owned = yes } #Gelderland
-		1580 = { transfer_if_owned = yes } #Zeeland
-		911 = { transfer_if_owned = yes } #Betuweland
-	}
-	
-	option = { #Return to Holland
-		log = "[GetLogInfo]: event annex.1165 option annex.1165.c"
-		name = annex.1165.c
-		trigger = {
-			has_event_target = holland
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:holland }
-				OR = { 
-					is_ally_with = event_target:flanders
-					is_ally_with = event_target:betuweland
-				}
-				
-			}
-			modifier = {
-				factor = 0
-				is_major = yes
-				NOT = { is_ally_with = event_target:holland }
-			}
-			modifier = {
-				factor = 0.1
-				event_target:holland = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:holland }
-		35 = { transfer_if_owned = yes } #Gelderland
-		1580 = { transfer_if_owned = yes } #Zeeland
-		911 = { transfer_if_owned = yes } #Betuweland		
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1165 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		35 = { transfer_if_owned = yes } #Gelderland
-		1580 = { transfer_if_owned = yes } #Zeeland
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1165 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		35 = { add_claim_of_ROOT = yes } #Gelderland
-		1580 = { add_claim_of_ROOT = yes } #Zeeland
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1165 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-	after = { 
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Betuweland
-	id = annex.1166
-	title = annexation_911
-	desc = annexation_911_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = { 
-			if = {
-				limit = {
-					OR = {
-						35 = { is_claim_or_core_of_ROOT = yes } #belgium
-						7 = { is_claim_or_core_of_ROOT = yes } #netherlands
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			if = {
-				limit = {
-					35 = { #belgium
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-						}
-					}
-				}
-				var:35.owner = { save_event_target_as = belgium }
-			}
-			if = {
-				limit = {
-					7 = { #netherlands
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-							NOT = { tag = event_target:belgium }
-						}
-					}
-				}
-				var:7.owner = { save_event_target_as = netherlands }
-			}
-		}
-	}
-
-	option = { #Return to belgium
-		log = "[GetLogInfo]: event annex.1166 option annex.1166.a"
-		name = annex.1166.a
-		trigger = {
-			has_event_target = belgium
-		}
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:belgium }
-				is_ally_with = event_target:netherlands
-			}
-			modifier = {
-				factor = 0
-				is_major = yes
-				NOT = { is_ally_with = event_target:belgium }
-			}
-			modifier = {
-				factor = 0.1
-				event_target:belgium = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:belgium }
-		911 = { transfer_if_owned = yes } #Betuweland
-	}
-
-	option = { #Give it to The netherlands
-		log = "[GetLogInfo]: event annex.1166 option annex.1166.b"
-		name = annex.1166.b
-		trigger = {
-			has_event_target = netherlands
-		}
-
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 0
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 0
-				NOT = { is_ally_with = event_target:netherlands }
-				is_ally_with = event_target:belgium
-			}
-			modifier = {
-				factor = 0
-				is_major = yes
-				NOT = { is_ally_with = event_target:netherlands }
-			}
-			modifier = {
-				factor = 0.1
-				event_target:netherlands = { is_subject = yes }
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:netherlands }
-		911 = { transfer_if_owned = yes } #Betuweland
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1166 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		911 = { transfer_if_owned = yes } #Betuweland
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1166 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		911 = { add_claim_of_ROOT = yes } #Betuweland
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1166 option annex.cancel"
-		name = annex.cancel
-		ai_chance = { base = 0 }
-	}
-	after = { 
-		recheck_annexations = yes
-	}
-}
-
-country_event = { #Fate of Gelderland
-	id = annex.1167
-	title = annexation_910
-	desc = annexation_910_desc
-	picture = GFX_report_PB_Peace_Deals_Europe
-
-	is_triggered_only = yes
-
-	immediate = {
-		hidden_effect = { 
-			if = {
-				limit = {
-					OR = {
-						1580 = { is_claim_or_core_of_ROOT = yes } #Zeeland
-						6 = { is_claim_or_core_of_ROOT = yes } #Flanders
-					}
-				}
-				save_event_target_as = can_annex
-			}
-			if = {
-				limit = {
-					1580 = { #Zeeland
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-						}
-					}
-				}
-				var:1580.owner = { save_event_target_as = zeeland }
-			}
-			if = {
-				limit = {
-					6 = { #flanders
-						annexations_state_owner_is_valid_grant_target = yes
-						owner = {
-							ROOT_can_grant_land = yes
-							NOT = { tag = event_target:zeeland }
-						}
-					}
-				}
-				var:6.owner = { save_event_target_as = flanders }
-			}
-		}
-	}
-
-	option = { #Return to Zeeland
-		log = "[GetLogInfo]: event annex.1167 option annex.1167.a"
-		name = annex.1167.a
-		trigger = {
-			has_event_target = zeeland
-		}
-		ai_chance = {
-			base = 100
-			modifier = {
-				factor = 0
-			}
-		}
-
-		set_temp_variable = { tag_to_release = event_target:zeeland }
-		910 = { transfer_if_owned = yes } #Gelderland
-	}
-
-	option = { #Give it to The flanders
-		log = "[GetLogInfo]: event annex.1167 option annex.1167.b"
-		name = annex.1167.b
-		trigger = {
-			has_event_target = flanders
-		}
-
-		ai_chance = { base = 100 }
-
-		set_temp_variable = { tag_to_release = event_target:flanders }
-		910 = { transfer_if_owned = yes } #Gelderland
-	}
-
-	option = { #Give to overlord
-		log = "[GetLogInfo]: event annex.1167 option annex.give_to_overlord"
-		name = annex.give_to_overlord
-		trigger = {
-			annexations_should_give_lands_to_overlord = yes
-		}
-		set_temp_variable = { tag_to_release = overlord }
-		910 = { transfer_if_owned = yes } #Gelderland
-	}
-
-	option = { #Integrate
-		log = "[GetLogInfo]: event annex.1167 option annex.integration"
-		name = annex.integration
-		trigger = {
-			annexations_can_annex = yes
-		}
-		910 = { add_claim_of_ROOT = yes } #Gelderland
-	}
-
-	option = { #Cancel
-		log = "[GetLogInfo]: event annex.1167 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
