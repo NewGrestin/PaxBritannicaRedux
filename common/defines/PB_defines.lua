@@ -26,6 +26,8 @@ NDefines.NAI.PEACE_AI_EVALUATE_FOR_NON_ALLIES = true						-- Vanilla is false
 NDefines.NAI.PEACE_AI_EVALUATE_OTHER_ALWAYS = true							-- Vanilla is false
 NDefines.NDiplomacy.PEACE_ACTION_MAX_COST = 99999							-- Vanilla is 9999
 -- Military
+NDefines.NMilitary.MAX_DIVISION_SUPPORT_WIDTH = 2							-- Vanilla is 1
+NDefines.NMilitary.MAX_DIVISION_SUPPORT_HEIGHT = 4							-- Vanilla is 5
 NDefines.NMilitary.MAX_ARMY_EXPERIENCE = 750                                -- Vanilla is 500
 NDefines.NMilitary.MAX_NAVY_EXPERIENCE = 750                                -- Vanilla is 500
 NDefines.NMilitary.MAX_AIR_EXPERIENCE = 750                                 -- Vanilla is 500
