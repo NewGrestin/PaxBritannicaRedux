@@ -3,8 +3,13 @@ enable_country_integration_50_compliance = {
 	enable_country_integration = yes
 }
 
-enable_country_integration_80_compliance = {
-	set_temp_variable = { integration_threshold = 80 }
+enable_country_integration_75_compliance = {
+	set_temp_variable = { integration_threshold = 75 }
+	enable_country_integration = yes
+}
+
+enable_country_integration_90_compliance = {
+	set_temp_variable = { integration_threshold = 90 }
 	enable_country_integration = yes
 }
 
@@ -86,8 +91,13 @@ enable_state_integration_50_compliance = {
 	enable_state_integration = yes
 }
 
-enable_state_integration_80_compliance = {
-	set_temp_variable = { integration_threshold = 80 }
+enable_state_integration_75_compliance = {
+	set_temp_variable = { integration_threshold = 75 }
+	enable_state_integration = yes
+}
+
+enable_state_integration_90_compliance = {
+	set_temp_variable = { integration_threshold = 90 }
 	enable_state_integration = yes
 }
 
@@ -184,7 +194,7 @@ add_state_core_upon_reaching_compliance_threshold = {
 				impassable = yes
 				if = {
 					limit = { has_variable = paired_impassable }
-					#var:paired_impassable = { is_core_of = PREV.PREV.controller }
+					var:paired_impassable = { is_core_of = PREV.PREV.controller }
 				}
 				else = {
 					is_owned_by = var:PREV.controller
@@ -233,52 +243,63 @@ add_state_core_upon_reaching_compliance_threshold = {
 		force_update_map_mode = { mapmode = cores_map_mode }
 
 		#fire tag-specific effects
-		#fire_country_specific_integration_content = yes
+		fire_country_specific_integration_content = yes
 	}
 }
 
-#fire_country_specific_integration_content = {
-#	if = {
-#		limit = {
-#			state = 463 #Alaska
-#			controller = { USA_has_america_cosmetic_tag = yes }
-#		}
-#		controller = { country_event = ustates.153 } #Alaska statehood
-#	}
-#	else_if = {
-#		limit = {
-#			state = 629 #Hawaii
-#			controller = { USA_has_america_cosmetic_tag = yes }
-#		}
-#		controller = { country_event = ustates.154 } #Hawaii statehood
-#	}
-#	else_if = {
-#		limit = {
-#			state = 686 #Puerto Rico
-#			controller = { USA_has_america_cosmetic_tag = yes }
-#		}
-#		controller = { country_event = ustates.155 } #Puerto Rico statehood
-#	}
-#	else_if = {
-#		limit = {
-#			state = 541 #Damaraland
-#			controller = { original_tag = SAF }
-#		}
-#		controller = { country_event = { id = saf.314 days = 90 random_days = 30 } }
-#	}
-#	else_if = {
-#		limit = {
-#			state = 950 #Lourenço Marques
-#			controller = { original_tag = SAF }
-#		}
-#		controller = { country_event = { id = saf.313 days = 90 random_days = 30 } }
-#	}
-#	else_if = {
-#		limit = { controller = { original_tag = ANQ } }
-#		controller = { country_event = { id = anq.181 days = 1 } }
-#	}
-#}
-#
+fire_country_specific_integration_content = {
+	#if = {
+	#	limit = {
+	#		state = 463 #Alaska
+	#		controller = { USA_has_america_cosmetic_tag = yes }
+	#	}
+	#	controller = { country_event = united_states_events.153 } #Alaska statehood
+	#}
+	#else_if = {
+	#	limit = {
+	#		state = 629 #Hawaii
+	#		controller = { USA_has_america_cosmetic_tag = yes }
+	#	}
+	#	controller = { country_event = united_states_events.154 } #Hawaii statehood
+	#}
+	#else_if = {
+	#	limit = {
+	#		state = 686 #Puerto Rico
+	#		controller = { USA_has_america_cosmetic_tag = yes }
+	#	}
+	#	controller = { country_event = united_states_events.155 } #Puerto Rico statehood
+	#}
+	#else_if = {
+	#	limit = {
+	#		state = 541 #Damaraland
+	#		controller = { original_tag = SAF }
+	#	}
+	#	controller = { country_event = { id = south_africa_events.314 days = 90 random_days = 30 } }
+	#}
+	#else_if = {
+	#	limit = {
+	#		state = 950 #Lourenço Marques
+	#		controller = { original_tag = SAF }
+	#	}
+	#	controller = { country_event = { id = south_africa_events.313 days = 90 random_days = 30 } }
+	#}
+	#else_if = {
+	#	limit = { controller = { original_tag = ANQ } }
+	#	controller = { country_event = { id = anqing_events.181 days = 1 } }
+	#}
+	#else_if = {
+	#	limit = { controller = { has_idea = ott_vilayet_stability_idea } }
+	#	OTT_add_stability_of_the_realm_state_dynmods = yes
+	#}
+	#else_if = {
+	#	limit = {
+	#		controller = { original_tag = NFA }
+	#		has_state_flag = FRA_mainland_state
+	#	}
+	#	controller = { NFA_update_metropole_integration_effects = yes }
+	#}
+}
+
 clear_cores_of_tag_if_possible = {
 	if = {
 		limit = { exists = no }
@@ -303,7 +324,10 @@ clear_cores_of_tag_if_possible = {
 				#	limit = { PREV = { is_indian_tag = yes } }
 				#	any_country_with_core = {
 				#		NOT = { tag = PREV.PREV }
-				#		is_indian_tag = yes
+				#		OR = {
+				#			is_indian_tag = yes
+				#			original_tag = BRM
+				#		}
 				#	}
 				#}
 				#else_if = {
@@ -358,24 +382,24 @@ clear_cores_of_tag_if_possible = {
 
 start_state_integration_resistance = {
 	if = {
-		limit = { NOT = { occupied_country_tag = XXD } }
+		limit = { NOT = { occupied_country_tag = event_target:system } }
 		if = {
 			limit = { has_resistance = yes }
 			set_temp_variable = { previous_compliance = compliance }
 			set_temp_variable = { previous_resistance = resistance }
 			cancel_resistance = yes
 		}
-		add_core_of = XXD
-		start_resistance = XXD
+		add_core_of = event_target:system
+		start_resistance = event_target:system
 		set_compliance = var:previous_compliance?0
 		set_resistance = var:previous_resistance?0
 	}
 	hidden_effect = { clear_state_integration_resistance = yes }
-	#controller = { XXD = { set_occupation_law_where_available = territorial_integration } }
+	controller = { event_target:system = { set_occupation_law_where_available = territorial_integration } }
 }
 
 clear_state_integration_resistance = {
-	XXD = {
+	event_target:system = {
 		every_core_state = {
 			limit = {
 				OR = {
@@ -383,7 +407,7 @@ clear_state_integration_resistance = {
 					NOT = { has_variable = can_integrate_@var:controller }
 				}
 			}
-			remove_core_of = XXD
+			remove_core_of = event_target:system
 		}
 	}
 }
