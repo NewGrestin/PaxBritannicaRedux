@@ -1579,8 +1579,8 @@ country_event = { #Fate of Area Zero/Huzhong
 	picture = GFX_report_PB_Peace_Deals_Asia
 
 	is_triggered_only = yes
-	immediate = { 
-		hidden_effect = { 
+	immediate = {
+		hidden_effect = {
 			determine_chinese_ally = yes
 			if = {
 				limit = {
@@ -1591,11 +1591,35 @@ country_event = { #Fate of Area Zero/Huzhong
 				}
 				save_event_target_as = can_annex
 			}
+			if = {
+				limit = {
+					is_chinese_tag = no
+					714 = { #Manchuria
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:714.owner = { save_event_target_as = manchuria add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					is_chinese_tag = no
+					563 = { #Chita
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:563.owner = { save_event_target_as = chita add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
 		}
 	}
-	
+
 	option = { #Give to China
-		log = "[GetLogInfo]: event annexation_events.7011 option annex.give_to_china"
+		log = "[GetLogInfo]: event annex.7011 option annex.give_to_china"
 		name = annex.give_to_china
 		trigger = {
 			has_event_target = china
@@ -1608,7 +1632,11 @@ country_event = { #Fate of Area Zero/Huzhong
 			}
 			modifier = {
 				factor = 0
-				is_major = yes
+				OR = {
+					is_major = yes
+					is_ally_with = event_target:manchuria
+					is_ally_with = event_target:chita
+				}
 				NOT = { is_ally_with = event_target:china }
 			}
 			modifier = {
@@ -1621,7 +1649,63 @@ country_event = { #Fate of Area Zero/Huzhong
 			transfer_state_and_notify = yes
 		}
 	}
-	
+
+	option = { #Give to Manchuria
+		log = "[GetLogInfo]: event annex.7011 option annex.give_to_manchuria"
+		name = annex.give_to_manchuria
+		trigger = {
+			has_event_target = manchuria
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:manchuria }
+				is_ally_with = event_target:china
+			}
+			modifier = {
+				factor = 0.1
+				event_target:manchuria = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:manchuria }
+		956 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
+	option = { #Give to Chita
+		log = "[GetLogInfo]: event annex.7011 option annex.give_to_chita"
+		name = annex.give_to_chita
+		trigger = {
+			has_event_target = chita
+		}
+		ai_chance = {
+			base = 30
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:chita }
+				is_ally_with = event_target:china
+			}
+			modifier = {
+				factor = 0.1
+				event_target:chita = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:chita }
+		956 = {
+			transfer_state_and_notify = yes
+		}
+	}
+
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7011 option annex.give_to_overlord"
 		name = annex.give_to_overlord
@@ -1639,9 +1723,6 @@ country_event = { #Fate of Area Zero/Huzhong
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-		}
 		956 = {
 			add_claim_of_ROOT = yes
 		}
@@ -1652,7 +1733,7 @@ country_event = { #Fate of Area Zero/Huzhong
 		name = annex.cancel
 		ai_chance = { base = 0 }
 	}
-	
+
 	after = {
 		recheck_annexations = yes
 	}
@@ -15492,38 +15573,7 @@ country_event = { # Fate of Arunachal
 		trigger = {
 			annexations_can_annex = yes
 		}
-		ai_chance = {
-			base = 0
-			modifier = {
-				factor = 100
-				annexations_can_annex = yes
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = NEP
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = TIB
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = CHI
-				}
-			}
-			modifier = {
-				factor = 100
-				ROOT = {
-					tag = ROC
-				}
-			}
-		}
-		every_owned_state = {
+		434 = {
 			add_claim_of_ROOT = yes
 		}
 	}

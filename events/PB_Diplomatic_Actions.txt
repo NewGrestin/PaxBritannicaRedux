@@ -263,12 +263,6 @@ country_event = { #GER gets event
 		log = "[GetLogInfo]: event PB_DA_generic.6 option PB_DA_generic.6.a"
 		name = PB_DA_generic.6.a
 		RUS = {
-			every_owned_state = { 
-				limit = { 
-					is_core_of = PREV
-				}
-				set_state_flag = RSA_claimed_state
-			}
 			every_other_country = {
 				limit = {
 					is_in_faction_with = PREV
@@ -286,7 +280,7 @@ country_event = { #GER gets event
 				peace_out_non_neighbours_after_leaving_faction = yes
 			}
 		}
-		#hidden_effect = { RUS_set_up_peace_conference_with_lon = yes }
+		hidden_effect = { RUS_set_up_peace_conference_with_lon = yes }
 		start_peace_conference = {
 			tag = RUS
 			score_factor = 1
@@ -294,4 +288,45 @@ country_event = { #GER gets event
 			loser_scope = FACTION
 		}
 	}
+}
+country_event = { #Russia state debugger
+	id = PB_DA_generic.7
+	title = PB_DA_generic.7.t
+	desc = PB_DA_generic.7.d
+	picture = GFX_report_event_generic_diplomacy1
+
+	timeout_days = 4
+
+	fire_only_once = yes
+
+	trigger = {
+		tag = RUS
+		has_war_with = IMP
+		second_great_war_started = yes
+		surrender_progress > 0.3
+	}
+	
+	immediate = {
+		hidden_effect = {
+			add_ideas = has_scripted_peace
+		}
+	}
+
+	option = { #Yes
+		name = PB_DA_generic.7.a
+		ai_chance = { base = 100 }
+		add_stability = -0.1
+		RRU = { 
+			set_global_flag = RUS_has_capitulated_to_LON
+		}
+		IMP = { 
+			country_event = { id = PB_DA_generic.6 days = 2 }
+		}
+	}
+	option = {
+		name = PB_DA_generic.7.b
+		ai_chance = { base = 0 }
+		add_war_support = -0.2
+		remove_ideas = has_scripted_peace
+	}#thankyoukrcodesrs
 }

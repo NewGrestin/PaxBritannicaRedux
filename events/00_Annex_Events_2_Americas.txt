@@ -1296,7 +1296,31 @@ country_event = { #Fate of Oregon
 	is_triggered_only = yes
 
 	immediate = {
-
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						has_idea = PB_Idea_Untamed_Frontier
+						tag = BCL
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			NWA = {
+				set_cosmetic_tag = NWD_Oregon_Generic
+				remove_ideas = {
+					PB_NWA_Ghosts_TAC
+					PB_NWA_Frontier_Democracy
+					PB_NWA_Trancendentalist_Vanguard
+					PB_Idea_Untamed_Frontier
+				}
+				set_capital = {
+					state = 836
+					remember_old_capital = no
+				}
+				clr_country_flag = PB_Anarchy_Wild_West_active
+			}
+		}
 	}
 
 	option = { #Create Oregon
@@ -1321,69 +1345,27 @@ country_event = { #Fate of Oregon
 			}
 		}
 		set_temp_variable = { tag_to_release = NWA }
-		892 = { remove_claim_and_add_core_of_target = yes } #Gasden
-		895 = { remove_claim_and_add_core_of_target = yes } #East Oregon
-		897 = { remove_claim_and_add_core_of_target = yes } #North Oregon
-		836 = { remove_claim_and_add_core_of_target = yes } #New Virginia
-		896 = { remove_claim_and_add_core_of_target = yes } #Gorogorun
-		release_targeted_tag = yes
-		NWA = {
-			set_cosmetic_tag = NWD_Oregon_Generic
-			remove_ideas = {
-				PB_NWA_Ghosts_TAC
-				PB_NWA_Frontier_Democracy
-				PB_NWA_Trancendentalist_Vanguard
-				PB_Idea_Untamed_Frontier
-			}
-			set_capital = {
-  				state = 836
- 				remember_old_capital = no
-			}
-			clr_country_flag = PB_Anarchy_Wild_West_active
+		every_state = {
+			limit = { is_oregon = yes }
+			remove_claim_and_add_core_of_target = yes
 		}
+		release_targeted_tag = yes
+		
 		if = {
+			limit = { has_custom_puppet_NWA = yes }
+			setup_custom_puppet_NWA = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			NWA = {
 				set_cosmetic_tag = NWA_Basin_Occupied_Monarchy
 			}
 		}
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			NWA = {
 				set_cosmetic_tag = NWA_Basin_Occupied_Republic
-			}
-		}
-		if = {
-			limit = { ROOT = { tag = AME } }
-			NWA = {
-				retire_ideology_leader = ds
-				set_cosmetic_tag = NWA_AME_Oregon_Territory
-				set_politics = {
-					ruling_party = ds
-					elections_allowed = no
-				}
-				add_popularity = {
-					ideology = ds
-					popularity = 0.5
-				}
-				add_popularity = {
-					ideology = cn
-					popularity = 0.1
-				}
-				add_popularity = {
-					ideology = lb
-					popularity = 0.1
-				}
-				add_popularity = {
-					ideology = jc
-					popularity = 0.3
-				}
-				promote_character = NWA_patrick_ashley_cooper 
-				set_party_name = {
-					ideology = ds
-					long_name = "American Governorship of Oregon"
-					name = "Territorial Goverorship"
-				}
 			}
 		}
 	}
@@ -1398,11 +1380,10 @@ country_event = { #Fate of Oregon
 			}
 		}
 		set_temp_variable = { tag_to_release = BCL }
-		892 = { transfer_if_owned = yes } #Gasden
-		895 = { transfer_if_owned = yes } #East Oregon
-		897 = { transfer_if_owned = yes } #North Oregon
-		836 = { transfer_if_owned = yes } #New Virginia
-		896 = { transfer_if_owned = yes } #Gorogorun
+		every_state = {
+			limit = { is_oregon = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { #give to overlord
@@ -1412,11 +1393,10 @@ country_event = { #Fate of Oregon
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		892 = { transfer_if_owned = yes } #Gasden
-		895 = { transfer_if_owned = yes } #East Oregon
-		897 = { transfer_if_owned = yes } #North Oregon
-		836 = { transfer_if_owned = yes } #New Virginia
-		896 = { transfer_if_owned = yes } #Gorogorun
+		every_state = {
+			limit = { is_oregon = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { #Integrate
@@ -1424,15 +1404,13 @@ country_event = { #Fate of Oregon
 		name = annex.integration
 		trigger = {
 			OR = {
-				has_idea = PB_Idea_Untamed_Frontier
 				annexations_can_annex = yes
 			}
 		}
-		892 = { add_claim_of_ROOT = yes } #Gasden
-		895 = { add_claim_of_ROOT = yes } #East Oregon
-		897 = { add_claim_of_ROOT = yes } #North Oregon
-		836 = { add_claim_of_ROOT = yes } #New Virginia
-		896 = { add_claim_of_ROOT = yes } #Gorogorun
+		every_state = {
+			limit = { is_oregon = yes }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { #Cancel
@@ -1663,15 +1641,19 @@ country_event = { #Fate of UCA
 		}
 		set_temp_variable = { tag_to_release = AME }
 		release_targeted_tag = yes
-
-		if = {
+		if = { 
+			limit = { has_custom_puppet_AME = yes }
+			setup_custom_puppet_AME = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			AME = {
 				set_cosmetic_tag = AME_Occupied_Monarchy_Split
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			AME = {
 				set_cosmetic_tag = AME_Occupied_Republic_Split
@@ -1720,14 +1702,19 @@ country_event = { #Fate of FSA
 				annexations_can_annex = yes
 			}
 		}
-		if = {
+		if = { 
+			limit = { has_custom_puppet_FSA = yes }
+			setup_custom_puppet_FSA = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			FSA = {
 				set_cosmetic_tag = FSA_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			FSA = {
 				set_cosmetic_tag = FSA_Occupied_Republic
@@ -2078,7 +2065,16 @@ country_event = { # Fate of Great Basin
 	is_triggered_only = yes
 
 	immediate = {
-		
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						has_idea = PB_Idea_Untamed_Frontier
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
 	}
 
 	option = { # Create Great Basin
@@ -2099,57 +2095,26 @@ country_event = { # Fate of Great Basin
 			}
 		}
 		set_temp_variable = { tag_to_release = NEV }
-		902 = { remove_claim_and_add_core_of_target = yes } # Imperio del Interior
-		900 = { remove_claim_and_add_core_of_target = yes } # Sierra de los Pinos
-		945 = { remove_claim_and_add_core_of_target = yes } # Black Foot
-		385 = { remove_claim_and_add_core_of_target = yes } # South Oregon
-		899 = { remove_claim_and_add_core_of_target = yes } # Ruby Mountains
-		906 = { remove_claim_and_add_core_of_target = yes } # Too’ee Na’Wa
-		380 = { remove_claim_and_add_core_of_target = yes } # Nuuchiu
+		every_state = {
+			limit = { is_basin = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
 		release_targeted_tag = yes
 		if = {
+			limit = { has_custom_puppet_NEV = yes }
+			setup_custom_puppet_NEV = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			NEV = {
 				set_cosmetic_tag = NEV_Basin_Occupied_Monarchy
 			}
 		}
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			NEV = {
 				set_cosmetic_tag = NEV_Basin_Occupied_Republic
-			}
-		}
-		if = {
-			limit = { ROOT = { tag = AME } }
-			NEV = {
-				set_cosmetic_tag = NEV_AME_Basin_Territory
-				retire_ideology_leader = ds
-				set_politics = {
-					ruling_party = ds
-					elections_allowed = no
-				}
-				add_popularity = {
-					ideology = ds
-					popularity = 0.5
-				}
-				add_popularity = {
-					ideology = cn
-					popularity = 0.1
-				}
-				add_popularity = {
-					ideology = lb
-					popularity = 0.2
-				}
-				add_popularity = {
-					ideology = jc
-					popularity = 0.1
-				}
-				promote_character = NEV_henry_pyrce
-				set_party_name = {
-					ideology = ds
-					long_name = "American Governorship of the Great Basin"
-					name = "Territorial Goverorship"
-				}
 			}
 		}
 	}
@@ -2161,13 +2126,10 @@ country_event = { # Fate of Great Basin
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		902 = { transfer_if_owned = yes } # Imperio del Interior
-		900 = { transfer_if_owned = yes } # Sierra de los Pinos
-		945 = { transfer_if_owned = yes } # Black Foot
-		385 = { transfer_if_owned = yes } # South Oregon
-		899 = { transfer_if_owned = yes } # Ruby Mountains
-		906 = { transfer_if_owned = yes } # Too’ee Na’Wa
-		380 = { transfer_if_owned = yes } # Nuuchiu
+		every_state = {
+			limit = { is_basin = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { # Integrate directly
@@ -2179,22 +2141,16 @@ country_event = { # Fate of Great Basin
 				annexations_can_annex = yes
 			}
 		}
-		902 = { add_claim_of_ROOT = yes } # Imperio del Interior
-		900 = { add_claim_of_ROOT = yes } # Sierra de los Pinos
-		945 = { add_claim_of_ROOT = yes } # Black Foot
-		385 = { add_claim_of_ROOT = yes } # South Oregon
-		899 = { add_claim_of_ROOT = yes } # Ruby Mountains
-		906 = { add_claim_of_ROOT = yes } # Too’ee Na’Wa
-		380 = { add_claim_of_ROOT = yes } # Nuuchiu
+		every_state = {
+			limit = { is_basin = yes }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { # Cancel
 		log = "[GetLogInfo]: event annex.2019 option annex.cancel"
 		name = annex.cancel
 		ai_chance = { base = 0 }
-	}
-	after = {
-		
 	}
 
 	after = {
@@ -2210,7 +2166,18 @@ country_event = { # Fate of the Rockies
 
 	is_triggered_only = yes
 
-	immediate = { }
+	immediate = { 
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						has_idea = PB_Idea_Untamed_Frontier
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
+	}
 
 	option = { # Create Rockies
 		log = "[GetLogInfo]: event annex.2020 option annex.2020.a"
@@ -2230,54 +2197,26 @@ country_event = { # Fate of the Rockies
 			}
 		}
 		set_temp_variable = { tag_to_release = STA }
-		881 = { remove_claim_and_add_core_of_target = yes } # Rockefeller
-		894 = { remove_claim_and_add_core_of_target = yes } # North Basin
-		797 = { remove_claim_and_add_core_of_target = yes } # Lago Salado
-		904 = { remove_claim_and_add_core_of_target = yes } # Nephia
+		every_state = {
+			limit = { is_rockies = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
 		release_targeted_tag = yes
 		if = {
+			limit = { has_custom_puppet_STA = yes }
+			setup_custom_puppet_STA = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			STA = {
 				set_cosmetic_tag = STA_Rockies_Occupied_Monarchy
 			}
 		}
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			STA = {
 				set_cosmetic_tag = STA_Rockies_Occupied_Republic
-			}
-		}
-		if = {
-			limit = { ROOT = { tag = AME } }
-			STA = {
-				set_cosmetic_tag = STA_AME_Rockies_Territory
-				retire_ideology_leader = ds
-				set_politics = {
-					ruling_party = ds
-					elections_allowed = no
-				}
-				add_popularity = {
-					ideology = ds
-					popularity = 0.5
-				}
-				add_popularity = {
-					ideology = cn
-					popularity = 0.1
-				}
-				add_popularity = {
-					ideology = lb
-					popularity = 0.1
-				}
-				add_popularity = {
-					ideology = jc
-					popularity = 0.3
-				}
-				promote_character = STA_baron_fairhaven
-				set_party_name = {
-					ideology = ds
-					long_name = "American Governorship of the Rocky Mountains"
-					name = "Territorial Goverorship"
-				}
 			}
 		}
 	}
@@ -2289,10 +2228,10 @@ country_event = { # Fate of the Rockies
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		881 = { transfer_if_owned = yes } # Rockefeller
-		894 = { transfer_if_owned = yes } # North Basin
-		797 = { transfer_if_owned = yes } # Lago Salado
-		904 = { transfer_if_owned = yes } # Nephia
+		every_state = {
+			limit = { is_rockies = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { # Integrate directly
@@ -2304,10 +2243,10 @@ country_event = { # Fate of the Rockies
 				annexations_can_annex = yes
 			}
 		}
-		881 = { add_claim_of_ROOT = yes } # Rockefeller
-		894 = { add_claim_of_ROOT = yes } # North Basin
-		797 = { add_claim_of_ROOT = yes } # Lago Salado
-		904 = { add_claim_of_ROOT = yes } # Nephia
+		every_state = {
+			limit = { is_rockies = yes }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { # Cancel
@@ -2329,6 +2268,16 @@ country_event = { # Fate of the Great Plains
 	is_triggered_only = yes
 
 	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						has_idea = PB_Idea_Untamed_Frontier
+					}
+				}
+				save_event_target_as = can_annex
+			}
+		}
 	}
 
 	option = { # Create Great Plains
@@ -2349,67 +2298,27 @@ country_event = { # Fate of the Great Plains
 			}
 		}
 		set_temp_variable = { tag_to_release = NDX }
-		373 = { remove_claim_and_add_core_of_target = yes } # Calhoun
-		1431 = { remove_claim_and_add_core_of_target = yes } # Jackson
-		941 = { remove_claim_and_add_core_of_target = yes } # Kansas
-		948 = { remove_claim_and_add_core_of_target = yes } # Stephens
-		1410 = { remove_claim_and_add_core_of_target = yes } # Marooneria
-		942 = { remove_claim_and_add_core_of_target = yes } # Freetown
-		392 = { remove_claim_and_add_core_of_target = yes } # Wazhazhe
-		1411 = { remove_claim_and_add_core_of_target = yes } # Ani Ozho
-		944 = { remove_claim_and_add_core_of_target = yes } # Norton
-		967 = { remove_claim_and_add_core_of_target = yes } # Empire
-		1430 = { remove_claim_and_add_core_of_target = yes } # Americaville
-		1429 = { remove_claim_and_add_core_of_target = yes } # Guntown
-		384 = { remove_claim_and_add_core_of_target = yes } # Kelly
-		901 = { remove_claim_and_add_core_of_target = yes } # Historia
-		799 = { remove_claim_and_add_core_of_target = yes } # Agraria
-		382 = { remove_claim_and_add_core_of_target = yes } # Jefferson
+		every_state = {
+			limit = { is_plains = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
 		release_targeted_tag = yes
 
 		if = {
+			limit = { has_custom_puppet_NDX = yes }
+			setup_custom_puppet_NDX = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			NDX = {
 				set_cosmetic_tag = NDX_Great_Plains_Occupied_Monarchy
 			}
 		}
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			NDX = {
 				set_cosmetic_tag = NDX_Great_Plains_Occupied_Republic
-			}
-		}
-		if = {
-			limit = { ROOT = { tag = AME } }
-			NDX = {
-				set_cosmetic_tag = NDX_AME_Plains_Territory
-				retire_ideology_leader = ds
-				set_politics = {
-					ruling_party = ds
-					elections_allowed = no
-				}
-				add_popularity = {
-					ideology = ds
-					popularity = 0.5
-				}
-				add_popularity = {
-					ideology = cn
-					popularity = 0.1
-				}
-				add_popularity = {
-					ideology = lb
-					popularity = 0.1
-				}
-				add_popularity = {
-					ideology = jc
-					popularity = 0.3
-				}
-				promote_character = NDX_vicary_gibbs
-				set_party_name = {
-					ideology = ds
-					long_name = "American Governorship of the Great Plains"
-					name = "Territorial Goverorship"
-				}
 			}
 		}
 	}
@@ -2421,22 +2330,10 @@ country_event = { # Fate of the Great Plains
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		373 = { transfer_if_owned = yes } # Calhoun
-		1431 = { transfer_if_owned = yes } # Jackson
-		941 = { transfer_if_owned = yes } # Kansas
-		948 = { transfer_if_owned = yes } # Stephens
-		1410 = { transfer_if_owned = yes } # Marooneria
-		942 = { transfer_if_owned = yes } # Freetown
-		392 = { transfer_if_owned = yes } # Wazhazhe
-		1411 = { transfer_if_owned = yes } # Ani Ozho
-		944 = { transfer_if_owned = yes } # Norton
-		967 = { transfer_if_owned = yes } # Empire
-		1430 = { transfer_if_owned = yes } # Americaville
-		1429 = { transfer_if_owned = yes } # Guntown
-		384 = { transfer_if_owned = yes } # Kelly
-		901 = { transfer_if_owned = yes } # Historia
-		799 = { transfer_if_owned = yes } # Agraria
-		382 = { transfer_if_owned = yes } # Jefferson
+		every_state = {
+			limit = { is_plains = yes }
+			transfer_if_owned = yes
+		}
 	}
 
 	option = { # Integrate directly
@@ -2448,22 +2345,10 @@ country_event = { # Fate of the Great Plains
 				annexations_can_annex = yes
 			}
 		}
-		373 = { add_claim_of_ROOT = yes } # Calhoun
-		1431 = { add_claim_of_ROOT = yes } # Jackson
-		941 = { add_claim_of_ROOT = yes } # Kansas
-		948 = { add_claim_of_ROOT = yes } # Stephens
-		1410 = { add_claim_of_ROOT = yes } # Marooneria
-		942 = { add_claim_of_ROOT = yes } # Freetown
-		392 = { add_claim_of_ROOT = yes } # Wazhazhe
-		1411 = { add_claim_of_ROOT = yes } # Ani Ozho
-		944 = { add_claim_of_ROOT = yes } # Norton
-		967 = { add_claim_of_ROOT = yes } # Empire
-		1430 = { add_claim_of_ROOT = yes } # Americaville
-		1429 = { add_claim_of_ROOT = yes } # Guntown
-		384 = { add_claim_of_ROOT = yes } # Kelly
-		901 = { add_claim_of_ROOT = yes } # Historia
-		799 = { add_claim_of_ROOT = yes } # Agraria
-		382 = { add_claim_of_ROOT = yes } # Jefferson
+		every_state = {
+			limit = { is_plains = yes }
+			add_claim_of_ROOT = yes
+		}
 	}
 
 	option = { # Cancel
@@ -2879,7 +2764,6 @@ country_event = { #Fate of Santa Fe
 	immediate = {
 		796 = { retain_state = yes } #Yootoo
 		903 = { retain_state = yes } #Dzil Gozhoo
-		311 = { retain_state = yes } #Belize
 		881 = { retain_state = yes } #Rockefeller
 		894 = { retain_state = yes } #Northbasin
 		797 = { retain_state = yes } #Lago Salado
@@ -3843,14 +3727,19 @@ country_event = { # Fate of New England
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
-		if = {
+		if = { 
+			limit = { has_custom_puppet_MIT = yes }
+			setup_custom_puppet_MIT = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			MIT = {
 				set_cosmetic_tag = MIT_New_England_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			MIT = {
 				set_cosmetic_tag = MIT_New_England_Occupied_Republic
@@ -3956,14 +3845,19 @@ country_event = { # Fate of New Africa
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
-		if = {
+		if = { 
+			limit = { has_custom_puppet_NAF = yes }
+			setup_custom_puppet_NAF = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			NAF = {
 				set_cosmetic_tag = NAF_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			NAF = {
 				set_cosmetic_tag = NAF_Occupied_Republic
@@ -4067,12 +3961,17 @@ country_event = { # Fate of Seminolia
 		set_temp_variable = { tag_to_release = SML }
 		366 = { remove_claim_and_add_core_of_target = yes }
 		release_targeted_tag = yes
+		if = { 
+			limit = { has_custom_puppet_SML = yes }
+			setup_custom_puppet_SML = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			SML = { set_cosmetic_tag = SML_Occupied_Monarchy }
 		}
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			SML = { set_cosmetic_tag = SML_Occupied_Republic }
 		}
@@ -5807,14 +5706,19 @@ country_event = { # Fate of the Ohio River
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
-		if = {
+		if = { 
+			limit = { has_custom_puppet_USA = yes }
+			setup_custom_puppet_USA = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			USA = {
 				set_cosmetic_tag = USA_OhioRiver_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			USA = {
 				set_cosmetic_tag = USA_OhioRiver_Occupied_Republic

@@ -1,0 +1,240 @@
+low_economic_mobilisation_available = {
+	has_war_support > 0.15
+}
+
+partial_economic_mobilisation_available = {
+	has_war_support > 0.25
+}
+
+war_economy_available = {
+	has_war_support > 0.5
+	has_war = yes
+	any_enemy_country = {
+		ic_ratio = { tag = PREV ratio > 0.4 }
+	}
+}
+
+tot_economic_mobilisation_available = {
+	has_war_support > 0.8
+	has_war = yes
+	any_enemy_country = {
+		ic_ratio = { tag = PREV ratio > 0.5 }
+	}
+}
+
+can_increase_economy_law_level = {
+	NOT = { has_idea = undisturbed_isolation }
+	NOT = { has_idea = isolation }
+	NOT = { has_idea = tot_economic_mobilisation }
+	if = {
+		limit = { has_idea = war_economy }
+		tot_economic_mobilisation_available = yes
+	}
+	else_if = {
+		limit = { has_idea = partial_economic_mobilisation }
+		war_economy_available = yes
+	}
+	else_if = {
+		limit = { has_idea = low_economic_mobilisation }
+		partial_economic_mobilisation_available = yes
+	}
+	else = {
+		low_economic_mobilisation_available = yes
+	}
+}
+
+limited_conscription_available = {
+	OR = {
+		has_war_support > 0.1
+		surrender_progress > 0
+	}
+}
+
+extensive_conscription_available = {
+	OR = {
+		has_war_support > 0.2
+		surrender_progress > 0
+	}
+	OR = {
+		has_war_support > 0.5
+		AND = {
+			has_war = yes
+			enemies_strength_ratio > 0.5
+		}
+	}
+}
+
+service_by_requirement_available = {
+	has_war = yes
+	OR = {
+		has_war_support > 0.6
+		surrender_progress > 0
+	}
+	enemies_strength_ratio > 0.6
+}
+
+all_adults_serve_available = {
+	has_war = yes
+	OR = {
+		has_war_support > 0.7
+		surrender_progress > 0
+	}
+	enemies_strength_ratio > 0.75
+}
+
+scraping_the_barrel_available = {
+	has_war = yes
+	OR = {
+		has_war_support > 0.85
+		surrender_progress > 0.25
+	}
+	enemies_strength_ratio > 1
+}
+
+sacrifice_everything_available = {
+	has_war = yes
+	OR = {
+		has_war_support > 0.99
+		surrender_progress > 0.85
+	}
+	enemies_strength_ratio > 1
+}
+
+can_increase_conscription_law_level = {
+	NOT = { has_idea = sacrifice_everything }
+	if = {
+		limit = { has_idea = scraping_the_barrel }
+		sacrifice_everything_available = yes
+	}
+	else_if = {
+		limit = { has_idea = all_adults_serve }
+		scraping_the_barrel_available = yes
+	}
+	else_if = {
+		limit = { has_idea = service_by_requirement }
+		all_adults_serve_available = yes
+	}
+	else_if = {
+		limit = { has_idea = extensive_conscription }
+		service_by_requirement_available = yes
+	}
+	else_if = {
+		limit = { has_idea = limited_conscription }
+		extensive_conscription_available = yes
+	}
+	else_if = {
+		limit = { has_idea = volunteer_only }
+		limited_conscription_available = yes
+	}
+	else = {
+		hidden_trigger = { always = no }
+	}
+}
+
+has_unsupported_economic_law = {
+	if = {
+		limit = { has_idea = low_economic_mobilisation }
+		low_economic_mobilisation_available = no
+	}
+	else_if = {
+		limit = { has_idea = partial_economic_mobilisation }
+		partial_economic_mobilisation_available = no
+	}
+	else_if = {
+		limit = { has_idea = war_economy }
+		war_economy_available = no
+	}
+	else_if = {
+		limit = { has_idea = tot_economic_mobilisation }
+		tot_economic_mobilisation_available = no
+	}
+	else = {
+		hidden_trigger = { always = no }
+	}
+}
+
+has_unsupported_economic_law_ai = {
+	if = {
+		limit = { has_idea = low_economic_mobilisation }
+		low_economic_mobilisation_available = no
+		has_unattained_important_goals = no
+	}
+	else_if = {
+		limit = { has_idea = partial_economic_mobilisation }
+		partial_economic_mobilisation_available = no
+		has_unattained_important_goals = no
+	}
+	else_if = {
+		limit = { has_idea = war_economy }
+		hidden_trigger = { always = yes }
+	}
+	else_if = {
+		limit = { has_idea = tot_economic_mobilisation }
+		hidden_trigger = { always = yes }
+	}
+	else = {
+		hidden_trigger = { always = no }
+	}
+}
+
+has_unsupported_manpower_law = {
+	if = {
+		limit = { has_idea = limited_conscription }
+		limited_conscription_available = no
+	}
+	else_if = {
+		limit = { has_idea = extensive_conscription }
+		extensive_conscription_available = no
+	}
+	else_if = {
+		limit = { has_idea = service_by_requirement }
+		service_by_requirement_available = no
+	}
+	else_if = {
+		limit = { has_idea = all_adults_serve }
+		all_adults_serve_available = no
+	}
+	else_if = {
+		limit = { has_idea = scraping_the_barrel }
+		scraping_the_barrel_available = no
+	}
+	else_if = {
+		limit = { has_idea = sacrifice_everything }
+		sacrifice_everything_available = no
+	}
+	else = {
+		hidden_trigger = { always = no }
+	}
+}
+
+has_unsupported_manpower_law_ai = {
+	if = {
+		limit = { has_idea = limited_conscription }
+		limited_conscription_available = no
+		has_unattained_important_goals = no
+	}
+	else_if = {
+		limit = { has_idea = extensive_conscription }
+		extensive_conscription_available = no
+		has_unattained_important_goals = no
+	}
+	else_if = {
+		limit = { has_idea = service_by_requirement }
+		hidden_trigger = { always = yes }
+	}
+	else_if = {
+		limit = { has_idea = all_adults_serve }
+		hidden_trigger = { always = yes }
+	}
+	else_if = {
+		limit = { has_idea = scraping_the_barrel }
+		hidden_trigger = { always = yes }
+	}
+	else_if = {
+		limit = { has_idea = sacrifice_everything }
+		hidden_trigger = { always = yes }
+	}
+	else = {
+		hidden_trigger = { always = no }
+	}
+}
