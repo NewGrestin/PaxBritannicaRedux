@@ -105,6 +105,23 @@ country_event = { #Revolt test
 		SWE_revolt_republic_path = yes
 	}
 }
+country_event = { #Revolt test
+	id = sweden_debug.4
+	title = sweden_debug.3.t
+	desc = sweden_debug.3.d
+	picture = GFX_report_event_PB_SWE_Ukki
+
+	is_triggered_only = yes
+
+	option = { #Unban Hedin Loyalists
+		name = sweden_debug.3.a
+		increase_military_modernization_level = yes
+		increase_economic_health_level = yes
+		increase_literacy_level = yes
+		increase_industrialization_level = yes
+		increase_poverty_rate_level = yes
+	}
+}
 
 country_event = { #Landed Nobility Demand Concessions!
 	id = sweden_statare.1
@@ -626,6 +643,10 @@ country_event = { #The Queen's Abdication!
 	immediate = {
 		if = { 
 			limit = { 
+				is_power_balance_in_range = {
+                    id = SWE_hedin_power_balance
+                    range < 0.10
+                }
 				has_character = SWE_mannerheim
 			}
 			country_event = { id = sweden_national.10 days = 50 }
@@ -678,28 +699,46 @@ country_event = { #Mannerheim's Coup
 	
 	option = {
 		name = sweden_national.10.a
-		activate_targeted_decision = {
-			target = THIS
-			decision = SWE_mannerheims_coup
-		}
+		SWE_mannerheim_coup_effect = yes
 	}
 }  
-country_event = { #Pummeling the '2nd Arjala Conspiracy'
+country_event = { #Pummeling the '2nd Anjala Conspiracy'
 	id = sweden_national.11
 	title = sweden_national.11.t
 	desc = sweden_national.11.d
 	#picture = 
 
 	is_triggered_only = yes
-	
+	immediate = {
+		hidden_effect = { 
+			country_event = { id = sweden_national.19 days = 3	}
+		}
+	}
 	option = {
 		name = sweden_national.11.a
 		add_manpower = -1566
-		retire_character = SWE_ernst_linder
 		add_opinion_modifier = {
 			target = RUS
 			modifier = autonomous_region
 		}
+	}
+}  
+country_event = { #Pummeling the '2nd Anjala Conspiracy' Ernst Lidner PArt
+	id = sweden_national.19
+	title = sweden_national.19.t
+	desc = sweden_national.19.d
+	#picture = 
+
+	is_triggered_only = yes
+	
+	option = {
+		name = sweden_national.19.a
+		retire_character = SWE_ernst_linder
+	}
+	option = {
+		name = sweden_national.19.b
+		add_political_power = 70
+		add_war_support = 0.25
 	}
 }  
 country_event = { #
@@ -759,7 +798,7 @@ country_event = { # Faluffaren
 		name = sweden_national.15.a
 	}
 }  
-country_event = { # Faluffaren
+country_event = { # Swedish Peasant Class
 	id = sweden_national.16
 	title = sweden_national.16.t
 	desc = sweden_national.16.d
@@ -1907,6 +1946,52 @@ country_event = {
 			check_variable = { cons_support > radeg_support }
 		}
 		set_country_flag = SWE_path_conservatives
+	}
+}
+country_event = { #Finland War Rungs up Once More!
+	id = sweden.42
+	title = sweden.42.t
+	desc = sweden.42.d
+	is_triggered_only = yes
+
+	option = { # WAR!
+		name = sweden.40.a
+		SWE = { 
+			declare_war_on = {
+				target = FIN
+				type = annex_everything
+			}
+			declare_war_on = {
+				target = RUS
+				type = annex_everything
+			}
+			annex_country = {
+				target = FFI
+				transfer_troops = yes
+			}
+			FFI = { 
+				every_character = {
+					limit = { 
+						is_army_leader = yes
+					}
+					set_nationality = SWE
+				}
+			}
+		}
+		RUS = {
+			annex_country = {
+				target = FIN
+				transfer_troops = yes
+			}
+			FIN = { 
+				every_character = {
+					limit = { 
+						is_army_leader = yes
+					}
+					set_nationality = RUS
+				}
+			}
+		}
 	}
 }
 
