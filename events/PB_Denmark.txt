@@ -5,118 +5,188 @@
 add_namespace = denmark
 
 
-country_event = {#Danish Revolution
-	id = denmark.1
-	title = denmark.1.t
-	desc = denmark.1.d
-	picture = GFX_report_PB_Paris_Event
+	country_event = { #Danish Revolution
+		id = denmark.1
+		title = denmark.1.t
+		desc = denmark.1.d
+		picture = GFX_report_PB_Paris_Event
 
-	is_triggered_only = yes
+		is_triggered_only = yes
 
-	fire_only_once = yes
+		fire_only_once = yes
 
-	option = { #
-		name = denmark.1.a
-		news_event = PBNews.394
-		DEN = { 
-			every_enemy_country = {
-				limit = {
-					is_valid_peace_target = yes
+		option = { #
+			name = denmark.1.a
+			news_event = PBNews.394
+			DEN = { 
+				peace_out_non_neighbours_after_leaving_faction = yes
+				add_ideas = PB_revolutionary_republic
+				set_cosmetic_tag = DEN_jacobin
+				set_politics = {
+					ruling_party = jc
+					elections_allowed = no
 				}
-				white_peace_with_ROOT = yes
+				set_popularities = {
+					ni = 6
+					ds = 11
+					rc = 8
+					cn = 0
+					lb = 8
+					an = 6
+					ss = 30
+					jc = 31
+				}
+				retire_character = DEN_wilhelm_i
 			}
-			if = { 
-				limit = { 
-					is_in_faction = yes
+
+			if = {
+				limit = {
+					DEN = { is_in_faction_with = FRA }
+					OR = {
+						has_country_flag = FRA_herbenville_leader
+						has_country_flag = FRA_doriot_leader
+					}
+				}
+				DEN = {
+					leave_faction = yes
+				}
+				NOR = { 
+					leave_faction = yes
 				}
 				leave_faction = yes
+				FRA = { 
+					country_event = { id = denmark.4 days = 1 }
+				}
 			}
-			add_ideas = PB_revolutionary_republic
-			set_cosmetic_tag = DEN_jacobin
-			set_politics = {
-				ruling_party = jc
-				elections_allowed = no
+			else = {
+				if = {
+					limit = {
+						DEN = { is_in_faction = yes }
+					}
+					DEN = {
+						leave_faction = yes
+					}
+				}
 			}
-			set_popularities = {
-				ni = 6
-				ds = 11
-				rc = 8
-				cn = 0
-				lb = 8
-				an = 6
-				ss = 30
-				jc = 31
+
+			if = { 
+				limit = { 
+					NOR = { 
+						exists = yes
+					}
+				}
+				DEN = { 
+					NOR = { 
+						end_puppet = PREV
+					}
+					declare_war_on = { 
+						target = NOR 
+						type = annex_everything
+					}
+				}
+				
+				NOR = { 
+					set_province_controller = 316
+					set_province_controller = 394
+					set_province_controller = 6235
+					set_province_controller = 3206
+					set_province_controller = 3341
+					set_province_controller = 13370
+					load_oob = "NOR_reaction"
+				}
 			}
-			retire_character = DEN_wilhelm_i
-			NOR = { 
-				end_puppet = PREV
+			
+			set_global_flag = DEN_revolution
+			country_event = { id = denmark.2 days = 3 }
+			ai_chance = {
+				base = 50
 			}
-			declare_war_on = { 
-				target = NOR 
-				type = annex_everything
-			}
-		}
-		NOR = { 
-			set_province_controller = 316
-			set_province_controller = 394
-			set_province_controller = 6235
-			set_province_controller = 3206
-			set_province_controller = 3341
-			set_province_controller = 13370
-			load_oob = "NOR_reaction"
-		}
-		set_global_flag = DEN_revoloution
-		country_event = { id = denmark.2 days = 3 }
-		ai_chance = {
-			base = 50
 		}
 	}
-}
-country_event = {#The Danish Kongetro
-	id = denmark.2
-	title = denmark.2.t
-	desc = denmark.2.d
-	picture = GFX_report_PB_Paris_Event
+	country_event = {#The Danish Kongetro
+		id = denmark.2
+		title = denmark.2.t
+		desc = denmark.2.d
+		picture = GFX_report_PB_Paris_Event
 
-	is_triggered_only = yes
+		is_triggered_only = yes
 
-	fire_only_once = yes
+		fire_only_once = yes
 
-	option = { #
-		name = denmark.2.a
+		option = { #
+			name = denmark.2.a
+			
+			ai_chance = {
+				base = 50
+			}
+			
+
+		}
+	}
+	country_event = {#Danish Crisis
+		id = denmark.3
+		title = denmark.3.t
+		desc = denmark.3.d
+		picture = GFX_report_PB_Paris_Event
+
+		is_triggered_only = yes
+
+		fire_only_once = yes
+
+		option = { # ONWARDS!
+			name = denmark.3.a
+			
+			ai_chance = {
+				base = 50
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_send_equipment_NOR
+			}
+		}
+		option = { # We'd rather not.
+			name = denmark.3.b
+			
+			ai_chance = {
+				base = 50
+			}
+			set_country_flag = DEN_revolution_opt_out
+		}
+	}
+	country_event = { #DANISH-BELTS CRISIS
+		id = denmark.4
+		title = denmark.4.t
+		desc = denmark.4.d
+		picture = GFX_report_PB_Paris_Event
+
+		is_triggered_only = yes
+
+		fire_only_once = yes
+
+		option = { #Re-admit Denmark
+			name = denmark.4.a
+			trigger = {
+				DEN = { exists = yes }
+			}
+			add_to_faction = DEN
+			ai_chance = {
+				base = 30
+			}
+		}
+
+		option = { #Re-admit Norway
+			name = denmark.4.b
+			trigger = {
+				NOR = { exists = yes }
+			}
+			add_to_faction = NOR
+			ai_chance = {
+				base = 70
+			}
+		}
 		
-		ai_chance = {
-			base = 50
+		option = { #Of no concern to us!
+			name = denmark.4.c
 		}
-		every_country = { 
-			limit = { 
-				tag = SWE
-				tag = ENG
-				tag = RUS
-				tag = GER
-				tag = HOL
-			}
-			country_event = { id = denmark.3 days = 1 }
-		}
-
 	}
-}
-country_event = {#The Danish Kongetro
-	id = denmark.3
-	title = denmark.3.t
-	desc = denmark.3.d
-	picture = GFX_report_PB_Paris_Event
-
-	is_triggered_only = yes
-
-	fire_only_once = yes
-
-	option = { # ONWARDS!
-		name = denmark.3.a
 		
-		ai_chance = {
-			base = 50
-		}
-
-	}
-}
