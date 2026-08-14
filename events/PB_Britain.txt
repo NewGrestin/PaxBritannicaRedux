@@ -619,7 +619,7 @@ country_event = {		#General Election Chain - Tory Victory
 		    popularity = 0.05
 		}
 
-		PB_clear_all_ministers = yes
+		
 
 		set_country_flag = ENG_General_Election_Completed
 		clr_country_flag = ENG_Election_Tories_Popularity
@@ -687,7 +687,7 @@ country_event = {		#General Election Chain - WUP Victory
 		    popularity = 0.15
 		}
 
-		PB_clear_all_ministers = yes
+		
 
 		activate_advisor = ENG_clement_attlee_hog
 		activate_advisor = ENG_george_barnes_fam
@@ -753,7 +753,7 @@ country_event = {		#General Election Chain - NPP Victory
 		    popularity = 0.15
 		}
 
-		PB_clear_all_ministers = yes
+		
 		activate_advisor = ENG_rotha_orman_hog
 		activate_advisor = ENG_frank_tiarks_ecm
 		activate_advisor = ENG_jeffrey_hamm_fam
@@ -1151,7 +1151,7 @@ country_event = {		#The National Recovery Act Fails - Military Coup
 
 		set_country_flag = ENG_FIX_THE_SLUMP
 
-		PB_clear_all_ministers = yes
+		
 
 		activate_advisor = ENG_jfc_fuller_hog
 		activate_advisor = ENG_william_allen_ecm
@@ -1988,29 +1988,11 @@ country_event = {		#Establishing New Dominions - West Indies
 
 		add_political_power = -10
 
-		WIS = {
-			transfer_state = 689
-			add_state_core = 689
-
-			transfer_state = 693
-			add_state_core = 693
-
-			transfer_state = 308
-			add_state_core = 308
-
-			transfer_state = 694
-			add_state_core = 694
-
-			transfer_state = 692
-			add_state_core = 692
-
-			transfer_state = 691
-			add_state_core = 691
-
-			transfer_state = 687
-			add_state_core = 687
-
-			inherit_technology = ENG
+		every_owned_state = { 
+			limit = { 
+				is_westindies = yes
+			}
+			transfer_state_to = WIS
 		}
 
 		ENG = {
@@ -2380,10 +2362,13 @@ country_event = {		#Britain - Generic Invite to Faction
 				ROOT = {
 					OR = {
 						original_tag = POR
-						original_tag = DEN
 						original_tag = SWE
-						original_tag = SIA
-						original_tag = PRS
+						AND = {
+							original_tag = PRS
+							NOT = {
+								has_government = ni
+							}
+						}
 					}
 				}
 			}
@@ -3390,11 +3375,6 @@ country_event = {		#Britain - National Security Act Passed
 			popularity = -1.0
 		}
 
-		add_popularity = {
-			ideology = ni
-			popularity = -1.0
-		}
-
 		add_political_power = 150
 
 		custom_effect_tooltip = ENG_NPP_Victorious_tooltip
@@ -3402,7 +3382,8 @@ country_event = {		#Britain - National Security Act Passed
 		add_ideas = ENG_National_Security_Act
 
 		add_to_farright_coalition_ni = yes
-
+		add_to_farright_coalition_rc = yes
+		
 		PB_ENG_Increase_Haig_Tory_Support = yes
 		PB_ENG_Increase_Lib_Support = yes
 		PB_ENG_Increase_NPP_Support = yes
@@ -4300,7 +4281,7 @@ country_event = {		#Britain - Proposal for the League of Nations
 			}
 			country_event = { id = britain.1018 days = 1 }
 		}
-		country_event = { id = lon.1 days = 3 }
+		
 		if = {
 			limit = {
 				JAP = {
@@ -4411,6 +4392,7 @@ country_event = {		#Britain - Proposal for the League of Nations - Formal Foundi
 		set_global_flag = PB_league_of_nations_formed
 
 		hidden_effect = {
+			country_event = { id = lon.1 days = 3 }
 			news_event = { id = PBNews.25 }
 
 			country_event = { id = britain.1021 days = 30 }
@@ -5182,7 +5164,7 @@ country_event = {		#1937 Election
 		    popularity = 0.05
 		}
 
-		PB_clear_all_ministers = yes
+		
 
 		set_country_flag = PB_ENG_1937_Elections_Completed
 
@@ -5286,7 +5268,7 @@ country_event = {		#1937 Election
 		    popularity = 0.15
 		}
 
-		PB_clear_all_ministers = yes
+		
 
 		set_country_flag = PB_ENG_1937_Elections_Completed
 
@@ -5385,7 +5367,7 @@ country_event = {		#1937 Election
 		    popularity = 0.15
 		}
 
-		PB_clear_all_ministers = yes
+		
 
 		set_country_flag = PB_ENG_1937_Elections_Completed
 
@@ -5477,7 +5459,7 @@ country_event = {		#Pollitt's Gamer Moment
 
 		add_ideas = PB_military_government
 
-		PB_clear_all_ministers = yes
+		
 
 		activate_advisor = ENG_jfc_fuller_hog
 		activate_advisor = ENG_william_allen_ecm
@@ -7544,9 +7526,23 @@ country_event = {		#Britain Asia Policy - Forming the British Raj
 				target = MDR
 				transfer_troops = yes
 			}
-
-			add_state_core = 850
-			add_state_core = 423
+			MDR = { 
+				every_state = { 
+					limit = { 
+						is_claim_or_core_of_PREVPREV = yes
+					}
+					if = { 
+						limit = { 
+							is_core_of = MDR
+						}
+						add_core_of = RAJ
+					}
+					else = { 
+						add_claim_by = RAJ
+					}
+				}
+			}
+			
 
 			set_cosmetic_tag = RAJ_Unitary_Empire
 		}
@@ -7575,8 +7571,22 @@ country_event = {		#Britain Asia Policy - Forming the British Raj
 				transfer_troops = yes
 			}
 
-			add_state_core = 850
-			add_state_core = 423
+			MDR = { 
+				every_state = { 
+					limit = { 
+						is_claim_or_core_of_PREVPREV = yes
+					}
+					if = { 
+						limit = { 
+							is_core_of = MDR
+						}
+						add_core_of = RAJ
+					}
+					else = { 
+						add_claim_by = RAJ
+					}
+				}
+			}
 
 			set_cosmetic_tag = RAJ_Federated_Empire
 		}
@@ -7610,8 +7620,22 @@ country_event = {		#Britain Asia Policy - Forming the British Raj
 				transfer_troops = yes
 			}
 
-			add_state_core = 850
-			add_state_core = 423
+			MDR = { 
+				every_state = { 
+					limit = { 
+						is_claim_or_core_of_PREVPREV = yes
+					}
+					if = { 
+						limit = { 
+							is_core_of = MDR
+						}
+						add_core_of = RAJ
+					}
+					else = { 
+						add_claim_by = RAJ
+					}
+				}
+			}
 
 			set_cosmetic_tag = RAJ_Commonwealth
 		}

@@ -2584,8 +2584,101 @@ PB_SWE_reforming_statare = {
 		}
 	}
 }
-PB_SWE_north_sea_war = {
+PB_Diplomacy_Decisions = {
+	SWE_declare_war_norway = { 
+		allowed = { always = no }
+
+		available = {
+			OR = {
+				is_in_faction = no
+				is_faction_leader = yes
+			}
+			NOT = { has_non_aggression_pact_with = FROM }
+			NOT = { has_guaranteed = FROM }
+		}
+
+		cancel_trigger = {
+			OR = {
+				NOT = { can_declare_war_on = FROM }
+				is_subject = yes
+				is_in_faction_but_not_leader = yes
+				has_non_aggression_pact_with = FROM
+				has_guaranteed = FROM
+			}
+		}
+
+		visible = {
+			can_declare_war_on = FROM
+			is_subject = no
+		}
 	
+		targets = { NOR DEN }
+
+		cost = 0
+		days_remove = 25
+		fire_only_once = yes
+		war_with_target_on_remove = yes
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		complete_effect = {
+			add_war_support = 0.10
+		}
+		remove_effect = {
+			news_event = PBNews.391
+			set_global_flag = SWE_NOR_WAR
+			declare_war_on = {
+				target = FROM
+				type = annex_everything
+			}
+		}
+	}
+	SWE_war_NOR_mission = {
+        icon = GFX_decision_generic_ignite_civil_war
+        allowed = { tag = SWE }
+		available = {
+			hidden_trigger = { 
+				always = no
+			}
+		}
+		activation = {
+			has_global_flag = SWE_NOR_WAR
+		}
+        selectable_mission = no
+        days_mission_timeout = 90
+        is_good = no
+
+		cancel_trigger = {
+			ROOT = { 
+				surrender_progress = 0.35
+			}
+		}
+		cancel_effect = {
+			news_event = PBNews.392
+			SWE = { 
+				every_enemy_country = { 
+					limit = { 
+						is_valid_peace_target = yes
+					}
+					white_peace_with_PREV = yes
+				}
+				set_temp_variable = { tag_to_release = NOR }
+				every_owned_state = { 
+					limit = { 
+						is_claim_or_core_of_target = yes
+					}
+					transfer_state_to = NOR
+				}
+			}
+		}
+        timeout_effect = {
+            add_war_support = -0.1
+            add_stability = -0.1
+            activate_mission = SWE_war_NOR_mission
+        }
+    }
 }
 PB_SWE_GER_economic_cooperation = {
 	SWE_contract_ship_ronja = {
@@ -4454,26 +4547,7 @@ SWE_automation_crisis = {
 	}
 }
 SWE_courtyard_camarilla = { 
-	SWE_mannerheims_coup = { 
-		icon = GFX_decision_gre_faction_management
-		
-		selectable_mission = no
-		allowed = {
-			always = no #manual
-		}
-		available = { 
-			hidden_trigger = { 
-				always = no
-			}
-		}
-		is_good = no
-		fire_only_once = no
-		days_mission_timeout = 10
-		visible = { always = yes }
-		timeout_effect = {
-			SWE_mannerheim_coup_effect = yes
-		}
-	}
+	#
 }
 SWE_balance_of_power_category = {
 	DEBUG_SWE_TEST = {

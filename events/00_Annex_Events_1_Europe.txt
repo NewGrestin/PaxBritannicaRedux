@@ -1904,7 +1904,6 @@ country_event = { #Fate of Faroe Islands
 			annexations_can_annex = yes
 		}
 		337 = {  #Faroe Islands
-			transfer_state_and_notify = yes 
 			remove_claim_and_add_core_of_target = yes
 		}
 	}
@@ -8839,7 +8838,121 @@ country_event = { #Fate of Valais
 		recheck_annexations = yes
 	}
 }
+country_event = { #Fate of Latium
+	id = annex.1029
+	title = annexation_2
+	desc = annexation_2_desc
+	picture = GFX_report_PB_Peace_Deals_Europe
 
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			annexations_reset_italy = yes
+			if = {
+				limit = { is_italian_tag = yes }
+				save_event_target_as = can_annex
+			}
+			annexations_create_italian_targets = yes
+			if = {
+				limit = {
+					PAP = {
+						ROOT_can_grant_land = yes
+					}
+				}
+				PAP = { save_event_target_as = papacy }
+			}
+		}
+	}
+
+	option = { #Release as ITA
+		log = "[GetLogInfo]: event annexation_events.1100 option annexation_events.europe.release_italy_republic"
+		name = annex.europe.release_ITA
+		trigger = {
+			annexations_can_release_ITA = yes
+		}
+		set_temp_variable = { tag_to_release = ITA }
+		annexations_release_italy = yes
+	}
+
+	option = { #Release as IST
+		log = "[GetLogInfo]: event annexation_events.1100 option annexation_events.europe.release_italy_federation"
+		name = annex.europe.release_IST
+		trigger = {
+			annexations_can_release_IST = yes
+		}
+		set_temp_variable = { tag_to_release = IST }
+		annexations_release_italy = yes
+	}
+
+	option = { #Puppet PAP
+		log = "[GetLogInfo]: event annex.1029 option annex.1029.a"
+		name = annex.1029.a
+		trigger = {
+			annexations_can_release_italian_splinters = yes
+			NOT = { has_event_target = papacy }
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = PAP }
+		2 = { remove_claim_and_add_core_of_target = yes } #Latium
+		915 = { remove_claim_and_add_core_of_target = yes } #Civitas Leonina
+		release_targeted_tag = yes
+	}
+
+	option = { #Give to PAP
+		log = "[GetLogInfo]: event annex.1029 option annex.1029.b"
+		name = annex.1029.b
+		trigger = {
+			annexations_can_release_italian_splinters = yes
+			has_event_target = papacy
+		}
+		ai_chance = { base = 0 }
+		set_temp_variable = { tag_to_release = PAP }
+		2 = { remove_claim_and_add_core_of_target = yes } #Latium
+		2 = { transfer_if_owned = yes } #Latium
+	}
+
+	option = { #Give to Italy
+		log = "[GetLogInfo]: event annex.1029 option annex.europe.give_to_italy"
+		name = annex.europe.give_to_italy
+		trigger = {
+			OR = {
+				has_event_target = italy
+				has_event_target = italy_soc
+			}
+		}
+		annexations_give_italy_to_target = yes
+	}
+
+	option = { #Give to overlord
+		log = "[GetLogInfo]: event annex.1029 option annex.give_to_overlord"
+		name = annex.give_to_overlord
+		trigger = {
+			annexations_should_give_lands_to_overlord = yes
+		}
+		set_temp_variable = { tag_to_release = overlord }
+		2 = { transfer_if_owned = yes } #Latium
+	}
+
+	option = { #Annex
+		log = "[GetLogInfo]: event annex.1029 option annex.integration"
+		name = annex.integration
+		trigger = {
+			annexations_can_annex = yes
+		}
+		2 = { transfer_if_owned = yes } #Latium
+	}
+
+	option = { #Cancel
+		log = "[GetLogInfo]: event annex.1029 option annex.cancel"
+		name = annex.cancel
+		ai_chance = { base = 0 }
+	}
+
+	after = {
+		recheck_annexations = yes
+	}
+}
 country_event = { #Fate of Central Italy
 	id = annex.1030
 	title = annexation_157
@@ -14155,6 +14268,7 @@ country_event = { #Fate of Schleswig
 					remove_claim_by = SCH
 				}
 			}
+		
 			if = {
 				limit = {
 					OR = {
@@ -14310,8 +14424,8 @@ country_event = { #Fate of Schleswig
 		trigger = {
 			annexations_can_annex = yes
 		}
-		1467 = { transfer_state_and_notify = yes } #South Schleswig
-		795 = { transfer_state_and_notify = yes } #North Schleswig
+		1467 = { add_claim_of_ROOT = yes } #South Schleswig
+		795 = { add_claim_of_ROOT = yes } #North Schleswig
 	}
 
 	option = { #Cancel
@@ -25552,7 +25666,7 @@ country_event = { #Fate of Norway
 			original_tag = SWE
 			has_monarchist_government = yes
 			is_subject = no
-			has_completed_focus = SWE_memories_of_marstand
+			has_completed_focus = SWE_push_for_norwegian_accession
 		}
 		set_cosmetic_tag = PB_SWEDEN_NORWAY
 		every_state = {

@@ -3972,11 +3972,27 @@ focus_tree = {
 		completion_reward = {
 			if = {
 				limit = { NOT = { has_dlc = "Arms Against Tyranny" } }
-				custom_effect_tooltip = FRA_improve_MAS_tt
+				custom_effect_tooltip = improves_designer_tt
+				if = {
+					limit = { has_idea = FRA_mas }
+					swap_ideas = {
+						remove_idea = FRA_mas
+						add_idea = FRA_mas_improved
+					}
+				}
+				else = {
+					effect_tooltip = {
+						swap_ideas = {
+							remove_idea = FRA_mas
+							add_idea = FRA_mas_improved
+						}
+					}
+				}
 			}
 			else = {
 				mio:FRA_mas_organization = {
 					add_mio_funds = 200
+					add_mio_funds_gain_factor = 0.15
 					add_mio_size = 1
 				}
 			}
@@ -5441,14 +5457,44 @@ focus_tree = {
 		completion_reward = {
 			set_temp_variable = { number = 4 }
 			FRA_fervour_change = yes
-			3 = {
-				add_claim_by = FRA
+			every_state = {
+				limit = {
+					OR = { 
+						state = 6
+						state = 1504
+						state = 34
+						state = 911
+						state = 1580
+						state = 910
+					}
+				}
+				add_claim_of_ROOT = yes
+				enable_state_integration_75_compliance = yes
 			}
-			6 = {
-				add_claim_by = FRA
+			every_state = {
+				limit = {
+					OR = { 
+						state = 28
+						state = 1191
+						state = 8
+					}
+				}
+				add_claim_of_ROOT = yes
+				enable_state_integration_50_compliance = yes
 			}
-			940 = {
-				add_claim_by = FRA
+			every_state = {
+				limit = {
+					OR = { 
+						state = 1183
+						state = 42
+						state = 909
+					}
+				}
+				add_claim_of_ROOT = yes
+				enable_state_integration_90_compliance = yes
+			}
+			972 = { 
+				add_core_of = ROOT
 			}
 		}
 	}
@@ -5706,65 +5752,88 @@ focus_tree = {
 		ai_will_do = {
 			factor = 75
 		}
+
 		available = {
-			OR = { 
-				DEN = {
-					OR = {
-						is_subject = yes
-						exists = no
-					}
-					NOT = { has_government = jc }
-				}
-				NOR = { 
-					OR = {
-						is_subject = yes
-						exists = no
-					}
-					NOT = { has_government = jc }
-				}
-			}
 		}
+
 		bypass = {
-			OR = { 
-				DEN = {
-					OR = {
-						is_subject = yes
-						exists = no
+			NOT = {
+				OR = {
+					DEN = {
+						OR = {
+							is_subject = yes
+							exists = no
+							NOT = { has_government = jc }
+							ROOT = { has_country_flag = PB_FRA_Muarras_Died_Coup_Success }
+							ROOT = { has_country_flag = FRA_herbenville_counter_coup_happened }
+						}
 					}
-					NOT = { has_government = jc }
-				}
-				NOR = { 
-					OR = {
-						is_subject = yes
-						exists = no
+					NOR = {
+						OR = {
+							is_subject = yes
+							exists = no
+							NOT = { has_government = jc }
+							ROOT = { has_country_flag = PB_FRA_Muarras_Died_Coup_Success }
+							ROOT = { has_country_flag = FRA_herbenville_counter_coup_happened }
+						}
 					}
-					NOT = { has_government = jc }
 				}
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_FOREIGN_POLICY}
+		search_filters = { FOCUS_FILTER_FOREIGN_POLICY }
 
 		prerequisite = {
 			focus = FRA_befriend_russia
 		}
+
 		completion_reward = {
-			add_opinion_modifier = {
-				target = DEN
-				modifier = diplomatic_outreach
-			}
-			DEN = {
+			if = {
+				limit = {
+					OR = {
+						has_country_flag = PB_FRA_Muarras_Died_Coup_Success
+						has_country_flag = FRA_herbenville_counter_coup_happened
+						NOT = { DEN = { has_government = jc } }
+					}
+				}
+
 				add_opinion_modifier = {
-					target = FRA
+					target = DEN
 					modifier = diplomatic_outreach
 				}
+				DEN = {
+					add_opinion_modifier = {
+						target = FRA
+						modifier = diplomatic_outreach
+					}
+				}
+				custom_effect_tooltip = PB_FRA_Denmark_Invitation_tt
+				custom_effect_tooltip = tooltip_white_line
+				DEN = {
+					country_event = {
+						id = French.39
+						days = 2
+					}
+				}
 			}
-			custom_effect_tooltip = PB_FRA_Denmark_Invitation_tt
-			custom_effect_tooltip = tooltip_white_line
-			DEN = {
-				country_event = {
-					id = French.39
-					days = 2
+			else = {
+				add_opinion_modifier = {
+					target = NOR
+					modifier = diplomatic_outreach
+				}
+				NOR = {
+					add_opinion_modifier = {
+						target = FRA
+						modifier = diplomatic_outreach
+					}
+				}
+				custom_effect_tooltip = PB_FRA_Norway_Invitation_tt
+				custom_effect_tooltip = tooltip_white_line
+				NOR = {
+					country_event = {
+						id = French.39
+						days = 2
+					}
 				}
 			}
 		}

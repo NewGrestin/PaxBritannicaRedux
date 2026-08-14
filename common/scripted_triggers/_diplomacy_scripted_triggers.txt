@@ -63,13 +63,20 @@ DIPLOMACY_LEAVE_FACTION_ENABLE_TRIGGER = {
 }
 
 DIPLOMACY_SEND_VOLUNTEERS_ENABLE_TRIGGER = {
-	#if = {
-	#	limit = { check_variable = { FROM.modifier@cannot_receive_volunteers > 0 } }
-	#	custom_trigger_tooltip = {
-	#		tooltip = cannot_receive_volunteers_warning
-	#		always = no
-	#	}
-	#}
+	if = {
+		limit = { check_variable = { FROM.modifier@cannot_send_or_receive_volunteers > 0 } }
+		custom_trigger_tooltip = {
+			tooltip = cannot_send_or_receive_volunteers_warning_FROM
+			always = no
+		}
+	}
+	if = {
+		limit = { check_variable = { modifier@cannot_send_or_receive_volunteers > 0 } }
+		custom_trigger_tooltip = {
+			tooltip = cannot_send_or_receive_volunteers_warning
+			always = no
+		}
+	}
 	if = {
 		limit = {
 			OR = {
@@ -98,6 +105,41 @@ DIPLOMACY_SEND_VOLUNTEERS_ENABLE_TRIGGER = {
 			tooltip = RULE_VOLUNTEERS_BLOCKED_TT
 			always = no
 		}
+	}
+}
+
+DIPLOMACY_GENERATE_WARGOAL_ENABLE_TRIGGER = {
+	if = {
+		limit = { is_subject_of = FROM.overlord }
+		custom_override_tooltip = {
+			tooltip = RULE_NO_WARGOALS_ON_ALLIED_PUPPETS_TT
+			always = no
+		}
+	}
+	else_if = {
+		limit = {
+			has_game_rule = { rule = allow_wargoals option = LIMITED }
+			second_great_war_started = no
+		}
+		custom_override_tooltip = {
+			tooltip = RULE_WARGOALS_GREAT_WAR_TT
+			always = no
+		}
+	}
+	else_if = {
+		limit = {
+			has_game_rule = { rule = allow_wargoals option = FOCUSES_ONLY }
+		}
+		custom_override_tooltip = {
+			tooltip = RULE_WARGOALS_BLOCKED_TT
+			always = no
+		}
+	}
+	if = {
+		limit = { is_ai = yes }
+		has_war = no
+		is_neighbor_of = FROM
+		NOT = { any_claim = yes }
 	}
 }
 
