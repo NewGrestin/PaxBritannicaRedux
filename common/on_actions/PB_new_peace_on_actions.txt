@@ -49,81 +49,47 @@ on_actions = {
 						}
 					}		
 				}
-				var:909.owner ={ 
-					country_event = { id = annex.1043 days = 10 }
-				}
-				var:28.owner ={ 
-					country_event = { id = annex.1054 days = 15 }
-				}
-				if = { #Prussia shit
-					limit = {
-						PRS = {
-							OR = {
-								exists = no
-								has_capitulated = yes
-							}
-						}
-					}
-					RUS = {
-						every_state = {
-							limit = {
-								is_core_of = PRS
-							}
-							RUS = {
-								transfer_state = PREV
-							}
-						}
-					}
-
-					if = {
-						limit = {
-							86 = {
-								NOT = {
-									is_core_of = PRS
-								}
-							}
-						}
-						DDR = {
-							transfer_state = 86
-						}
-					}
-				}
 					
 				GER = { 
 					GER_setup_exiles = yes
-					every_country = { 
+				}
+				
+				RUS = { 
+					every_owned_state = { 
 						limit = { 
-							has_war_with = GER
+							is_germany = yes
+							NOT = { is_claimed_by = PREV }
 						}
-						white_peace = GER
+						transfer_state_to = DDR
 					}
-					every_subject_country = {
-						if = { 
+					setup_custom_puppet_GER_manual_RUS = yes
+					if = { 
+						limit = { 
+							GER = { 
+								owns_state = 9
+							} #its a bit slow
+						}
+						every_owned_state = { 
 							limit = { 
-								GER = { 
-									OR = {
-										is_in_faction_with = ENG
-										is_in_faction_with = AME
-									}
-									is_subject_of = PREV
-								}
+								is_bohemia = yes
+								NOT = { is_claimed_by = PREV }
 							}
-							overlord = {
-								set_autonomy = { target = PREV autonomy_state = autonomy_free }
-							}
-							white_peace = FROM
-							leave_faction = yes
+							transfer_state_to = CZE
 						}
+						setup_custom_puppet_CZE = yes
 					}
-					leave_faction = yes
 				}
-				every_state = {
-					limit = {
-						is_claimed_by = DAF
+				FRA = { 
+					every_owned_state = { 
+						limit = { 
+							is_germany = yes
+							NOT = { is_claimed_by = PREV }
+						}
+						transfer_state_to = MGE
 					}
-					add_claim_by = GER
-				}
-			
+					setup_custom_puppet_GER_manual_FRA = yes
+				} 
+				#Shameful manual scripted peacedeal
 				set_global_flag = skip_default_capitulation
 			}
 			else_if = {  # ENG COLLAPSE
@@ -399,6 +365,21 @@ on_actions = {
 				}
 				PHI_victory_effects = yes
 				set_global_flag = DAS_PHI_peace_out
+			}
+			else_if = { #Spain Screws over portugal
+				limit = {
+					ROOT = { 
+						original_tag = POR
+					}
+					FROM = { 
+						original_tag = SPR
+						is_ally_with = SPR
+					}
+				}
+				PHI_victory_effects = yes
+				SPR = { 
+					set_cosmetic_tag = SPR_
+				}
 			}
 			else_if = {# MEXICO Defeated
 				limit = {
