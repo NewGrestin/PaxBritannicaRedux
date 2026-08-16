@@ -2801,7 +2801,7 @@ country_event = { # they decline
 	}
 }
 
-country_event = { # SCA VICTORY
+country_event = { # SCA VICTORY - No impfed
 	id = SCA.67
 	title = SCA67title
 	desc = SCA67desc
@@ -2809,28 +2809,102 @@ country_event = { # SCA VICTORY
 
 	trigger = {
 		tag = SCA
-		has_war_with = AME
-		AME = {
-			has_capitulated = yes
-		}
-		BCL = {
-			has_capitulated = yes
-		}
-		QUE = {
-			has_capitulated = yes
+		has_idea = PB_SCA_Second_American_Revolution
+		NOT = { has_country_flag = SCA_peace_victory }
+
+		AND = {
+			360 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			361 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			368 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			1462 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			816 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			950 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			891 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			261 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			1409 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			320 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			813 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			464 = {
+				OR = {
+					NOT = { owner = { is_enemy_of = SCA } }
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
 		}
 	}
-
 	fire_only_once = yes
 
 	option = {
-		name = SCA67opta
+	name = SCA67opta
+		remove_ideas = PB_SCA_Second_American_Revolution
+		set_country_flag = SCA_peace_victory
+		# Capture faction status BEFORE dismantling it
+		if = {
+			limit = { AME = { is_in_faction_with = IMP } }
+			set_variable = { SCA67_ame_was_imp_aligned = 1 }
+		}
+
 		AME = {
-			if = { # If CoIs exists
+			if = { # If AME is faction leader
 				limit = { is_faction_leader = yes }
 				dismantle_faction = yes
 			}
-			transfer_units_fraction= {
+			transfer_units_fraction = {
 				target = CUB
 				size = 0.2
 				stockpile_ratio = 0.8
@@ -2841,238 +2915,103 @@ country_event = { # SCA VICTORY
 			transfer_navy = {
 				target = SCA
 			}
-			every_navy_leader = { 
+			every_navy_leader = {
 				limit = {
-					NOT = {
-						has_trait = AME_british_loyalties
-					}
+					NOT = { has_trait = AME_british_loyalties }
 				}
 				set_nationality = SCA
 			}
-			every_owned_state = { 
-				limit = {
-					NOT = {
-						OR = {
-							region = 211
-							region = 117
-							region = 214
-							region = 198
-							region = 197
-							region = 213
-							region = 220
-						}
-					}
-				}
-				if = {
-					limit = {
-						ENG = {
-							exists = yes
-							is_subject = no
-							is_in_faction_with = AME
-						}
-					}
-					transfer_state_to = ENG
-				}
-				else_if = {
-					limit = {
-						CUB = {
-							exists = yes
-							is_subject = no
-						}
-					}
-					transfer_state_to = CUB
-				}
-				else = {
-					transfer_state_to = SCA
-				}
-			}
-			every_country = {
-				limit = {
-					is_subject_of = PREV
-				}
+			every_subject_country = { # already scoped to AME's subjects
 				end_puppet = PREV
 				leave_faction = yes
 			}
 		}
-		CUB = {
-			set_cosmetic_tag = CUB_AME_Exile
-			load_oob = "CUB_AME_Exiles"
-			set_party_name = {
-				ideology = ds
-				long_name = "American Government in Exile"
-				name = "American Exiles"
-			}
-			hidden_effect = {
-				set_popularities = {
-					ni = 5
-					ds = 60
-					rc = 15
-					cn = 0
-					lb = 0
-					an = 20
-					ss = 0
-					jc = 0
-				}
-			}
-			remove_ideas = PB_CUB_dixie_come_home
-			remove_ideas = PB_CUB_theodores_prison
-			remove_ideas = PB_CUB_war_in_making
-			inherit_technology = AME
-			leave_faction = yes
-		}
+
 		QUE = {
-			transfer_navy = {
-				target = SCA
-			}
+			transfer_navy = { target = SCA }
 			remove_ideas = CoF_Prince_Arthur
 			remove_ideas = QUE_Black_Sheep
 		}
+
 		BCL = {
-			transfer_navy = {
-				target = SCA
-			}
+			transfer_navy = { target = SCA }
 		}
-		annex_country = {
-			target = ACD
-			transfer_troops = no
-		}
-		annex_country = {
-			target = QUE
-			transfer_troops = no
-		}
-		annex_country = {
-			target = AME
-			transfer_troops = no
-		}
-		annex_country = {
-			target = BCL
-			transfer_troops = no
-		}
-		if = {
-			limit = {
-				ENG = {
-					owns_state = 332
-					owns_state = 331
-					owns_state = 730
+		
+		SCA = {
+			every_enemy_country = {
+				limit = {
+					has_war_with = SCA
+				}
+				every_owned_state = {
+					if = {
+						limit = {
+							is_on_continent = north_america
+						}
+						transfer_state_to = SCA
+					}
+					if = {
+						limit = {
+							owner = { is_in_north_america = yes } # enemy's capital is in NA
+							check_variable = { SCA67_ame_was_imp_aligned = 1 }
+						}
+						transfer_state_to = IMP
+					}
+					else_if = {
+						limit = { 
+							owner = { is_in_north_america = yes } # enemy's capital is in NA
+						}
+						transfer_state_to = SCA
+					}
 				}
 			}
-			332 = { transfer_state_to = SCA }
-			331 = { transfer_state_to = SCA }
-			730 = { transfer_state_to = SCA }
-		}
-		every_owned_state = {
-			limit = {
-				is_core_of = AME
-			}
-			add_dynamic_modifier = { modifier = SCA_Industrial_Damage }	
-		}
-		news_event = { 
-			id =  PBNews.81
-			days = 1
-		} 
-		367 = {
-			set_temp_variable = { temp_culture = culture_id }
-			ROOT = {
-				PB_Cultures_add_accepted_culture = yes 
-			}
-		}
-		366 = {
-			set_temp_variable = { temp_culture = culture_id }
-			ROOT = { 
-				PB_Cultures_add_accepted_culture = yes 
-			}
-		}
-		396 = {
-			set_temp_variable = { temp_culture = culture_id }
-			ROOT = { 
-				PB_Cultures_add_accepted_culture = yes
-			}
-		}
-		369 = {
-			set_temp_variable = { temp_culture = culture_id }
-			ROOT = { 
-				PB_Cultures_add_accepted_culture = yes 
-			}
-		}
-		360 = {
-			set_temp_variable = { temp_culture = culture_id }
-			ROOT = { 
-				PB_Cultures_add_accepted_culture = yes 
-			}
-		}
-		371 = {
-			set_temp_variable = { temp_culture = culture_id }
-			ROOT = { 
-				PB_Cultures_add_accepted_culture = yes 
-			}
-		}
-		464 = {
-			set_demilitarized_zone = yes
-		}
-		465 = {
-			set_demilitarized_zone = yes
-		}
-		357 = {
-			set_demilitarized_zone = yes
-		}
-		815 = {
-			set_demilitarized_zone = yes
-		}
-
-		367 = {
-			set_demilitarized_zone = yes
-		}
-		365 = {
-			set_demilitarized_zone = yes
-		}
-		362 = {
-			set_demilitarized_zone = yes
-		}
-		1409 = {
-			set_demilitarized_zone = yes
-		}
-		368 = {
-			set_demilitarized_zone = yes
-		}
-		364 = {
-			set_demilitarized_zone = yes
-		}
-		363 = {
-			set_demilitarized_zone = yes
 		}
 		SCA = {
-			set_capital = {state = 361}
-			complete_national_focus = SCA_war_is_a_racket
-			remove_ideas = PB_SCA_Fear_And_Chaos
-			remove_ideas = PB_SCA_Mobolize_The_Workers
-			remove_ideas = PB_SCA_The_Great_Leap_Forward_Idea
-			remove_ideas = PB_SCA_The_Dead_March_West
-			remove_ideas = PB_SCA_The_Dead_March_West_2
-			remove_ideas = PB_SCA_Second_American_Revolution
-			country_event = { 
-				id = SCA.24
-				days = 1
+			every_enemy_country = {
+				limit = {
+					is_valid_peace_target = yes
+				}
+				white_peace_with_ROOT = yes
+			}
+			every_owned_state = {
+				limit = {
+					OR = {
+						is_dixieamerica = yes
+						is_new_england = yes
+					}
+				}
+				set_demilitarized_zone = yes
+			}
+			
+			every_owned_state = {
+				limit = { is_core_of = AME }
+				add_dynamic_modifier = { modifier = SCA_Industrial_Damage }
 			}
 		}
-		white_peace = ENG
-		white_peace = CUB
-		white_peace = NIC
-		white_peace = BEF
-		white_peace = HNK
-		white_peace = AST
-		white_peace = NZL
-		set_global_flag = skip_default_capitulation
+
+		ACD = {
+			clear_cores_of_tag_if_possible = yes
+		}
 	}
 }
 
-country_event = { # SCA debug
+country_event = { # imperial civilwar goshdarn happened!
 	id = SCA.68
 	title = SCA68title
 	desc = SCA68desc
 	picture = GFX_report_event_PB_Ford_Workers
 	is_triggered_only = yes
 	option = {
-		
+		if = { 
+			limit = { 
+				has_war_with = AME
+				AME = { has_war_with = IMP }
+			}
+			declare_war_on = {
+				target = IMP
+				type = annex_everything
+			}
+			add_political_power = 2
+		}
 	}
 }
 country_event = {
