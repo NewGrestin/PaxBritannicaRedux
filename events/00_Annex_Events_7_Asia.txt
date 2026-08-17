@@ -9038,11 +9038,62 @@ country_event = { #Fate of Uttarchal
 					OR = {
 						is_indian_unifier = yes
 						original_tag = NEP
+						1100 = { is_claim_or_core_of_ROOT = yes }
+						1261 = { is_claim_or_core_of_ROOT = yes }
+						323 = { is_claim_or_core_of_ROOT = yes }
 					}
 				}
 				save_event_target_as = can_annex
 			}
 			determine_indian_ally = yes
+			if = {
+				limit = {
+					annexations_india_is_puppet_or_independent_ally_of_ROOT = no
+					1100 = { #Himachal
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							NOT = { tag = event_target:india_two }
+							NOT = { tag = event_target:india_three }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1100.owner = { save_event_target_as = himachal add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					annexations_india_is_puppet_or_independent_ally_of_ROOT = no
+					1261 = { #Meerut
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							NOT = { tag = event_target:india_two }
+							NOT = { tag = event_target:india_three }
+							NOT = { tag = event_target:himachal }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:1261.owner = { save_event_target_as = meerut add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
+			if = {
+				limit = {
+					annexations_india_is_puppet_or_independent_ally_of_ROOT = no
+					323 = {
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							NOT = { tag = event_target:india_two }
+							NOT = { tag = event_target:india_three }
+							NOT = { tag = event_target:himachal }
+							NOT = { tag = event_target:meerut }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:323.owner = { save_event_target_as = nepal add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
 		}
 	}
 	option = { #Give to india
@@ -9061,6 +9112,9 @@ country_event = { #Fate of Uttarchal
 				factor = 0
 				NOT = { is_ally_with = event_target:india }
 				OR = { 
+					is_ally_with = event_target:himachal
+					is_ally_with = event_target:meerut
+					is_ally_with = event_target:nepal
 					is_ally_with = event_target:india_two
 					is_ally_with = event_target:india_three
 				}
@@ -9090,6 +9144,9 @@ country_event = { #Fate of Uttarchal
 				factor = 0
 				NOT = { is_ally_with = event_target:india_two }
 				OR = { 
+					is_ally_with = event_target:himachal
+					is_ally_with = event_target:meerut
+					is_ally_with = event_target:nepal
 					is_ally_with = event_target:india
 					is_ally_with = event_target:india_three
 				}
@@ -9119,6 +9176,9 @@ country_event = { #Fate of Uttarchal
 				factor = 0
 				NOT = { is_ally_with = event_target:india_three }
 				OR = { 
+					is_ally_with = event_target:himachal
+					is_ally_with = event_target:meerut
+					is_ally_with = event_target:nepal
 					is_ally_with = event_target:india
 					is_ally_with = event_target:india_two
 				}
@@ -9131,6 +9191,102 @@ country_event = { #Fate of Uttarchal
 		set_temp_variable = { tag_to_release = event_target:india_three }
 		1101 = { transfer_state_and_notify = yes }
 	}
+
+	option = { #Give to Himachal
+		log = "[GetLogInfo]: event annex.7056 option annex.give_to_himachal"
+		name = annex.7056.a
+		trigger = {
+			has_event_target = himachal
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:himachal }
+				OR = {
+					is_ally_with = event_target:meerut
+					is_ally_with = event_target:nepal
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:himachal = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:himachal }
+		1101 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to Meerut
+		log = "[GetLogInfo]: event annex.7056 option annex.give_to_meerut"
+		name = annex.7056.b
+		trigger = {
+			has_event_target = meerut
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:meerut }
+				OR = {
+					is_ally_with = event_target:himachal
+					is_ally_with = event_target:nepal
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:meerut = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:meerut }
+		1101 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to Nepal
+		log = "[GetLogInfo]: event annex.7056 option annex.give_to_nepal"
+		name = annex.7056.c
+		trigger = {
+			has_event_target = nepal
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:nepal }
+				OR = {
+					is_ally_with = event_target:himachal
+					is_ally_with = event_target:meerut
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:nepal = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:nepal }
+		1101 = { transfer_state_and_notify = yes }
+	}
 	
 	option = { #Give to overlord
 		log = "[GetLogInfo]: event annex.7056 option annex.give_to_overlord"
@@ -9139,7 +9295,7 @@ country_event = { #Fate of Uttarchal
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1101 = { transfer_if_owned = yes }
+		1101 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Integrate
@@ -9162,7 +9318,6 @@ country_event = { #Fate of Uttarchal
 
 	after = { recheck_annexations = yes }
 }
-
 country_event = { #Fate of Khalsa
 	id = annex.7057
 	title = annexation_441
@@ -11536,6 +11691,7 @@ country_event = { # Fate of Nepal
 			}
 			determine_indian_ally = yes
 			1259 = { retain_state = yes }
+			1610 = { retain_state = yes }
 		}
 	}
 
@@ -11706,7 +11862,6 @@ country_event = { # Fate of Nepal
         recheck_annexations = yes
     }
 }
-
 country_event = { # Fate of Terai
 	id = annex.7069
 	title = annexation_1259
@@ -11721,7 +11876,9 @@ country_event = { # Fate of Terai
 				limit = {
 					OR = {
 						is_indian_unifier = yes
-						323 = { is_claim_or_core_of_ROOT = yes } #Madras
+						323 = { is_claim_or_core_of_ROOT = yes } #Nepal
+						328 = { is_claim_or_core_of_ROOT = yes } #Faizabad (Awadh)
+						1607 = { is_claim_or_core_of_ROOT = yes } #Awadh
 					}
 				}
 				save_event_target_as = can_annex
@@ -11743,6 +11900,22 @@ country_event = { # Fate of Terai
 				}
 				var:323.owner = { save_event_target_as = nepal add_to_array = { ROOT.potential_grant_targets = THIS } }
 			}
+			if = {
+				limit = {
+					annexations_india_is_puppet_or_independent_ally_of_ROOT = no
+					328 = { #Faizabad (Awadh)
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = {
+							NOT = { tag = event_target:india }
+							NOT = { tag = event_target:india_two }
+							NOT = { tag = event_target:india_three }
+							NOT = { tag = event_target:nepal }
+							ROOT_can_grant_land = yes
+						}
+					}
+				}
+				var:328.owner = { save_event_target_as = awadh add_to_array = { ROOT.potential_grant_targets = THIS } }
+			}
 		}
 	}
 	option = { #Give to india
@@ -11762,8 +11935,9 @@ country_event = { # Fate of Terai
 				NOT = { is_ally_with = event_target:india }
 				OR = { 
 					is_ally_with = event_target:india_two
-					is_ally_with = event_target:nepal
 					is_ally_with = event_target:india_three
+					is_ally_with = event_target:nepal
+					is_ally_with = event_target:awadh
 				}
 			}
 			modifier = {
@@ -11792,8 +11966,9 @@ country_event = { # Fate of Terai
 				NOT = { is_ally_with = event_target:india_two }
 				OR = { 
 					is_ally_with = event_target:india
-					is_ally_with = event_target:nepal
 					is_ally_with = event_target:india_three
+					is_ally_with = event_target:nepal
+					is_ally_with = event_target:awadh
 				}
 			}
 			modifier = {
@@ -11824,6 +11999,7 @@ country_event = { # Fate of Terai
 					is_ally_with = event_target:india
 					is_ally_with = event_target:india_two
 					is_ally_with = event_target:nepal
+					is_ally_with = event_target:awadh
 				}
 			}
 			modifier = {
@@ -11835,9 +12011,9 @@ country_event = { # Fate of Terai
 		1259 = { transfer_state_and_notify = yes }
 	}
 
-	option = { #Give to owner of nepal
-		log = "[GetLogInfo]: event annexation_events.7069 option annex.give_to_nepal"
-		name = annex.give_to_nepal
+	option = { #Give to owner of Nepal
+		log = "[GetLogInfo]: event annex.7069 option annex.7069.a"
+		name = annex.7069.a
 		trigger = {
 			has_event_target = nepal
 		}
@@ -11854,6 +12030,7 @@ country_event = { # Fate of Terai
 					is_ally_with = event_target:india
 					is_ally_with = event_target:india_two
 					is_ally_with = event_target:india_three
+					is_ally_with = event_target:awadh
 				}
 			}
 			modifier = {
@@ -11862,7 +12039,38 @@ country_event = { # Fate of Terai
 			}
 		}
 		set_temp_variable = { tag_to_release = event_target:nepal }
-		1259 = {	transfer_state_and_notify = yes }
+		1259 = { transfer_state_and_notify = yes }
+	}
+
+	option = { #Give to owner of Awadh
+		log = "[GetLogInfo]: event annex.7069 option annex.7069.b"
+		name = annex.7069.b
+		trigger = {
+			has_event_target = awadh
+		}
+		ai_chance = {
+			base = 70
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_ally_with = event_target:awadh }
+				OR = { 
+					is_ally_with = event_target:india
+					is_ally_with = event_target:india_two
+					is_ally_with = event_target:india_three
+					is_ally_with = event_target:nepal
+				}
+			}
+			modifier = {
+				factor = 0.1
+				event_target:awadh = { is_subject = yes }
+			}
+		}
+		set_temp_variable = { tag_to_release = event_target:awadh }
+		1259 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Give to overlord
@@ -11872,7 +12080,7 @@ country_event = { # Fate of Terai
 			annexations_should_give_lands_to_overlord = yes
 		}
 		set_temp_variable = { tag_to_release = overlord }
-		1259 = { transfer_if_owned = yes }
+		1259 = { transfer_state_and_notify = yes }
 	}  
 
 	option = { #Integrate
