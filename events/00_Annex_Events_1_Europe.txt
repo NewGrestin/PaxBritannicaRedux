@@ -2468,29 +2468,11 @@ country_event = { #Fate of Portugal
 		hidden_effect = {
 			if = {
 				limit = { NOT = { country_exists = POR } }
-				every_state = {
-					if = {
-						limit = { is_portugal = no }
-						remove_core_of = POR
-					}
-					else = {
-						add_core_of = POR
-					}
-					remove_claim_by = POR
-				}
+				POR = { clear_cores_of_tag_if_possible = yes }
 			}
 			if = {
 				limit = { NOT = { country_exists = PEF } }
-				every_state = {
-					if = {
-						limit = { is_portugal = no is_in_europe = yes }
-						remove_core_of = PEF
-					}
-					else = {
-						add_core_of = PEF
-					}
-					remove_claim_by = PEF
-				}
+				PEF = { clear_cores_of_tag_if_possible = yes }
 			}
 			if = {
 				limit = {
@@ -2544,6 +2526,7 @@ country_event = { #Fate of Portugal
 		log = "[GetLogInfo]: event annex.1016 option annex.1016.a"
 		name = annex.1016.a
 		trigger = {
+			is_ally_with = ENG
 			NOT = { country_exists = PEF }
 			NOT = {
 				OR = {
@@ -2611,8 +2594,8 @@ country_event = { #Fate of Portugal
 				NOT = { is_ally_with = ROOT }
 			}
 			OR = {
-				NOT = { is_ally_with = event_target:portugal_exile}
-				event_target:portugal_exile = {
+				NOT = { is_ally_with = event_target:portugal }
+				event_target:portugal = {
 					is_subject = yes
 					NOT = { is_subject_of = ROOT }
 				}
@@ -2644,7 +2627,6 @@ country_event = { #Fate of Portugal
 				set_cosmetic_tag = POR_Occupied_Monarchy
 			}
 		}
-
 		if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			POR = {
@@ -2652,7 +2634,13 @@ country_event = { #Fate of Portugal
 				set_cosmetic_tag = POR_Occupied_Republic
 			}
 		}
-
+		if = {
+			limit = { country_exists = PEF }
+			reverse_add_opinion_modifier = {
+				target = PEF
+				modifier = PEF_occupied_portugal
+			}
+		}
 	}
 
 	option = { #Give to Portugal
@@ -2768,6 +2756,7 @@ country_event = { #Fate of Portugal
 		recheck_annexations = yes
 	}
 }
+
 country_event = { #Fate of Spain
 	id = annex.1018
 	title = annexation_41
@@ -21717,12 +21706,9 @@ country_event = { #Fate of Poland
 			setup_custom_puppet_POL = yes
 			custom_effect_tooltip = has_custom_puppet
 		}
+
 		else_if = {
-			limit = {
-				ROOT = {
-					has_monarchist_government = yes
-				}
-			}
+			limit = { ROOT = { has_monarchist_government = yes } }
 			POL = {
 				set_cosmetic_tag = POL_Occupied_Monarchy
 			}
