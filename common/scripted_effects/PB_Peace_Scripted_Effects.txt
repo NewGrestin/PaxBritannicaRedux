@@ -633,6 +633,33 @@ RRU_LON_setup = {
 }
 
 imp_civilwar_peace_settlement = { 
+	if = { 
+		limit = { QUE = { is_in_faction_with = ENG } }
+		set_country_flag = QUE_was_in_ENG_faction
+	}
+	if = {
+		limit = { BCL = { is_in_faction_with = ENG } }
+		set_country_flag = BCL_was_in_ENG_faction
+	}
+	if = { 
+		limit = {
+			has_country_flag = AME_peaced_during_ICW
+		}
+		ENG = { 
+			every_other_country = {
+				limit = {
+					is_in_faction_with = ROOT
+					has_capitulated = no
+					OR = {
+						is_subject = no
+						overlord = { has_capitulated = yes }
+					}
+				}
+				set_country_flag = former_imp_member
+				faction_collapse_member_peace_effect = yes
+			}
+		}
+	}
 	set_global_flag = imperial_civil_war_concluded_AME
 	set_global_flag = imperial_civil_war_concluded
 	ENG = { 
@@ -648,23 +675,14 @@ imp_civilwar_peace_settlement = {
 		}
 	}
 	if = { 
-		limit = { 
-			QUE = { 
-				is_in_faction_with = ENG
-			}
-		}
-		ENG = { 
-			end_puppet = QUE
-		}
+		limit = { has_country_flag = QUE_was_in_ENG_faction }
+		ENG = { end_puppet = QUE }
 		QUE = { 
 			leave_faction = yes
 			AME = { add_to_faction = QUE }
 			drop_cosmetic_tag = yes
 			set_cosmetic_tag = QUE_Republic
-			set_politics = {
-				ruling_party = cn
-				elections_allowed = no
-			}
+			set_politics = { ruling_party = cn elections_allowed = no }
 			kill_country_leader = yes
 			create_country_leader = {
 				name = "Louis-Alexandre Taschereau"
@@ -672,28 +690,19 @@ imp_civilwar_peace_settlement = {
 				picture = "Portrait_QUE_Louis_Alexandre_Taschereau.dds"
 				expire = "1965.1.1"
 				ideology = CN_VARIANT_01
-			
 			}
 		}
 	}
+
 	if = {
-		limit = {
-			BCL = { 
-				is_in_faction_with = ENG
-			}
-		}
-		ENG = { 
-			end_puppet = BCL
-		}
+		limit = { has_country_flag = BCL_was_in_ENG_faction }
+		ENG = { end_puppet = BCL }
 		BCL = { 
 			leave_faction = yes
 			AME = { add_to_faction = BCL }
 			drop_cosmetic_tag = yes
 			set_cosmetic_tag = BCL_Republic
-			set_politics = {
-				ruling_party = ss
-				elections_allowed = no
-			}
+			set_politics = { ruling_party = ss elections_allowed = no }
 			kill_country_leader = yes
 			create_country_leader = {
 				name = "Richard Gavin Reid"
