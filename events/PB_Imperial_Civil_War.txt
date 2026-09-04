@@ -4706,14 +4706,18 @@ country_event = {# Imperial Civil War - Eastern Seaboard joins London
 		hidden_effect = {
 			AME = {
 				country_event = {
+					id = ImpCiv_Crisis.15
+					days = 1
+				}			
+				country_event = {
 					id = ImpCiv_Crisis.17
-					days = 2
+					days = 5
 				}
 			}
 			ENG = {
 				country_event = {
 					id = ImpCiv_Crisis.18
-					days = 2
+					days = 5
 				}
 			}
 			ENG = {
@@ -4733,16 +4737,12 @@ country_event = {# Imperial Civil War - Bermuda Confrontation
 	desc = ImpCiv_Crisis.15.d
 	picture = GFX_report_PB_Generic_Naval_Event
 
-	#is_triggered_only = yes
+	is_triggered_only = yes
 
 	fire_only_once = yes
 
 	trigger = {
 		tag = AME
-		check_variable = { days_mission_timeout@AME_Impending_Imperial_Civil_War_The_End_Is_Near < 11 }
-
-		#check_variable = { days_mission_timeout@AME_Impending_Imperial_Civil_War_The_End_Is_Near > 79 }
-
 	}
 
 	#mean_time_to_happen = {
@@ -5019,6 +5019,12 @@ country_event = {# Imperial Civil War - Last minutes of peace
 
 		check_variable = { days_mission_timeout@AME_Impending_Imperial_Civil_War_The_End_Is_Near > 19 }
 
+	}
+	
+	immediate = {
+		hidden_effect = { 
+			set_global_flag = imperial_civil_war_ongoing
+		}
 	}
 
 	option = { 
@@ -5304,6 +5310,9 @@ country_event = {# Imperial Civil War - America Declares Independence
 		trigger = {
             tag = AME
         }
+		hidden_effect = { 
+			SCA = { country_event = { id = SCA.68 days = 1 } }#tell SCA its all going fuckin down bro
+		}
 		add_timed_idea = {
 			idea = PB_AME_War_for_Independence
 			days = 100
@@ -5723,48 +5732,13 @@ country_event = {# British Victory - Imperial Federation Declared
 			base = 50
 		}
 
-		add_stability = 0.1
-
-		annex_country = {
-			target = ACD
-			transfer_troops = yes
+		add_stability = -0.1
+		every_allied_country = { 
+			limit = { 
+				is_white_people = yes
+			}
+			country_event = { id = ImpCiv_War.2 days = 3 }
 		}
-
-		annex_country = {
-			target = IRE
-			transfer_troops = yes
-		}
-
-		annex_country = {
-			target = ULS
-			transfer_troops = yes
-		}
-
-		annex_country = {
-			target = AME
-			transfer_troops = yes
-		}
-
-		annex_country = {
-			target = QUE
-			transfer_troops = yes
-		}
-
-		annex_country = {
-			target = BCL
-			transfer_troops = yes
-		}
-
-		annex_country = {
-			target = CRN
-			transfer_troops = yes
-		}
-
-		annex_country = {
-			target = AST
-			transfer_troops = yes
-		}
-
 		if = {
 			limit = {
 				ENG = {
@@ -5775,7 +5749,8 @@ country_event = {# British Victory - Imperial Federation Declared
 				}
 			}
 			ENG = {
-				set_cosmetic_tag = ENG_ImpFed_Decentralized
+				#set_cosmetic_tag = ENG_ImpFed_Decentralized
+				set_country_flag =  ENG_ImpFed_Decentralized_check_flag
 			}
 		}
 
@@ -5789,81 +5764,81 @@ country_event = {# British Victory - Imperial Federation Declared
 				}
 			}
 			ENG = {
-				set_cosmetic_tag = ENG_ImpFed_Centralized
+				#set_cosmetic_tag = ENG_ImpFed_Centralized
 				set_country_flag = ENG_ImpFed_Centralized_check_flag
 				set_global_flag =  ImpFed_Centralized_check_flag
 			}
 		}
 
-		custom_effect_tooltip = ENG_Imperial_Federation_Coring_Begin_tt
+		#custom_effect_tooltip = ENG_Imperial_Federation_Coring_Begin_tt
 
-		add_timed_idea = {
-			idea = ENG_Integration_Chaos
-			days = 180
-		}
-	
-		hidden_effect = {
-			country_event = {
-				id = ImpCiv_War.2
-				days = 30
-			}
-		}
-
-		set_temp_variable = { superevent_temp = token:imperial_federation_united }
-		PB_Fire_Super_Event = yes
+		#add_timed_idea = {
+		#	idea = ENG_Integration_Chaos
+		#	days = 180
+		#}
+		
+		#set_temp_variable = { superevent_temp = token:imperial_federation_united } 
+		#PB_Fire_Super_Event = yes
+		# RESERVE FOR END GAME (in like the steam push after this, if not adressed immediately spam @2and2)
 	}
 }
 
-country_event = {# British Victory - Ireland Integrated
+country_event = {# British Victory - Imperial Federation Invitation
 	id = ImpCiv_War.2
 	title = ImpCiv_War.2.t
 	desc = ImpCiv_War.2.d
 	picture = GFX_report_PB_Diplomatic_Agreement
 
 	is_triggered_only = yes
-
-	option = { 
+	option = { #Great Idea Chaps
 		name = ImpCiv_War.2.a
+
+		ai_chance = {
+			base = 100
+		}
+		ROOT = { 
+			#get_current_ideology_popularities = yes
+			#get_current_ruling_party = yes
+			every_subject_country = { 
+				#get_current_ideology_popularities = yes
+				#get_current_ruling_party = yes
+				FROM = { 
+					set_autonomy = {
+						target = PREV
+						autonomous_state = autonomy_client_state
+						freedom_level = 0.50
+					}
+				}
+				#restore_ideology_popularities = yes
+   				#restore_ruling_party = yes
+			}
+		}
+		FROM = { 
+			set_autonomy = {
+				target = ROOT
+				autonomous_state = autonomy_imperial_federation_constituent
+				freedom_level = 0.50
+			}
+			country_event = ImpCiv_War.3
+		}
+		ROOT = { 
+			#restore_ideology_popularities = yes
+   			#restore_ruling_party = yes
+		}
+	}
+	option = { #Absoloutely Not!
+		name = ImpCiv_War.2.b
 
 		ai_chance = {
 			base = 0
 		}
-
-		add_political_power = 150
-
-		every_state = {
-			limit = {
-				is_core_of = IRE
-			}
-
-			ENG = {
-				add_state_core = PREV
-			}
-		}
-
-		every_state = {
-			limit = {
-				is_core_of = ULS
-			}
-
-			ENG = {
-				add_state_core = PREV
-			}
-		}
-
-		set_temp_variable = { temp_culture = 5 }
-		PB_Cultures_add_accepted_culture = yes
-
-		hidden_effect = {
-			country_event = {
-				id = ImpCiv_War.3
-				days = 60
-			}		
+		FROM = { 
+			country_event = ImpCiv_War.4
 		}
 	}
 }
 
-country_event = {# British Victory - Quebec Integrated
+country_event = {# British Victory - FROM accepted Federation
 	id = ImpCiv_War.3
 	title = ImpCiv_War.3.t
 	desc = ImpCiv_War.3.d
@@ -5878,31 +5853,10 @@ country_event = {# British Victory - Quebec Integrated
 			base = 0
 		}
 
-		add_political_power = 150
-
-		every_state = {
-			limit = {
-				is_core_of = QUE
-			}
-
-			ENG = {
-				add_state_core = PREV
-			}
-		}
-
-		set_temp_variable = { temp_culture = 135 }
-		PB_Cultures_add_accepted_culture = yes
-
-		hidden_effect = {
-			country_event = {
-				id = ImpCiv_War.4
-				days = 30
-			}		
-		}
 	}
 }
 
-country_event = {# British Victory - British Columbia Integrated
+country_event = {# British Victory - FROM rejected Federation
 	id = ImpCiv_War.4
 	title = ImpCiv_War.4.t
 	desc = ImpCiv_War.4.d
@@ -5918,26 +5872,6 @@ country_event = {# British Victory - British Columbia Integrated
 		}
 
 		add_political_power = 150
-
-		every_state = {
-			limit = {
-				is_core_of = BCL
-			}
-
-			ENG = {
-				add_state_core = PREV
-			}
-		}
-
-		set_temp_variable = { temp_culture = 153 }
-		PB_Cultures_add_accepted_culture = yes
-
-		hidden_effect = {
-			country_event = {
-				id = ImpCiv_War.5
-				days = 30
-			}		
-		}
 	}
 }
 

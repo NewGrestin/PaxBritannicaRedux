@@ -13,6 +13,38 @@ add_namespace = sweden_luddite
 add_namespace = sweden_trade_war
 add_namespace = sweden_debug
 add_namespace = sweden_autocrisis
+add_namespace = sweden_finland
+country_event = { #Sveaborg Falls!
+	id = sweden_finland.1
+	title = sweden_finland.1.t
+	desc = sweden_finland.1.d
+	picture = GFX_report_event_PB_SWE_Ukki
+
+	is_triggered_only = yes
+
+	option = { #Damn it!
+		name = sweden_finland.1.a
+		add_war_support = -0.05
+	}
+
+}
+
+country_event = { #Nyslott Falls!
+	id = sweden_finland.2
+	title = sweden_finland.2.t
+	desc = sweden_finland.2.d
+	picture = GFX_report_event_PB_SWE_Ukki
+
+	is_triggered_only = yes
+
+	option = { #Damn it!
+		name = sweden_finland.2.a
+		add_war_support = -0.05
+	}
+
+}
+
+
 
 country_event = { #BAN PARTIES DEBUG
 	id = sweden_debug.1
@@ -123,6 +155,27 @@ country_event = { #Revolt test
 	}
 }
 
+country_event = {
+	id = sweden_debug.5
+	title = sweden_debug.5.t
+	desc = sweden_debug.5.d
+	picture = GFX_report_event_PB_SWE_Ukki
+
+	is_triggered_only = yes
+	immediate = {
+		SWE_affarsimperium_calculations = yes
+	}
+	option = { # Increase unemployment + crime
+	
+		SWE_automation_crisis_calculations = yes
+	}
+	option = { # Decrease unemployment + crime
+		name = sweden_debug.5.b
+	
+		SWE_automation_crisis_calculations = yes
+	}
+}
+
 country_event = { #Landed Nobility Demand Concessions!
 	id = sweden_statare.1
 	title = sweden_statare.1.t
@@ -174,7 +227,14 @@ country_event = { #Northern way of life
 	
 	option = {
 		name = sweden_flavor.1.a
-		recruit_character = SWE_vasily_levonen
+		add_corps_commander_role = {
+			character = SWE_vasily_levonen
+			skill=5
+			attack_skill=4
+			defense_skill=1
+			planning_skill=2
+			logistics_skill=2
+		}
 	}
 }  
 country_event = { #War Report by Potatotro
@@ -262,6 +322,17 @@ country_event = { # Labour Freefalling
 		name = sweden_flavor.7.a
 		add_stability = -0.05
 		add_manpower = -2567
+		add_to_variable = { 
+			var = SWE_unemployment_rate
+			value = 56000
+			tooltip = SWE_unemployment_rate_add_tt
+		}
+		add_to_variable = { 
+			var = SWE_crime_violent_rate
+			value = 23
+			tooltip = SWE_crime_violent_rate_add_tt
+		}
+		SWE_automation_crisis_calculations = yes
 		hidden_effect = {
 			country_event = { id = sweden_flavor.8 days = 15 }
 		}
@@ -278,6 +349,12 @@ country_event = { # A Crisis Unlike Any Other
 	option = {
 		name = sweden_flavor.8.a
 		add_stability = -0.05
+		add_to_variable = { 
+			var = SWE_unemployment_rate
+			value = 26000
+			tooltip = SWE_unemployment_rate_add_tt
+		}
+		SWE_automation_crisis_calculations = yes
 		hidden_effect = {
 			country_event = { id = sweden_flavor.10 days = 55 }
 		}
@@ -293,6 +370,17 @@ country_event = { # A Permanent Underclass?
 	
 	option = {
 		name = sweden_flavor.9.a
+		add_to_variable = { 
+			var = SWE_unemployment_rate
+			value = 12000
+			tooltip = SWE_unemployment_rate_add_tt
+		}
+		add_to_variable = { 
+			var = SWE_crime_violent_rate
+			value = 12
+			tooltip = SWE_crime_violent_rate_add_tt
+		}
+		SWE_automation_crisis_calculations = yes
 		add_stability = -0.1
 	}
 }
@@ -512,6 +600,31 @@ country_event = { # ikea
 	}
 }
 
+country_event = { # ikea 
+	id = sweden_flavor.23
+	title = sweden_flavor.23.t
+	desc = sweden_flavor.23.d
+	#picture = 
+
+	is_triggered_only = yes
+	
+	option = {
+		name = sweden_flavor.23.a #larp
+	}
+}
+
+country_event = { # ikea 
+	id = sweden_flavor.24
+	title = sweden_flavor.24.t
+	desc = sweden_flavor.24.d
+	#picture = 
+
+	is_triggered_only = yes
+	
+	option = {
+		name = sweden_flavor.24.a #larp
+	}
+}
 
 
 country_event = { #coalition n
@@ -670,7 +783,7 @@ country_event = { #The Queen's Abdication!
 	is_triggered_only = yes
 	immediate = {
 		if = { 
-			limit = { 
+			limit = {
 				is_power_balance_in_range = {
                     id = SWE_hedin_power_balance
                     range < 0.10
@@ -747,10 +860,18 @@ country_event = { #Pummeling the '2nd Anjala Conspiracy'
 		add_manpower = -1566
 		add_opinion_modifier = {
 			target = RUS
-			modifier = autonomous_region
+			modifier = hostile_diplomacy
+		}
+		hidden_effect = {
+			RUS = {
+				add_opinion_modifier = {
+					target = SWE
+					modifier = hostile_diplomacy
+				}
+			}
 		}
 	}
-}  
+}
 country_event = { #Pummeling the '2nd Anjala Conspiracy' Ernst Lidner PArt
 	id = sweden_national.19
 	title = sweden_national.19.t
@@ -1295,8 +1416,14 @@ country_event = { #Finland asks Russia for Ultimatum
 	title = sweden.6.t
 	desc = sweden.6.d
 	#picture = GFX_report_event_generic
-	is_triggered_only = yes
-
+	fire_only_once = yes
+	trigger = {
+		tag = RUS
+		winter_war_active = yes
+		FIN = { 
+			surrender_progress > 0.5
+		}
+	}
 	option = { #Sweden will not move one foot! -RUS
 		name = sweden.6.a
 		RUS = { 
@@ -1399,7 +1526,6 @@ country_event = { #Sweden Recieves the Ultimatum
 
 	option = { #We've no choice.
 		name = sweden.8.a
-		finland_ceasefire = yes
 		news_event = PBNews.379
 		country_event = { id = sweden.9 days = 5 }
 	}
@@ -1515,14 +1641,14 @@ country_event = { #The Cartel Offer (Affars path)
 }
 
 country_event = { #The Coalition Holds
-	id = sweden.15
-	title = sweden.15.t
-	desc = sweden.15.d
+	id = sweden.16
+	title = sweden.16.t
+	desc = sweden.16.d
 	#picture = GFX_report_event_generic
 	is_triggered_only = yes
 
 	option = { #Onwards, to the Polls.
-		name = sweden.15.a
+		name = sweden.16.a
 		add_stability = 0.3
 		add_popularity = {
 			ideology = cn
@@ -1540,14 +1666,14 @@ country_event = { #The Coalition Holds
 }
 
 country_event = { #The Coalition Collapses.
-	id = sweden.16
-	title = sweden.16.t
-	desc = sweden.16.d
+	id = sweden.15
+	title = sweden.15.t
+	desc = sweden.15.d
 	picture = GFX_report_event_PB_SWE_Lindman_Eden_Trygger_Branting
 	is_triggered_only = yes
 
 	option = { #So help me God.
-		name = sweden.16.a
+		name = sweden.15.a
 		deactivate_advisor = SWE_trygger_hog
 		deactivate_advisor = SWE_dahl_ecm
 		deactivate_advisor = SWE_bissmark_iam
@@ -1579,7 +1705,28 @@ country_event = { #AUTOMATION CRISIS STRIKES SWEDEN
 
 	option = { #So help me God.
 		name = sweden.17.a
-		add_ideas = PB_SWE_AutoCrisis99
+		add_dynamic_modifier = { 
+			modifier = SWE_automation_crisis_modifier
+		}
+		add_to_variable = { 
+			var = SWE_unemployment_rate
+			value = 350000
+			tooltip = SWE_unemployment_rate_add_tt
+		}
+		add_to_variable = { 
+			var = SWE_crime_violent_rate
+			value = 34
+			tooltip = SWE_crime_violent_rate_add_tt
+		}
+		hidden_effect = { 
+			clamp_variable = {
+				var = SWE_crime_violent_rate
+				min = 1
+				max = 100
+			}
+		}
+		
+		SWE_automation_crisis_calculations = yes
 		decrease_economic_health_level = yes
 		add_stability = -0.1
 		activate_mission = SWE_northern_riots_mission

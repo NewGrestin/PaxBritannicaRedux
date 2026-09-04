@@ -141,7 +141,7 @@ PB_Debug = {
 		fire_only_once = yes
 
 		complete_effect = {
-			set_country_flag = AME_Won_Imp_War
+			set_country_flag = imperial_civil_war_concluded_AME
 			
 		}
 	}
@@ -220,8 +220,6 @@ PB_Debug = {
 					transfer_state = 331
 					transfer_state = 730
 					transfer_state = 696
-					set_country_flag = AME_Won_Imp_War
-					set_global_flag = Imp_Civil_War_Over
 					news_event = {
 						id = PBNews.242
 						days = 1
@@ -270,7 +268,7 @@ PB_Debug = {
 
 
 				set_variable = { global.ENG_Empire_Tension = 100 }
-				
+				set_global_flag = imperial_civil_war_ongoing
 				imp_civilwar_setup_events = yes
 				#custom_effect_tooltip = AME_Impending_Imperial_Civil_War_tt
 		}
@@ -534,6 +532,29 @@ PB_Debug = {
 
 		complete_effect = {
 			load_focus_tree = PB_SCA_Exile_Congress
+		}
+	}
+
+	PB_Debug_Revolution_invade_america = {
+		icon = generic_decision
+
+		visible = {
+			is_debug = yes
+			tag = SCA
+		}
+
+		cost = 0
+		ai_will_do = {
+			factor = 0
+		}
+
+		fire_only_once = yes
+
+		complete_effect = {
+			activate_targeted_decision = {
+				target = AME
+				decision = SCA_Reveal_Ourselves
+			}
 		}
 	}
 
@@ -1091,39 +1112,6 @@ PB_Debug = {
 			add_manpower = 10000
 		}
 	}
-	
-	CONCERTOFEUROPE_FIN_request_russian_peace = {
-
-		icon = generic_decision
-
-		cost = 0
-
-		ai_will_do = {
-			factor = 0
-			modifier = { 
-				add = 100
-				surrender_progress > 0.6
-			}
-		}
-
-		fire_only_once = yes
-		allowed = {
-			always = yes
-		}
-		visible = { 
-			OR = { 
-				is_ai = yes
-				is_debug = yes
-			}
-			original_tag = FIN
-		}
-		complete_effect = {
-			RUS = {
-				country_event = { id = sweden.6 } 
-			}
-		}
-	}
-
 	CONCERTOFEUROPE_FIN_rejoin_russia = {
 
 		icon = generic_decision
@@ -1159,37 +1147,7 @@ PB_Debug = {
 			}
 		}
 	}
-	CONCERTOFEUROPE_hungarian_civil_war_timer = { 
-		icon = GFX_decision_generic_scorched_earth
-		selectable_mission = no
-		activation = {
-			HUN = { 
-				has_war_with = HWA
-			}
-		}
-		allowed = {
-			tag = HUN
-		}
-		available = { 
-			hidden_trigger = { 
-				always = no
-			}
-		}
-		visible = { 
-			OR = { 
-				is_debug = yes
-				is_ai = yes
-			}
-		}
-		is_good = yes
-		fire_only_once = yes
-				
-		days_mission_timeout = 170
-
-		timeout_effect = {
-			country_event = { id = balkwar.18 days = 2 }
-		}
-	} 
+	
 	GBW_Danubian_Entente_Victory = { 
 
 		visible = { 
@@ -1345,6 +1303,83 @@ PB_Debug = {
 			}
 			RUS = {
 				activate_mission = PB_AFG_RUS_Omani_Intervention_Timer
+			}
+		}
+	}
+	
+	PB_debug_orbit_war = {
+		visible = { 
+			is_debug = yes
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+		
+		complete_effect = {
+			set_global_flag = Global_Orbit_Wars_Active
+			unlock_decision_category_tooltip = PB_Orbit_Wars_Decisions
+
+			set_variable = { var = Orbit_Wars_Tab value = 0 }
+			set_variable = { var = Current_Research_Points value = 0 }
+			set_variable = { var = Monthly_Research_Points value = 10 }
+			set_variable = { var = OW_Rocket_Val value = 1 }
+			set_variable = { var = OW_Fuel_Val value = 1 }
+			set_variable = { var = OW_Component_Val value = 1 }
+			
+			OW_check_components_failchance_scripted_effect = yes
+
+			if = {
+				limit = {
+					RUS = {
+						is_ai = yes
+					}
+				}
+				RUS = {
+					set_variable = { var = Monthly_Research_Points value = 20 }
+				}
+			}
+
+			news_event = {
+				id = PBNews.214
+				days = 1
+			}
+		}
+	}
+	
+	PB_debug_orbit_war_unlock_all_techs = {
+		visible = {
+			is_debug = yes
+			has_global_flag = Global_Orbit_Wars_Active
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+		
+		complete_effect = {
+			ROOT = {
+				country_event = OrbitDebug.1
+			}
+		}
+	}
+	
+	PB_debug_orbit_war_add_science = {
+		visible = {
+			is_debug = yes
+			has_global_flag = Global_Orbit_Wars_Active
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+		
+		complete_effect = {
+			ROOT = {
+				add_to_variable = {
+					var = Current_Research_Points
+					value = 900
+				}
 			}
 		}
 	}

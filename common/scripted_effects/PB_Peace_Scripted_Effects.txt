@@ -586,7 +586,9 @@ RRU_LON_setup = {
 				}
 			}
 			set_country_flag = ENG_WW2_VICTOR
+			news_event = PBNews.187
 		}
+		
 	}
 	
 	PET = {
@@ -631,6 +633,35 @@ RRU_LON_setup = {
 }
 
 imp_civilwar_peace_settlement = { 
+	if = { 
+		limit = { QUE = { is_in_faction_with = ENG } }
+		set_country_flag = QUE_was_in_ENG_faction
+	}
+	if = {
+		limit = { BCL = { is_in_faction_with = ENG } }
+		set_country_flag = BCL_was_in_ENG_faction
+	}
+	if = { 
+		limit = {
+			has_country_flag = AME_peaced_during_ICW
+		}
+		ENG = { 
+			every_other_country = {
+				limit = {
+					is_in_faction_with = ROOT
+					has_capitulated = no
+					OR = {
+						is_subject = no
+						overlord = { has_capitulated = yes }
+					}
+				}
+				set_country_flag = former_imp_member
+				faction_collapse_member_peace_effect = yes
+			}
+		}
+	}
+	set_global_flag = imperial_civil_war_concluded_AME
+	set_global_flag = imperial_civil_war_concluded
 	ENG = { 
 		every_owned_state = { 
 			limit = { 
@@ -644,23 +675,14 @@ imp_civilwar_peace_settlement = {
 		}
 	}
 	if = { 
-		limit = { 
-			QUE = { 
-				is_in_faction_with = ENG
-			}
-		}
-		ENG = { 
-			end_puppet = QUE
-		}
+		limit = { has_country_flag = QUE_was_in_ENG_faction }
+		ENG = { end_puppet = QUE }
 		QUE = { 
 			leave_faction = yes
 			AME = { add_to_faction = QUE }
 			drop_cosmetic_tag = yes
 			set_cosmetic_tag = QUE_Republic
-			set_politics = {
-				ruling_party = cn
-				elections_allowed = no
-			}
+			set_politics = { ruling_party = cn elections_allowed = no }
 			kill_country_leader = yes
 			create_country_leader = {
 				name = "Louis-Alexandre Taschereau"
@@ -668,28 +690,19 @@ imp_civilwar_peace_settlement = {
 				picture = "Portrait_QUE_Louis_Alexandre_Taschereau.dds"
 				expire = "1965.1.1"
 				ideology = CN_VARIANT_01
-			
 			}
 		}
 	}
+
 	if = {
-		limit = {
-			BCL = { 
-				is_in_faction_with = ENG
-			}
-		}
-		ENG = { 
-			end_puppet = BCL
-		}
+		limit = { has_country_flag = BCL_was_in_ENG_faction }
+		ENG = { end_puppet = BCL }
 		BCL = { 
 			leave_faction = yes
 			AME = { add_to_faction = BCL }
 			drop_cosmetic_tag = yes
 			set_cosmetic_tag = BCL_Republic
-			set_politics = {
-				ruling_party = ss
-				elections_allowed = no
-			}
+			set_politics = { ruling_party = ss elections_allowed = no }
 			kill_country_leader = yes
 			create_country_leader = {
 				name = "Richard Gavin Reid"
@@ -762,8 +775,53 @@ middle_east_peace_effect = {
 		}
 	}
 }
-india_peace_effect = { 
-	ROOT = { 
+india_peace_effect = {
+	RAJ = { 
+		if = {
+			limit = { is_faction_leader = yes }
+			every_other_country = {
+				limit = {
+					is_in_faction_with = PREV
+					is_central_asian_tag = no
+					has_capitulated = no
+				}
+				if = {
+					limit = { is_subject_of = PREV }
+					#remove_puppet_and_leave_faction = yes
+				}
+				else_if = {
+					limit = { is_subject = no }
+					leave_faction = yes
+				}
+				peace_out_non_neighbours_after_leaving_faction = yes
+			}
+			dismantle_faction = yes
+		}
+		else = {
+			leave_faction = yes
+		}
+		every_country = { # consolidate all territory to be under RAJ for the peacedeal
+			limit = { 
+				OR = {
+					is_subject_of = PREV 
+					is_ally_of_PREV = yes
+				}
+				any_owned_state = {
+					is_india = yes
+				}
+			}
+			every_owned_state = { 
+				limit = { 
+					is_india = yes
+				}
+				transfer_state_to = PREV
+			}
+		}
+	} 
+	every_enemy_country = { 
+		limit = { 
+			is_indian_tag = yes
+		}
 		every_enemy_country = {
 			limit = {
 				is_valid_peace_target = yes
@@ -772,55 +830,14 @@ india_peace_effect = {
 			white_peace_with_ROOT = yes
 		}
 	}
-	ENG = { 
-		every_allied_country = {
-			limit = { 
-				any_owned_state = {
-					is_india = yes
-				}
-			}
-			every_owned_state = { 
-				limit = { 
-					OR = { 
-						is_india = yes
-					}
-				}
-				transfer_state_to = ROOT
-			}
-		}
-		every_subject_country = {
-			limit = { 
-				any_owned_state = {
-					is_india = yes
-				}
-			}
-			every_owned_state = { 
-				limit = { 
-					OR = { 
-						is_india = yes
-					}
-				}
-				transfer_state_to = ROOT
-			}
-		}
-		if = { 
-			limit = { 
-				any_owned_state = {
-					is_india = yes
-				}
-			}
-			every_owned_state = { 
-				limit = { 
-					OR = { 
-						is_india = yes
-					}
-				}
-				transfer_state_to = ROOT
-			}
-		}
+
+	start_peace_conference = {
+		tag = RAJ
+		score_factor = 1
+		winner_scope = ALL
+		loser_scope = FACTION
 	}
 }
-
 AME_peace_FRA = { 
 	#news_event = PBNews.186
 	every_state = {
@@ -859,6 +876,18 @@ AME_peace_FRA = {
 				}
 			}
 			end_puppet = PREV
+		}
+		every_allied_country = {
+			limit = {
+				NOT = { tag = AME }
+				NOT = { tag = ENG }
+				OR = {
+					is_in_europe = yes
+					tag = CRN
+					tag = BAF
+				}
+			}
+			leave_faction = yes
 		}
 		leave_faction = yes
 	}
