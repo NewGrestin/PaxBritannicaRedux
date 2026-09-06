@@ -23,6 +23,108 @@ PB_Debug = {
 			}
 		}
 	}
+	PB_dirty = {
+		icon = generic_decision
+
+		visible = {
+			is_debug = yes
+		}
+
+		cost = 0
+		ai_will_do = {
+			factor = 0
+		}
+
+		complete_effect = {
+			ROOT = { 
+				mark_focus_tree_layout_dirty = yes
+			}
+		}
+	}
+	PB_sweden_ceasefire_test = { 
+
+		visible = { 
+			is_debug =yes
+		}
+
+		ai_will_do = {
+			factor = 0
+		}
+
+		complete_effect = {
+			activate_targeted_decision = {
+                target = var:110.owner
+                decision = SWE_declare_war_norway
+            }
+		}
+	}
+	PB_sweden_hedin_cabinet_test = { 
+
+		visible = { 
+			is_debug =yes
+			tag = SWE
+		}
+
+		ai_will_do = {
+			factor = 0
+		}
+
+		complete_effect = {
+			add_dynamic_modifier = {
+				modifier = SWE_courtyard_camarilla_modifier
+			}
+			SWE_Ban_HedinLoyalists_Support = yes
+			set_variable = { var = SWE_HedinLoyalists_Support value = 65 }
+			set_variable = { var = SWE_LundConservatives_Support value = 55 }
+			set_variable = { var = SWE_Kronparteit_Support value = 30 }
+			set_variable = { var = SWE_Nobility_Support value = 50 }
+			set_variable = { var = SWE_Luddites_Support value = 20 }
+			set_variable = { var = SWE_Transcendentalists_Support value = 45 }
+			SWE_hedin_loyalists_calculations = yes
+			SWE_lund_conservatives_calculations = yes
+			SWE_kronparteit_calculations = yes
+			SWE_nobility_calculations = yes
+			SWE_luddites_calculations = yes
+			SWE_transcendentalists_calculations = yes
+			
+			complete_national_focus = SWE_forth_marche_revenge
+		}
+	}
+	PB_sweden_riots = { 
+
+		visible = { 
+			is_debug =yes
+			tag = SWE
+		}
+
+		ai_will_do = {
+			factor = 0
+		}
+
+		complete_effect = {
+			
+			complete_national_focus = SWE_forth_marche_revenge
+		}
+	}
+
+	PB_Start_middle_east_war = {
+		icon = generic_decision
+
+		visible = {
+			is_debug = yes
+		}
+
+		cost = 0
+		ai_will_do = {
+			factor = 0
+		}
+
+		fire_only_once = yes
+
+		complete_effect = {
+			set_global_flag = PB_middle_east_war
+		}
+	}
     PB_Debug_America_Peace_With_Britain = {
 		icon = generic_decision
 
@@ -39,7 +141,7 @@ PB_Debug = {
 		fire_only_once = yes
 
 		complete_effect = {
-			set_country_flag = AME_Won_Imp_War
+			set_country_flag = imperial_civil_war_concluded_AME
 			
 		}
 	}
@@ -118,8 +220,6 @@ PB_Debug = {
 					transfer_state = 331
 					transfer_state = 730
 					transfer_state = 696
-					set_country_flag = AME_Won_Imp_War
-					set_global_flag = Imp_Civil_War_Over
 					news_event = {
 						id = PBNews.242
 						days = 1
@@ -168,7 +268,7 @@ PB_Debug = {
 
 
 				set_variable = { global.ENG_Empire_Tension = 100 }
-				
+				set_global_flag = imperial_civil_war_ongoing
 				imp_civilwar_setup_events = yes
 				#custom_effect_tooltip = AME_Impending_Imperial_Civil_War_tt
 		}
@@ -435,6 +535,29 @@ PB_Debug = {
 		}
 	}
 
+	PB_Debug_Revolution_invade_america = {
+		icon = generic_decision
+
+		visible = {
+			is_debug = yes
+			tag = SCA
+		}
+
+		cost = 0
+		ai_will_do = {
+			factor = 0
+		}
+
+		fire_only_once = yes
+
+		complete_effect = {
+			activate_targeted_decision = {
+				target = AME
+				decision = SCA_Reveal_Ourselves
+			}
+		}
+	}
+
 	PB_Debug_AME_Elect_Liberals = {
 		icon = generic_decision
 
@@ -480,7 +603,7 @@ PB_Debug = {
 				every_navy_leader = { 
 					limit = {
 						NOT = {
-							has_trait = trait_AME_British_Loyalties
+							has_trait = AME_british_loyalties
 						}
 					}
 					set_nationality = SCA
@@ -989,7 +1112,42 @@ PB_Debug = {
 			add_manpower = 10000
 		}
 	}
+	CONCERTOFEUROPE_FIN_rejoin_russia = {
 
+		icon = generic_decision
+
+		cost = 0
+
+		ai_will_do = {
+			factor = 0
+			modifier = { 
+				add = 100
+				has_war = no
+			}
+		}
+
+		fire_only_once = yes
+		allowed = {
+			always = yes
+		}
+		visible = { 
+			OR = { 
+				is_ai = yes
+				is_debug = yes
+			}
+			original_tag = FIN
+		}
+		complete_effect = {
+			RUS = {
+				set_autonomy = {
+					target = FIN
+					autonomous_state = autonomy_PB_Imperial_Autonomy
+					freedom_level = 0.7
+				}
+			}
+		}
+	}
+	
 	GBW_Danubian_Entente_Victory = { 
 
 		visible = { 
@@ -1016,7 +1174,7 @@ PB_Debug = {
 		}
 
 		complete_effect = {
-			GBW_Coalition_Victory = yes
+			GBW_Danubian_Coalition_Victory = yes
 		}
 	}
 	
@@ -1145,6 +1303,83 @@ PB_Debug = {
 			}
 			RUS = {
 				activate_mission = PB_AFG_RUS_Omani_Intervention_Timer
+			}
+		}
+	}
+	
+	PB_debug_orbit_war = {
+		visible = { 
+			is_debug = yes
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+		
+		complete_effect = {
+			set_global_flag = Global_Orbit_Wars_Active
+			unlock_decision_category_tooltip = PB_Orbit_Wars_Decisions
+
+			set_variable = { var = Orbit_Wars_Tab value = 0 }
+			set_variable = { var = Current_Research_Points value = 0 }
+			set_variable = { var = Monthly_Research_Points value = 10 }
+			set_variable = { var = OW_Rocket_Val value = 1 }
+			set_variable = { var = OW_Fuel_Val value = 1 }
+			set_variable = { var = OW_Component_Val value = 1 }
+			
+			OW_check_components_failchance_scripted_effect = yes
+
+			if = {
+				limit = {
+					RUS = {
+						is_ai = yes
+					}
+				}
+				RUS = {
+					set_variable = { var = Monthly_Research_Points value = 20 }
+				}
+			}
+
+			news_event = {
+				id = PBNews.214
+				days = 1
+			}
+		}
+	}
+	
+	PB_debug_orbit_war_unlock_all_techs = {
+		visible = {
+			is_debug = yes
+			has_global_flag = Global_Orbit_Wars_Active
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+		
+		complete_effect = {
+			ROOT = {
+				country_event = OrbitDebug.1
+			}
+		}
+	}
+	
+	PB_debug_orbit_war_add_science = {
+		visible = {
+			is_debug = yes
+			has_global_flag = Global_Orbit_Wars_Active
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+		
+		complete_effect = {
+			ROOT = {
+				add_to_variable = {
+					var = Current_Research_Points
+					value = 900
+				}
 			}
 		}
 	}

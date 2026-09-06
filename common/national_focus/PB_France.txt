@@ -1249,7 +1249,7 @@ focus_tree = {
 			set_temp_variable = { number = -0.35 }
 			FRA_unemployment_change = yes
 			modify_building_resources = {
-				building = farm
+				building = agroponics_complex
 				resource = grain
 				amount = 1
 			}
@@ -1766,9 +1766,10 @@ focus_tree = {
 		}
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 	}
+	###DORIOT LEFT-WING TREE
 	focus = {
 		id = FRA_cultural_revival
-		icon = GFX_goal_Focus_FRA_Carolingian_Legacy
+		icon = GFX_goal_FRA_cultural_revival
 		cost = 30
 
 		relative_position_id = FRA_doriot_takeover
@@ -1786,9 +1787,17 @@ focus_tree = {
 			}
 		}
 		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_left
+				has_country_flag = FRA_Doriot_center
+			}
+		}
+		
 		prerequisite = {
 			focus = FRA_new_france
 		}
+		
 		select_effect = {
 			hidden_effect = {
 				add_ideas = FRA_cultural_reconstruction
@@ -1796,7 +1805,7 @@ focus_tree = {
 			}
 		}
 		completion_reward = {
-			custom_effect_tooltip = idea_active_during_focus_tt
+			custom_effect_tooltip = tooltip_effect_during_focus
 			show_ideas_tooltip = FRA_cultural_reconstruction
 			custom_effect_tooltip = tooltip_white_line
 			country_event = { id = france_events.15 hours = 3 }
@@ -1807,9 +1816,9 @@ focus_tree = {
 		}
 		search_filters = {FOCUS_FILTER_STABILITY}
 	}
-		focus = {
-		id = FRA_propose_european_commonwealth
-		icon = GFX_goal_Generic_German_Soldiers2
+	focus = {
+		id = FRA_enlightened_race
+		icon = GFX_goal_FRA_enlightened_race
 		cost = 30
 
 		relative_position_id = FRA_doriot_takeover
@@ -1830,16 +1839,51 @@ focus_tree = {
 		prerequisite = {
 			focus = FRA_cultural_revival
 		}
+		
 		completion_reward = {
-			add_political_power = 50
-			set_temp_variable = { number = -4 }
-			FRA_factionalism_change = yes
+			set_temp_variable = { number = 5 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			16 = {
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			19 = {
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			32 = {
+				add_building_construction = {
+					type = research_center
+					level = 1
+					instant_build = yes
+				}
+			}
+			custom_effect_tooltip = tooltip_white_line
+			if = {
+				limit = { has_idea = PB_minority_ethnic_segregation }
+				swap_ideas = {
+					remove_idea = PB_minority_ethnic_segregation
+					add_idea = PB_minority_forceful_integration
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_minority_forceful_integration }
+				add_political_power = 150
+			}
+			else = { add_ideas = PB_minority_forceful_integration }
 		}
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
 	}
 	focus = {
-		id = FRA_the_state_that_gives
-		icon = GFX_goal_Generic_Army_Unity
+		id = FRA_mythical_task
+		icon = GFX_goal_FRA_mythical_task
 		cost = 30
 
 		relative_position_id = FRA_doriot_takeover
@@ -1858,8 +1902,88 @@ focus_tree = {
 		}
 		
 		prerequisite = {
-			focus = FRA_propose_european_commonwealth
+			focus = FRA_enlightened_race
 		}
+		completion_reward = {
+			SD_MIL_growth_progress_moderate = yes
+			country_event = { id = france_foreign_policy_events.1 days = 1 }
+			hidden_effect = {
+				GER = { country_event = { id = france_foreign_policy_events.1 days = 1 } }
+			}
+		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY FOCUS_FILTER_RESEARCH FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_rally_technocrats
+		icon = GFX_goal_FRA_rally_technocrats
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		
+		x = 1
+		y = 6
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_left
+				has_country_flag = FRA_Doriot_corporatist
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_new_france
+		}
+		
+		completion_reward = {
+			SD_ECON_growth_progress_small = yes
+			SD_IND_growth_progress_small = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_to_variable = { FRA_PD_research_speed_factor = 0.05 tooltip = research_speed_factor_tt }
+			add_to_variable = { FRA_PD_production_factory_efficiency_gain_factor = 0.05 tooltip = production_factory_efficiency_gain_factor_tt }
+			custom_effect_tooltip = tooltip_white_line
+			set_temp_variable = { number = -10 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_popularity = { ideology = ds popularity = 0.05 }
+			add_popularity = { ideology = an popularity = 0.03 }
+		}
+		search_filters = { FOCUS_FILTER_RESEARCH }
+	}
+	focus = {
+		id = FRA_solidarism
+		icon = GFX_Focus_FRA_solidarism
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 7
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_rally_technocrats
+		}
+		
 		completion_reward = {
 			SD_POV_growth_progress_small = yes
 			SD_ECON_growth_progress_small = yes
@@ -1880,94 +2004,11 @@ focus_tree = {
 			}
 			else = { add_ideas = PB_moderate_state_welfare }
 		}
-		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY FOCUS_FILTER_RESEARCH FOCUS_FILTER_FACTIONALISM }
-	}
-	focus = {
-		id = FRA_racial_science
-		icon = GFX_goal_Focus_Examine_Foreign_Science
-		cost = 30
-
-		relative_position_id = FRA_doriot_takeover
-		x = 1
-		y = 6
-		
-		ai_will_do = {
-			factor = 100
-		}
-
-		available = {
-			has_country_leader = {
-				character = FRA_jacques_doriot
-				ruling_only = yes
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_new_france
-		}
-		completion_reward = {
-			if = {
-				limit = { has_idea = PB_minority_ethnic_segregation }
-				swap_ideas = {
-					remove_idea = PB_minority_ethnic_segregation
-					add_idea = PB_minority_ethnic_hierarchy
-				}
-			}
-			else_if = {
-				limit = { has_idea = PB_minority_ethnic_hierarchy }
-				add_political_power = 150
-			}
-			else = { add_ideas = PB_minority_ethnic_hierarchy }
-
-			if = {
-				limit = { has_idea = PB_sociogenetics_system_illnesses }
-				swap_ideas = {
-					remove_idea = PB_sociogenetics_system_illnesses
-					add_idea = PB_sociogenetics_system_undesirables
-				}
-			}
-			else_if = {
-				limit = { has_idea = PB_sociogenetics_system_undesirables }
-				add_political_power = 150
-			}
-			else = { add_ideas = PB_sociogenetics_system_undesirables }
-		}
-		search_filters = { FOCUS_FILTER_RESEARCH }
-	}
-	focus = {
-		id = FRA_purge_catholic_influence
-		icon = GFX_Focus_Focus_Generic_Molotov
-		cost = 30
-
-		relative_position_id = FRA_doriot_takeover
-		x = 1
-		y = 7
-		
-		ai_will_do = {
-			factor = 100
-		}
-
-		available = {
-			has_country_leader = {
-				character = FRA_jacques_doriot
-				ruling_only = yes
-			}
-		}
-		
-		prerequisite = {
-			focus = FRA_racial_science
-		}
-		completion_reward = {
-			add_stability = -0.1
-			add_popularity = { ideology = ni popularity = 0.2 }
-			set_temp_variable = { number = -8 }
-			FRA_fervour_change = yes
-		}
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_NATIONALISM FOCUS_FILTER_STABILITY }
 	}
 	focus = {
-		id = FRA_expel_germans
-		icon = GFX_goal_FRA_kill_the_eagle
+		id = FRA_regional_synchronicity
+		icon = GFX_goal_FRA_regional_synchronicity
 		cost = 20
 
 		relative_position_id = FRA_doriot_takeover
@@ -1986,18 +2027,270 @@ focus_tree = {
 		}
 		
 		prerequisite = {
-			focus = FRA_purge_catholic_influence
+			focus = FRA_solidarism
 		}
+		
 		completion_reward = {
-			add_stability = -0.05
-			country_event = { id = france_foreign_policy_events.1 days = 1 }
-			hidden_effect = {
-				GER = { country_event = { id = france_foreign_policy_events.1 days = 1 } }
+			set_temp_variable = { number = 3 }
+			FRA_fervour_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			PB_state_focus_upgrade = yes
+			custom_effect_tooltip = tooltip_white_line
+			every_owned_state = {
+				limit = {
+					is_core_of = FRA
+				}
+				add_dynamic_modifier = { modifier = FRA_regional_synchronicity_modifier }
 			}
 		}
 		search_filters = { FOCUS_FILTER_FOREIGN_POLICY FOCUS_FILTER_STABILITY }
 	}
-		focus = {
+	###DORIOT RIGHT-WING TREE
+	focus = {
+		id = FRA_pillar_of_decency
+		icon = GFX_goal_FRA_pillar_of_decency
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 6
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_right
+				has_country_flag = FRA_Doriot_corporatist
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_new_france
+		}
+		
+		select_effect = {
+			
+		}
+		completion_reward = {
+			if = {
+				limit = { has_idea = PB_minority_ethnic_segregation }
+				swap_ideas = {
+					remove_idea = PB_minority_ethnic_segregation
+					add_idea = PB_minority_ethnic_hierarchy
+				}
+			}
+			else_if = {
+				limit = { has_idea = PB_minority_ethnic_hierarchy }
+				add_political_power = 150
+			}
+			else = { add_ideas = PB_minority_ethnic_hierarchy }
+		}
+		search_filters = {FOCUS_FILTER_STABILITY}
+	}
+	focus = {
+		id = FRA_party_mythos
+		icon = GFX_goal_FRA_party_mythos
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 7
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_pillar_of_decency
+		}
+		
+		completion_reward = {
+			set_temp_variable = { number = 5 }
+			FRA_fervour_change = yes
+		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_labour_family_country
+		icon = GFX_goal_FRA_labour_family_country
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = -1
+		y = 8
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_party_mythos
+		}
+		completion_reward = {
+			unlock_decision_tooltip = FRA_Extended_Shifts
+			unlock_decision_tooltip = FRA_Restore_Social_Laws
+			custom_effect_tooltip = tooltip_white_line
+			add_ideas = FRA_labour_family_country
+			custom_effect_tooltip = tooltip_white_line
+			if = {
+				limit = { has_idea = volunteer_only }
+				swap_ideas = {
+					remove_idea = volunteer_only
+					add_idea = limited_conscription
+				}
+			}
+			else_if = {
+				limit = { has_idea = limited_conscription }
+				swap_ideas = {
+					remove_idea = limited_conscription
+					add_idea = extensive_conscription
+				}
+			}
+			else_if = {
+				limit = { has_idea = extensive_conscription }
+				swap_ideas = {
+					remove_idea = extensive_conscription
+					add_idea = service_by_requirement
+				}
+			}
+			else = { add_political_power = 150 add_war_support = 0.05 }
+			exempt_demob = yes
+		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY FOCUS_FILTER_RESEARCH FOCUS_FILTER_FACTIONALISM }
+	}
+	focus = {
+		id = FRA_rally_ultras
+		icon = GFX_goal_FRA_rally_ultras
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		
+		x = 1
+		y = 6
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		allow_branch = {
+			OR = {
+				has_country_flag = FRA_Doriot_right
+				has_country_flag = FRA_Doriot_center
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_new_france
+		}
+		
+		completion_reward = {
+			set_temp_variable = { number = -10 }
+			FRA_factionalism_change = yes
+			custom_effect_tooltip = tooltip_white_line
+			army_experience = 25
+			air_experience = 10
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = FRA_Camelots_tt
+			custom_effect_tooltip = tooltip_white_line
+			add_popularity = { ideology = rc popularity = 0.05 }
+			add_popularity = { ideology = ds popularity = 0.03 }
+			hidden_effect = {
+				load_oob = FRA_Camelots
+			}
+		}
+		search_filters = { FOCUS_FILTER_RESEARCH }
+	}
+	focus = {
+		id = FRA_crownless_king
+		icon = GFX_goal_FRA_crownless_king
+		cost = 30
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 7
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_rally_ultras
+		}
+		completion_reward = {
+			add_country_leader_trait = PB_FRA_Crownless_King_trait
+		}
+		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_NATIONALISM FOCUS_FILTER_STABILITY }
+	}
+	focus = {
+		id = FRA_three_bodies_one_nation
+		icon = GFX_goal_FRA_three_bodies_one_nation
+		cost = 20
+
+		relative_position_id = FRA_doriot_takeover
+		x = 1
+		y = 8
+		
+		ai_will_do = {
+			factor = 100
+		}
+
+		available = {
+			has_country_leader = {
+				character = FRA_jacques_doriot
+				ruling_only = yes
+			}
+		}
+		
+		prerequisite = {
+			focus = FRA_crownless_king
+		}
+		completion_reward = {
+			unlock_decision_tooltip = FRA_Empower_Provincial_Council
+			unlock_decision_tooltip = FRA_Empower_Corporations_Council
+			unlock_decision_tooltip = FRA_Empower_Imperial_Council
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = FRA_Three_Bodies_One_Nation_tt
+		}
+		search_filters = { FOCUS_FILTER_FOREIGN_POLICY FOCUS_FILTER_STABILITY }
+	}
+	focus = {
 		id = FRA_manifest_destiny
 		icon = GFX_goal_Focus_FRA_Manifest_Destiny
 		cost = 30
@@ -2018,10 +2311,10 @@ focus_tree = {
 		}
 		
 		prerequisite = {
-			focus = FRA_the_state_that_gives
-		}
-		prerequisite = {
-			focus = FRA_expel_germans
+			focus = FRA_mythical_task
+			focus = FRA_labour_family_country
+			focus = FRA_three_bodies_one_nation
+			focus = FRA_regional_synchronicity
 		}
 		completion_reward = {
 			set_temp_variable = { number = -10 }
@@ -2190,6 +2483,7 @@ focus_tree = {
 		prerequisite = {
 			focus = FRA_year_one_constitution
 		}
+		
 		completion_reward = {
 			SD_POV_growth_progress_moderate = yes
 			custom_effect_tooltip = tooltip_white_line
@@ -2282,6 +2576,7 @@ focus_tree = {
 				}
 			}
 			else = { add_political_power = 150 add_war_support = 0.05 }
+			exempt_demob = yes
 		}
 		search_filters = { FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY } 
 	}
@@ -2370,6 +2665,7 @@ focus_tree = {
 				add_ideas = extensive_conscription
 			}
 			else = { add_political_power = 150 }
+			exempt_demob = yes
 		}
 		search_filters = { FOCUS_FILTER_NATIONALISM FOCUS_FILTER_FACTIONALISM FOCUS_FILTER_MANPOWER FOCUS_FILTER_INDUSTRY }
 	}
@@ -3331,7 +3627,7 @@ focus_tree = {
 			23 = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
-					type = steel_mill
+					type = mineral_fabricator
 					level = 1
 					instant_build = yes
 				}
@@ -3339,7 +3635,7 @@ focus_tree = {
 			17 = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
-					type = steel_mill
+					type = mineral_fabricator
 					level = 1
 					instant_build = yes
 				}
@@ -3347,7 +3643,7 @@ focus_tree = {
 			15 = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
-					type = steel_mill
+					type = mineral_fabricator
 					level = 1
 					instant_build = yes
 				}
@@ -3679,11 +3975,27 @@ focus_tree = {
 		completion_reward = {
 			if = {
 				limit = { NOT = { has_dlc = "Arms Against Tyranny" } }
-				custom_effect_tooltip = FRA_improve_MAS_tt
+				custom_effect_tooltip = improves_designer_tt
+				if = {
+					limit = { has_idea = FRA_mas }
+					swap_ideas = {
+						remove_idea = FRA_mas
+						add_idea = FRA_mas_improved
+					}
+				}
+				else = {
+					effect_tooltip = {
+						swap_ideas = {
+							remove_idea = FRA_mas
+							add_idea = FRA_mas_improved
+						}
+					}
+				}
 			}
 			else = {
 				mio:FRA_mas_organization = {
 					add_mio_funds = 200
+					add_mio_funds_gain_factor = 0.15
 					add_mio_size = 1
 				}
 			}
@@ -4177,7 +4489,7 @@ focus_tree = {
 			add_ideas = FRA_investing_in_city
 		}
 		completion_reward = {
-			custom_effect_tooltip = idea_active_during_focus_tt
+			custom_effect_tooltip = tooltip_effect_during_focus
 			show_ideas_tooltip = FRA_investing_in_city
 			hidden_effect = {
 				remove_ideas = FRA_investing_in_city
@@ -4233,7 +4545,7 @@ focus_tree = {
 			add_ideas = FRA_investing_in_city
 		}
 		completion_reward = {
-			custom_effect_tooltip = idea_active_during_focus_tt
+			custom_effect_tooltip = tooltip_effect_during_focus
 			show_ideas_tooltip = FRA_investing_in_city
 			hidden_effect = {
 				remove_ideas = FRA_investing_in_city
@@ -4289,7 +4601,7 @@ focus_tree = {
 			add_ideas = FRA_investing_in_city
 		}
 		completion_reward = {
-			custom_effect_tooltip = idea_active_during_focus_tt
+			custom_effect_tooltip = tooltip_effect_during_focus
 			show_ideas_tooltip = FRA_investing_in_city
 			hidden_effect = {
 				remove_ideas = FRA_investing_in_city
@@ -4345,7 +4657,7 @@ focus_tree = {
 			add_ideas = FRA_investing_in_city
 		}
 		completion_reward = {
-			custom_effect_tooltip = idea_active_during_focus_tt
+			custom_effect_tooltip = tooltip_effect_during_focus
 			show_ideas_tooltip = FRA_investing_in_city
 			hidden_effect = {
 				remove_ideas = FRA_investing_in_city
@@ -4400,7 +4712,7 @@ focus_tree = {
 			add_ideas = FRA_investing_in_city
 		}
 		completion_reward = {
-			custom_effect_tooltip = idea_active_during_focus_tt
+			custom_effect_tooltip = tooltip_effect_during_focus
 			show_ideas_tooltip = FRA_investing_in_city
 			hidden_effect = {
 				remove_ideas = FRA_investing_in_city
@@ -4920,6 +5232,10 @@ focus_tree = {
 
 
 		completion_reward = {
+			17 = { set_demilitarized_zone = no } #Muerthe
+			972 = { set_demilitarized_zone = no } #Neuchatel
+			1206 = { set_demilitarized_zone = no } #Moselle
+			1207 = { set_demilitarized_zone = no } #Verdun
 			add_named_threat = { threat = 5 name = FRA_lorraine_remilitarization }
 			set_temp_variable = { number = 6 }
 			FRA_fervour_change = yes
@@ -5144,23 +5460,44 @@ focus_tree = {
 		completion_reward = {
 			set_temp_variable = { number = 4 }
 			FRA_fervour_change = yes
-			3 = {
-				add_claim_by = FRA
+			every_state = {
+				limit = {
+					OR = { 
+						state = 6
+						state = 1504
+						state = 34
+						state = 911
+						state = 1580
+						state = 910
+					}
+				}
+				add_claim_of_ROOT = yes
+				enable_state_integration_75_compliance = yes
 			}
-			6 = {
-				add_claim_by = FRA
+			every_state = {
+				limit = {
+					OR = { 
+						state = 28
+						state = 1191
+						state = 8
+					}
+				}
+				add_claim_of_ROOT = yes
+				enable_state_integration_50_compliance = yes
 			}
-			35 = {
-				add_claim_by = FRA
+			every_state = {
+				limit = {
+					OR = { 
+						state = 1183
+						state = 42
+						state = 909
+					}
+				}
+				add_claim_of_ROOT = yes
+				enable_state_integration_90_compliance = yes
 			}
-			7 = {
-				add_claim_by = FRA
-			}
-			36 = {
-				add_claim_by = FRA
-			}
-			940 = {
-				add_claim_by = FRA
+			972 = { 
+				add_core_of = ROOT
 			}
 		}
 	}
@@ -5418,43 +5755,88 @@ focus_tree = {
 		ai_will_do = {
 			factor = 75
 		}
+
 		available = {
-			DEN = {
-				exists = yes
-				is_subject = no
-			}
 		}
+
 		bypass = {
-			DEN = {
+			NOT = {
 				OR = {
-					is_subject = yes
-					exists = no
+					DEN = {
+						OR = {
+							is_subject = yes
+							exists = no
+							NOT = { has_government = jc }
+							ROOT = { has_country_flag = PB_FRA_Muarras_Died_Coup_Success }
+							ROOT = { has_country_flag = FRA_herbenville_counter_coup_happened }
+						}
+					}
+					NOR = {
+						OR = {
+							is_subject = yes
+							exists = no
+							NOT = { has_government = jc }
+							ROOT = { has_country_flag = PB_FRA_Muarras_Died_Coup_Success }
+							ROOT = { has_country_flag = FRA_herbenville_counter_coup_happened }
+						}
+					}
 				}
 			}
 		}
 
-		search_filters = {FOCUS_FILTER_FOREIGN_POLICY}
+		search_filters = { FOCUS_FILTER_FOREIGN_POLICY }
 
 		prerequisite = {
 			focus = FRA_befriend_russia
 		}
+
 		completion_reward = {
-			add_opinion_modifier = {
-				target = DEN
-				modifier = diplomatic_outreach
-			}
-			DEN = {
+			if = {
+				limit = {
+					OR = {
+						has_country_flag = PB_FRA_Muarras_Died_Coup_Success
+						has_country_flag = FRA_herbenville_counter_coup_happened
+						NOT = { DEN = { has_government = jc } }
+					}
+				}
+
 				add_opinion_modifier = {
-					target = FRA
+					target = DEN
 					modifier = diplomatic_outreach
 				}
+				DEN = {
+					add_opinion_modifier = {
+						target = FRA
+						modifier = diplomatic_outreach
+					}
+				}
+				custom_effect_tooltip = PB_FRA_Denmark_Invitation_tt
+				custom_effect_tooltip = tooltip_white_line
+				DEN = {
+					country_event = {
+						id = French.39
+						days = 2
+					}
+				}
 			}
-			custom_effect_tooltip = PB_FRA_Denmark_Invitation_tt
-			custom_effect_tooltip = tooltip_white_line
-			DEN = {
-				country_event = {
-					id = French.39
-					days = 2
+			else = {
+				add_opinion_modifier = {
+					target = NOR
+					modifier = diplomatic_outreach
+				}
+				NOR = {
+					add_opinion_modifier = {
+						target = FRA
+						modifier = diplomatic_outreach
+					}
+				}
+				custom_effect_tooltip = PB_FRA_Norway_Invitation_tt
+				custom_effect_tooltip = tooltip_white_line
+				NOR = {
+					country_event = {
+						id = French.39
+						days = 2
+					}
 				}
 			}
 		}
@@ -5504,7 +5886,7 @@ focus_tree = {
 	}
 	focus = {
 		id = FRA_into_the_misted_lands
-		icon = GFX_BAS_It_was_an_honor
+		icon = GFX_goal_PB_FRA_into_the_misted_lands
 		x = 34
 		y = 2
 		cost = 25
@@ -5832,7 +6214,7 @@ focus_tree = {
 					popularity = 0.05
 				}
 			}
-			AST = {
+			FST = {
 				add_opinion_modifier = {
 					target = FRA
 					modifier = diplomatic_outreach
@@ -6083,7 +6465,7 @@ focus_tree = {
 						has_completed_focus = FRA_scrap_campaigns
 					}
 					modify_building_resources = {
-				        building = steel_mill
+				        building = mineral_fabricator
 				        resource = steel
 				        amount = -2
 			        }
@@ -6374,6 +6756,7 @@ focus_tree = {
 		}
 		completion_reward = {
 			add_ideas = tot_economic_mobilisation
+			exempt_demob = yes
 		}
 	}
 	#######################
@@ -6398,24 +6781,24 @@ focus_tree = {
 
 		completion_reward = {
 			SD_MIL_growth_progress_small = yes
-			army_experience = 20
-			navy_experience = 20
-			air_experience = 20
+			army_experience = 15
+			navy_experience = 15
+			air_experience = 15
 			custom_effect_tooltip = tooltip_white_line
-		add_breakthrough_points = {
-			specialization = specialization_land
-			value = 1
-		}
-		custom_effect_tooltip = tooltip_white_line
-		add_breakthrough_points = {
-			specialization = specialization_naval
-			value = 1
-		}
-		custom_effect_tooltip = tooltip_white_line
-		add_breakthrough_points = {
-			specialization = specialization_air
-			value = 1
-		}
+			add_breakthrough_points = {
+				specialization = specialization_land
+				value = 1
+			}
+			custom_effect_tooltip = tooltip_white_line
+			add_breakthrough_points = {
+				specialization = specialization_naval
+				value = 1
+			}
+			custom_effect_tooltip = tooltip_white_line
+			add_breakthrough_points = {
+				specialization = specialization_air
+				value = 1
+			}
 		}
 	}
 	focus = {
@@ -6423,7 +6806,7 @@ focus_tree = {
 		icon = GFX_GER_the_future_of_aviation
 		x = 64
 		y = 1
-		cost = 35
+		cost = 21
 		ai_will_do = {
 			factor = 90
 		}
@@ -6434,7 +6817,17 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			navy_experience = 25
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_add_dynmod
+					DYNMOD = PB_FRA_airforce_dynmod
+				}
+				add_dynamic_modifier = { modifier = PB_FRA_airforce_dynmod }
+			}
+			add_to_variable = { FM_xp_gain_air_factor = 0.1 tooltip = experience_gain_air_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
+			air_experience = 25
 			custom_effect_tooltip = tooltip_white_line
 			add_doctrine_cost_reduction = {
 				name = FRA_reform_military_lightning_war
@@ -6449,7 +6842,7 @@ focus_tree = {
 		icon = GFX_GER_iron_eagles
 		x = 62
 		y = 2
-		cost = 35
+		cost = 30
 		ai_will_do = {
 			factor = 45
 		}
@@ -6470,6 +6863,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_air_doctrine_cost_factor = -0.05 tooltip = air_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			IF = {
 				limit = {
 					has_doctrine = air_subdoctrine_dogfighting_mastery
@@ -6514,7 +6914,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			add_ideas = FRA_pilot_ambition_program
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_ace_generation_chance_factor = 0.1 tooltip = air_ace_generation_chance_factor_tt }
+			add_to_variable = { FM_air_accidents_factor = -0.15 tooltip = air_accidents_factor_tt }
+			add_to_variable = { FM_air_agility_factor = 0.025 tooltip = air_agility_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -6534,12 +6941,29 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			random_owned_controlled_state = {
-				add_resource = {
-					type = aluminium
-					amount = 25
-				}
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
 			}
+			add_to_variable = { FM_air_home_defence_factor = 0.075 tooltip = air_home_defence_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_resource = {
+                type = aluminium
+                amount = 10
+                state = 1205
+            }
+			add_resource = {
+                type = aluminium
+                amount = 10
+                state = 22
+            }
+			add_resource = {
+                type = aluminium
+                amount = 10
+                state = 21
+            }
+			
 		}
 	}
 	focus = {
@@ -6558,10 +6982,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			swap_ideas = {
-				add_idea = FRA_pilot_romanticisation
-				remove_idea = FRA_pilot_ambition_program
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
 			}
+			add_to_variable = { FM_ace_generation_chance_factor = 0.05 tooltip = air_ace_generation_chance_factor_tt }
+			add_to_variable = { FM_air_accidents_factor = -0.05 tooltip = air_accidents_factor_tt }
+			add_to_variable = { FM_air_agility_factor = 0.025 tooltip = air_agility_factor_tt }
+			add_to_variable = { FM_air_fuel_consumption_factor = -0.1 tooltip = air_fuel_consumption_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -6581,6 +7010,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_military_dynmod
+			}
+			add_to_variable = { FM_production_efficiency_retention = 0.025 tooltip = line_change_production_efficiency_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
 				bonus = 0.25
 				uses = 1
@@ -6610,6 +7046,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_air_cas_efficiency = 0.03 tooltip = air_cas_efficiency_tt }
+			add_to_variable = { FM_air_cas_present_factor = 0.05 tooltip = air_cas_present_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
 				bonus = 0.5
 				uses = 1
@@ -6634,7 +7078,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			add_ideas = FRA_increasing_plane_production
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_bonus_air_superiority_factor = 0.05 tooltip = army_bonus_air_superiority_factor_tt }
+			add_to_variable = { FM_ground_attack_factor = 0.1 tooltip = ground_attack_factor_tt }
+			force_update_dynamic_modifier = yes
+
 		}
 	}
 	focus = {
@@ -6656,10 +7107,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			swap_ideas = {
-				add_idea = FRA_the_best_pilots_of_europe
-				remove_idea = FRA_pilot_romanticisation
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
 			}
+			add_to_variable = { FM_ace_generation_chance_factor = 0.05 tooltip = air_ace_generation_chance_factor_tt }
+			add_to_variable = { FM_air_intercept_eff = 0.15 tooltip = air_intercept_efficiency_tt }
+			add_to_variable = { FM_air_agility_factor = 0.025 tooltip = air_agility_factor_tt }
+			add_to_variable = { FM_air_cas_present_factor = 0.05 tooltip = air_cas_present_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -6688,6 +7144,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_air_doctrine_cost_factor = -0.05 tooltip = air_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			IF = {
 				limit = {
 					has_doctrine = air_subdoctrine_carpet_bombing
@@ -6733,6 +7196,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_military_dynmod
+			}
+			add_to_variable = { FM_mil_factory_construction_speed = 0.035 tooltip = production_speed_arms_factory_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			random_owned_controlled_state = {
 				limit = {
 					free_building_slots = {
@@ -6811,7 +7281,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			add_ideas = FRA_waves_of_annihilation
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_ground_bombing_targetting = 0.15 tooltip = air_bombing_targetting_tt }
+			add_to_variable = { FM_strategic_bombing_factor = 0.05 tooltip = air_strategic_bomber_bombing_factor_tt }
+			add_to_variable = { FM_air_night_penalty = 0.1 tooltip = air_night_penalty_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -6830,10 +7307,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			swap_ideas = {
-				add_idea = FRA_roast_the_land
-				remove_idea = FRA_waves_of_annihilation
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
 			}
+			add_to_variable = { FM_ground_bombing_targetting = 0.1 tooltip = air_bombing_targetting_tt }
+			add_to_variable = { FM_ground_attack_factor = 0.05 tooltip = ground_attack_factor_tt }
+			add_to_variable = { FM_strategic_bombing_factor = 0.05 tooltip = air_strategic_bomber_bombing_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -6856,10 +7337,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
-			swap_ideas = {
-				add_idea = FRA_barons_of_hell
-				remove_idea = FRA_roast_the_land
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
 			}
+			add_to_variable = { FM_air_range_factor = 0.025 tooltip = air_range_factor_tt }
+			add_to_variable = { FM_air_nav_efficiency = 0.2 tooltip = air_nav_efficiency_tt }
+			add_to_variable = { FM_air_night_penalty = 0.05 tooltip = air_night_penalty_tt }
+			add_to_variable = { FM_air_weather_penalty = -0.05 tooltip = air_weather_penalty_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -6879,6 +7365,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_military_dynmod
+			}
+			add_to_variable = { FM_factory_output_factor = 0.025 tooltip = industrial_capacity_factory_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
 				bonus = 0.25
 				uses = 1
@@ -6913,8 +7406,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_air_mission_efficiency = 0.05 tooltip = air_mission_efficiency_tt }
+			add_to_variable = { FM_naval_strike_target_factor = 0.1 tooltip = naval_strike_targetting_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
-				bonus = 0.5
+				bonus = 0.75
 				uses = 1
 				category = cat_heavy_fighter
 			}
@@ -6936,7 +7437,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			add_ideas = FRA_pilot_training_program
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_air_range_factor = 0.075 tooltip = air_range_factor_tt }
+			add_to_variable = { FM_air_accidents_factor = -0.1 tooltip = air_accidents_factor_tt }
+			add_to_variable = { FM_air_weather_penalty = -0.05 tooltip = air_weather_penalty_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -6956,6 +7464,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_air_doctrine_cost_factor = -0.05 tooltip = air_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_mastery_bonus = {
 				name = Pax_placeholder_name
 				bonus = 0.075
@@ -6989,6 +7504,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_air_base_construction_speed = 0.075 tooltip = production_speed_air_base_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			random_owned_controlled_state = {
 				limit = {
 					free_building_slots = {
@@ -7091,6 +7613,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_ace_generation_chance_factor = 0.1 tooltip = air_ace_generation_chance_factor_tt }
+			add_to_variable = { FM_ace_effectiveness_factor = 0.05 tooltip = ace_effectiveness_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_ace = {
 				name = "Jean"
 				surname = "Accart"
@@ -7125,8 +7655,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
+			}
+			add_to_variable = { FM_decryption_factor = 0.05 tooltip = decryption_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
-				bonus = 0.5
+				bonus = 0.75
 				uses = 1
 				category = radar_tech
 			}
@@ -7169,87 +7706,42 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_AIR}
 
 		completion_reward = {
-			random_owned_controlled_state = {
-				limit = {
-					free_building_slots = {
-						building = anti_air_building
-						size > 0
-					}
-					OR = {
-						is_in_home_area = yes
-						NOT = {
-							owner = {
-								any_owned_state = {
-									free_building_slots = {
-										building = anti_air_building
-										size > 0
-									}
-									is_in_home_area = yes
-								}
-							}
-						}
-					}
-				}
-				add_building_construction = {
-					type = anti_air_building
-					level = 1
-					instant_build = yes
-				}
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_airforce_dynmod
 			}
-			random_owned_controlled_state = {
-				limit = {
-					free_building_slots = {
-						building = anti_air_building
-						size > 0
-					}
-					OR = {
-						is_in_home_area = yes
-						NOT = {
-							owner = {
-								any_owned_state = {
-									free_building_slots = {
-										building = anti_air_building
-										size > 0
-									}
-									is_in_home_area = yes
-								}
-							}
-						}
-					}
-				}
+			add_to_variable = { FM_anti_air_construction_speed = 0.055 tooltip = production_speed_anti_air_building_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
+			16 = {
 				add_building_construction = {
-					type = anti_air_building
-					level = 1
-					instant_build = yes
-				}
+				    type = anti_air_building
+				    level = 2
+				    instant_build = yes
+			    } 
 			}
-			random_owned_controlled_state = {
-				limit = {
-					free_building_slots = {
-						building = anti_air_building
-						size > 0
-					}
-					OR = {
-						is_in_home_area = yes
-						NOT = {
-							owner = {
-								any_owned_state = {
-									free_building_slots = {
-										building = anti_air_building
-										size > 0
-									}
-									is_in_home_area = yes
-								}
-							}
-						}
-					}
-				}
+			24 = {
 				add_building_construction = {
-					type = anti_air_building
-					level = 1
-					instant_build = yes
-				}
+				    type = anti_air_building
+				    level = 2
+				    instant_build = yes
+			    } 
 			}
+			21 = {
+				add_building_construction = {
+				    type = anti_air_building
+				    level = 2
+				    instant_build = yes
+			    } 
+			}
+			20 = {
+				add_building_construction = {
+				    type = anti_air_building
+				    level = 2
+				    instant_build = yes
+			    } 
+			}
+			
 		}
 	}
 	focus = {
@@ -7268,6 +7760,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_add_dynmod
+					DYNMOD = PB_FRA_navy_dynmod
+				}
+				add_dynamic_modifier = { modifier = PB_FRA_navy_dynmod }
+			}
+			add_to_variable = { FM_xp_gain_navy_factor = 0.1 tooltip = experience_gain_navy_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			navy_experience = 25
 			custom_effect_tooltip = tooltip_white_line
 			add_doctrine_cost_reduction = {
@@ -7295,6 +7797,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_doctrine_cost_factor = -0.05 tooltip = naval_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			random_owned_controlled_state = {
 				limit = {
 					free_building_slots = {
@@ -7423,7 +7932,7 @@ focus_tree = {
 		icon = GFX_goal_Focus_Generic_Maritime_Trade
 		x = 54
 		y = 4
-		cost = 35
+		cost = 25
 		ai_will_do = {
 			factor = 40
 		}
@@ -7435,6 +7944,20 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			21 = {
+				add_building_construction = {
+					type = naval_headquarters
+					level = 1
+					province = 11834
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = naval_base
+					level = 3
+					province = 11834
+					instant_build = yes
+				}
+			}
 			30 = {
 				add_building_construction = {
 					type = naval_base
@@ -7451,6 +7974,15 @@ focus_tree = {
 					instant_build = yes
 				}
 			}
+			19 = {
+				add_building_construction = {
+					type = naval_base
+					level = 2
+					province = 9737
+					instant_build = yes
+				}
+			}
+			
 		}
 	}
 	focus = {
@@ -7474,34 +8006,37 @@ focus_tree = {
 			    every_navy_leader = { add_defense = 1 }
 			}
 			custom_effect_tooltip = FRA_Navy_Defense_tt
-			random_owned_controlled_state = {
-				limit = {
-					coastal_bunker < 9
-					is_coastal = yes
-				}
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_navy_leader_cost_factors = -0.1 tooltip = navy_leader_cost_factor_tt }
+			add_to_variable = { FM_coastal_bunker_construction_speed = 0.075 tooltip = production_speed_coastal_bunker_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
+			1204 = {
 				add_building_construction = {
 					type = coastal_bunker
 					level = 3
 					instant_build = yes
-					province = {
-						all_provinces = yes
-						limit_to_coastal = yes
-					}
+					province = 9349
 				}
 			}
-			random_owned_controlled_state = {
-				limit = {
-					coastal_bunker < 9
-					is_coastal = yes
-				}
+			29 = {
 				add_building_construction = {
 					type = coastal_bunker
-					level = 3
+					level = 4
 					instant_build = yes
-					province = {
-						all_provinces = yes
-						limit_to_coastal = yes
-					}
+					province = 11548
+				}
+			}
+			15 = {
+				add_building_construction = {
+					type = coastal_bunker
+					level = 4
+					instant_build = yes
+					province = 6449
 				}
 			}
 		}
@@ -7526,6 +8061,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_dockyard_construction_speed = 0.075 tooltip = production_speed_dockyard_factor_tt }
+			add_to_variable = { FM_naval_dockyard_output = -0.05 tooltip = industrial_capacity_dockyard_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			random_owned_controlled_state = {
 				limit = {
 					free_building_slots = {
@@ -7608,6 +8151,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_dockyard_output = 0.075 tooltip = industrial_capacity_dockyard_tt }
+			add_to_variable = { FM_naval_dockyard_construction_speed = -0.05 tooltip = production_speed_dockyard_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_ideas = FRA_cutting_naval_costs
 		}
 	}
@@ -7637,6 +8188,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_doctrine_cost_factor = -0.05 tooltip = naval_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			IF = {
 				limit = {
 					has_doctrine = submarine_fleet_operations
@@ -7682,6 +8240,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_capital_ship_defence_factor = 0.05 tooltip = navy_capital_ship_defence_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
 				bonus = 0.5
 				uses = 1
@@ -7715,7 +8280,15 @@ focus_tree = {
 			    every_navy_leader = { add_planning = 1 }
 			}
 			custom_effect_tooltip = FRA_Navy_Planning_tt
-			add_ideas = FRA_blockade_policy_1
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_coordination = 0.2 tooltip = naval_coordination_tt }
+			add_to_variable = { FM_convoy_raiding_eff = 0.15 tooltip = convoy_raiding_efficiency_factor_tt }
+			add_to_variable = { FM_naval_org_factor = 0.1 tooltip = navy_org_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
     focus = {
@@ -7734,10 +8307,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = FRA_blockade_policy_1
-				add_idea = FRA_blockade_policy_2
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
 			}
+			add_to_variable = { FM_sub_retreat_speed = 0.05 tooltip = sub_retreat_speed_tt }
+			add_to_variable = { FM_convoy_raiding_eff = 0.05 tooltip = convoy_raiding_efficiency_factor_tt }
+			add_to_variable = { FM_navy_max_range_factor = 0.035 tooltip = navy_max_range_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -7759,10 +8336,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = FRA_the_vigenere_cipher
-				add_idea = FRA_autokey_vigenere_cipher
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
 			}
+			add_to_variable = { FM_encryption_factor = 0.05 tooltip = encryption_factor_tt }
+			add_to_variable = { FM_decryption_factor = 0.1 tooltip = decryption_factor_tt }
+			add_to_variable = { FM_sub_detection_factor = 0.075 tooltip = navy_submarine_detection_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -7782,6 +8363,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_morale_factor = 0.075 tooltip = naval_morale_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_mastery_bonus = {
 				name = Pax_placeholder_name
 				bonus = 0.15
@@ -7807,7 +8395,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
-			add_ideas = FRA_the_vigenere_cipher
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_encryption_factor = 0.1 tooltip = encryption_factor_tt }
+			add_to_variable = { FM_mines_planting_factor = 0.1 tooltip = mines_planting_by_fleets_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -7827,6 +8421,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_torpedo_hits_chance_factor = 0.075 tooltip = naval_torpedo_hit_chance_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
 				bonus = 0.5
 				uses = 1
@@ -7882,6 +8483,13 @@ focus_tree = {
 
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_doctrine_cost_factor = -0.05 tooltip = naval_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			IF = {
 				limit = {
 					has_doctrine = line_of_battle
@@ -7927,6 +8535,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_light_gun_hit_chance_factor = 0.075 tooltip = naval_light_gun_hit_chance_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
 				bonus = 0.5
 				uses = 2
@@ -7954,7 +8569,15 @@ focus_tree = {
 			    every_navy_leader = { add_attack = 1 }
 			}
 			custom_effect_tooltip = FRA_Navy_Attack_tt
-			add_ideas = FRA_brute_force_policy
+			custom_effect_tooltip = tooltip_white_line
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_invasion_preperation = 0.1 tooltip = naval_invasion_prep_speed_tt }
+			add_to_variable = { FM_naval_damage_factor = 0.05 tooltip = naval_damage_factor_tt }
+			add_to_variable = { FM_naval_defense_factor = -0.05 tooltip = naval_defense_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -7974,6 +8597,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_navy_weather_penalty = -0.05 tooltip = navy_weather_penalty_tt }
+			add_to_variable = { FM_screen_ship_attack_factor = 0.025 tooltip = navy_screen_attack_factor_tt }
+			force_update_dynamic_modifier = yes
 			custom_effect_tooltip = tooltip_white_line
 			if = {
 				limit = {
@@ -8045,12 +8675,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
-			hidden_effect = {
-				remove_ideas = FRA_renewed_naval_policy
-				remove_ideas = FRA_brute_force_policy
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
 			}
-			custom_effect_tooltip = PB_FRA_France_Rule_The_Waves_tt
-			add_ideas = FRA_france_rules_the_waves
+			add_to_variable = { FM_invasion_preperation = 0.1 tooltip = naval_invasion_prep_speed_tt }
+			add_to_variable = { FM_naval_damage_factor = 0.1 tooltip = naval_damage_factor_tt }
+			add_to_variable = { FM_navy_weather_penalty = -0.025 tooltip = navy_weather_penalty_tt }
+			add_to_variable = { FM_naval_dockyard_output = 0.025 tooltip = industrial_capacity_dockyard_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -8070,6 +8703,13 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_heavy_gun_hit_chance_factor = 0.075 tooltip = naval_heavy_gun_hit_chance_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			navy_experience = 25
 			add_tech_bonus = {
 				bonus = 0.5
@@ -8095,7 +8735,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
-			add_ideas = FRA_renewed_naval_policy
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_naval_dockyard_construction_speed = 0.05 tooltip = production_speed_dockyard_factor_tt }
+			add_to_variable = { FM_naval_morale_factor = 0.025 tooltip = naval_morale_factor_tt }
+			add_to_variable = { FM_naval_org_factor = 0.025 tooltip = navy_org_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -8115,11 +8762,20 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_NAVY}
 
 		completion_reward = {
+			custom_effect_tooltip = {
+				localization_key = tooltip_modify_dynmod
+				DYNMOD = PB_FRA_navy_dynmod
+			}
+			add_to_variable = { FM_capital_ship_attack_factor = 0.075 tooltip = navy_capital_ship_attack_factor_tt }
+			add_to_variable = { FM_navy_leader_cost_factors = -0.05 tooltip = navy_leader_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
-				bonus = 0.5
+				bonus = 0.75
 				uses = 1
 				category = shbb_tech
 			}
+			
 		}
 	}
 	focus = {
@@ -8138,6 +8794,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_add_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+				add_dynamic_modifier = { modifier = PB_FRA_military_dynmod }
+			}
+			add_to_variable = { FM_xp_gain_army_factor = 0.1 tooltip = experience_gain_army_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			army_experience = 25
 			custom_effect_tooltip = tooltip_white_line
 			add_doctrine_cost_reduction = {
@@ -8174,6 +8840,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_land_doctrine_cost_factor = -0.05 tooltip = land_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			IF = {
 				limit = {
 					has_doctrine = armored_cavalry
@@ -8228,6 +8903,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_land_doctrine_cost_factor = -0.05 tooltip = land_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			IF = {
 				limit = {
 					has_doctrine = grand_assault
@@ -8273,6 +8957,14 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_general_armor_attack_factor = 0.055 tooltip = army_armor_attack_factor_tt }
+			force_update_dynamic_modifier = yes
 			custom_effect_tooltip = tooltip_white_line
 			if = {
 				limit = {
@@ -8346,7 +9038,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_UNEMPLOYMENT}
 
 		completion_reward = {
-			add_ideas = FRA_Production_Quotas
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_factory_output_factor = 0.05 tooltip = industrial_capacity_factory_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			set_temp_variable = { number = -0.1 }
 			FRA_unemployment_change = yes
 		}
@@ -8368,6 +9068,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_synthetic_refinery_construction_speed = 0.05 tooltip = production_speed_synthetic_refinery_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			random_owned_controlled_state = {
 				limit = {
 					free_building_slots = {
@@ -8446,7 +9155,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			add_ideas = FRA_Breakthrough
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_army_speed_factor = 0.055 tooltip = army_speed_factor_tt }
+			add_to_variable = { FM_army_attack_factor = 0.035 tooltip = army_attack_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -8468,6 +9185,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_armor_speed_factor = 0.05 tooltip = army_armor_speed_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			SD_MIL_growth_progress_small = yes
 			add_mastery_bonus = {
 				name = Pax_placeholder_name
@@ -8494,10 +9220,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = FRA_Breakthrough
-				add_idea = FRA_Breakthrough2
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
 			}
+			add_to_variable = { FM_army_attack_factor = 0.03 tooltip = army_attack_factor_tt }
+			add_to_variable = { FM_army_org_regain = 0.03 tooltip = army_org_regain_tt }
+			add_to_variable = { FM_max_planning_factor = 0.025 tooltip = max_planning_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -8525,10 +9257,17 @@ focus_tree = {
 				every_unit_leader = { add_attack = 1 } 
 	        }   
 	        custom_effect_tooltip = FRA_Unit_Leader_Attack
-			swap_ideas = {
-				remove_idea = FRA_Breakthrough2
-				add_idea = FRA_Breakthrough3
+			custom_effect_tooltip = tooltip_white_line
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
 			}
+			add_to_variable = { FM_supply_consumption_factor = -0.1 tooltip = supply_consumption_factor_tt }
+			add_to_variable = { FM_army_attack_factor = 0.035 tooltip = army_attack_factor_tt }
+			add_to_variable = { FM_general_armor_attack_factor = 0.035 tooltip =army_armor_attack_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -8549,6 +9288,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_land_doctrine_cost_factor = -0.05 tooltip = land_doctrine_cost_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			add_tech_bonus = {
                 bonus = 1
                 uses = 1
@@ -8575,7 +9323,17 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			add_ideas = FRA_Local_SP_Militias
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_resistance_target = -0.05 tooltip = resistance_target_tt }
+			add_to_variable = { FM_damage_to_garrison = -0.1 tooltip = resistance_damage_to_garrison_tt }
+			add_to_variable = { FM_equipment_capture_factor = 0.05 tooltip = equipment_capture_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			random_owned_controlled_state = {
 				limit = {
 					 is_in_home_area = yes
@@ -8613,10 +9371,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = FRA_Local_SP_Militias
-				add_idea = FRA_Local_SP_Militias2
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
 			}
+			add_to_variable = { FM_army_org_factor = 0.025 tooltip = army_org_factor_tt }
+			add_to_variable = { FM_training_time_factor = -0.05 tooltip = training_time_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 		}
 	}
 	focus = {
@@ -8639,10 +9403,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = FRA_Local_SP_Militias2
-				add_idea = FRA_Local_SP_Militias3
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
 			}
+			add_to_variable = { FM_special_forces_min = 5 tooltip = special_forces_min_tt }
+			add_to_variable = { FM_special_forces_out_of_supply_factor = -0.05 tooltip = special_forces_out_of_supply_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			set_division_template_lock = {
 				division_template = "Division de Sécurité Publique"
 				is_locked = no
@@ -8670,10 +9440,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = FRA_Local_SP_Militias2
-				add_idea = FRA_Local_SP_Militias4
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
 			}
+			add_to_variable = { FM_recruitable_population_factor = 0.03 tooltip = recruitable_population_factor_tt }
+			add_to_variable = { FM_training_time_factor = -0.025 tooltip = training_time_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			set_division_template_lock = {
 				division_template = "Division de Sécurité Publique"
 				is_locked = no
@@ -8715,7 +9491,16 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			add_ideas = FRA_Rifles_Streamlined
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_factory_output_factor = 0.05 tooltip = industrial_capacity_factory_tt }
+			add_to_variable = { FM_equipment_conversion_speed = 0.055 tooltip = equipment_conversion_speed_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 		}
 	}
 	focus = {
@@ -8735,6 +9520,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_mil_factory_construction_speed = 0.035 tooltip = production_speed_arms_factory_factor_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 			random_owned_controlled_state = {
 				limit = {
 					free_building_slots = {
@@ -8814,7 +9608,17 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			add_ideas = FRA_Mass_Conscription
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_recruitable_population_factor = 0.05 tooltip = recruitable_population_factor_tt }
+			add_to_variable = { FM_stability_factor = -0.1 tooltip = stability_factor_tt }
+			add_to_variable = { FM_monthly_population = -0.025 tooltip = monthly_population_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 		}
 	}
 	focus = {
@@ -8834,7 +9638,18 @@ focus_tree = {
 
 		completion_reward = {
 			SD_MIL_growth_progress_small = yes
-			add_ideas = FRA_Hyperaggression
+			custom_effect_tooltip = tooltip_white_line
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_army_attack_factor = 0.03 tooltip = army_attack_factor_tt }
+			add_to_variable = { FM_core_attack_factor = 0.03 tooltip = army_core_attack_factor_tt }
+			add_to_variable = { FM_core_defense_factor = -0.03 tooltip = army_core_defence_factor_tt }
+			add_to_variable = { FM_reinforce_rate = 0.035 tooltip = land_reinforce_rate_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 	focus = {
@@ -8854,6 +9669,15 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
+			}
+			add_to_variable = { FM_artillery_attack_factor = 0.055 tooltip = army_artillery_attack_factor_tt }
+			add_to_variable = { FM_artillery_defense_factor = 0.055 tooltip = army_artillery_defence_factor_tt }
+			force_update_dynamic_modifier = yes
 			custom_effect_tooltip = tooltip_white_line
 			if = {
 				limit = {
@@ -8925,10 +9749,22 @@ focus_tree = {
 		search_filters = {FOCUS_FILTER_ARMY}
 
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = FRA_Hyperaggression
-				add_idea = FRA_Hyperaggression2
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
 			}
+			add_to_variable = { FM_training_time_factor = -0.1 tooltip = training_time_factor_tt }
+			add_to_variable = { FM_stability_factor = -0.05 tooltip = stability_factor_tt }
+			add_to_variable = { FM_army_attack_factor = 0.03 tooltip = army_attack_factor_tt }
+			add_to_variable = { FM_army_defence_factor = -0.05 tooltip = army_defence_factor_tt }
+			add_to_variable = { FM_core_attack_factor = 0.025 tooltip = army_core_attack_factor_tt }
+			add_to_variable = { FM_factory_repair_speed_factor = -0.1 tooltip = industry_repair_factor_tt }
+			add_to_variable = { FM_surrender_limit = 0.05 tooltip = surrender_limit_tt }
+			add_to_variable = { FM_reinforce_rate = 0.035 tooltip = land_reinforce_rate_tt }
+			force_update_dynamic_modifier = yes
+			custom_effect_tooltip = tooltip_white_line
 		}
 	}
 	focus = {
@@ -8954,10 +9790,18 @@ focus_tree = {
 				every_unit_leader = { add_defense = 1 } 
 	        }   
 			custom_effect_tooltip = FRA_Unit_Leader_Defense
-			swap_ideas = {
-				remove_idea = FRA_Hyperaggression2
-				add_idea = FRA_Hyperaggression3
+			custom_effect_tooltip = tooltip_white_line
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_modify_dynmod
+					DYNMOD = PB_FRA_military_dynmod
+				}
 			}
+			add_to_variable = { FM_surrender_limit = 0.05 tooltip = surrender_limit_tt }
+			add_to_variable = { FM_attrition = -0.05 tooltip = attrition_tt }
+			add_to_variable = { FM_fuel_consumption_factor = -0.1 tooltip = army_fuel_consumption_factor_tt }
+			add_to_variable = { FM_max_planning_factor = 0.035 tooltip = max_planning_factor_tt }
+			force_update_dynamic_modifier = yes
 		}
 	}
 
@@ -9005,7 +9849,7 @@ focus_tree = {
 
 		completion_reward = {
 			modify_building_resources = {
-				building = steel_mill
+				building = mineral_fabricator
 				resource = steel
 				amount = 2
 			}
@@ -9870,16 +10714,17 @@ joint_focus = {
 	id = FRA_behead_the_bear
 	icon = GFX_goal_Focus_FRA_Prague_Conference
 	available = {
-		if = { 
-			limit = { 
-				tag = FRA
-			}
-			has_completed_focus = FRA_pan_francophone_doctrine
-			has_completed_focus = FRA_the_apurdi_situation
-		}
-		else = { 
-			has_completed_focus = RUS_the_russian_century
-		}
+		always = no
+		#if = { 
+		#	limit = { 
+		#		tag = FRA
+		#	}
+		#	has_completed_focus = FRA_pan_francophone_doctrine
+		#	has_completed_focus = FRA_the_apurdi_situation
+		#}
+		#else = { 
+		#	has_completed_focus = RUS_the_russian_century
+		#}
 	}
 	joint_trigger = {
 		if = { 
@@ -9928,7 +10773,7 @@ joint_focus = {
 # 298 Focuses in total
 # Thanks to Grestin, Zerogamer, and Bernie since us three all did shit in relation to this tree
 # I swear to god people better fucking like this focus tree
-# Maybe use relative id and add more effects next time, nuttrees  :3 -tapir 
+# Maybe use relative id and add more effects next time, nuttrees  :3 -tapir
 
 ### SINCE SP-MILITARY WILL BE SUBJECT TO CHANGE AND CURRENTLY ITS GAMEPLAY IS CRAP I REMOVED THEM TEMPORARILY ##
 
@@ -10524,7 +11369,7 @@ joint_focus = {
 #			}
 #			every_army_leader = { 
 #				limit = { 
-#					has_trait = trait_FRA_MIL_Loyalties
+#					has_trait = FRA_MIL_loyalties
 #				}
 #				retire = yes
 #				custom_effect_tooltip = PB_FRA_MIL_PURGE
@@ -10568,7 +11413,7 @@ joint_focus = {
 #			    remove_idea = FRA_SP_Rule
 #				add_idea = FRA_SP_Officer_Corps
 #		    }
-#			every_army_leader = { add_unit_leader_trait = trait_FRA_SP_Loyalties }
+#			every_army_leader = { add_unit_leader_trait = FRA_SP_loyalties }
 #		}
 #	}
 #	focus = {
@@ -10663,7 +11508,7 @@ joint_focus = {
 #			}
 #			every_army_leader = { 
 #				limit = { 
-#					has_trait = trait_FRA_SP_Loyalties
+#					has_trait = FRA_SP_loyalties
 #				}
 #				retire = yes
 #
@@ -10712,7 +11557,7 @@ joint_focus = {
 #		completion_reward = {
 #			add_stability = 0.025
 #			add_war_support = 0.025
-#			every_army_leader = { add_unit_leader_trait = trait_FRA_MIL_Loyalties }
+#			every_army_leader = { add_unit_leader_trait = FRA_MIL_loyalties }
 #		}
 #	}
 #	focus = {

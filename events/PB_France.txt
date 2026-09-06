@@ -554,8 +554,14 @@ country_event = {#Maurras restores the legitimate king
 		ai_chance = { base = 100 }
 
 		FRA_louis_bourbon = {
-			custom_effect_tooltip = FRA_louis_bourbon_regnal_name_adopt_tt
-			set_character_name = FRA_louis_bourbon_regnal
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_change_character_name
+					NAME = FRA_louis_bourbon
+					NAME_NEW = FRA_louis_bourbon_regnal
+				}
+				set_character_name = FRA_louis_bourbon_regnal
+			}
 			custom_effect_tooltip = tooltip_white_line
 			custom_effect_tooltip = character_becomes_country_leader_tt
 			hidden_effect = {
@@ -574,7 +580,7 @@ country_event = {#Maurras restores the legitimate king
 					slot = head_of_government
 					ledger = civilian
 					idea_token = FRA_charles_maurras_hog
-					traits = { PB_rc_trait }
+					traits = { }
 					cost = 0
 					can_be_fired = no
 				}
@@ -640,15 +646,16 @@ country_event = {#Volte Face
 		trigger = { has_event_target = political_dissonance_left }
 		ai_chance = { base = 100 }
 		
-		FRA_jacques_doriot = {
-			add_country_leader_trait = PB_FRA_Man_From_People_trait
-		}
+		set_country_flag = FRA_Doriot_left
+		
 		hidden_effect = {
 			set_country_leader_ideology = DS_VARIANT_08
 			add_popularity = { ideology = ds popularity = 0.1 }
 			add_popularity = { ideology = lb popularity = 0.05 }
 			add_popularity = { ideology = ss popularity = 0.02 }
 		}
+		
+		add_country_leader_trait = { ideology = DS_VARIANT_08 trait = PB_FRA_Man_From_People_trait }
 	}
 	
 	option = { #The Modern Danton
@@ -656,14 +663,10 @@ country_event = {#Volte Face
 		name = france_events.10.b
 		trigger = { has_event_target = political_dissonance_far_left }
 		ai_chance = { base = 100 }
-		if = {
-			limit = {has_country_leader_with_trait = PB_FRA_Beloved_Statesman_trait  }
-			swap_ruler_traits = { 
-				remove = PB_FRA_Beloved_Statesman_trait
-				add = PB_FRA_Modern_Danton_trait
-			}
-		}
-		else = { add_country_leader_trait = PB_FRA_Modern_Danton_trait }
+		
+		set_country_flag = FRA_Doriot_left
+		FRA_save_doriot_traits = yes
+		
 		swap_ideas = {
 			remove_idea = PB_presidential_dictatorship
 			add_idea = PB_parliamentary_republic
@@ -685,6 +688,7 @@ country_event = {#Volte Face
 		
 		hidden_effect = {
 			retire_ideology_leader = ss
+			set_country_leader_ideology = SS_VARIANT_08
 			add_popularity = { ideology = ss popularity = 0.15 }
 			add_popularity = { ideology = ni popularity = -0.05 }
 			add_popularity = { ideology = rc popularity = -0.1 }
@@ -695,6 +699,15 @@ country_event = {#Volte Face
 			remove_from_farright_coalition_ds = yes
 			remove_from_farright_coalition_rc = yes
 		}
+		
+		if = {
+			limit = { has_country_leader_with_trait = PB_FRA_Beloved_Statesman_trait  }
+			swap_ruler_traits = { 
+				remove = PB_FRA_Beloved_Statesman_trait
+				add = PB_FRA_Modern_Danton_trait
+			}
+		}
+		else = { add_country_leader_trait = { ideology = SS_VARIANT_08 trait = PB_FRA_Modern_Danton_trait }}
 	}
 	
 	option = { #The Father of the Nation
@@ -703,7 +716,9 @@ country_event = {#Volte Face
 		trigger = { has_event_target = political_dissonance_right }
 		ai_chance = { base = 100 }
 		
-		add_country_leader_trait = PB_FRA_Father_of_Nation_trait
+		set_country_flag = FRA_Doriot_right
+		FRA_save_doriot_traits = yes
+		
 		set_politics = { ruling_party = ni elections_allowed = no }
 		unban_party_rc = yes
 		set_party_name = {
@@ -724,6 +739,8 @@ country_event = {#Volte Face
 				portrait = GFX_portrait_FRA_jacques_doriot_marshal_civilian_large
 			}
 		}
+		
+		add_country_leader_trait = { ideology = NI_VARIANT_02 trait = PB_FRA_Father_of_Nation_trait }
 	}
 	
 	option = { #Our Grand Marshal
@@ -731,14 +748,10 @@ country_event = {#Volte Face
 		name = france_events.10.e
 		trigger = { has_event_target = political_dissonance_far_right }
 		ai_chance = { base = 100 }
-		if = {
-			limit = { has_country_leader_with_trait = PB_FRA_Grand_Marshal_Inexperienced_trait  }
-			swap_ruler_traits = { 
-				remove = PB_FRA_Grand_Marshal_Inexperienced_trait
-				add = PB_FRA_Grand_Marshal_Experienced_trait
-			}
-		}
-		else = { add_country_leader_trait = PB_FRA_Grand_Marshal_Experienced_trait }
+		
+		set_country_flag = FRA_Doriot_right
+		FRA_save_doriot_traits = yes
+		
 		var:country_leader = { gain_xp = 100 }
 		swap_ideas = {
 			remove_idea = PB_presidential_dictatorship
@@ -762,6 +775,15 @@ country_event = {#Volte Face
 				portrait = GFX_portrait_FRA_jacques_doriot_marshal_civilian_large
 			}
 		}
+		
+		if = {
+			limit = { has_country_leader_with_trait = PB_FRA_Grand_Marshal_Inexperienced_trait  }
+			swap_ruler_traits = { 
+				remove = PB_FRA_Grand_Marshal_Inexperienced_trait
+				add = PB_FRA_Grand_Marshal_Experienced_trait
+			}
+		}
+		else = { add_country_leader_trait = { ideology = NI_VARIANT_07 trait = PB_FRA_Grand_Marshal_Experienced_trait }}
 	}
 	
 	option = { #The Wisest Among All
@@ -770,7 +792,8 @@ country_event = {#Volte Face
 		trigger = { has_event_target = political_dissonance_center }
 		ai_chance = { base = 100 }
 		
-		add_country_leader_trait = PB_FRA_Wisest_Among_All_trait
+		set_country_flag = FRA_Doriot_center
+		
 		hidden_effect = {
 			set_country_leader_ideology = DS_VARIANT_05
 			add_popularity = { ideology = ds popularity = 0.1 }
@@ -782,6 +805,8 @@ country_event = {#Volte Face
 			add_popularity = { ideology = ss popularity = -0.05 }
 			add_popularity = { ideology = jc popularity = -0.05 }
 		}
+		
+		add_country_leader_trait = { ideology = DS_VARIANT_05 trait = PB_FRA_Wisest_Among_All_trait }
 	}
 	
 	option = { #Protector of the Organic Country
@@ -790,7 +815,9 @@ country_event = {#Volte Face
 		trigger = { has_event_target = political_dissonance_corporatist }
 		ai_chance = { base = 100 }
 		
-		add_country_leader_trait = PB_FRA_Corporatist_trait
+		set_country_flag = FRA_Doriot_corporatist
+		FRA_save_doriot_traits = yes
+		
 		set_politics = { ruling_party = ni elections_allowed = no }
 		FRA = {
 			drop_cosmetic_tag = yes
@@ -803,6 +830,8 @@ country_event = {#Volte Face
 			add_popularity = { ideology = rc popularity = 0.04 }
 			add_popularity = { ideology = an popularity = 0.04 }
 		}
+		
+		add_country_leader_trait = { ideology = NI_VARIANT_03 trait = PB_FRA_Corporatist_trait }
 	}
 	
 	option = { #The One Who Transcend Politics
@@ -814,7 +843,8 @@ country_event = {#Volte Face
 		}
 		ai_chance = { base = 100 }
 		
-		add_country_leader_trait = PB_FRA_The_One_Who_Transcend_trait
+		set_country_flag = FRA_Doriot_corporatist
+		
 		swap_ideas = {
 			remove_idea = PB_presidential_dictatorship
 			add_idea = PB_national_theocracy
@@ -877,6 +907,8 @@ country_event = {#Volte Face
 				jc = 12
 			}
 		}
+		
+		add_country_leader_trait = { ideology = ds trait = PB_FRA_The_One_Who_Transcend_trait }
 	}
 	
 	option = { #The Opportunist
@@ -888,7 +920,8 @@ country_event = {#Volte Face
 		}
 		ai_chance = { base = 10 }
 		
-		add_country_leader_trait = PB_FRA_Opportunist_trait
+		set_country_flag = FRA_Doriot_center
+		
 		add_popularity = { ideology = ni popularity = -0.1 }
 		add_popularity = { ideology = ds popularity = -0.1 }
 		add_popularity = { ideology = rc popularity = 0.04 }
@@ -896,6 +929,8 @@ country_event = {#Volte Face
 		add_popularity = { ideology = lb popularity = 0.03 }
 		add_popularity = { ideology = ss popularity = 0.03 }
 		add_popularity = { ideology = jc popularity = 0.04 }
+		
+		add_country_leader_trait = { ideology = ds trait = PB_FRA_Opportunist_trait }
 	}
 	
 	after = {
@@ -915,6 +950,8 @@ country_event = {#Volte Face
 				clr_character_flag = FRA_doriot_AI_center
 			}
 		}
+		FRA_restore_doriot_traits = yes
+		mark_focus_tree_layout_dirty = yes
 	}
 }
 
@@ -1733,36 +1770,36 @@ country_event = {#Dutch Crisis - Germany abandons the Netherlands - French Annex
 		ai_chance = {
 			base = 100
 		}
-
-		FRA = {
-			transfer_state = 6
-			transfer_state = 910
-			transfer_state = 911
-			transfer_state = 35
-			transfer_state = 7
-			transfer_state = 36
+		SAF = { 
+			change_tag_from = HOL
 		}
-
-		HOL = {
+		HOL = { 
+			every_owned_state = {
+				if = { 
+					limit = { 
+						is_on_continent = europe
+					}
+					transfer_state_to = FRA
+				}
+				else = { 
+					transfer_state_to = SAF
+					add_claim_by = SAF
+				}
+			}
+		}
+		
+		SAF = {
+			inherit_technology = HOL
+			annex_country = { 
+				target = HOL
+				transfer_troops = yes
+			}
 			set_cosmetic_tag = HOL_Exiled
 			set_country_flag = HOL_Dutch_Exiled
 
 			add_opinion_modifier = {
 				target = FRA modifier = aggressive_expansionism
 			}
-		}
-
-		hidden_effect = {
-			HOL = {
-			    delete_unit_template_and_units = {
-				    division_template = "Infanterie Divisie"
-				    disband = yes 
-			    }
-			    delete_unit_template_and_units = {
-				    division_template = "Koloniale Garnizoen"
-				    disband = yes 
-			    }
-		    }		
 		}
 
 		hidden_effect = {
@@ -1843,7 +1880,7 @@ country_event = {#Alliance with Spain
 	#}
 }
 
-country_event = {#Policy towards Denmark
+country_event = { #Policy towards Denmark/Norway
 	id = French.39
 	title = French.39.t
 	desc = French.39.d
@@ -1861,7 +1898,7 @@ country_event = {#Policy towards Denmark
 		}
 
 		FRA = {
-            add_to_faction = DEN
+			add_to_faction = ROOT
 		}
 	}
 
@@ -1871,11 +1908,11 @@ country_event = {#Policy towards Denmark
 		ai_chance = {
 			base = 0
 		}
-		
+
 		FRA = {
-			give_guarantee = DEN
+			give_guarantee = ROOT
 		}
-		DEN = {
+		ROOT = {
 			give_guarantee = FRA
 		}
 	}
@@ -2222,7 +2259,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = OBR
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2260,7 +2297,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = SCO
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2298,7 +2335,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = WLS
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2374,7 +2411,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = SND
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2456,7 +2493,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = SND
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2540,7 +2577,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = SND
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2578,7 +2615,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = SWI
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2615,7 +2652,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = SPR
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2652,7 +2689,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = IST
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -2690,7 +2727,7 @@ country_event = {#France - SP Attempts to Sieze Control
 				FRA = {
 					set_autonomy = {
 						target = MGE
-						autonomous_state = autonomy_PB_SP_Client_State
+						autonomous_state = autonomy_autonomy_PB_Occupied_State
 						freedom_level = 0.50
 					}
 				}
@@ -3413,8 +3450,6 @@ country_event = {#Remilitarizing Lorraine - German response
 
 		ai_chance = { base = 100 }
 
-		add_political_power = -25
-
 		GER = { add_opinion_modifier = { target = FRA modifier = aggressive_expansionism } }
         hidden_effect = {
 			news_event = {  id = PBNews.20 }
@@ -4122,7 +4157,7 @@ country_event = {# Corsica Refuses
 	}
 }
 
-country_event = {# The Apurdi Situation
+country_event = {# The Labourd Situation
 	id = French.76
 	title = French.76.t
 	desc = French.76.d
@@ -4963,7 +4998,7 @@ country_event = {# Basque Governor
 	option = { #appoint Jose Luis de Arrese
 		name = French.96.a
 		trigger = {
-			has_country_leader_with_trait = PB_Pers_Charismatic
+			has_country_leader_with_trait = PB_personality_charismatic
 		}
 		custom_effect_tooltip = PB_Pers_Charismatic_FRA_tt
 		172 = {
@@ -5379,7 +5414,7 @@ country_event = {# Walloon Governor
 	option = { #appoint victor matthys
 		name = French.108.a
 		trigger = {
-			has_country_leader_with_trait = PB_Pers_Ambitious
+			has_country_leader_with_trait = PB_personality_ambitious
 		}
 		custom_effect_tooltip = PB_Pers_Ambitious_FRA_tt
 		random_state = {
@@ -6091,8 +6126,8 @@ country_event = {#French Economic Influence
 			limit = {
 				has_idea = FRA_Economic_Influence_High
 			}
-			FRA = {
-				puppet = ROOT
+			ROOT = {
+				set_country_flag = Tag_in_French_Sphere
 			}
 		}
 	}
@@ -7356,7 +7391,7 @@ country_event = { # Workers protest
 	option = { # We Must Stand United
 		name = French_personality.1.c
         trigger = {
-			has_country_leader_with_trait = PB_Pers_Charismatic
+			has_country_leader_with_trait = PB_personality_charismatic
 		}
 		custom_effect_tooltip = PB_Pers_Charismatic_FRA_tt
 		add_stability = 0.025
@@ -7403,7 +7438,7 @@ country_event = { # Echoes Of Corruption
 	option = { # A Little Out Of Pocket Money Won't Hurt
 		name = French_personality.2.c
         trigger = {
-			has_country_leader_with_trait = PB_Pers_Charismatic
+			has_country_leader_with_trait = PB_personality_charismatic
 		}
 		custom_effect_tooltip = PB_Pers_Charismatic_FRA_tt
 		add_political_power = 25
@@ -7444,7 +7479,7 @@ country_event = { # New Factory Opening In Paris
 	option = { # Can We Build Another One Of Those?
 		name = French_personality.3.b
 		trigger = {
-			has_country_leader_with_trait = PB_Pers_Ambitious
+			has_country_leader_with_trait = PB_personality_ambitious
 		}
 		custom_effect_tooltip = PB_Pers_Ambitious_FRA_tt
 		random_owned_controlled_state = {
@@ -7524,7 +7559,7 @@ country_event = { # The American Free Corps
 	option = { # Thousands You Say?
 		name = French_personality.4.b
 		trigger = {
-			has_country_leader_with_trait = PB_Pers_Intelligent
+			has_country_leader_with_trait = PB_personality_intelligent
 		}
 		custom_effect_tooltip = PB_Pers_Intelligent_FRA_tt
 		custom_effect_tooltip = American_Free_Corps2_tt
@@ -7596,7 +7631,7 @@ country_event = { # The Personality Test
 
 	option = { # 
 		name = French_personality.5.a
-		add_country_leader_trait = PB_Pers_Charismatic
+		add_country_leader_trait = PB_personality_charismatic
 		ai_chance = {
 			base = 50
 		}
@@ -7604,7 +7639,7 @@ country_event = { # The Personality Test
 
 	option = { # 
 		name = French_personality.5.b
-		add_country_leader_trait = PB_Pers_Intelligent
+		add_country_leader_trait = PB_personality_intelligent
 		ai_chance = {
 			base = 50
 		}
@@ -7612,7 +7647,7 @@ country_event = { # The Personality Test
 
 	option = { # 
 		name = French_personality.5.c
-		add_country_leader_trait = PB_Pers_Ambitious
+		add_country_leader_trait = PB_personality_ambitious
 		ai_chance = {
 			base = 50
 		}

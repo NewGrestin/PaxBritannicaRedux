@@ -16,30 +16,60 @@
 setup_custom_puppet_MOR = {
 	if = { #Spain
 		limit = { tag = SPR }
+		set_autonomy = {
+			target = MOR
+			autonomous_state = autonomy_client_state
+			freedom_level = 0.50
+		}
+		MOR = {
+			set_politics = {
+				ruling_party = ds
+			}
+			set_party_name = {
+				ideology = ds
+				long_name = "Capitanía General de Marruecos"
+				name = "Capitanía General de Marruecos"
+			}
+			kill_country_leader = yes
+			create_country_leader = {
+				name = "Damaso Berenguer"
+				desc = ""
+				picture = "Portrait_MOR_Damaso_Berenguer.dds"
+				expire = "1965.1.1"
+				ideology = DS_VARIANT_15
+			}
+			set_cosmetic_tag = MOR_SPR_Custody
+		}
+	}
+	else_if = { 
+		limit = { tag = RUS }
+		if = { 
+			limit = { has_completed_focus = RUS_god_returns_to_save_russia }
 			set_autonomy = {
-				target = MOR
-				autonomous_state = autonomy_PB_Garrison_State
+				target = var:tag_to_release
+				autonomous_state = autonomy_PB_Russian_Theocracy
 				freedom_level = 0.50
 			}
-			MOR = {
+			var:tag_to_release = { 
 				set_politics = {
 					ruling_party = ds
 				}
 				set_party_name = {
 					ideology = ds
-					long_name = "Capitanía General de Marruecos"
-					name = "Capitanía General de Marruecos"
+					long_name = "Metropolitan See of Tingis"
+					name = "Metropolitan See of Tingis"
 				}
 				kill_country_leader = yes
 				create_country_leader = {
-					name = "Damaso Berenguer"
-					desc = ""
-					picture = "Portrait_MOR_Damaso_Berenguer.dds"
+					name = "Ecclesiastical Authority"
+					desc = "PB_Ecclesiastical_Authority_DESC"
+					picture = "Portrait_PB_DDR_Ecclesiastical_Authority.dds"
 					expire = "1965.1.1"
-					ideology = DS_VARIANT_15
+					ideology = DS_VARIANT_09
 				}
-				set_cosmetic_tag = MOR_SPR_Custody
+				set_cosmetic_tag = MOR_RUS_Theocracy
 			}
+		}
 	}
 }
 setup_custom_puppet_ETH = {
@@ -159,23 +189,68 @@ setup_custom_puppet_EGY = {
 		}
 	}
 }
-setup_custom_puppet_BAF = {
-	BAF = {
-		if = {
-			limit = {
-				BAF = {
-					OR = {
-						has_idea = PB_Idea_BAF_Overextension
-						has_idea = PB_Idea_BAF_Paradise_of_the_Empire
-						has_idea = PB_Idea_BAF_Colonial_Garrison_Army
-					}
-				}
+setup_puppet_BAF = { 
+	every_owned_state = {
+		limit = {
+			is_saharan_africa = yes
+			is_valid_annexation_state = yes
+		}
+		transfer_state_and_notify = yes
+		add_claim_by = BAF
+	}
+	if = { 
+		limit = { has_custom_puppet_BAF = yes }
+		setup_custom_puppet_BAF = yes
+		custom_effect_tooltip = has_custom_puppet
+	}
+	else = { 
+		set_autonomy = {
+			target = BAF
+			autonomous_state = autonomy_PB_Autonomous_Colony
+			freedom_level = 0.60
+		}
+		BAF = {
+			set_party_name = {
+				ideology = ni
+				long_name = "Colonial Government"
+				name = "West African Colonial Government"
 			}
-			remove_ideas = PB_Idea_BAF_Overextension
-			remove_ideas = PB_Idea_BAF_Paradise_of_the_Empire
-			remove_ideas = PB_Idea_BAF_Colonial_Garrison_Army
+			set_party_name = {
+				ideology = ds
+				long_name = "Colonial Government"
+				name = "West African Colonial Government"
+			}
+			set_party_name = {
+				ideology = an
+				long_name = "Colonial Government"
+				name = "West African Colonial Government"
+			}
+			set_cosmetic_tag = BAF_West_Africa
+			set_politics = {
+				ruling_party = ds
+			}
+			kill_country_leader = yes
+			create_country_leader = {
+				name = "Colonial Administration"
+				desc = ""
+				picture = GFX_portrait_no_leader
+				expire = "1965.1.1"
+				ideology = DS_VARIANT_01
+			}
+			set_popularities = {
+				ni = 11
+				ds = 26
+				rc = 6
+				cn = 11
+				lb = 16
+				an = 4
+				ss = 10
+				jc = 16
+			}
 		}
 	}
+}
+setup_custom_puppet_BAF = { 
 	if = { #France
 		limit = { tag = FRA }
 		set_autonomy = {
@@ -419,52 +494,6 @@ setup_custom_puppet_BAF = {
 					ss = 11
 					jc = 22
 				}
-			}
-		}
-	}
-	else = {
-		set_autonomy = {
-			target = BAF
-			autonomous_state = autonomy_PB_Autonomous_Colony
-			freedom_level = 0.60
-		}
-		BAF = {
-			set_party_name = {
-				ideology = ni
-				long_name = "Colonial Government"
-				name = "West African Colonial Government"
-			}
-			set_party_name = {
-				ideology = ds
-				long_name = "Colonial Government"
-				name = "West African Colonial Government"
-			}
-			set_party_name = {
-				ideology = an
-				long_name = "Colonial Government"
-				name = "West African Colonial Government"
-			}
-			set_cosmetic_tag = BAF_West_Africa
-			set_politics = {
-				ruling_party = ds
-			}
-			kill_country_leader = yes
-			create_country_leader = {
-				name = "Colonial Administration"
-				desc = ""
-				picture = GFX_portrait_no_leader
-				expire = "1965.1.1"
-				ideology = DS_VARIANT_01
-			}
-			set_popularities = {
-				ni = 11
-				ds = 26
-				rc = 6
-				cn = 11
-				lb = 16
-				an = 4
-				ss = 10
-				jc = 16
 			}
 		}
 	}
@@ -771,32 +800,6 @@ setup_custom_puppet_DAF = {
 	}
 }
 setup_custom_puppet_CRN = {
-	if = {
-		limit = {
-			CRN = {
-				OR = {
-					has_idea = PB_CRN_White_Oasis
-					has_idea = PB_CRN_Native_Reservation_Zones
-				}
-			}
-		}
-		CRN = {
-			remove_ideas = PB_CRN_White_Oasis
-			remove_ideas = PB_CRN_Native_Reservation_Zones
-		}
-		if = {
-			limit = {
-				CRN = {
-					OR = {
-						has_idea = CoF_Prince_Albert_Victor
-					}
-				}
-			}
-			CRN = { 
-				remove_ideas = CoF_Prince_Albert_Victor 
-			}
-		}
-	}
 	if = { #France
 		limit = { tag = FRA }
 		set_autonomy = {

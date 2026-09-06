@@ -75,6 +75,162 @@ FFI_border_Finland_Uprising = {
 	#}
 }
 
+MAN_border_Mongolia_Uprising = {
+	allowed = { 
+		original_tag = MAN 
+	}
+
+	enable = {
+		GAN = {
+			exists = yes
+		}
+		#NOT = {
+		#	has_completed_focus = RUS_commit_to_finland
+		#}
+	}
+
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = GAN
+		value = -5000
+	}
+}
+
+GAN_border_Mongolia_Uprising = {
+	allowed = { 
+		original_tag = GAN
+	}
+
+	enable = {
+		GAN = {
+			has_war_with = MON
+		}
+	}
+
+	abort_when_not_enabled = yes
+
+	#ai_strategy = {
+	#	type = front_unit_request
+	#	state = 149
+	#	state = 150
+	#	strategic_region = 13
+	#	value = 5000
+	#}
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = MON
+		value = 5000
+	}	
+
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = RUS
+		value = -5000
+	}	
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = MAN
+		value = -5000
+	}	
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = SIK
+		value = -5000
+	}	
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = XSM
+		value = -5000
+	}	
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = KUM
+		value = -5000
+	}
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = ROC
+		value = -5000
+	}
+}
+
+Mongolian_threat = {
+	allowed = {
+		tag = GAN
+	}
+	enable = {
+		has_war_with = MON
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = conquer
+		id = "MON"
+		value = 200
+	}
+	ai_strategy = {
+		type = antagonize
+		id = "MON"
+		value = 200
+	}
+
+	ai_strategy = {
+		type = front_control
+
+		tag = MON
+
+		ratio = 0.1
+
+		priority = 100
+		ordertype = front
+		execution_type = rush
+		execute_order = yes
+	}
+}
+
+Mongolian_threat_2 = {
+	allowed = {
+		tag = MON
+	}
+	enable = {
+		has_war_with = GAN
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = conquer
+		id = "GAN"
+		value = 200
+	}
+	ai_strategy = {
+		type = antagonize
+		id = "GAN"
+		value = 200
+	}
+
+	ai_strategy = {
+		type = front_control
+
+		tag = GAN
+
+		ratio = 0.1
+
+		priority = 100
+		ordertype = front
+		execution_type = rush
+		execute_order = yes
+	}
+}
+
 Finlad_War_Lend_Lease_Fixing = {
 	allowed = { 
 		original_tag = MAL
@@ -106,7 +262,25 @@ Finlad_War_Lend_Lease_Fixing = {
 	}
 }
 
+RUS_Send_Volunteers_to_Finland = {
+	allowed = { 
+		original_tag = RUS 
+	}
 
+    enable = {
+        FIN = {
+			has_war_with = FFI
+		}
+    }
+
+	abort_when_not_enabled = yes
+
+    ai_strategy = {
+        type = send_volunteers_desire
+        id = FIN
+        value = 1000
+    }
+}
 
 RUS_Send_Volunteers_to_Italy = {
 	allowed = { 
@@ -144,26 +318,6 @@ RUS_Send_Volunteers_to_White_Hungary = {
     ai_strategy = {
         type = send_volunteers_desire
         id = HWA
-        value = 1000
-    }
-}
-
-RUS_Send_Volunteers_to_Xinjiang = {
-	allowed = { 
-		original_tag = RUS 
-	}
-
-    enable = {
-        SIK = {
-			has_war_with = ETR
-		}
-    }
-
-	abort_when_not_enabled = yes
-
-    ai_strategy = {
-        type = send_volunteers_desire
-        id = SIK
         value = 1000
     }
 }
@@ -387,7 +541,7 @@ RUS_stop_doing_nothing_and_attack = {
 		RUS = {
 			has_war_with = GER
 		}
-		date < 1939.1.1
+		second_great_war_started = yes
 	}
 
 	abort_when_not_enabled = yes
@@ -397,12 +551,48 @@ RUS_stop_doing_nothing_and_attack = {
 
 		tag = GER
 
-		ratio = 0.7
+		ratio = 0.5
 
-		priority = 1000
+		priority = 100
 		ordertype = front
 		execution_type = rush_weak
 		execute_order = yes
+	}
+}
+RUS_protect_petrograd = {
+	allowed = {
+		original_tag = RUS
+	}
+	enable = {
+		OR = { 
+			1398 = {
+				controller = {
+					OR = {
+						has_war_with = ROOT
+					}
+				}
+			}
+			1021 = { 
+				controller = {
+					OR = {
+						has_war_with = ROOT
+						tag = SWE
+						tag = FFI
+					}
+				}
+			}
+		}
+	}
+
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = put_unit_buffers
+		states = { 195 146 208 }
+		ratio = 0.08
+		area = eastern_europe
+		area = scandinavia
+		subtract_fronts_from_need = no
 	}
 }
 
@@ -431,7 +621,7 @@ RUS_border_Germany = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = GER
-		value = 2000
+		value = 120
 	}
 }
 
@@ -541,21 +731,12 @@ RUS_destroy_SNA = {
 		AND = {
 			RUS = {
 				OR = {
-					has_war_with = FIN
+					has_war_with = FFI
 					has_war_with = POL
 					has_war_with = UKR
 					has_war_with = BAL
 				}
-			}
-			ENG = {
-				OR = {
-					is_in_faction_with = FIN
-					is_in_faction_with = POL
-					is_in_faction_with = UKR
-					is_in_faction_with = BAL
-				}
-			}
-				
+			}	
 		}
 	}
 
@@ -564,7 +745,7 @@ RUS_destroy_SNA = {
 	ai_strategy = {
 		type = front_unit_request
 		country_trigger = {
-			original_tag = FIN
+			original_tag = FFI
 			original_tag = POL
 			original_tag = UKR
 			original_tag = BAL
@@ -574,7 +755,7 @@ RUS_destroy_SNA = {
 	ai_strategy = {
 		type = front_control
 		state_trigger = {
-			is_owned_by = FIN
+			is_owned_by = FFI
 			is_owned_by = POL
 			is_owned_by = UKR
 			is_owned_by = BAL

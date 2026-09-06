@@ -691,9 +691,22 @@ annexations_create_india_event_targets = {
 	}
 }
 annexations_release_MGE_germany = { 
+	every_state = {
+		limit = { is_germany = yes }
+		if = {
+			limit = { is_owned_by = ROOT }
+			remove_claim_and_add_core_of_target = yes
+		}
+		else = {
+			add_claim_of_target = yes
+		}
+	}
 	every_owned_state = {
-		limit = { 
-			is_rhineland = yes
+		limit = {
+			OR = { 
+				is_rhineland = yes
+				state = 8 
+			} 	
 		}
 		retain_state = yes
 	}
@@ -713,16 +726,16 @@ annexations_release_MGE_germany = {
 				is_germany = yes
 				is_valid_annexation_state = yes
 			}
-			transfer_state_and_notify = yes
+			var:tag_to_release = {
+				transfer_state_and_notify = yes
+			}
 		}
 	}
 	else = { 
 		generate_new_german_puppet = yes
 		every_state = {
 			limit = {
-				OR = { 
-					is_germany = yes
-				}
+				is_germany = yes
 			}
 			add_core_of = var:tag_to_release
 		}
@@ -730,7 +743,7 @@ annexations_release_MGE_germany = {
 			limit = {
 				is_germany_or_splinter_tag = yes
 				is_german_unifier_tag = no
-				NOT = { original_tag = RHN }
+				NOT = { original_tag = RHH }
 				is_ai = yes
 			}
 			annex_splinter_tag = yes
@@ -746,7 +759,8 @@ generate_new_german_puppet = {
 		}
 		set_temp_variable = { tag_to_release = MGE }
 		hidden_effect = {
-			#GER = { var:tag_to_release = { copy_laws_of_PREV = yes } }
+			MGE = { var:tag_to_release = { #copy_laws_of_PREV = yes 
+			} }
 		}
 		every_state = {
 			limit = { is_germany = yes }
@@ -786,23 +800,24 @@ generate_new_german_puppet = {
 		}
 	}
 	else = {
-		set_temp_variable = { target = MGE }
 		create_dynamic_country = {
 			original_tag = MGE
 			set_temp_variable = { tag_to_release = THIS }
 			hidden_effect = {
-				#GER = { var:tag_to_release = { copy_laws_of_PREV = yes } }
+				var:tag_to_release = { 
+					set_cosmetic_tag = MGE_Regional
+				} 
 			}
 			ROOT = {
 				every_owned_state = {
-					limit = { is_core_of = MGE }
-					transfer_state_without_overriding_occupation = yes
+					limit = { is_germany = yes }
+					var:tag_to_release = {
+						transfer_state_without_overriding_occupation = yes
+					}
 				}
 			}
-			hidden_effect = {
-				set_cosmetic_tag = MGE_Regional
-			}
 		}
+		release_targeted_tag = yes
 		puppet_released_tag = yes
 		ROOT = { 
 			set_autonomy = {
@@ -814,6 +829,19 @@ generate_new_german_puppet = {
 }
 
 annexations_reset_german_tags = {
+	if = {
+		limit = { NOT = { country_exists = HES } }
+		every_state = {
+			if = {
+				limit = { is_hesse = no }
+				remove_core_of = HES
+			}
+			else = {
+				add_core_of = HES
+			}
+			remove_claim_by = HES
+		}
+	}
 	if = {
 		limit = { NOT = { country_exists = RHH } }
 		every_state = {
@@ -892,6 +920,32 @@ annexations_reset_german_tags = {
 			remove_claim_by = WRT
 		}
 	}
+	if = {
+		limit = { NOT = { country_exists = AUS } }
+		every_state = {
+			if = {
+				limit = { is_austria = no }
+				remove_core_of = AUS
+			}
+			else = {
+				add_core_of = AUS
+			}
+			remove_claim_by = AUS
+		}
+	}
+	if = {
+		limit = { NOT = { country_exists = MGE } }
+		every_state = {
+			if = {
+				limit = { is_germany = no }
+				remove_core_of = MGE
+			}
+			else = {
+				add_core_of = MGE
+			}
+			remove_claim_by = MGE
+		}
+	}
 }
 
 annexations_release_united_central_america = {
@@ -906,7 +960,7 @@ annexations_release_united_central_america = {
 	1212 = { retain_state = yes } #Peten
 	NIC = { set_country_flag = CEN_formed }
 
-	set_temp_variable = { tag_to_release = CEM }
+	set_temp_variable = { tag_to_release = CEN }
 	every_state = {
 		limit = {
 			OR = {
@@ -945,15 +999,15 @@ annexations_release_united_central_america = {
 	}
 	if = {
 		limit = { ROOT = { has_monarchist_government = yes } }
-		CEM = {
-			set_cosmetic_tag = CEM_Occupied_Monarchy
+		CEN = {
+			set_cosmetic_tag = CEN_Occupied_Monarchy
 		}
 	}
 
 	if = {
 		limit = { ROOT = { has_republican_government = yes } }
-		CEM = {
-			set_cosmetic_tag = CEM_Occupied_Republic
+		CEN = {
+			set_cosmetic_tag = CEN_Occupied_Republic
 		}
 	}
 }
@@ -1051,8 +1105,8 @@ annexations_reset_central_american_tags = {
 		}
 	}
 	if = {
-		limit = { NOT = { country_exists = CEM } }
-		CEM = {
+		limit = { NOT = { country_exists = CEN } }
+		CEN = {
 			clear_cores_of_tag_if_possible = yes
 		}
 	}
@@ -1384,6 +1438,7 @@ annexations_give_india_to_target = {
 }
 
 annexations_reset_yugoslavian_cores_claims = {
+	
 	if = {
 		limit = { NOT = { country_exists = CRO } }
 		every_state = {
