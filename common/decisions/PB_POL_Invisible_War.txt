@@ -39,12 +39,33 @@ PB_POL_Invisible_War = {
 		days_remove = 20
 
 		remove_effect = {
-			PB_RUS_Decrease_Polish_Resistance = yes
+			PB_RUS_Decrease_Polish_Resistance_Medium = yes
 			set_global_flag = POL_Disband_Shooting_Clubs
-			add_war_support = -0.05
+			add_war_support = -0.01
 			add_popularity = {
 				ideology = jc
 				popularity = -0.05
+			}
+			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Small_tt
+			hidden_effect = {
+				for_each_scope_loop = {
+					array = POL.owned_states
+					if = {
+						limit = {
+							is_core_of = POL
+							has_state_flag = POL_Resistance_State_Flag
+						}
+						add_to_variable = {
+							var = id.Resistance_Number
+							value = -5
+						}
+						clamp_variable = {
+							var = id.Resistance_Number
+							min = 0
+							max = 100
+						}
+					}
+				}
 			}
 		}
 	}
@@ -106,7 +127,7 @@ PB_POL_Invisible_War = {
 				amount = -100
 				producer = POL
 			}
-			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Small_tt
+			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Large_tt
 			hidden_effect = {
 				for_each_scope_loop = {
 					array = POL.owned_states
@@ -117,7 +138,7 @@ PB_POL_Invisible_War = {
 						}
 						add_to_variable = {
 							var = id.Resistance_Number
-							value = -5
+							value = -15
 						}
 						clamp_variable = {
 							var = id.Resistance_Number
@@ -187,7 +208,7 @@ PB_POL_Invisible_War = {
 					value = 50
 				}
 			}
-			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Small_tt
+			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Medium_tt
 			hidden_effect = {
 				for_each_scope_loop = {
 					array = POL.owned_states
@@ -198,7 +219,7 @@ PB_POL_Invisible_War = {
 						}
 						add_to_variable = {
 							var = id.Resistance_Number
-							value = -5
+							value = -10
 						}
 						clamp_variable = {
 							var = id.Resistance_Number
@@ -229,7 +250,90 @@ PB_POL_Invisible_War = {
 		days_remove = 14
 
 		remove_effect = {
+			PB_RUS_Decrease_Polish_Resistance_Large = yes
+			add_popularity = {
+				ideology = jc
+				popularity = -0.1
+			}
+			add_popularity = {
+				ideology = ss
+				popularity = -0.1
+			}
+			add_political_power = 80
 
+			if = {
+				limit = {
+					HUN = {
+						OR = {
+							has_government = jc
+							has_government = ss
+						}
+					}
+					73 = {
+						is_owned_by = HUN
+					}
+				}
+				73 = {
+					damage_building = {
+						type = infrastructure
+						damage = 2
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					86 = {
+						is_owned_by = PRS
+					}
+				}
+				86 = {
+					damage_building = {
+						type = infrastructure
+						damage = 2
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					JAP = {
+						OR = {
+							has_government = jc
+							has_government = ss
+						}
+					}
+					536 = {
+						is_owned_by = JAP
+					}
+				}
+				536 = {
+					damage_building = {
+						type = infrastructure
+						damage = 2
+					}
+				}
+			}
+
+			custom_effect_tooltip = POL_Decrease_Every_Local_Resistance_Medium_tt
+			hidden_effect = {
+				for_each_scope_loop = {
+					array = POL.owned_states
+					if = {
+						limit = {
+							is_core_of = POL
+							has_state_flag = POL_Resistance_State_Flag
+						}
+						add_to_variable = {
+							var = id.Resistance_Number
+							value = -10
+						}
+						clamp_variable = {
+							var = id.Resistance_Number
+							min = 0
+							max = 100
+						}
+					}
+				}
+			}
 		}
 	}
 	PB_POL_False_Flag_Operation = {
@@ -256,6 +360,10 @@ PB_POL_Invisible_War = {
 				ideology = jc
 				popularity = -0.15
 			}
+			add_popularity = {
+				ideology = ss
+				popularity = -0.1
+			}
 			add_political_power = 60
 		}
 	}
@@ -275,6 +383,8 @@ PB_POL_Invisible_War = {
 		visible = {
 			
 		}
+
+		fire_only_once = yes
 
 		state_target = yes
 
@@ -321,6 +431,7 @@ PB_POL_Invisible_War = {
 						min = 0
 						max = 100
 					}
+					set_state_flag = PB_POL_Local_Mass_Arrests_Flag
 				}
 			}
 		}
@@ -405,10 +516,8 @@ PB_POL_Invisible_War = {
 
 		days_remove = 10
 
-		cost = 5
 		custom_cost_trigger = {
 			command_power > 10
-			has_political_power>4
 		}
 		custom_cost_text = PB_POL_decision_cost_CP_10
 		available = {
@@ -430,6 +539,7 @@ PB_POL_Invisible_War = {
 			FROM = {
 				is_core_of = POL
 				has_state_flag = POL_Resistance_State_Flag
+				has_state_flag = PB_POL_Local_Mass_Arrests_Flag
 				NOT = {
 					has_state_flag = PB_POL_Pacified_State
 				}
@@ -452,11 +562,19 @@ PB_POL_Invisible_War = {
 		}
 
 		remove_effect = {
-			FROM = {
-				PB_POL_Decrease_Local_Resistance_Medium = yes
+			add_popularity = {
+				ideology = ss
+				popularity = -0.01
 			}
-			
+			add_popularity = {
+				ideology = jc
+				popularity = -0.02
+			}
+			army_experience = 5
 			add_manpower = -10
+			FROM = {
+				PB_POL_Decrease_Local_Resistance_Large = yes
+			}
 		}
 
 		ai_will_do = {
@@ -481,6 +599,8 @@ PB_POL_Invisible_War = {
 				size > 1
 			}
 		}
+
+		fire_only_once = no
 
 		visible = {
 
