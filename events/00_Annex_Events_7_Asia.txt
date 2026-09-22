@@ -6345,11 +6345,31 @@ country_event = { #Fate of Afghanistan
 	is_triggered_only = yes
 	
 	immediate = {
-		1587 = { retain_state = yes } #Hazaristan
-		440 = { retain_state = yes } #Punjab
-		1590 = { retain_state = yes } #West Punjab
-		444 = { retain_state = yes } #Balochistan
-		1260 = { retain_state = yes } #West Sind
+		hidden_effect = { 
+			every_state = {
+				if = {
+					limit = { is_afghanistan = no }
+					remove_core_of = AFG
+				}
+				else = {
+					add_core_of = AFG
+				}
+				remove_claim_by = AFG
+			}
+			if = {
+				limit = {
+					OR = {
+						is_indian_unifier = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
+			1587 = { retain_state = yes } #Hazaristan
+			440 = { retain_state = yes } #Punjab
+			1590 = { retain_state = yes } #West Punjab
+			444 = { retain_state = yes } #Balochistan
+			1260 = { retain_state = yes } #West Sind
+		}
 	}
 
 	option = { #Release Afghanistan
@@ -6452,9 +6472,20 @@ country_event = { #Fate of Balochistan
 		hidden_effect = {
 			if = {
 				limit = {
-					tag = AFG
+					OR = {
+						267 = { is_claim_or_core_of_ROOT = yes }
+					}
 				}
 				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					267 = { # Kabul
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:267.owner = { save_event_target_as = kabul }
 			}
 		}
 	}
@@ -6473,10 +6504,7 @@ country_event = { #Fate of Balochistan
 			}
 			modifier = {
 				factor = 0
-				AND = {
-					AFG = { exists = yes }
-					is_ally_with = AFG
-				}
+				is_ally_with = event_target:kabul
 			}
 		}
 
@@ -6513,7 +6541,7 @@ country_event = { #Fate of Balochistan
 		name = annex.7039.b
 		trigger = {
 			is_subject = no
-			AFG = { exists = yes }
+			has_event_target = kabul
 		}
 		ai_chance = {
 			base = 70
@@ -6522,17 +6550,19 @@ country_event = { #Fate of Balochistan
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 0
-				NOT = { is_ally_with = AFG }
+				factor = 0.1
+				is_ally_with = event_target:kabul
 			}
 			modifier = {
 				factor = 0.1
-				AFG = { is_subject = yes }
+				event_target:kabul = { is_subject = yes }
 			}
 		}
 		
 		set_temp_variable = { tag_to_release = AFG }
 		444 = { transfer_state_and_notify = yes }
+		1589 = { transfer_state_and_notify = yes }
+		1588 = { transfer_state_and_notify = yes }
 	}
 	
 	option = { #Give to overlord
@@ -6544,6 +6574,8 @@ country_event = { #Fate of Balochistan
 		
 		set_temp_variable = { tag_to_release = overlord }
 		444 = { transfer_state_and_notify = yes } #Balochistan
+		1589 = { transfer_state_and_notify = yes }
+		1588 = { transfer_state_and_notify = yes }
 	}
 
 	option = { #Integrate
@@ -6555,6 +6587,8 @@ country_event = { #Fate of Balochistan
 		ai_chance = { base = 100 }
 		
 		444 = { add_claim_of_ROOT = yes }
+		1589 = { add_claim_of_ROOT = yes }
+		1588 = { add_claim_of_ROOT = yes }
 	}
 
 	option = { #Cancel
@@ -6580,9 +6614,20 @@ country_event = { #Fate of Hazaristan
 		hidden_effect = {
 			if = {
 				limit = {
-					tag = AFG
+					OR = {
+						267 = { is_claim_or_core_of_ROOT = yes }
+					}
 				}
 				save_event_target_as = can_annex
+			}
+			if = {
+				limit = {
+					267 = { # Kabul
+						annexations_state_owner_is_valid_grant_target = yes
+						owner = { ROOT_can_grant_land = yes }
+					}
+				}
+				var:267.owner = { save_event_target_as = kabul }
 			}
 		}
 	}
@@ -6601,9 +6646,9 @@ country_event = { #Fate of Hazaristan
 			}
 			modifier = {
 				factor = 0
-				AND = {
-					AFG = { exists = yes }
-					is_ally_with = AFG
+				modifier = {
+					factor = 0
+					is_ally_with = event_target:kabul
 				}
 			}
 		}
@@ -6646,9 +6691,7 @@ country_event = { #Fate of Hazaristan
 		name = annex.7040.b
 		trigger = {
 			is_subject = no
-			AFG = {
-				exists = yes
-			}
+			has_event_target = kabul
 		}
 		ai_chance = {
 			base = 70
@@ -6657,12 +6700,12 @@ country_event = { #Fate of Hazaristan
 				annexations_can_annex = yes
 			}
 			modifier = {
-				factor = 0
-				NOT = { is_ally_with = AFG }
+				factor = 0.1
+				is_ally_with = event_target:kabul
 			}
 			modifier = {
 				factor = 0.1
-				AFG = { is_subject = yes }
+				event_target:kabul = { is_subject = yes }
 			}
 		}
 		
