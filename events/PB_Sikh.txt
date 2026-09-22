@@ -15,9 +15,6 @@ country_event = {	#Victory in Kangra
 	immediate = {
 		hidden_effect = { 
 			remove_ideas = SKH_kangra_hills_war
-			1100 = { 
-				set_demilitarized_zone = yes
-			}
 			#cancel remaining border wars
 			cancel_border_war = {
 				dont_fire_events = yes
@@ -44,6 +41,18 @@ country_event = {	#Victory in Kangra
 		}
 		add_war_support = 0.25
 		add_political_power = 80
+		1100 = { 
+			set_demilitarized_zone = yes
+		}
+		hidden_effect = {
+			if = {
+				limit = { has_country_flag = kangra_alliance_with_nep }
+				SKH = { country_event = { id = sikh_kangra_war.4 days = 3 } }
+			}
+			else = {
+				1100 = { transfer_state_to = SKH }
+			}
+		}
 	}
 	option = {
 		trigger = {
@@ -158,6 +167,97 @@ country_event = {	#Faliure in Kangra
 		add_stability = 0.15
 	}
 }
+country_event = {	#The Fate of Kangra
+	id = sikh_kangra_war.4
+	title = sikh_kangra_war.4.t
+	desc = sikh_kangra_war.4.d
+	#picture = GFX_news_event_PB_Carlist_Civil_War
+
+	fire_only_once = yes
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			1100 = { 
+				set_demilitarized_zone = no
+			}
+		}
+	}
+	option = { #Cede Kangra to our Gorkha allies
+		name = sikh_kangra_war.4.a
+		ai_chance = {
+			base = 30
+		}
+		add_opinion_modifier = {
+			target = NEP
+			modifier = convenient_alliance
+		}
+		add_political_power = 20
+		1100 = { 
+			transfer_state_to = NEP
+		}
+		NEP = { 
+			country_event = { id = sikh_kangra_war.5 days = 1 }
+		}
+	}
+	option = { #Keep Kangra for the Khalsa
+		name = sikh_kangra_war.4.b
+		ai_chance = {
+			base = 70
+		}
+		add_opinion_modifier = {
+			target = NEP
+			modifier = dangerous_expansionism
+		}
+		add_political_power = 50
+		1100 = { 
+			transfer_state_to = SKH
+		}
+		NEP = { 
+			country_event = { id = sikh_kangra_war.6 days = 1 }
+		}
+	}
+}
+country_event = {	#Gorkha Rule Comes to Kangra
+	id = sikh_kangra_war.5
+	title = sikh_kangra_war.5.t
+	desc = sikh_kangra_war.5.d
+	#picture = GFX_news_event_PB_Carlist_Civil_War
+
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = sikh_kangra_war.5.a
+		ai_chance = {
+			base = 100
+		}
+		add_political_power = 50
+		add_stability = 0.05
+		add_opinion_modifier = {
+			target = SKH
+			modifier = convenient_alliance
+		}
+	}
+}
+country_event = {	#Betrayed by the Khalsa
+	id = sikh_kangra_war.6
+	title = sikh_kangra_war.6.t
+	desc = sikh_kangra_war.6.d
+	#picture = GFX_news_event_PB_Carlist_Civil_War
+
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = sikh_kangra_war.6.a
+		ai_chance = {
+			base = 100
+		}
+		add_opinion_modifier = {
+			target = SKH
+			modifier = dangerous_expansionism
+		}
+		add_political_power = -20
+	}
+}
 #Monarchy instated in sikh
 country_event = {	#Annals of Court Intrigue
 	id = sikh.1
@@ -168,7 +268,10 @@ country_event = {	#Annals of Court Intrigue
 	fire_only_once = yes
 	is_triggered_only = yes
 	immediate = {
-		country_event = { id = sikh.2 days = 27 }
+		hidden_effect = {
+			country_event = { id = sikh.2 days = 127 }
+		}
+		
 	}
 	option = {
 		name = sikh.1.a
@@ -235,12 +338,13 @@ country_event = {	#The Propsects of a Gorkha Alliance
 		ai_chance = {
 			base = 100
 		}
+		set_country_flag = kangra_alliance_with_nep
 		add_opinion_modifier = {
 			target = NEP
 			modifier = convenient_alliance
 		}
 		NEP = { 
-
+			set_country_flag = kangra_alliance_with_nep
 			add_ideas = SKH_kangra_hills_war
 		
 			add_opinion_modifier = {
@@ -399,6 +503,19 @@ country_event = { #Fall of the Khalsa
 			add_country_leader_role = {
                 country_leader = {
                     ideology = DS_VARIANT_13
+                }
+                promote_leader = yes
+            }
+		}
+	}
+	option = {
+		name = sikh.7.b
+		set_cosmetic_tag = SKH_military
+		kill_country_leader = yes
+		SKH_bhupinder_singh = { 
+			add_country_leader_role = {
+                country_leader = {
+                    ideology = DS_VARIANT_18
                 }
                 promote_leader = yes
             }

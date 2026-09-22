@@ -56,9 +56,13 @@ allow_annexation_decision_selection = {
 }
 
 recheck_annexations_base = {
-	clear_array = valid_italian_targets_grant
-	clear_array = offered_states_array
-	allow_annexation_decision_selection = yes
+	hidden_effect = {
+		clear_array = potential_grant_targets
+		clear_array = valid_italian_targets_grant
+		clear_array = valid_italian_targets_offer
+		clear_array = offered_states_array
+		allow_annexation_decision_selection = yes
+	}
 }
 
 recheck_annexations = {
@@ -74,10 +78,13 @@ recheck_annexations = {
 }
 
 recheck_annexations_immediate = {
-	recheck_annexations_base = yes
 	hidden_effect = {
-		country_event = annex.1
-		refresh_occupation_penalties = yes
+		if = {
+			limit = { NOT = { has_country_flag = currently_offering_states } }
+			recheck_annexations_base = yes
+			country_event = annex.1
+			refresh_occupation_penalties = yes
+		}
 	}
 }
 
@@ -179,7 +186,7 @@ build_annexation_temp_arrays = {
 							set_temp_variable = { priority_state_@var:annexation_target = THIS }
 						}
 						else_if = {
-							limit = { var:priority_state_@var:annexation_target = { check_variable = { id > PREV.id } } }
+							limit = { var:priority_state_@var:annexation_target = { check_variable = { id < PREV.id } } } #state ids are negative
 							set_temp_variable = { priority_state_@var:annexation_target = THIS }
 						}
 					}
