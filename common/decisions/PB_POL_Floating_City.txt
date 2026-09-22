@@ -591,7 +591,7 @@ PB_POL_Floating_City = {
 		}
 
 		visible = {
-			
+			has_global_flag = POL_Floating_City_Launched
 		}
 
 		complete_effect = {
@@ -642,12 +642,9 @@ PB_POL_Floating_City = {
 					if = {
 						limit = {
 							NOT = {
-								controller = {
-									NOT = {
-										has_country_flag = POL_Floating_City_Was_Here
-									}
-								}
+								has_country_flag = POL_Floating_City_Was_Here
 							}
+						
 						}
 						ROOT = {
 							random_list = {
@@ -693,6 +690,100 @@ PB_POL_Floating_City = {
 						}
 					}
 				}
+			}
+
+			hidden_effect = {
+				clr_country_flag = POL_moving_city
+				set_global_flag = POL_City_Did_Something
+			}
+			
+		}
+
+	}
+
+	PB_POL_travel_back_to_warsaw = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 10
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 10
+			}
+		}
+
+		available = {
+			NOT = {
+				has_country_flag = POL_moving_city
+				has_global_flag = POL_deactivating_or_activating
+			}
+			hidden_trigger = {
+				has_global_flag = { flag = POL_City_Did_Something days > 1 }
+			}
+			10 = {
+				NOT = {
+					has_state_flag = POL_Where_Floating_City
+				}
+			}
+			
+		}
+
+		visible = {
+			10 = {
+				NOT = {
+					has_state_flag = POL_Where_Floating_City
+					any_neighbor_state = {
+						has_state_flag = POL_Where_Floating_City
+					}
+				}
+			}
+			has_global_flag = POL_Floating_City_Launched
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				POL = {
+					set_country_flag = POL_moving_city
+				}
+				clr_global_flag = POL_City_Did_Something
+			}
+		}
+
+		modifier = {
+			#political_power_cost = 0.5
+		}
+
+		remove_effect = {
+
+			every_state = {
+				limit = {
+					has_state_flag = POL_Where_Floating_City
+				}
+				if = {
+					limit = {
+						has_global_flag = POL_Floating_City1
+					}
+					remove_dynamic_modifier = { modifier = POL_Floating_City1 }
+					else = {
+						remove_dynamic_modifier = { modifier = POL_Floating_City2 }
+					}
+				}
+				
+				clr_state_flag = POL_Where_Floating_City
+			}
+
+			10 = {
+				if = {
+					limit = {
+						has_global_flag = POL_Floating_City1
+					}
+					add_dynamic_modifier = { modifier = POL_Floating_City1 }
+					else = {
+						add_dynamic_modifier = { modifier = POL_Floating_City2 }
+					}
+				}
+				set_state_flag = POL_Where_Floating_City
 			}
 
 			hidden_effect = {
