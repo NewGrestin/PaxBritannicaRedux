@@ -1,149 +1,6 @@
 #category = short_term medium_term or long_term
 # ROOT is faction leader, FROM is faction member who opens UI and views goals, completed/cancel/complete_effect do not have FROM scopes
 
-
-######################################################################
-
-###  ##   ##  ### ###  ##  #  #      ## ###  ###  ##  ### ### ###  ##  
-#   #  # #  #  #   #  #  # ## #     #   #  # #   #  #  #  #    #  #  # 
-##  #### #     #   #  #  # # ##      #  ###  ##  #     #  ##   #  #    
-#   #  # #  #  #   #  #  # #  #       # #    #   #  #  #  #    #  #  # 
-#   #  #  ##   #  ###  ##  #  #     ##  #    ###  ##  ### #   ###  ##  
-
-######################################################################
-### IMPERIAL POWERS ###
-faction_goal_complete_nicaragua_canal = {
-	name = complete_nicaragua_canal_goal_name
-	description = complete_nicaragua_canal_goal_desc
-	category = medium_term
-	group = FOCUS_FILTER_INDUSTRY
-	visible = {
-		FROM = {
-			OR = {
-				original_tag = ENG
-				is_ally_with = ENG
-			}
-		}
-		274 = { is_controlled_by_ROOT_or_ally = yes }
-	}
-	available = {
-
-	}
-	completed = {
-		has_global_flag = NICARAGUA_CANAL_BUILT
-	}
-	complete_effect = {
-		add_faction_power_projection = 100
-		custom_effect_tooltip = generic_skip_one_line_tt
-		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
-		every_faction_member = { 
-			visible_when_empty = yes
-			limit = {
-				controls_state = 274
-			}
-			add_faction_initiative = 1
-		}
-		274 = {
-			add_extra_state_shared_building_slots = 2
-			add_building_construction = {
-				type = naval_base
-				level = 2
-				province = 13303
-				instant_build = yes
-			}
-			add_building_construction = {
-				type = naval_base
-				level = 2
-				province = 13210
-				instant_build = yes
-			}
-		}
-	}
-	ai_will_do = {
-		base = 0
-		modifier = {
-			add = 1 # If naval power seek to project it by expanding bases
-			has_navy_size = {
-				size > 5
-				type = capital_ship
-			}
-		}
-		modifier = {
-			add = 2 # If major naval power seek to protect access
-			has_navy_size = {
-				size > 20
-				type = capital_ship
-			}
-		}
-		modifier = {
-			add = 10
-			original_tag = AME
-			original_tag = ENG
-		}
-	}
-}
-### PACTE ###
-faction_goal_renounce_treaty_of_tours = {
-	name = renounce_treaty_of_tours_goal_name
-	description = renounce_treaty_of_tours_goal_desc
-	category = medium_term
-	group = FOCUS_FILTER_WAR_SUPPORT
-	visible = {
-		FROM = { original_tag = FRA }
-	}
-	completed = {
-		OR = {
-			AND = {
-				original_tag = FRA
-				has_army_manpower = {
-					size > 800000
-				}
-				controls_state = 14 #Brittany
-				controls_state = 34 #Hainaut
-				controls_state = 788 #Walloon Luxemburg
-				controls_state = 855 #Dunkerque
-			}
-			any_allied_country = {
-				original_tag = FRA
-				has_army_manpower = {
-					size > 800000
-				}
-				controls_state = 14 #Brittany
-				controls_state = 34 #Hainaut
-				controls_state = 788 #Walloon Luxemburg
-				controls_state = 855 #Dunkerque
-			}
-		}
-		17 = { is_demilitarized_zone = no } #Meurthe
-		685 = { is_demilitarized_zone = no } #Champagne-Ardenne
-		972 = { is_demilitarized_zone = no } #Neuchatel
-		1206 = { is_demilitarized_zone = no } #Moselle
-		1207 = { is_demilitarized_zone = no } #Verdun
-	}
-	complete_effect = {
-		add_faction_power_projection = 100
-		every_faction_member = {
-			limit = {
-				original_tag = FRA
-			}
-			add_faction_initiative = 1
-		}
-		custom_effect_tooltip = generic_skip_one_line_tt
-		every_faction_member = { 
-			tooltip = INFLUENCE_ABOVE_30_PERCENT
-			visible_when_empty = yes
-			limit = {
-				faction_influence_ratio > 0.3
-			}
-			add_war_support = 0.05
-			add_political_power = 50
-		}
-	}
-	ai_will_do = {
-		base = 10
-	}
-}
-
 faction_goal_a_large_faction = {
 	name = a_large_faction_goal_name
 	description = a_large_faction_goal_desc
@@ -161,9 +18,7 @@ faction_goal_a_large_faction = {
 		custom_effect_tooltip = THE_FACTION_LEADER
 		add_faction_initiative = 1
 	}
-	ai_will_do = {
-		base = 1
-	}
+	ai_will_do = { base = 1 }
 }
 
 ### Units/Deployment
@@ -264,8 +119,12 @@ faction_goal_marine_corps = {
 		base = 0
 		modifier = {
 			add = 1
-			any_state = {
-				is_controlled_by_ROOT_or_ally = yes
+			any_collection_element = {
+				collection = {
+					input = game:scope
+					operators = { faction_members controlled_states }
+					name = FACTION_CONTROLLED_STATES
+				}
 				is_coastal = yes
 			}
 		}
@@ -369,8 +228,9 @@ faction_goal_airborne_corps = {
 		base = 0
 		modifier = {
 			add = 1
-			has_equipment = {
-			    transport_plane_equipment > 0
+			OR = {
+				has_equipment = { transport_plane_equipment > 0 }
+				has_equipment = { transport_helicopter_equipment > 0 }
 			}
 		}
 	}
@@ -467,12 +327,18 @@ faction_goal_mountaineer_corps = {
 		modifier = {
 			add = 1
 			any_allied_country = {
-				has_terrain = mountain
+				OR = {
+					has_terrain = mountain
+					has_terrain = montane_forest
+				}
 			}
 		}
 		modifier = {
 			add = 2
-			has_terrain = mountain
+			OR = {
+				has_terrain = mountain
+				has_terrain = montane_forest
+			}
 		}
 	}
 }
@@ -798,10 +664,6 @@ faction_goal_industrial_expansion = {
 			is_major = yes
 		}
 		modifier = {
-			add = 1 # If already big it's easy to grow
-			is_major = yes
-		}
-		modifier = {
 			add = 1 # Prioritize more earlier on - more pay-off
 			date < 1935.1.1
 		}
@@ -857,10 +719,6 @@ faction_goal_tesla_tower_network_expansion = {
 	}
 	ai_will_do = {
 		base = 1
-		modifier = {
-			add = 1 # If already big it's easy to grow
-			is_major = yes
-		}
 		modifier = {
 			add = 1 # If already big it's easy to grow
 			is_major = yes
@@ -924,10 +782,6 @@ faction_goal_healthcare_development = {
 	}
 	ai_will_do = {
 		base = 1
-		modifier = {
-			add = 1 # If already big it's easy to grow
-			is_major = yes
-		}
 		modifier = {
 			add = 1 # If already big it's easy to grow
 			is_major = yes
@@ -1199,9 +1053,7 @@ faction_goal_aggressive_defense = {
 			}
 		}
 	}
-	ai_will_do = {
-		base = 1
-	}
+	ai_will_do = { base = 1 }
 }
 
 

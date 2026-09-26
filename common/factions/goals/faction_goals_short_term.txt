@@ -9,7 +9,7 @@ faction_goal_unlock_research = {
 		FROM = { num_faction_members > 2 }
 	}
 	visible = {
-		FROM = { has_faction_research_unlocked = no }
+		FROM = { NOT = { has_faction_research_unlocked = yes } }
 	}
 	select_effect = {
 		scope:faction = {
@@ -72,22 +72,16 @@ faction_goal_unlock_research = {
 			}
 
 			if = {
-				limit = {
-					has_variable = unlock_military_techs_researched_target
-				}
+				limit = { has_variable = unlock_military_techs_researched_target }
 				check_variable = {
-					var = unlock_military_techs_researched_compare_temp_target
-					value = unlock_military_techs_researched_target
-					compare = greater_than
-					tooltip = "GOAL_T_TRIGGER_A"
+					unlock_military_techs_researched_compare_temp_target > unlock_military_techs_researched_target
+					tooltip = GOAL_T_TRIGGER_A
 				}
 			}
 			else = {
 				check_variable = {
-					value = unlock_military_techs_researched_compare
-					var = unlock_military_techs_researched_compare_temp_target
-					compare = greater_than
-					tooltip = "GOAL_T_TRIGGER_A"
+					unlock_military_techs_researched_compare_temp_target > unlock_military_techs_researched_compare
+					tooltip = GOAL_T_TRIGGER_A
 				}
 			}
 		}
@@ -98,10 +92,6 @@ faction_goal_unlock_research = {
 	}
 	ai_will_do = {
 		base = 1000 # They should always do this if they can
-		modifier = {
-			add = 1000
-			original_tag = ENG
-		}
 	}
 }
 
@@ -117,22 +107,17 @@ faction_goal_unlock_military = {
 		FROM = { has_faction_military_unlocked = no }
 	}
 	select_effect = {
-		set_temp_variable = { total_divs = 0 }
-		every_collection_element = {
-			input = {
-				input = game:scope
-				operators =  {
-					faction_members
+		scope:faction = {
+			set_temp_variable = {
+				total_divs = {
+					value = 0
+					every_collection = {
+						named_collection = faction_members
+						add = num_armies
+					}
+					multiply = 1.20
 				}
 			}
-			add_to_temp_variable = { total_divs = num_armies }
-		}
-		
-		multiply_temp_variable = {
-			var = total_divs
-			value = 1.20
-		}
-		scope:faction = {
 			set_variable = { unlock_target = total_divs }
 		}
 	}
@@ -140,34 +125,33 @@ faction_goal_unlock_military = {
 		scope:faction = {
 			hidden_trigger = {
 				tooltip_evaluation = eval
-				set_temp_variable = { unlock_compare = 0 }			
-				all_collection_elements = {
-					collection = {
-						input = game:scope
-						operators =  { faction_members }
+				set_temp_variable = {
+					unlock_compare = {
+						value = 0
+						every_collection = {
+							named_collection = faction_members
+							add = num_armies
+						}
 					}
-					add_to_temp_variable = { unlock_compare = num_armies }
-					set_temp_variable = { unlock_military_techs_researched_compare_temp_target = unlock_compare }
-					multiply_temp_variable = { unlock_military_techs_researched_compare_temp_target = 1.20 }
+				}
+				set_temp_variable = {
+					unlock_military_techs_researched_compare_temp_target = {
+						value = unlock_compare
+						multiply = 1.20
+					}
 				}
 			}
 			if = {
-				limit = {
-					has_variable = unlock_target
-				}
+				limit = { has_variable = unlock_target }
 				check_variable = {
-					var = unlock_compare
-					value = unlock_target
-					compare = greater_than
-					tooltip = "GOAL_T_TRIGGER_B"
+					unlock_compare > unlock_target
+					tooltip = GOAL_T_TRIGGER_B
 				}
 			}
 			else = {
 				check_variable = {
-					var = unlock_compare
-					value = unlock_military_techs_researched_compare_temp_target
-					compare = greater_than
-					tooltip = "GOAL_T_TRIGGER_B"
+					unlock_compare > unlock_military_techs_researched_compare_temp_target
+					tooltip = GOAL_T_TRIGGER_B
 				}
 			}
 		}
@@ -326,6 +310,7 @@ faction_goal_spy_master = {
 }
 
 
+
 faction_goal_convoy_sufficiency = {
 	name = convoy_sufficiency_goal_name
 	description = convoy_sufficiency_goal_desc
@@ -366,29 +351,12 @@ faction_goal_convoy_sufficiency = {
 	ai_will_do = {
 		base = 1
 		modifier = {
-			add = -1
-			collection_size = {
-				input = {
-					input = game:all_states
-					operators = {
-						limit = {
-							is_coastal = yes
-							is_controlled_by_ROOT_or_ally = yes
-						}
-					}
-				}
-				value < 1
-			}
+			factor = 0
+			NOT = { any_owned_state = { naval_base > 0 } }
 		}
-		modifier = {  
+		modifier = {
 			add = 1
-			OR = {
-				original_tag = ENG
-				original_tag = AME
-				original_tag = JAP
-				original_tag = ITA
-				original_tag = FRA
-			}
+			is_major = yes
 		}
 		modifier = {  
 			add = 1
@@ -416,112 +384,52 @@ faction_goal_ensure_military_r_d = {
 	group = FOCUS_FILTER_RESEARCH
 	visible = {
 		OR = {
-			collection_size = {
-				input = {
-					input = game:all_states
-					operators = {
-						limit = {
-							is_controlled_by_ROOT_or_ally = yes 
-							land_facility > 0
-						}
-					}
-					name = COLLECTION_FACTION_LAND_FACILITY
+			NOT = {
+				any_of_scopes = {
+					array = faction_members
+					has_facility_specialization = specialization_land
 				}
-				value < 1
 			}
-			collection_size = {
-				input = {
-					input = game:all_states
-					operators = {
-						limit = {
-							is_controlled_by_ROOT_or_ally = yes 
-							naval_facility > 0
-						}
-					}
-					name = COLLECTION_FACTION_NAVAL_FACILITY
+			NOT = {
+				any_of_scopes = {
+					array = faction_members
+					has_facility_specialization = specialization_naval
 				}
-				value < 1
 			}
-			collection_size = {
-				input = {
-					input = game:all_states
-					operators = {
-						limit = {
-							is_controlled_by_ROOT_or_ally = yes 
-							air_facility > 0
-						}
-					}
-					name = COLLECTION_FACTION_AIR_FACILITY
+			NOT = {
+				any_of_scopes = {
+					array = faction_members
+					has_facility_specialization = specialization_air
 				}
-				value < 1
 			}
-			collection_size = {
-				input = {
-					input = game:all_states
-					operators = {
-						limit = {
-							is_controlled_by_ROOT_or_ally = yes 
-							biochem_facility > 0
-						}
-					}
-					name = COLLECTION_FACTION_BIOCHEM_FACILITY
+			NOT = {
+				any_of_scopes = {
+					array = faction_members
+					has_facility_specialization = specialization_biochem
 				}
-				value < 1
 			}
 		}
 	}
 	completed = {
-		collection_size = {
-			input = {
-				input = game:all_states
-				operators = {
-					limit = {
-						is_controlled_by_ROOT_or_ally = yes 
-						land_facility > 0
-					}
-				}
-				name = COLLECTION_FACTION_LAND_FACILITY
-			}
-			value > 0
+		any_of_scopes = {
+			tooltip = any_faction_member_tooltip
+			array = faction_members
+			has_facility_specialization = specialization_land
 		}
-		collection_size = {
-			input = {
-				input = game:all_states
-				operators = {
-					limit = {
-						is_controlled_by_ROOT_or_ally = yes 
-						naval_facility > 0
-					}
-				}
-				name = COLLECTION_FACTION_NAVAL_FACILITY
-			}
-			value > 0
+		any_of_scopes = {
+			tooltip = any_faction_member_tooltip
+			array = faction_members
+			has_facility_specialization = specialization_naval
 		}
-		collection_size = {
-			input = {
-				input = game:all_states
-				operators = {
-					limit = {
-						is_controlled_by_ROOT_or_ally = yes 
-						air_facility > 0
-					}
-				}
-				name = COLLECTION_FACTION_AIR_FACILITY
-			}
-			value > 0
+		any_of_scopes = {
+			tooltip = any_faction_member_tooltip
+			array = faction_members
+			has_facility_specialization = specialization_air
 		}
-		collection_size = {
-			input = {
-				input = game:all_states
-				operators = {
-					limit = {
-						is_controlled_by_ROOT_or_ally = yes 
-						biochem_facility > 0
-					}
-				}
-				name = COLLECTION_FACTION_BIOCHEM_FACILITY
-			}
-			value > 0
+		any_of_scopes = {
+			tooltip = any_faction_member_tooltip
+			array = faction_members
+			has_facility_specialization = specialization_biochem
 		}
 	}
 	complete_effect = {
@@ -650,9 +558,7 @@ faction_goal_ensure_military_r_d = {
 			}
 		}
 	}
-	ai_will_do = {
-		base = 1
-	}
+	ai_will_do = { base = 1 }
 }
 
 
@@ -827,9 +733,7 @@ faction_goal_an_armored_fist = {
 			}
 		}
 	}
-	ai_will_do = {
-		base = 1
-	}
+	ai_will_do = { base = 1 }
 }
 
 faction_goal_an_infantry_army = {
@@ -869,9 +773,7 @@ faction_goal_an_infantry_army = {
 			}
 		}
 	}
-	ai_will_do = {
-		base = 1
-	}
+	ai_will_do = { base = 1 }
 }
 
 ### Strategic Resources

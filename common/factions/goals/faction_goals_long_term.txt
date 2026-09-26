@@ -4,12 +4,7 @@ faction_goal_rule_the_waves = {
 	category = long_term
 	group = FOCUS_FILTER_NAVY_XP
 	visible = {
-		FROM = {
-			OR = {
-				original_tag = ENG # Britannia always wants to Rule!
-				num_of_naval_factories > 19
-			}
-		}
+		FROM = { num_of_naval_factories > 19 }
 	}
 	completed = {
 		has_war = yes
@@ -81,15 +76,6 @@ faction_goal_rule_the_waves = {
 			add = 1 # If you got a bunch of dockyards odds of succeeding go up + indication nation is gunning for navy
 			num_of_naval_factories > 59
 		}
-		modifier = {
-			add = 10 # These boys always want to give it a shot
-			OR = {
-				original_tag = ENG
-				original_tag = AME
-				original_tag = JAP
-			}
-			is_historical_focus_on = yes
-		}
 	}
 }
 
@@ -99,9 +85,7 @@ faction_goal_strategic_bombing_campaign = {
 	category = long_term
 	group = FOCUS_FILTER_AIR_XP
 	available = {
-		FROM = {
-			has_war = yes
-		}
+		FROM = { has_war = yes }
 	}
 	completed = {
 		count_in_collection = {
@@ -167,14 +151,13 @@ faction_goal_strategic_bombing_campaign = {
 		}
 		modifier = {
 			add = 1 # Factions with decent number of military factories should probably start caring more about strat bombing - because they can
-			count_in_collection = {
-				collection = {
-					input = game:scope
-					operators = { faction_members }
-					name = FACTION_NAME
+			check_expr = {
+				value = 0
+				every_collection = {
+					named_collection = faction_members
+					add = num_of_military_factories
 				}
-				buildings = { arms_factory }
-				size > 149
+				greater_than = 149
 			}
 		}
 	}
@@ -234,32 +217,24 @@ faction_goal_liberate_territory = {
 		base = 1
 		modifier = {
 			add = 4 # If lots of territory, prioritize this
-			collection_size = {
-				input = {
-					input = collection:faction_owned_core_states
-					operators = {
-						limit = {
-							NOT = { is_fully_controlled_by = OWNER }
-						}
-					}
-					name = FACTION_CORE_STATES_NOT_FULLY_CONTROLLED
+			check_expr = {
+				value = 0
+				every_collection = {
+					named_collection = faction_owned_core_states_not_fully_controlled
+					add = 1
 				}
-				value > 4
+				greater_than = 4
 			}
 		}
 		modifier = {  
 			add = 5 # If even more territory, prioritize this A LOT
-			collection_size = {
-				input = {
-					input = collection:faction_owned_core_states
-					operators = {
-						limit = {
-							NOT = { is_fully_controlled_by = OWNER }
-						}
-					}
-					name = FACTION_CORE_STATES_NOT_FULLY_CONTROLLED
+			check_expr = {
+				value = 0
+				every_collection = {
+					named_collection = faction_owned_core_states_not_fully_controlled
+					add = 1
 				}
-				value > 10
+				greater_than = 10
 			}
 		}
 	}
@@ -359,43 +334,6 @@ faction_goal_great_offensive = {
 				}
 				value < 1
 			}
-		}
-	}
-}
-
-faction_goal_defeating_our_enemies = {
-	name = defeating_our_enemies_goal_name
-	description = defeating_our_enemies_goal_desc
-	group = FOCUS_FILTER_ANNEXATION
-	category = long_term
-	visible = {
-		NOT = { has_country_flag = peace_winner_flag}
-	}
-	completed = {
-		custom_trigger_tooltip = {
-			tooltip = is_victor_in_pc_tt
-			has_country_flag = peace_winner_flag
-		}
-		
-	}
-	complete_effect = {
-		add_faction_power_projection = 200
-		custom_effect_tooltip = generic_skip_one_line_tt
-		custom_effect_tooltip = ALL_FACTION_MEMBERS
-		every_faction_member = {
-			IF = {
-				limit = { NOT = { has_completed_goal = faction_goal_defeating_our_enemies } }
-				add_war_support = 0.1
-			}
-		}
-		custom_effect_tooltip = generic_skip_one_line_tt
-		custom_effect_tooltip = PEACE_CONFERENCE_WINNERS
-		every_faction_member = {
-			visible_when_empty = yes
-			limit = {
-				has_country_flag = peace_winner_flag
-			}
-			add_faction_initiative = 1
 		}
 	}
 }
