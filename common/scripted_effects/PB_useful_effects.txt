@@ -531,3 +531,474 @@ transfer_state_during_war = {
 	}
 }
 
+clear_spheres = {
+	clr_country_flag = Tag_in_American_Sphere
+	clr_country_flag = Tag_in_British_Sphere
+	clr_country_flag = Tag_in_Bulgarian_Sphere
+	clr_country_flag = Tag_in_Dutch_Sphere
+	clr_country_flag = Tag_in_Egyptian_Sphere
+	clr_country_flag = Tag_in_French_Sphere
+	clr_country_flag = Tag_in_German_Sphere
+	clr_country_flag = Tag_in_Hungarian_Sphere
+	clr_country_flag = Tag_in_Japanese_Sphere
+	clr_country_flag = Tag_in_Maratha_Sphere
+	clr_country_flag = Tag_in_New_Granada_Sphere
+	clr_country_flag = Tag_in_Ottoman_Sphere
+	clr_country_flag = Tag_in_Portuguese_Sphere
+	clr_country_flag = Tag_in_Russian_Sphere
+	clr_country_flag = Tag_in_Russo_British_Sphere
+	clr_country_flag = Tag_in_Spanish_Sphere
+	clr_country_flag = Tag_in_Swedish_Sphere
+}
+# ends puppet status, removes from faction and all current wars (used for rebellions)
+clear_all_relations = {
+	clear_spheres = yes
+	if = {
+		limit = { is_subject = yes }
+		overlord = {
+			set_autonomy = {
+				target = PREV
+				autonomy_state = autonomy_free
+			}
+		}
+	}
+	if = {
+		limit = { is_faction_leader = yes }
+		dismantle_faction = yes
+	}
+	else_if = {
+		limit = { is_in_faction = yes }
+		if = {
+			limit = { is_exile_host = yes } #THIS MUST BE DONE BEFORE LEAVING A FACTION OR ELSE EXILE GOV LEAVES FACTION TOO
+			var:faction_leader = {
+				for_each_scope_loop = {
+					array = PREV.exiles
+					become_exiled_in = { target = PREV }
+				}
+			}
+		}
+		leave_faction = yes
+	}
+	if = {
+		limit = { num_subjects > 0 }
+		every_subject_country = {
+			overlord = {
+				set_autonomy = {
+					target = PREV
+					autonomy_state = autonomy_free
+				}
+			}
+		}
+	}
+	if = {
+		limit = { NOT = { has_variable = keep_wars } }
+		separate_peace_all_wars = yes
+	}
+	effect_tooltip = {
+		every_other_country = {
+			limit = { has_guaranteed = PREV }
+			diplomatic_relation = {
+				country = PREV
+				relation = guarantee
+				active = no
+			}
+		}
+		every_other_country = {
+			limit = { has_non_aggression_pact_with = PREV }
+			diplomatic_relation = {
+				country = PREV
+				relation = non_aggression_pact
+				active = no
+			}
+		}
+		every_other_country = {
+			limit = { has_military_access_to = PREV }
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = no
+			}
+		}
+		every_other_country = {
+			limit = { is_guaranteed_by = PREV }
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = guarantee
+					active = no
+				}
+			}
+		}
+		every_other_country = {
+			limit = { gives_military_access_to = PREV }
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+			}
+		}
+		every_other_country = {
+			limit = { gives_military_access_to = PREV }
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+			}
+		}
+		every_other_country = {
+			limit = { has_market_access_with = PREV }
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = no
+			}
+		}
+		every_other_country = {
+			limit = { PREV = { has_market_access_with = PREV } }
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+			}
+		}
+		if = {
+			limit = { has_dlc_bba = yes }
+			every_other_country = {
+				limit = { is_embargoing = PREV }
+				diplomatic_relation = {
+					country = ROOT
+					relation = embargo
+					active = no
+				}
+			}
+			every_other_country = {
+				limit = { is_embargoed_by = PREV }
+				PREV = {
+					diplomatic_relation = {
+						country = PREV
+						relation = embargo
+						active = no
+					}
+				}
+			}
+		}
+		else = {
+			every_other_country = {
+				limit = { has_variable = embargoed_@PREV }
+				remove_opinion_modifier = {
+					modifier = embargo
+					target = PREV
+				}
+			}
+			every_other_country = {
+				limit = { PREV = { has_variable = embargoed_@PREV } }
+				PREV = {
+					remove_opinion_modifier = {
+						modifier = embargo
+						target = PREV
+					}
+				}
+			}
+		}
+	}
+	hidden_effect = {
+		every_other_country = {
+			diplomatic_relation = {
+				country = PREV
+				relation = guarantee
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = non_aggression_pact
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = market_access_rights
+				active = no
+			}
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = guarantee
+					active = no
+				}
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+				diplomatic_relation = {
+					country = PREV
+					relation = market_access_rights
+					active = no
+				}
+			}
+			clear_embargo_PREV = yes
+		}
+	}
+}
+
+# clears all relations with a specific country and its allies, does not end wars
+# requires temp variable target = TAG
+clear_all_relations_with_TARGET = {
+	clear_spheres = yes
+	if = {
+		limit = { has_subject = var:target }
+		set_autonomy = {
+			target = var:target
+			autonomy_state = autonomy_free
+		}
+		var:target = { leave_faction = yes }
+	}
+	else_if = {
+		limit = { is_subject_of = var:target }
+		overlord = {
+			set_autonomy = {
+				target = PREV
+				autonomy_state = autonomy_free
+			}
+		}
+		leave_faction = yes
+	}
+	else_if = {
+		limit = { is_in_faction_with = var:target }
+		if = {
+			limit = { is_exile_host = yes } #THIS MUST BE DONE BEFORE LEAVING A FACTION OR ELSE EXILE GOV LEAVES FACTION TOO
+			var:faction_leader = {
+				for_each_scope_loop = {
+					array = PREV.exiles
+					become_exiled_in = { target = PREV }
+				}
+			}
+		}
+		leave_faction = yes
+	}
+	effect_tooltip = {
+		every_other_country = {
+			limit = {
+				is_ally_with = var:target
+				has_guaranteed = PREV
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = guarantee
+				active = no
+			}
+		}
+		every_other_country = {
+			limit = {
+				is_ally_with = var:target
+				has_non_aggression_pact_with = PREV
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = non_aggression_pact
+				active = no
+			}
+		}
+		every_other_country = {
+			limit = {
+				is_ally_with = var:target
+				has_military_access_to = PREV
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = no
+			}
+		}
+		every_other_country = {
+			limit = {
+				is_ally_with = var:target
+				is_guaranteed_by = PREV
+			}
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = guarantee
+					active = no
+				}
+			}
+		}
+		every_other_country = {
+			limit = {
+				is_ally_with = var:target
+				gives_military_access_to = PREV
+			}
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+			}
+		}
+		every_other_country = {
+			limit = {
+				is_ally_with = var:target
+				gives_military_access_to = PREV
+			}
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+			}
+		}
+		if = {
+			limit = { has_dlc_bba = yes }
+			every_other_country = {
+				limit = {
+					is_ally_with = var:target
+					is_embargoing = PREV
+				}
+				diplomatic_relation = {
+					country = ROOT
+					relation = embargo
+					active = no
+				}
+			}
+			every_other_country = {
+				limit = {
+					is_ally_with = var:target
+					is_embargoed_by = PREV
+				}
+				PREV = {
+					diplomatic_relation = {
+						country = PREV
+						relation = embargo
+						active = no
+					}
+				}
+			}
+		}
+		else = {
+			every_other_country = {
+				limit = {
+					is_ally_with = var:target
+					has_variable = embargoed_@PREV
+				}
+				remove_opinion_modifier = {
+					modifier = embargo
+					target = PREV
+				}
+			}
+			every_other_country = {
+				limit = {
+					is_ally_with = var:target
+					PREV = { has_variable = embargoed_@PREV }
+				}
+				PREV = {
+					remove_opinion_modifier = {
+						modifier = embargo
+						target = PREV
+					}
+				}
+			}
+		}
+	}
+	hidden_effect = {
+		every_other_country = {
+			limit = { is_ally_with = var:target }
+			diplomatic_relation = {
+				country = PREV
+				relation = guarantee
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = non_aggression_pact
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = market_access_rights
+				active = no
+			}
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = guarantee
+					active = no
+				}
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+			}
+			clear_embargo_PREV = yes
+		}
+	}
+}#thankyou KR
+separate_peace_all_wars = {
+	if = {
+		limit = { has_war = yes }
+		effect_tooltip = {
+			every_enemy_country = {
+				limit = { NOT = { civilwar_target = PREV } }
+				white_peace = PREV
+			}
+		}
+		hidden_effect = {
+			# first peace out with faction leaders
+			every_enemy_country = {
+				limit = {
+					is_faction_leader = yes
+					NOT = { civilwar_target = PREV }
+				}
+				white_peace = PREV
+			}
+
+			# then all non-puppets whose faction leaders aren't in the war
+			every_enemy_country = {
+				limit = {
+					is_subject = no
+					is_in_faction = yes
+					faction_leader = { NOT = { has_war_with = PREV.PREV } }
+					NOT = { civilwar_target = PREV }
+				}
+				white_peace = PREV
+			}
+
+			# then all non-puppets who aren't in factions
+			every_enemy_country = {
+				limit = {
+					is_subject = no
+					is_in_faction = no
+					NOT = { civilwar_target = PREV }
+				}
+				white_peace = PREV
+			}
+
+			# then all puppets whose overlords aren't in the war
+			every_enemy_country = {
+				limit = {
+					is_subject = yes
+					overlord = { NOT = { has_war_with = PREV.PREV } }
+					NOT = { civilwar_target = PREV }
+				}
+				white_peace = PREV
+			}
+		}
+	}
+}
