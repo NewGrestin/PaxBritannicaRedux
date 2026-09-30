@@ -51,7 +51,7 @@ country_event = {		#Debug - Failrate 0
 		name = OrbitDebug.2.a
 
 		set_variable = {
-			var = Local_Launch_Failure_Chance
+			var = OW_total_failure_chance
 			value = 0
 		}
 	}
@@ -93,7 +93,7 @@ country_event = {		#Launch Success
 				has_country_flag = OW_Active_Component_Stellar_Research_Module
 			}
 			add_to_variable = {
-				var = Current_Research_Points
+				var = OW_research_current
 				value = 15
 			}
 			custom_effect_tooltip = OWB_success_15_research_points_tt
@@ -106,7 +106,7 @@ country_event = {		#Launch Success
 				has_country_flag = OW_Active_Component_Research_Dome
 			}
 			add_to_variable = {
-				var = Monthly_Research_Points
+				var = OW_research_monthly
 				value = 15
 			}
 			PB_OBW_Clear_Satellite_Ability = yes
@@ -135,7 +135,7 @@ country_event = {		#Launch Success
 			}
 			set_country_flag = OBW_Phase_1_Success
 			add_to_variable = {
-				var = Current_Research_Points
+				var = OW_research_current
 				value = 30
 			}
 			custom_effect_tooltip = OWB_success_30_research_points_tt
@@ -156,7 +156,7 @@ country_event = {		#Launch Success
 			PB_OBW_Clear_Satellite_Ability = yes
 			set_country_flag = OBW_Phase_2_Success
 			add_to_variable = {
-				var = Current_Research_Points
+				var = OW_research_current
 				value = 30
 			}
 			custom_effect_tooltip = OWB_success_30_research_points_tt
@@ -182,43 +182,23 @@ country_event = {		#Launch Success - Phase 1 Success
 
 		hidden_effect = {
 			if = {
-				limit = {
-					ROOT = { original_tag = ENG }
-				}
-				set_country_flag = ENG_OWB_sattelite_orbit
+				limit = { ROOT = { original_tag = ENG } }
 				log = "[ENG.GetNameWithFlag] put satellite in orbit"
-				
+				ENG = { set_country_flag = has_satellite_in_orbit }
 				if = {
-					limit = {
-						NOT = {
-							OR = {
-								has_global_flag = ENG_First_Satellite_in_Orbit
-								has_global_flag = RUS_First_Satellite_in_Orbit
-							}
-						}
-					}
-					set_global_flag = ENG_First_Satellite_in_Orbit
+					limit = { NOT = { has_global_flag = first_satellite_deployed_@RUS } } 
+					set_global_flag = first_satellite_deployed_@ENG
 				}
-				
+
 				news_event = PBNews.209
 			}
 			if = {
-				limit = {
-					ROOT = { original_tag = RUS }
-				}
-				set_country_flag = RUS_OWB_sattelite_orbit
+				limit = { ROOT = { original_tag = RUS }  }
 				log = "[RUS.GetNameWithFlag] put satellite in orbit"
-				
+				RUS = { set_country_flag = has_satellite_in_orbit }
 				if = {
-					limit = {
-						NOT = {
-							OR = {
-								has_global_flag = ENG_First_Satellite_in_Orbit
-								has_global_flag = RUS_First_Satellite_in_Orbit
-							}
-						}
-					}
-					set_global_flag = RUS_First_Satellite_in_Orbit
+					limit = { NOT = { has_global_flag = first_satellite_deployed_@ENG } } 
+					set_global_flag = first_satellite_deployed_@RUS
 				}
 				
 				news_event = PBNews.210
@@ -240,56 +220,31 @@ country_event = {		#Launch Success - Phase 2 Success
 
 		hidden_effect = {
 			if = {
-				limit = {
-					ROOT = { original_tag = ENG }
+				limit = { ROOT = { original_tag = ENG } }
+				log = "[ENG.GetNameWithFlag] put satellite in orbit"
+				ENG = {
+					set_country_flag = has_astronaut_in_orbit 
+					add_ideas = PB_Idea_OBW_Orbit_War_Winner
 				}
-				set_country_flag = ENG_OWB_men_in_orbit
-				log = "[ENG.GetNameWithFlag] put a man in orbit"
-				
 				if = {
-					limit = {
-						NOT = {
-							OR = {
-								has_global_flag = ENG_wins_orbit_war
-								has_global_flag = RUS_wins_orbit_war
-							}
-						}
-					}
-					set_global_flag = ENG_wins_orbit_war
-					log = "[ENG.GetNameWithFlag] won orbit wars"
-					
-					every_country = {
-						set_temp_variable = { superevent_temp = token:britain_wins_orbit_war }
-						PB_Fire_Super_Event = yes
-					}
+					limit = { NOT = { has_global_flag = first_astronaut_deployed_@RUS } } 
+					set_global_flag = first_astronaut_deployed_@ENG
+					set_global_flag = orbit_wars_victor_@ENG
 				}
-				
+
 				news_event = PBNews.211
 			}
-	
 			if = {
-				limit = {
-					ROOT = { original_tag = RUS }
+				limit = { ROOT = { original_tag = RUS } }
+				log = "[RUS.GetNameWithFlag] put satellite in orbit"
+				RUS = {
+					set_country_flag = has_astronaut_in_orbit 
+					add_ideas = PB_Idea_OBW_Orbit_War_Winner
 				}
-				set_country_flag = RUS_OWB_men_in_orbit
-				log = "[RUS.GetNameWithFlag] put a man in orbit"
-				
 				if = {
-					limit = {
-						NOT = {
-							OR = {
-								has_global_flag = ENG_wins_orbit_war
-								has_global_flag = RUS_wins_orbit_war
-							}
-						}
-					}
-					set_global_flag = RUS_wins_orbit_war
-					log = "[RUS.GetNameWithFlag] won orbit wars"
-					
-					every_country = {
-						set_temp_variable = { superevent_temp = token:russia_wins_orbit_war }
-						PB_Fire_Super_Event = yes
-					}
+					limit = { NOT = { has_global_flag = first_astronaut_deployed_@ENG } } 
+					set_global_flag = first_astronaut_deployed_@RUS
+					set_global_flag = orbit_wars_victor_@RUS
 				}
 				
 				news_event = PBNews.212
@@ -330,12 +285,12 @@ country_event = {		#Satellite Ability - Space Pirates
 		custom_effect_tooltip = tooltip_OBW_Research_Points_Stolen_tt
 
 		add_to_variable = {
-			var = Current_Research_Points
+			var = OW_research_current
 			value = -25
 		}
 
 		clamp_variable = {
-			var = Current_Research_Points
+			var = OW_research_current
 			min = 0
 			max = 300
 		}
@@ -346,12 +301,12 @@ country_event = {		#Satellite Ability - Space Pirates
 			}
 			RUS = {
 				add_to_variable = {
-					var = Current_Research_Points
+					var = OW_research_current
 					value = 25
 				}
 
 				clamp_variable = {
-					var = Current_Research_Points
+					var = OW_research_current
 					min = 0
 					max = 300
 				}				
@@ -364,12 +319,12 @@ country_event = {		#Satellite Ability - Space Pirates
 			}
 			ENG = {
 				add_to_variable = {
-					var = Current_Research_Points
+					var = OW_research_current
 					value = 25
 				}
 
 				clamp_variable = {
-					var = Current_Research_Points
+					var = OW_research_current
 					min = 0
 					max = 300
 				}				
@@ -992,12 +947,12 @@ country_event = {		#Orbit Wars Opener - Epsilon 1 Launch
 	option = { 
 		name = Orbit.20.a
 
-		set_global_flag = Global_Orbit_Wars_Active
-		unlock_decision_category_tooltip = PB_Orbit_Wars_Decisions
+		set_global_flag = orbit_wars_active
+		unlock_decision_category_tooltip = PB_orbit_wars_category
 
 		set_variable = { var = Orbit_Wars_Tab value = 0 }
-		set_variable = { var = Current_Research_Points value = 0 }
-		set_variable = { var = Monthly_Research_Points value = 10 }
+		set_variable = { var = OW_research_current value = 0 }
+		set_variable = { var = OW_research_monthly value = 10 }
 		set_variable = { var = OW_Rocket_Val value = 1 }
 		set_variable = { var = OW_Fuel_Val value = 1 }
 		set_variable = { var = OW_Component_Val value = 1 }
@@ -1011,7 +966,7 @@ country_event = {		#Orbit Wars Opener - Epsilon 1 Launch
 				}
 			}
 			RUS = {
-				set_variable = { var = Monthly_Research_Points value = 20 }
+				set_variable = { var = OW_research_monthly value = 20 }
 			}
 		}
 
@@ -1036,7 +991,7 @@ country_event = {		#Orbit Wars - America offers Research Data
 		custom_effect_tooltip = PB_AME_American_Orbit_Program_Contribution_tt
 
 		add_to_variable = {
-			var = Current_Research_Points
+			var = OW_research_current
 			value = 15
 		}
 	}
