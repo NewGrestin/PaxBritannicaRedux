@@ -1,17 +1,66 @@
 scripted_gui = {
-
 	orbit_wars_scripted_gui = {
 		context_type = decision_category
 		parent_window_token = decision_tab
 		window_name = "orbit_wars_window"
+		#dirty = orbit_wars_dirty
 
 		properties = {
 			OW_ENG_flag = { image = [ENG.GetFlag] }
 			OW_RUS_flag = { image = [RUS.GetFlag] }
+
+			rocket_engine_option = {
+				image = "GFX_rocket_engine_[?rocket_engine]"
+				frame = rocket_engine_option_frame
+			}
+
+			rocket_propulsion_option = {
+				image = "GFX_rocket_propulsion_[?rocket_propulsion]"
+				frame = rocket_propulsion_option_frame
+			}
+
+			rocket_special_module_option = {
+				image = "GFX_rocket_special_module_[?rocket_special_module]"
+				frame = rocket_special_module_option_frame
+			}
+
+			OW_rocket_slot_1 = {
+				image = "[get_rocket_slot_1_icon]"
+				frame = rocket_slot_1_frame
+			}
+
+			OW_rocket_slot_2 = {
+				image = "[get_rocket_slot_2_icon]"
+				frame = rocket_slot_2_frame
+			}
+
+			OW_rocket_slot_3 = {
+				image = "[get_rocket_slot_3_icon]"
+				frame = rocket_slot_3_frame
+			}
+		}
+
+		dynamic_lists = {
+			rocket_engine_gridbox = {
+				array = rocket_engine_array
+				index = rocket_engine
+				entry_container = "rocket_engine_entry"
+			}
+
+			rocket_propulsion_gridbox = {
+				array = rocket_propulsion_array
+				index = rocket_propulsion
+				entry_container = "rocket_propulsion_entry"
+			}
+
+			rocket_special_modules_gridbox = {
+				array = rocket_special_modules_array
+				index = rocket_special_module
+				entry_container = "rocket_special_module_entry"
+			}
 		}
 
 		triggers = {
-
 			OW_earth_icon_static_visible = {
 				has_country_flag = globe_static
 			}
@@ -20,854 +69,262 @@ scripted_gui = {
 				NOT = { has_country_flag = globe_static }
 			}
 
-			###ENGINES
-			OB1_Basic_Test_Engine_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 1
-					}
+			rocket_engine_option_click_enabled = {
+				if = { limit = { check_variable = { rocket_engine_selected = rocket_engine } }
+					set_temp_variable = { rocket_engine_option_frame = 3 }
 				}
-			}
-			OB1_Intermediate_Engine_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 2
-					}
+				else_if = { limit = { check_variable = { rocket_engine_unlocked_array^rocket_engine = 1 } }
+					set_temp_variable = { rocket_engine_option_frame = 2 }
 				}
-			}
-			OB1_Advanced_Engine_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 3
-					}
-				}
-			}
-			OB1_Teleforce_Engine_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 4
-					}
-				}
-			}
-			OB1_Atomic_Engine_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 5
-					}
-				}
+				else = { set_temp_variable = { rocket_engine_option_frame = 1 } }
 			}
 
-			###FUEL CONTAINERS
-			OWS_Solid_Fuel_Container_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 1
-					}
+			rocket_propulsion_option_click_enabled = {
+				if = { limit = { check_variable = { rocket_propulsion_selected = rocket_propulsion } }
+					set_temp_variable = { rocket_propulsion_option_frame = 3 }
 				}
-			}
-			OWS_Liquid_Fuel_Container_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 2
-					}
+				else_if = { limit = { check_variable = { rocket_propulsion_unlocked_array^rocket_propulsion = 1 } }
+					set_temp_variable = { rocket_propulsion_option_frame = 2 }
 				}
-			}
-			OWS_Hybrid_Fuel_Container_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 3
-					}
-				}
-			}
-			OWS_Teleforce_Accelerator_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 4
-					}
-				}
-			}
-			OWS_Nuclear_Reactor_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 5
-					}
-				}
+				else = { set_temp_variable = { rocket_propulsion_option_frame = 1 } }
 			}
 
-			###COMPONENTS
-			OWS_Test_Icon3_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 0
-					}
-				}				
-			}
-			OWS_Stellar_Research_Module_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 1
-					}
+			rocket_special_module_option_click_enabled = {
+				if = { limit = { check_variable = { rocket_special_module_selected = rocket_special_module } }
+					set_temp_variable = { rocket_special_module_option_frame = 3 }
 				}
-			}
-			OWS_Communications_Booster_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 2
-					}
+				else_if = { limit = { check_variable = { rocket_special_modules_unlocked_array^rocket_special_module = 1 } }
+					set_temp_variable = { rocket_special_module_option_frame = 2 }
 				}
+				else = { set_temp_variable = { rocket_special_module_option_frame = 1 } }
 			}
-			OWS_Orbital_Research_Dome_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 3
-					}
+
+			rocket_engine_research_glow_visible = {
+				if = {
+					limit = { check_variable = { rocket_engine = 0 } }
+					can_research_rocket_engine_test = yes
 				}
-			}
-			OWS_Intelligence_Interceptor_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 4
-					}
+				else_if = {
+					limit = { check_variable = { rocket_engine = 1 } }
+					can_research_rocket_engine_intermediate = yes
 				}
-			}
-			OWS_Crew_Quarters_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 5
-					}
+				else_if = {
+					limit = { check_variable = { rocket_engine = 2 } }
+					can_research_rocket_engine_advanced = yes
 				}
-			}
-			OWS_Relative_Kill_Vehicle_Launcher_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 6
-					}
+				else_if = {
+					limit = { check_variable = { rocket_engine = 3 } }
+					can_research_rocket_engine_teleforce = yes
 				}
-			}
-			OWS_Space_Privateer_Team_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 7
-					}
-				}
-			}
-			OWS_Nuclear_Launch_System_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 8
-					}
-				}
-			}
-			OWS_Scorched_Space_System_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 9
-					}
+				else_if = {
+					limit = { check_variable = { rocket_engine = 4 } }
+					can_research_rocket_engine_atomic = yes
 				}
 			}
 			
-			###ENGINES BUTTONS VISIBLE
-			OWS_Intermediate_Engine_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 1
-					}
+			rocket_propulsion_research_glow_visible = {
+				if = {
+					limit = { check_variable = { rocket_propulsion = 0 } }
+					can_research_rocket_propulsion_solid_fuel = yes
 				}
-			}
-			OWS_Advanced_Engine_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 2
-					}
+				else_if = {
+					limit = { check_variable = { rocket_propulsion = 1 } }
+					can_research_rocket_propulsion_hybrid_fuel = yes
 				}
-			}
-			OWS_Teleforce_Engine_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 3
-					}
+				else_if = {
+					limit = { check_variable = { rocket_propulsion = 2 } }
+					can_research_rocket_propulsion_liquid_fuel = yes
 				}
-			}
-			OWS_Atomic_Engine_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 4
-					}
+				else_if = {
+					limit = { check_variable = { rocket_propulsion = 3 } }
+					can_research_rocket_propulsion_teleforce = yes
 				}
-			}
-			OWS_Atomic_Engine_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Rocket_Val
-						value = 5
-					}
-				}
-			}
-			###FUEL CONTAINERS BUTTONS VISIBLE
-			OWS_Liquid_Fuel_Container_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 1
-					}
-				}
-			}
-			OWS_Hybrid_Fuel_Container_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 2
-					}
-				}
-			}
-			OWS_Teleforce_Accelerator_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 3
-					}
-				}
-			}
-			OWS_Nuclear_Reactor_button_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 4
-					}
-				}
-			}
-			OWS_Nuclear_Reactor_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Fuel_Val
-						value = 5
-					}
-				}
-			}
-			###MAIN COMPONENTS BUTTONS VISIBLE
-			OWS_Stellar_Research_Module_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 1
-						}
-					}
-				}
-			}
-			OWS_Communications_Booster_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 2
-						}
-					}
-					has_country_flag = OBW_Communications_Booster_Researched
-				}
-			}
-			OWS_Orbital_Research_Dome_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 3
-						}
-					}
-					has_country_flag = OBW_Research_Dome_Researched
-				}
-			}
-			OWS_Intelligence_Interceptor_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 4
-						}
-					}
-					has_country_flag = OBW_Research_Intel_Interceptor
-				}
-			}
-			OWS_Crew_Quarters_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 5
-						}
-					}
-					has_country_flag = OBW_Research_Crew_Quarters
-				}
-			}
-			OWS_Relative_Kill_Vehicle_Launcher_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 6
-						}
-					}
-					has_country_flag = OBW_Research_RKV
-				}
-			}
-			OWS_Space_Privateer_Team_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 7
-						}
-					}
-					has_country_flag = OBW_Research_Space_Pirates
-				}
-			}
-			OWS_Nuclear_Launch_System_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 8
-						}
-					}
-					has_country_flag = OBW_Research_Space_Nukes
-				}
-			}
-			OWS_Scorched_Space_System_button_visible = {
-				ROOT = {
-					NOT = {
-						check_variable = {
-							var = OW_Component_Val
-							value = 9
-						}
-					}
-					has_country_flag = OBW_Research_Scorched_Space
-				}
-			}
-			###RESEARCH NEXT MAIN COMPONENT VISIBLE
-			OWS_Communications_Booster_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Communications_Booster_Researched
-					}
-				}
-			}
-			OWS_Orbital_Research_Dome_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Research_Dome_Researched
-					}
-				}
-			}
-			OWS_Intelligence_Interceptor_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Research_Intel_Interceptor
-					}
-				}
-			}
-			OWS_Crew_Quarters_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Research_Crew_Quarters
-					}
-				}
-			}
-			OWS_Relative_Kill_Vehicle_Launcher_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Research_RKV
-					}
-				}
-			}
-			OWS_Space_Privateer_Team_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Research_Space_Pirates
-					}
-				}
-			}
-			OWS_Nuclear_Launch_System_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Research_Space_Nukes
-					}
-				}
-			}
-			OWS_Scorched_Space_System_research_button_visible = {
-				ROOT = {
-					NOT = {
-						has_country_flag = OBW_Research_Scorched_Space
-					}
-				}
-			}
-			###MAIN COMPONENTS ICONS VISIBLE
-			OWS_Stellar_Research_Module_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 1
-					}
-				}
-			}
-			OWS_Communications_Booster_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 2
-					}
-				}
-			}
-			OWS_Orbital_Research_Dome_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 3
-					}
-				}
-			}
-			OWS_Intelligence_Interceptor_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 4
-					}
-				}
-			}
-			OWS_Crew_Quarters_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 5
-					}
-				}
-			}
-			OWS_Relative_Kill_Vehicle_Launcher_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 6
-					}
-				}
-			}
-			OWS_Space_Privateer_Team_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 7
-					}
-				}
-			}
-			OWS_Nuclear_Launch_System_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 8
-					}
-				}
-			}
-			OWS_Scorched_Space_System_icon_visible = {
-				ROOT = {
-					check_variable = {
-						var = OW_Component_Val
-						value = 9
-					}
-				}
-			}
-			###MAIN COMPONENTS RESEARCH BUTTONS CLICK ENABLED
-			OWS_Communications_Booster_research_button_enabled = {
-				ROOT = {
-					check_variable = {
-						var = OW_research_current
-						value > 74
-					}
-				}
-			}
-			OWS_Orbital_Research_Dome_research_button_enabled = {
-				ROOT = {
-					has_country_flag = OBW_Research_Crew_Quarters
-					check_variable = {
-						var = OW_research_current
-						value > 74
-					}
-				}
-			}
-			OWS_Intelligence_Interceptor_research_button_enabled = {
-				ROOT = {
-					has_country_flag = OBW_Communications_Booster_Researched
-					check_variable = {
-						var = OW_research_current
-						value > 99
-					}
-				}
-			}
-			OWS_Crew_Quarters_research_button_enabled = {
-				ROOT = {
-					has_country_flag = OBW_Communications_Booster_Researched
-					check_variable = {
-						var = OW_research_current
-						value > 124
-					}
-				}
-			}
-			OWS_Relative_Kill_Vehicle_Launcher_research_button_enabled = {
-				ROOT = {
-					has_country_flag = OBW_Research_Crew_Quarters
-					check_variable = {
-						var = OW_research_current
-						value > 149
-					}
-				}
-			}
-			OWS_Space_Privateer_Team_research_button_enabled = {
-				ROOT = {
-					has_country_flag = OBW_Research_Crew_Quarters
-					check_variable = {
-						var = OW_research_current
-						value > 124
-					}
-				}
-			}
-			OWS_Nuclear_Launch_System_research_button_enabled = {
-				ROOT = {
-					has_country_flag = OBW_Research_Crew_Quarters
-					check_variable = {
-						var = OW_research_current
-						value > 149
-					}
-				}
-			}
-			OWS_Scorched_Space_System_research_button_enabled = {
-				ROOT = {
-					has_country_flag = OBW_Research_Crew_Quarters
-					check_variable = {
-						var > OW_research_current
-						value > 149
-					}
+				else_if = {
+					limit = { check_variable = { rocket_propulsion = 4 } }
+					can_research_rocket_propulsion_nuclear = yes
 				}
 			}
 			
-			###ENGINES BUTTONS CLICK ENABLED
-			OWS_Intermediate_Engine_button_click_enabled = {
-				ROOT = {
-					check_variable = { 
-						var = OW_research_current 
-						value > 49
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+			rocket_special_module_research_glow_visible = {
+				if = {
+					limit = { check_variable = { rocket_special_module = 0 } }
+					can_research_rocket_module_research_module = yes
 				}
-			}
-			OWS_Advanced_Engine_button_click_enabled = {
-				ROOT = {
-					check_variable = { 
-						var = OW_research_current 
-						value > 74
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 1 } }
+					can_research_rocket_module_communications_booster = yes
 				}
-			}
-			OWS_Teleforce_Engine_button_click_enabled = {
-				ROOT = {
-					check_variable = { 
-						var = OW_research_current 
-						value > 99
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 2 } }
+					can_research_rocket_module_research_dome = yes
 				}
-			}
-			OWS_Atomic_Engine_button_click_enabled = {
-				ROOT = {
-					check_variable = {
-						var = OW_research_current
-						value > 149
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 3 } }
+					can_research_rocket_module_intelligence_interceptor = yes
 				}
-			}
-			###FUEL CONTAINERS BUTTONS CLICK ENABLED
-			OWS_Liquid_Fuel_Container_button_click_enabled = {
-				ROOT = {
-					check_variable = { 
-						var = OW_research_current 
-						value > 49
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 4 } }
+					can_research_rocket_module_crew_quarters = yes
 				}
-			}
-			OWS_Hybrid_Fuel_Container_button_click_enabled = {
-				ROOT = {
-					check_variable = { 
-						var = OW_research_current 
-						value > 74
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 5 } }
+					can_research_rocket_module_space_privateers = yes
 				}
-			}
-			OWS_Teleforce_Accelerator_button_click_enabled = {
-				ROOT = {
-					check_variable = { 
-						var = OW_research_current 
-						value > 99
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 6 } }
+					can_research_rocket_module_orbital_bombardment = yes
 				}
-			}
-			OWS_Nuclear_Reactor_button_click_enabled = {
-				ROOT = {
-					check_variable = {
-						var > OW_research_current
-						value > 149
-					}
-					NOT = { has_country_flag = OBW_Currently_Launching_Rocket }
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 7 } }
+					can_research_rocket_module_scorched_space = yes
+				}
+				else_if = {
+					limit = { check_variable = { rocket_special_module = 8 } }
+					can_research_rocket_module_nuclear_weapon = yes
 				}
 			}
 		}
-		
+
 		effects = {
-			OW_earth_icon_spinning_click = {
-				set_country_flag = globe_static
-			}
-			OW_earth_icon_static_click = {
-				clr_country_flag = globe_static
-			}
-			###RESEARCH NEXT ENGINE TIER
-			OWS_Intermediate_Engine_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Rocket_Val value = 2 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -50 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+			OW_earth_icon_spinning_click = { set_country_flag = globe_static }
+
+			OW_earth_icon_static_click = { clr_country_flag = globe_static }
+
+			OW_rocket_slot_1_click = {
+				if = { limit = { check_variable = { rocket_engine_frame = 3 } }
+					set_variable = { rocket_engine_frame = 2 }
+					set_variable = { rocket_slot_1_frame = 1 }
+					set_variable = { rocket_engine_selected = -1 }
 				}
 			}
-			OWS_Advanced_Engine_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Rocket_Val value = 3 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -75 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+
+			OW_rocket_slot_2_click = {
+				if = { limit = { check_variable = { rocket_propulsion_frame = 3 } }
+					set_variable = { rocket_propulsion_frame = 2 }
+					set_variable = { rocket_slot_2_frame = 1 }
+					set_variable = { rocket_propulsion_selected = -1 }
 				}
 			}
-			OWS_Teleforce_Engine_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Rocket_Val value = 4 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -100 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+
+			OW_rocket_slot_3_click = {
+				if = { limit = { check_variable = { rocket_special_module_frame = 3 } }
+					set_variable = { rocket_special_module_frame = 2 }
+					set_variable = { rocket_slot_3_frame = 1 }
+					set_variable = { rocket_special_module_selected = -1 }
 				}
 			}
-			OWS_Atomic_Engine_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Rocket_Val value = 5 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -150 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+
+			rocket_engine_option_click = {
+				if = { limit = { check_variable = { rocket_engine_selected = rocket_engine } }
+				}
+				else_if = { limit = { check_variable = { rocket_engine_unlocked_array^rocket_engine = 1 } }
+					set_variable = { rocket_engine_selected = rocket_engine }
+					set_variable = { rocket_engine_frame = 3 }
+					set_variable = { rocket_slot_1_frame = 3 }
+				}
+				else = {
+					if = { limit = { can_research_rocket_engine_test = yes }
+						add_to_variable = { OW_research_current = -50 }
+						add_timed_idea = { idea = OW_rocket_engine_research_0 days = 60 }
+					}
+					else_if = { limit = { can_research_rocket_engine_intermediate = yes }
+						add_to_variable = { OW_research_current = -75 }
+						add_timed_idea = { idea = OW_rocket_engine_research_1 days = 90 }
+					}
+					else_if = { limit = { can_research_rocket_engine_advanced = yes }
+						add_to_variable = { OW_research_current = -100 }
+						add_timed_idea = { idea = OW_rocket_engine_research_2 days = 120 }
+					}
+					else_if = { limit = { can_research_rocket_engine_teleforce = yes }
+						add_to_variable = { OW_research_current = -125 }
+						add_timed_idea = { idea = OW_rocket_engine_research_3 days = 150 }
+					}
+					else_if = { limit = { can_research_rocket_engine_atomic = yes }
+						add_to_variable = { OW_research_current = -150 }
+						add_timed_idea = { idea = OW_rocket_engine_research_4 days = 180 }
+					}
 				}
 			}
-			
-			###RESEARCH NEXT FUEL TIER
-			OWS_Liquid_Fuel_Container_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Fuel_Val value = 2 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -50 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+
+			rocket_propulsion_option_click = {
+				if = { limit = { check_variable = { rocket_propulsion_selected = rocket_propulsion } }
+				}
+				else_if = { limit = { check_variable = { rocket_propulsion_unlocked_array^rocket_propulsion = 1 } }
+					set_variable = { rocket_propulsion_selected = rocket_propulsion }
+					set_variable = { rocket_propulsion_frame = 3 }
+					set_variable = { rocket_slot_2_frame = 3 }
+				}
+				else = {
+					if = { limit = { can_research_rocket_propulsion_solid_fuel = yes }
+						add_to_variable = { OW_research_current = -50 }
+						add_timed_idea = { idea = OW_rocket_propulsion_research_0 days = 60 }
+					}
+					else_if = { limit = { can_research_rocket_propulsion_hybrid_fuel = yes }
+						add_to_variable = { OW_research_current = -75 }
+						add_timed_idea = { idea = OW_rocket_propulsion_research_1 days = 90 }
+					}
+					else_if = { limit = { can_research_rocket_propulsion_liquid_fuel = yes }
+						add_to_variable = { OW_research_current = -100 }
+						add_timed_idea = { idea = OW_rocket_propulsion_research_2 days = 120 }
+					}
+					else_if = { limit = { can_research_rocket_propulsion_teleforce = yes }
+						add_to_variable = { OW_research_current = -125 }
+						add_timed_idea = { idea = OW_rocket_propulsion_research_3 days = 150 }
+					}
+					else_if = { limit = { can_research_rocket_propulsion_nuclear = yes }
+						add_to_variable = { OW_research_current = -150 }
+						add_timed_idea = { idea = OW_rocket_propulsion_research_4 days = 180 }
+					}
 				}
 			}
-			OWS_Hybrid_Fuel_Container_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Fuel_Val value = 3 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -75 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+
+			rocket_special_module_option_click = {
+				if = { limit = { check_variable = { rocket_special_module_selected = rocket_special_module } }
 				}
-			}
-			OWS_Teleforce_Accelerator_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Fuel_Val value = 4 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -100 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+				else_if = { limit = { check_variable = { rocket_special_modules_unlocked_array^rocket_special_module = 1 } }
+					set_variable = { rocket_special_module_selected = rocket_special_module }
+					set_variable = { rocket_special_module_frame = 3 }
+					set_variable = { rocket_slot_3_frame = 3 }
 				}
-			}
-			OWS_Nuclear_Reactor_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Fuel_Val value = 5 }
-					
-					OW_check_components_failchance_scripted_effect = yes
-					
-					add_to_variable = { var = OW_research_current value = -150 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
+				else = {
+					if = { limit = { can_research_rocket_module_research_module = yes }
+						add_to_variable = { OW_research_current = -50 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_0 days = 60 }
+					}
+					else_if = { limit = { can_research_rocket_module_communications_booster = yes }
+						add_to_variable = { OW_research_current = -75 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_1 days = 90 }
+					}
+					else_if = { limit = { can_research_rocket_module_research_dome = yes }
+						add_to_variable = { OW_research_current = -100 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_2 days = 120 }
+					}
+					else_if = { limit = { can_research_rocket_module_intelligence_interceptor = yes }
+						add_to_variable = { OW_research_current = -125 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_3 days = 150 }
+					}
+					else_if = { limit = { can_research_rocket_module_crew_quarters = yes }
+						add_to_variable = { OW_research_current = -150 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_4 days = 180 }
+					}
+					else_if = { limit = { can_research_rocket_module_space_privateers = yes }
+						add_to_variable = { OW_research_current = -175 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_5 days = 210 }
+					}
+					else_if = { limit = { can_research_rocket_module_orbital_bombardment = yes }
+						add_to_variable = { OW_research_current = -200 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_6 days = 240 }
+					}
+					else_if = { limit = { can_research_rocket_module_scorched_space = yes }
+						add_to_variable = { OW_research_current = -225 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_7 days = 270 }
+					}
+					else_if = { limit = { can_research_rocket_module_nuclear_weapon = yes }
+						add_to_variable = { OW_research_current = -250 }
+						add_timed_idea = { idea = OW_rocket_special_module_research_8 days = 300 }
+					}
 				}
-			}
-			
-			###RESEARCH NEXT MAIN COMPONENT
-			OWS_Communications_Booster_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Communications_Booster_Researched
-					
-					add_to_variable = { var = OW_research_current value = -75 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			OWS_Orbital_Research_Dome_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Research_Dome_Researched
-					
-					add_to_variable = { var = OW_research_current value = -75 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			OWS_Intelligence_Interceptor_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Research_Intel_Interceptor
-					
-					add_to_variable = { var = OW_research_current value = -100 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			OWS_Crew_Quarters_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Research_Crew_Quarters
-					
-					add_to_variable = { var = OW_research_current value = -125 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			OWS_Relative_Kill_Vehicle_Launcher_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Research_RKV
-					
-					add_to_variable = { var = OW_research_current value = -150 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			OWS_Space_Privateer_Team_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Research_Space_Pirates
-					
-					add_to_variable = { var = OW_research_current value = -125 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			OWS_Nuclear_Launch_System_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Research_Space_Nukes
-					
-					add_to_variable = { var = OW_research_current value = -150 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			OWS_Scorched_Space_System_research_button_click = {
-				ROOT = {
-					set_country_flag = OBW_Research_Scorched_Space
-					
-					add_to_variable = { var = OW_research_current value = -150 }
-					clamp_variable = { var = OW_research_current min = 0 max = 300 }
-				}
-			}
-			
-			###SELECT MAIN COMPONENT
-			OWS_Stellar_Research_Module_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 1 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Communications_Booster_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 2 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Orbital_Research_Dome_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 3 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Intelligence_Interceptor_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 4 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Crew_Quarters_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 5 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Relative_Kill_Vehicle_Launcher_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 6 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Space_Privateer_Team_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 7 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Nuclear_Launch_System_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 8 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
-			}
-			OWS_Scorched_Space_System_button_click = {
-				ROOT = {
-					set_variable = { var = OW_Component_Val value = 9 }
-				}
-				
-				OW_check_components_failchance_scripted_effect = yes
 			}
 		}
-	}	
+	}
 }
-
