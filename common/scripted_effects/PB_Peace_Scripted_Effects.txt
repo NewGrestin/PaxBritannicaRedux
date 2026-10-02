@@ -361,7 +361,7 @@ RUS_set_up_peace_conference_with_lon = {
 				}
 			}
 			every_owned_state = {
-				limit = { is_turkmenistan = yes }
+				limit = { is_central_asia = yes }
 				set_state_flag = RUS_to_peace_conference
 			}
 		}
@@ -512,7 +512,7 @@ RUS_set_up_peace_conference_with_lon = {
 				every_owned_state = {
 					limit = {
 						OR = {
-							is_russia_continental = no
+							is_russia_peace_deal_continental = no
 							is_claimed_by = BAL
 							is_claimed_by = BLR
 							is_claimed_by = UKR
@@ -904,40 +904,66 @@ imperial_britain_capitulates = {
 			}
 			imperial_civil_war_ongoing = yes
 		}
-		set_global_flag = AME_peaced_during_ICW
-		imp_civilwar_peace_settlement = yes
-		AME = { 
-			country_event = {
-				id = ImpCiv_Crisis.20
-				days = 0
-			}
-			news_event = {
-				id = PBNews.242
-				days = 1
-			}
-		}
-	}
-	else_if = { 
-		limit = { 
-			imperial_civil_war_ongoing = yes
-		}
 		AME = {
 			set_global_flag = AME_peaced_during_ICW
 			imp_civilwar_peace_settlement = yes
-			every_enemy_country = { 
-				limit = { 
-					is_in_faction_with = IMP
+
+			every_country = {
+				limit = {
+					has_capitulated = no
+					NOT = { tag = IMP }
+					OR = {
+						is_in_faction_with = IMP
+						is_subject_of = IMP
+						actual_imp_constituent = yes
+					}
 				}
-				white_peace_with_PREV = yes
+				if = {
+					limit = { actual_imp_constituent = yes }
+					set_country_flag = former_IMP_member_actually_english
+				}
+				else = {
+					set_country_flag = former_IMP_member
+				}
 			}
-			country_event = {
-				id = ImpCiv_Crisis.20
-				days = 0
+
+			every_country = {
+				limit = {
+					OR = {
+						has_country_flag = former_IMP_member_actually_english
+						has_country_flag = former_IMP_member
+					}
+				}
+				if = {
+					limit = { is_subject_of = IMP }
+					IMP = { end_puppet = PREV }
+				}
+				IMP = { remove_from_faction = PREV }
 			}
-			news_event = {
-				id = PBNews.242
-				days = 1
+			every_country = {
+				limit = {
+					has_war_with = AME
+					OR = {
+						has_country_flag = former_IMP_member_actually_english
+						has_country_flag = former_IMP_member
+					}
+				}
+				white_peace = AME
 			}
+
+			every_country = {
+				limit = { has_country_flag = former_IMP_member_actually_english }
+				AME = { add_to_faction = PREV }
+			}
+
+			ENG = { 
+				every_owned_state = {
+					limit = { is_great_britain = yes }
+					transfer_state_to = OBR
+				}
+			}
+			country_event = { id = ImpCiv_Crisis.20 days = 0 }
+			news_event = { id = PBNews.242 days = 1 }
 		}
 	}
 	else_if = {
