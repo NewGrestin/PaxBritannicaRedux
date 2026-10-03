@@ -1,0 +1,1056 @@
+﻿##################
+# ORBIT WARS EVENTS
+##################
+
+add_namespace = OW_events
+add_namespace = OW_success_events
+add_namespace = OW_fail_events
+
+add_namespace = OW_news_events
+
+add_namespace = Orbit
+add_namespace = OrbitSuccess
+add_namespace = OrbitDebug
+add_namespace = OrbitHidden
+
+
+country_event = { #Orbit Wars Opener - Epsilon 1 Launch
+	id = OW_events.1
+	title = OW_events.1.t
+	desc = OW_events.1.d
+	picture = GFX_report_OBW_Success1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_events.1.a
+
+		set_global_flag = orbit_wars_active
+		unlock_decision_category_tooltip = PB_orbit_wars_category
+
+		every_possible_country = {
+			limit = {
+				OR = {
+					original_tag = ENG
+					original_tag = RUS
+				}
+			}
+			initialize_orbit_wars = yes
+		}
+		news_event = {
+			id = OW_news_events.1
+			days = 1
+		}
+	}
+}
+country_event = { #Determine succes/fail event
+	id = OW_events.2
+
+	hidden = yes
+	is_triggered_only = yes
+
+	option = { 
+
+		set_temp_variable = {
+			OW_succes_chance = {
+				value = 100
+				subtract = total_rocket_failure_chance
+			}
+		}
+		random_list = {
+			OW_succes_chance = {
+				country_event = OW_success_events.1 
+				add_to_variable = { OW_succesful_missions = 1 }
+			}
+			total_rocket_failure_chance = {
+				country_event = OW_fail_events.1 
+				add_to_variable = { OW_failed_missions = 1 }
+			}
+		}
+	}
+	after = { OW_update = yes }
+}
+country_event = { #Sattelite Abilities
+	id = OW_events.3
+	title = OW_events.3.t
+	desc = OW_events.3.d
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_events.3.a
+		trigger = { has_rocket_special_module_1_in_orbit = yes }
+		add_timed_idea = { idea = OW_communications_sattelite days = 90 }
+	}
+	option = { 
+		name = OW_events.3.b
+		trigger = { has_rocket_special_module_3_in_orbit = yes }
+		add_timed_idea = { idea = OW_decryption_sattelite days = 90 }
+	}
+	option = {
+		name = OW_events.3.c
+	}
+	after = { OW_update = yes }
+}
+country_event = { #Scorched Space activated
+	id = OW_events.4
+	title = OW_events.4.t
+	desc = OW_events.4.d
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_events.4.a
+	}
+	after = { OW_update = yes }
+}
+country_event = { #Scorched Space receiver
+	id = OW_events.5
+	title = OW_events.5.t
+	desc = OW_events.5.d
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_events.5.a
+	}
+	after = { OW_update = yes }
+}
+country_event = { #Launch Success
+	id = OW_success_events.1
+	title = OW_success_events.1.t
+	desc = OW_success_events.1.d
+	picture = GFX_report_OBW_Success1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_success_events.1.a
+		
+		if = {
+		    limit = { check_variable = { rocket_special_module_selected = 0 } } #research module installed
+		    custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_add_orbit_research
+					NUM = 15
+				}
+				add_to_variable = { OW_research_current = 15 }
+			}
+			OW_calculate_monthly_research = yes
+		}
+
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 2 } } # research dome installed
+			if = {
+				limit = { check_variable = { num_research_domes = 0 } }
+				custom_override_tooltip = {
+					tooltip = {
+						localization_key = tooltip_add_orbit_research_monthly
+						NUM = 15
+					}
+					add_to_variable = { OW_research_monthly_dome = 15 }
+				}
+			}
+			else_if = {
+				limit = { check_variable = { num_research_domes > 0 } }
+				custom_override_tooltip = {
+					tooltip = {
+						localization_key = tooltip_add_orbit_research_monthly
+						NUM = 5
+					}
+					add_to_variable = { OW_research_monthly_dome = 5 }
+				}
+			}
+			OW_calculate_monthly_research = yes
+			add_to_variable = { num_research_domes = 1 }
+			add_to_variable = { OW_current_sattelites = 1 }
+			add_to_variable = { OW_total_sattelites = 1 }
+		}
+		
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 1 } } #communications booster
+			set_rocket_special_module_1_in_orbit = yes
+			set_country_flag = launched_special_module_1_once
+			add_to_variable = { OW_current_sattelites = 1 }
+			add_to_variable = { OW_total_sattelites = 1 }
+			if = {
+				limit = { NOT = { has_country_flag = unlocked_sattelite_abilities } }
+				set_country_flag = unlocked_sattelite_abilities
+				unlock_decision_tooltip = OW_activate_sattelite
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_country_flag = OW_phase_1_success
+					}
+				}
+			
+				set_country_flag = OW_phase_1_success
+			
+				custom_override_tooltip = {
+					tooltip = {
+						localization_key = tooltip_add_orbit_research
+						NUM = 30
+					}
+					add_to_variable = { OW_research_current = 30 }
+				}
+			
+				country_event = { id = OW_success_events.2 hours = 5 }
+			}
+			clear_rocket_slot_3 = yes
+		}
+
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 3 } } #intelligence interceptor installed
+			set_rocket_special_module_3_in_orbit = yes
+			set_country_flag = launched_special_module_3_once
+			add_to_variable = { OW_current_sattelites = 1 }
+			add_to_variable = { OW_total_sattelites = 1 }
+			if = {
+				limit = { NOT = { has_country_flag = unlocked_sattelite_abilities } }
+				set_country_flag = unlocked_sattelite_abilities
+				unlock_decision_tooltip = OW_activate_sattelite
+			}
+			clear_rocket_slot_3 = yes
+		}
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 4 } } # crew quarters
+				
+			if = {
+				limit = {
+					NOT = {
+						has_country_flag = OW_phase_2_success
+					}
+				}
+			
+				set_country_flag = OW_phase_2_success
+			
+				custom_override_tooltip = {
+					tooltip = {
+						localization_key = tooltip_add_orbit_research
+						NUM = 30
+					}
+					add_to_variable = { OW_research_current = 30 }
+				}
+			
+				country_event = { id = OW_success_events.3 hours = 5 }
+			}
+			clear_rocket_slot_3 = yes
+		}
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 5 } } #stellar troopers
+			set_rocket_special_module_5_in_orbit = yes
+			set_country_flag = launched_special_module_5_once
+			add_to_variable = { OW_current_sattelites = 1 }
+			add_to_variable = { OW_total_sattelites = 1 }
+			clear_rocket_slot_3 = yes
+		}
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 6 } } #orbital strike
+			set_rocket_special_module_6_in_orbit = yes
+			set_country_flag = launched_special_module_6_once
+			add_to_variable = { OW_current_sattelites = 1 }
+			add_to_variable = { OW_total_sattelites = 1 }
+			clear_rocket_slot_3 = yes
+		}
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 7 } } #scorched space
+			set_rocket_special_module_7_in_orbit = yes
+			set_country_flag = launched_special_module_7_once
+			add_to_variable = { OW_current_sattelites = 1 }
+			add_to_variable = { OW_total_sattelites = 1 }
+			clear_rocket_slot_3 = yes
+		}
+		if = {
+			limit = { check_variable = { rocket_special_module_selected = 8 } } #nuclear warheads
+			set_rocket_special_module_8_in_orbit = yes
+			set_country_flag = launched_special_module_8_once
+			add_to_variable = { OW_current_sattelites = 1 }
+			add_to_variable = { OW_total_sattelites = 1 }
+			clear_rocket_slot_3 = yes
+		}
+	}
+	after = {
+		OW_update = yes	
+	}
+}
+
+country_event = { #Event to determine fail type
+	id = OW_fail_events.1
+
+	hidden = yes
+	is_triggered_only = yes
+
+	option = { 
+		randomize_temp_variable = OW_fail_temp
+		random_list = {
+			seed = OW_fail_temp
+			# Guidance Malfunction
+			25 = { country_event = OW_fail_events.2 }
+			# Lauch Pod fail
+			25 = { country_event = OW_fail_events.3 }
+			# Explosion at launch site
+			25 = { country_event = OW_fail_events.4 }
+			# Electrical failure
+			10 = { country_event = OW_fail_events.5 }
+			# Burn in athmosphere
+			10 = { country_event = OW_fail_events.6 }
+			# Connection issue - lost in space
+			10 = { country_event = OW_fail_events.7 }
+			# Fell from sky
+			10 = { country_event = OW_fail_events.8 }
+			# Connection issue - lost in space 2
+			3 = { country_event = OW_fail_events.9 }
+			# Rocket cult
+			3 = { country_event = OW_fail_events.10 }
+			# Hitting moon
+			1 = { country_event = OW_fail_events.11 }
+			# Precitipation
+			5 = { country_event = OW_fail_events.12 }
+			# Wild wild west
+			1 = { country_event = OW_fail_events.13 }
+			# Research setback
+			3 = { country_event = OW_fail_events.14 }
+			# Rocket tipped over
+			3 = { country_event = OW_fail_events.15 }
+			# Enemy unknown
+			1 = { country_event = OW_fail_events.16 }
+			# From beyond
+			1 = { country_event = OW_fail_events.17 }
+			# Knightwatch
+			1 = { country_event = OW_fail_events.18 }
+		}
+	}
+	after = {
+		OW_update = yes	
+	}
+}
+
+country_event = {		#Launch Success - Phase 1 Success
+	id = OW_success_events.2
+	title = OW_success_events.2.t
+	desc = OW_success_events.2.d
+	picture = GFX_report_OBW_Success1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_success_events.2.a
+
+		hidden_effect = {
+			if = {
+				limit = { ROOT = { original_tag = ENG } }
+				log = "[ENG.GetNameWithFlag] put satellite in orbit"
+				ENG = { set_country_flag = has_satellite_in_orbit }
+				if = {
+					limit = { NOT = { has_global_flag = first_satellite_deployed_@RUS } } 
+					set_global_flag = first_satellite_deployed_@ENG
+				}
+
+				news_event = OW_news_events.2
+			}
+			if = {
+				limit = { ROOT = { original_tag = RUS }  }
+				log = "[RUS.GetNameWithFlag] put satellite in orbit"
+				RUS = { set_country_flag = has_satellite_in_orbit }
+				if = {
+					limit = { NOT = { has_global_flag = first_satellite_deployed_@ENG } } 
+					set_global_flag = first_satellite_deployed_@RUS
+				}
+				
+				news_event = OW_news_events.3
+			}
+		}
+	}
+}
+
+country_event = {		#Launch Success - Phase 2 Success
+	id = OW_success_events.3
+	title = OW_success_events.3.t
+	desc = OW_success_events.3.d
+	picture = GFX_report_OBW_Success1
+
+	is_triggered_only = yes
+
+	option = {
+		name = OW_success_events.3.a
+
+		hidden_effect = {
+			if = {
+				limit = { ROOT = { original_tag = ENG } }
+				log = "[ENG.GetNameWithFlag] put satellite in orbit"
+				ENG = {
+					set_country_flag = has_astronaut_in_orbit 
+					add_ideas = OW_victor_idea
+				}
+				if = {
+					limit = { NOT = { has_global_flag = first_astronaut_deployed_@RUS } } 
+					set_global_flag = first_astronaut_deployed_@ENG
+					set_global_flag = orbit_wars_victor_@ENG
+				}
+
+				news_event = OW_news_events.4
+			}
+			if = {
+				limit = { ROOT = { original_tag = RUS } }
+				log = "[RUS.GetNameWithFlag] put satellite in orbit"
+				RUS = {
+					set_country_flag = has_astronaut_in_orbit 
+					add_ideas = OW_victor_idea
+				}
+				if = {
+					limit = { NOT = { has_global_flag = first_astronaut_deployed_@ENG } } 
+					set_global_flag = first_astronaut_deployed_@RUS
+					set_global_flag = orbit_wars_victor_@RUS
+				}
+				
+				news_event = OW_news_events.5
+			}
+		}
+	}
+}
+
+country_event = {		#Satellite Ability - Relative Kill Vehicle
+	id = OrbitSuccess.4
+	title = OrbitSuccess.4.t
+	desc = OrbitSuccess.4.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OrbitSuccess.4.a
+
+		add_timed_idea = {
+			idea = PB_Idea_OBW_Orbital_Bombardment
+			days = 25
+		}
+	}
+}
+
+country_event = {		#Satellite Ability - Space Pirates
+	id = OrbitSuccess.5
+	title = OrbitSuccess.5.t
+	desc = OrbitSuccess.5.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OrbitSuccess.5.a
+
+		custom_effect_tooltip = tooltip_OBW_Research_Points_Stolen_tt
+
+		add_to_variable = {
+			var = OW_research_current
+			value = -25
+		}
+
+		clamp_variable = {
+			var = OW_research_current
+			min = 0
+			max = 300
+		}
+
+		if = {
+			limit = {
+				original_tag = ENG
+			}
+			RUS = {
+				add_to_variable = {
+					var = OW_research_current
+					value = 25
+				}
+
+				clamp_variable = {
+					var = OW_research_current
+					min = 0
+					max = 300
+				}				
+			}
+		}
+
+		if = {
+			limit = {
+				original_tag = RUS
+			}
+			ENG = {
+				add_to_variable = {
+					var = OW_research_current
+					value = 25
+				}
+
+				clamp_variable = {
+					var = OW_research_current
+					min = 0
+					max = 300
+				}				
+			}
+		}
+	}
+}
+
+country_event = {		#Satellite Ability - Space Nukes - British Targets
+	id = OrbitSuccess.6
+	title = OrbitSuccess.6.t
+	desc = OrbitSuccess.6.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { #London
+		name = OrbitSuccess.6.a
+        ai_chance = {
+            base = 50
+        }
+
+		launch_nuke = {
+			province = 6103
+		}
+
+		ENG = {
+			country_event = {
+				id = OrbitSuccess.8
+			}
+		}
+	}
+
+	option = { #Birmingham
+		name = OrbitSuccess.6.b
+        ai_chance = {
+            base = 50
+        }
+
+		launch_nuke = {
+			province = 9297
+		}
+
+		ENG = {
+			country_event = {
+				id = OrbitSuccess.8
+			}
+		}
+	}
+
+	option = { #Glasgow
+		name = OrbitSuccess.6.b
+        ai_chance = {
+            base = 50
+        }
+
+		launch_nuke = {
+			province = 3273
+		}
+
+		ENG = {
+			country_event = {
+				id = OrbitSuccess.8
+			}
+		}
+	}
+}
+
+country_event = {		#Satellite Ability - Space Nukes - Russian Targets
+	id = OrbitSuccess.7
+	title = OrbitSuccess.7.t
+	desc = OrbitSuccess.7.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { #St Petersburg
+		name = OrbitSuccess.7.a
+        ai_chance = {
+            base = 50
+        }
+
+		launch_nuke = {
+			province = 3151
+		}
+
+		RUS = {
+			country_event = {
+				id = OrbitSuccess.8
+			}
+		}
+	}
+
+	option = { #Tsaritsyn
+		name = OrbitSuccess.7.b
+        ai_chance = {
+            base = 50
+        }
+
+		launch_nuke = {
+			province = 3529
+		}
+
+		RUS = {
+			country_event = {
+				id = OrbitSuccess.8
+			}
+		}
+	}
+
+	option = { #Moscow
+		name = OrbitSuccess.7.c
+        ai_chance = {
+            base = 50
+        }
+
+		launch_nuke = {
+			province = 6380
+		}
+
+		RUS = {
+			country_event = {
+				id = OrbitSuccess.8
+			}
+		}
+	}
+}
+
+country_event = {		#Satellite Ability - Space Nukes - You've been nuked
+	id = OrbitSuccess.8
+	title = OrbitSuccess.8.t
+	desc = OrbitSuccess.8.d
+	picture = GFX_report_OBW_Failure2
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OrbitSuccess.8.a
+
+		add_timed_idea = {
+			idea = PB_Idea_OBW_Orbital_Bombardment
+			days = 25
+		}
+	}
+}
+
+country_event = {		#Satellite Ability - Scorched Space - Activation Event
+	id = OrbitSuccess.9
+	title = OrbitSuccess.9.t
+	desc = OrbitSuccess.9.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OrbitSuccess.9.a
+	}
+}
+
+country_event = {		#Launch Fail Event 2
+	id = OW_fail_events.2
+	title = OW_fail_events.2.t
+	desc = OW_fail_events.2.d
+	picture = GFX_report_OBW_Failure1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.2.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 3
+	id = OW_fail_events.3
+	title = OW_fail_events.3.t
+	desc = OW_fail_events.3.d
+	picture = GFX_report_OBW_Failure2
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.3.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 4
+	id = OW_fail_events.4
+	title = OW_fail_events.4.t
+	desc = OW_fail_events.4.d
+	picture = GFX_report_OBW_Failure1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.4.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 5
+	id = OW_fail_events.5
+	title = OW_fail_events.5.t
+	desc = OW_fail_events.5.d
+	picture = GFX_report_OBW_Failure4
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.5.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 6
+	id = OW_fail_events.6
+	title = OW_fail_events.6.t
+	desc = OW_fail_events.6.d
+	picture = GFX_report_OBW_Failure4
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.6.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 7
+	id = OW_fail_events.7
+	title = OW_fail_events.7.t
+	desc = OW_fail_events.7.d
+	picture = GFX_report_OBW_Failure4
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.7.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 8
+	id = OW_fail_events.8
+	title = OW_fail_events.8.t
+	desc = OW_fail_events.8.d
+	picture = GFX_report_OBW_Failure1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.8.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 9
+	id = OW_fail_events.9
+	title = OW_fail_events.9.t
+	desc = OW_fail_events.9.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.9.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 10
+	id = OW_fail_events.10
+	title = OW_fail_events.10.t
+	desc = OW_fail_events.10.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.10.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 11
+	id = OW_fail_events.11
+	title = OW_fail_events.11.t
+	desc = OW_fail_events.11.d
+	picture = GFX_report_OBW_Failure6
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.11.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 12
+	id = OW_fail_events.12
+	title = OW_fail_events.12.t
+	desc = OW_fail_events.12.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.12.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 13
+	id = OW_fail_events.13
+	title = OW_fail_events.13.t
+	desc = OW_fail_events.13.d
+	picture = GFX_report_OBW_Failure7
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.13.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 14
+	id = OW_fail_events.14
+	title = OW_fail_events.14.t
+	desc = OW_fail_events.14.d
+	picture = GFX_report_Generic_Poverty
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.14.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 15
+	id = OW_fail_events.15
+	title = OW_fail_events.15.t
+	desc = OW_fail_events.15.d
+	picture = GFX_report_Generic_Poverty
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.15.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 16
+	id = OW_fail_events.16
+	title = OW_fail_events.16.t
+	desc = OW_fail_events.16.d
+	picture = GFX_report_OBW_Unknown_Failure1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.16.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 17
+	id = OW_fail_events.17
+	title = OW_fail_events.17.t
+	desc = OW_fail_events.17.d
+	picture = GFX_report_OBW_Failure5
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.17.a
+
+	}
+}
+
+country_event = {		#Launch Fail Event 18
+	id = OW_fail_events.18
+	title = OW_fail_events.18.t
+	desc = OW_fail_events.18.d
+	picture = GFX_report_OBW_Unknown_Failure2
+
+	is_triggered_only = yes
+
+	option = { 
+		name = OW_fail_events.18.a
+
+	}
+}
+
+
+country_event = {		#Orbit Wars - America offers Research Data
+	id = Orbit.21
+	title = Orbit.21.t
+	desc = Orbit.21.d
+	picture = GFX_report_OBW_Success1
+
+	is_triggered_only = yes
+
+	option = { 
+		name = Orbit.21.a
+
+		custom_effect_tooltip = PB_AME_American_Orbit_Program_Contribution_tt
+
+		add_to_variable = {
+			var = OW_research_current
+			value = 15
+		}
+	}
+}
+
+news_event = {		# Epsilon 1 Launch
+	id = OW_news_events.1
+	title = OW_news_events.1.t
+	desc = OW_news_events.1.d
+	picture = GFX_PB_news_event_PBNews_Epsilon_1_Launch
+
+    is_triggered_only = yes
+
+	#fire_only_once = yes
+	
+	major = yes
+
+	option = {
+		name = OW_news_events.1.a	
+		if = {
+			limit = {
+				OR = {
+					original_tag = RUS
+					original_tag = ENG
+				}
+			}
+			unlock_decision_category_tooltip = PB_orbit_wars_category
+		}
+		else = {
+			custom_effect_tooltip = orbit_wars_started_tt
+		}
+	}
+}
+
+news_event = {		# Britain first satellite success
+	id = OW_news_events.2
+	title = OW_news_events.2.t
+	desc = {
+		text = OW_news_events.2.d.a
+		trigger = {
+			has_global_flag = first_satellite_deployed_@ENG
+		}
+	}
+	desc = {
+		text = OW_news_events.2.d.b
+		trigger = {
+			has_global_flag = first_satellite_deployed_@RUS
+		}
+	}
+	picture = GFX_PB_news_event_PBNews_First_Satellite
+
+    is_triggered_only = yes
+
+	#fire_only_once = yes
+	
+	major = yes
+
+	option = {
+		name = OW_news_events.2.a	
+	}
+}
+
+news_event = {		# Russia first satellite success
+	id = OW_news_events.3
+	title = OW_news_events.3.t
+	desc = {
+		text = OW_news_events.3.d.a
+		trigger = {
+			has_global_flag = first_satellite_deployed_@RUS
+		}
+	}
+	desc = {
+		text = OW_news_events.3.d.b
+		trigger = {
+			has_global_flag = first_satellite_deployed_@ENG
+		}
+	}
+	picture = GFX_PB_news_event_PBNews_First_Satellite
+
+    is_triggered_only = yes
+
+	#fire_only_once = yes
+	
+	major = yes
+
+	option = {
+		name = OW_news_events.3.a	
+	}
+}
+
+news_event = {		# Britain first man in space success
+	id = OW_news_events.4
+	title = OW_news_events.4.t
+	desc = {
+		text = OW_news_events.4.d.a
+		trigger = {
+			has_global_flag = first_astronaut_deployed_@ENG
+		}
+	}
+	desc = {
+		text = OW_news_events.4.d.b
+		trigger = {
+			has_global_flag = first_astronaut_deployed_@RUS
+		}
+	}
+	picture = GFX_PB_news_event_PBNews_First_Man
+
+    is_triggered_only = yes
+
+	#fire_only_once = yes
+	
+	major = yes
+
+	option = {
+		name = OW_news_events.4.a	
+	}
+	after = {
+		if = {
+			limit = { NOT = { has_global_flag = orbit_wars_victor_@RUS } }
+			set_temp_variable = { superevent_temp = token:britain_wins_orbit_war }
+			PB_Fire_Super_Event = yes
+		}
+	}
+}
+
+news_event = {		# Russia first man in space success
+	id = OW_news_events.5
+	title = OW_news_events.5.t
+	desc = {
+		text = OW_news_events.5.d.a
+		trigger = {
+			has_global_flag = first_astronaut_deployed_@RUS
+		}
+	}
+	desc = {
+		text = OW_news_events.5.d.b
+		trigger = {
+			has_global_flag = first_astronaut_deployed_@ENG
+		}
+	}
+	picture = GFX_PB_news_event_PBNews_First_Man
+
+    is_triggered_only = yes
+
+	#fire_only_once = yes
+	
+	major = yes
+
+	option = {
+		name = OW_news_events.5.a	
+	}
+	after = {
+		if = {
+			limit = { NOT = { has_global_flag = orbit_wars_victor_@ENG } }
+			set_temp_variable = { superevent_temp = token:russia_wins_orbit_war }
+			PB_Fire_Super_Event = yes
+		}
+	}
+}

@@ -1,0 +1,207 @@
+PB_orbit_wars_category = {
+
+	OW_launch_rocket = {
+		icon = GFX_decision_rocket
+		ai_will_do = { base = 100 }
+		priority = 300
+		available = {
+			if = {
+				limit = { has_country_flag = orbital_actions_crippled }
+				NOT = {
+					has_country_flag = orbital_actions_crippled
+				}
+			}
+			has_installed_rocket_engine = yes
+			has_installed_rocket_propulsion = yes
+			has_installed_rocket_special_module = yes
+			if = {
+				limit = { check_variable = { OW_mission_civ_cost > 0 } }
+				set_temp_variable = {
+				OW_mission_civ_cost_temp = {
+						value = OW_mission_civ_cost
+						add = -1
+					}
+				}
+				num_of_available_civilian_factories > OW_mission_civ_cost_temp
+			}
+			
+		}
+
+		custom_cost_trigger = {
+            num_of_available_civilian_factories > OW_mission_civ_cost_temp
+        }
+        custom_cost_text = decision_cost_civ_OW
+		days_re_enable = 20
+		fire_only_once = no
+		complete_effect = {
+			log = "[ROOT.GetName]: Decision complete OW_launch_rocket"
+			activate_mission = OW_rocket_launched
+			set_country_flag = rocket_launched
+			add_dynamic_modifier = { modifier = OW_rocket_launch_cost }
+			OW_update = yes
+		}
+		fixed_random_seed = no
+	}
+	OW_rocket_launched = {
+		icon = GFX_decision_rocket
+		available = {
+			hidden_trigger = { always = no }
+		}
+		allowed = { always = no } #manually activated
+		selectable_mission = yes
+		is_good = yes
+
+		priority = 299
+		fire_only_once = yes
+		days_mission_timeout = 14
+		timeout_effect = {
+			log = "[GetLogRoot]: Decision complete OW_rocket_launched"
+			custom_override_tooltip = {
+				tooltip = OW_mission_outcome_tt
+				country_event = OW_events.2
+			}
+			clr_country_flag = rocket_launched
+			OW_update = yes
+			remove_dynamic_modifier = { modifier = OW_rocket_launch_cost }
+		}
+		fixed_random_seed = no
+	}
+
+	OW_activate_sattelite = {
+		icon = GFX_decision_sattelite
+		ai_will_do = { base = 25 }
+		priority = 250
+		visible = { has_country_flag = unlocked_sattelite_abilities }
+		available = {
+			OR = {
+				has_rocket_special_module_1_in_orbit = yes
+				has_rocket_special_module_3_in_orbit = yes
+			}
+		}
+
+		days_re_enable = 20
+		fire_only_once = no
+		complete_effect = {
+			log = "[ROOT.GetName]: Decision complete OW_activate_sattelite"
+			country_event = OW_events.3
+			OW_update = yes
+		}
+		fixed_random_seed = no
+	}
+
+	OW_activate_scorched_space = {
+	icon = GFX_decision_sattelite
+
+	ai_will_do = {
+		base = 25
+	}
+
+	priority = 240
+
+	visible = {
+		has_rocket_special_module_7_in_orbit = yes
+	}
+
+	available = {
+		has_rocket_special_module_7_in_orbit = yes
+	}
+
+	target_root_trigger = {
+		has_rocket_special_module_7_in_orbit = yes
+	}
+
+	target_trigger = {
+		is_in_array = {
+			array = global.conquesting_space
+			value = THIS
+		}
+
+		NOT = {
+			has_country_flag = orbital_actions_crippled
+		}
+	}
+
+	target_array = global.conquesting_space
+
+	days_re_enable = 30
+	fire_only_once = no
+
+	complete_effect = {
+		log = "[ROOT.GetName]: Decision complete OW_activate_scorched_space"
+
+		country_event = OW_events.4
+		
+		FROM = {
+			country_event = OW_events.5
+			set_country_flag = {
+				flag = orbital_actions_crippled
+				value = 1
+				days = 100
+			}
+		}
+
+		OW_update = yes
+	}
+
+	fixed_random_seed = no
+}
+
+	PB_debug_orbit_wars_launch_rocket = {
+		visible = { is_debug = yes }
+		
+		ai_will_do = { base = 0 }
+		
+		complete_effect = {
+			country_event = OW_events.2
+			OW_update = yes
+		}
+	}
+	PB_debug_orbit_wars_launch_rocket_success = {
+		visible = { is_debug = yes }
+		
+		ai_will_do = { base = 0 }
+		
+		complete_effect = {
+			country_event = OW_success_events.1
+			OW_update = yes
+		}
+	}
+
+	PB_debug_orbit_wars_unlock_all_techs = {
+		visible = { is_debug = yes }
+		
+		ai_will_do = { base = 0 }
+		
+		complete_effect = {
+			OW_unlock_all_parts = yes
+			OW_debug_complete_all_research_in_progress = yes
+			OW_update = yes
+		}
+	}
+	
+	PB_debug_orbit_wars_add_rp = {
+		visible = { is_debug = yes }
+		
+		ai_will_do = { base = 0 }
+		
+		complete_effect = {
+			custom_override_tooltip = {
+				tooltip = {
+					localization_key = tooltip_add_orbit_research
+					NUM = 1000
+				}
+				add_to_variable = { OW_research_current = 1000 }
+			}
+			OW_update = yes
+		}
+	}
+
+	PB_debug_orbit_wars_clr_flag = {
+		visible = { is_debug = yes }
+		
+		ai_will_do = { base = 0 }
+		
+		complete_effect = { clr_country_flag = rocket_launched  OW_update = yes }
+	}
+
+}
