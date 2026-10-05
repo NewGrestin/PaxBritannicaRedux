@@ -6,10 +6,8 @@ PB_orbit_wars_category = {
 		priority = 300
 		available = {
 			if = {
-				limit = { has_country_flag = orbital_actions_crippled }
-				NOT = {
-					has_country_flag = orbital_actions_crippled
-				}
+				limit = { orbital_actions_crippled = yes }
+				orbital_actions_crippled = no
 			}
 			has_installed_rocket_engine = yes
 			has_installed_rocket_propulsion = yes
@@ -71,15 +69,39 @@ PB_orbit_wars_category = {
 		icon = GFX_decision_sattelite
 		ai_will_do = { base = 25 }
 		priority = 250
-		visible = { has_country_flag = unlocked_sattelite_abilities }
+		visible = {
+			has_country_flag = unlocked_sattelite_abilities 
+			NOT = { has_country_flag = OW_sattelite_activation_cooldown }
+		}
 		available = {
+			orbital_actions_crippled = no
+			if = {
+				limit = { check_variable = { OW_comms_booster_uses > 0 } }
+				custom_trigger_tooltip = { tooltip =  OW_comms_booster_uses_tt }
+			}
+			if = {
+				limit = { check_variable = { OW_intel_interceptor_uses > 0 } }
+				custom_trigger_tooltip = { tooltip =  OW_intel_interceptor_uses_tt } 
+			}
+			if = {
+				limit = {
+					has_idea = OW_communications_sattelite
+					has_idea = OW_decryption_sattelite
+				}
+				custom_override_tooltip = {
+					tooltip = OW_all_possible_sattelites_active
+					NOT = { 
+						has_idea = OW_communications_sattelite
+						has_idea = OW_decryption_sattelite
+					}
+				}
+			}
 			OR = {
 				has_rocket_special_module_1_in_orbit = yes
 				has_rocket_special_module_3_in_orbit = yes
 			}
 		}
 
-		days_re_enable = 20
 		fire_only_once = no
 		complete_effect = {
 			log = "[ROOT.GetName]: Decision complete OW_activate_sattelite"
@@ -92,23 +114,14 @@ PB_orbit_wars_category = {
 	OW_activate_scorched_space = {
 	icon = GFX_decision_sattelite
 
-	ai_will_do = {
-		base = 25
-	}
+	ai_will_do = { base = 25 }
 
 	priority = 240
 
-	visible = {
-		has_rocket_special_module_7_in_orbit = yes
-	}
+	visible = { has_rocket_special_module_7_in_orbit = yes }
+	available = { has_rocket_special_module_7_in_orbit = yes }
 
-	available = {
-		has_rocket_special_module_7_in_orbit = yes
-	}
-
-	target_root_trigger = {
-		has_rocket_special_module_7_in_orbit = yes
-	}
+	target_root_trigger = { has_rocket_special_module_7_in_orbit = yes }
 
 	target_trigger = {
 		is_in_array = {
@@ -116,9 +129,8 @@ PB_orbit_wars_category = {
 			value = THIS
 		}
 
-		NOT = {
-			has_country_flag = orbital_actions_crippled
-		}
+		orbital_actions_crippled = no
+		#has_war_with = ROOT
 	}
 
 	target_array = global.conquesting_space
@@ -128,15 +140,51 @@ PB_orbit_wars_category = {
 
 	complete_effect = {
 		log = "[ROOT.GetName]: Decision complete OW_activate_scorched_space"
-
-		country_event = OW_events.4
 		
-		FROM = {
-			country_event = OW_events.5
-			set_country_flag = {
-				flag = orbital_actions_crippled
-				value = 1
-				days = 100
+		hidden_effect = {
+			if = {
+				limit = {
+					ROOT = { NOT = { has_war_with = FROM } }
+				}
+				add_named_threat = {
+					threat = 0.5
+					name = SSD_hit_peaceful_nation
+				}
+			}
+			FROM = {
+				country_event = OW_events.4
+				set_country_flag = {
+					flag = orbital_actions_crippled
+					value = 1
+					days = 100
+				}
+
+				## remove ideas ##
+				if = {
+					limit = { has_idea = OW_communications_sattelite }
+					remove_ideas = OW_communications_sattelite
+				}
+				if = {
+					limit = { has_idea = OW_decryption_sattelite }
+					remove_ideas = OW_decryption_sattelite
+				}
+				## remove 1 use from each enemy sattelite ##
+				if = {
+					limit = { check_variable = {  OW_comms_booster_uses < 1 } }
+					custom_override_tooltip = {
+						tooltip = OW_sattelite_deactivated
+						clr_country_flag = has_rocket_special_module_1_in_orbit
+					}
+					add_to_variable = { OW_current_sattelites = -1 }
+				}
+				if = {
+					limit = { check_variable = {  OW_comms_booster_uses < 1 } }
+					custom_override_tooltip = {
+						tooltip = OW_sattelite_deactivated
+						clr_country_flag = has_rocket_special_module_1_in_orbit
+					}
+					add_to_variable = { OW_current_sattelites = -1 }
+				}
 			}
 		}
 

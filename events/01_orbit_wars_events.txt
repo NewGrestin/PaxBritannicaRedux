@@ -27,7 +27,14 @@ country_event = { #Orbit Wars Opener - Epsilon 1 Launch
 
 		set_global_flag = orbit_wars_active
 		unlock_decision_category_tooltip = PB_orbit_wars_category
-
+		920 = {
+			add_building_construction = {
+				type = space_port
+				level = 1
+				province = 15232
+				instant_build = yes
+			}
+		}
 		every_possible_country = {
 			limit = {
 				OR = {
@@ -40,6 +47,9 @@ country_event = { #Orbit Wars Opener - Epsilon 1 Launch
 		news_event = {
 			id = OW_news_events.1
 			days = 1
+		}
+		hidden_effect = {
+			RUS = { country_event = { id = OW_events.5 days = 1 hours = 2 } }
 		}
 	}
 }
@@ -79,20 +89,46 @@ country_event = { #Sattelite Abilities
 
 	option = { 
 		name = OW_events.3.a
-		trigger = { has_rocket_special_module_1_in_orbit = yes }
+		trigger = {
+			has_rocket_special_module_1_in_orbit = yes 
+			NOT = { has_idea = OW_communications_sattelite }
+		}
 		add_timed_idea = { idea = OW_communications_sattelite days = 90 }
+		add_to_variable = { OW_comms_booster_uses = -1 }
+		if = {
+			limit = { check_variable = {  OW_comms_booster_uses < 1 } }
+			custom_override_tooltip = {
+				tooltip = OW_sattelite_deactivated
+				clr_country_flag = has_rocket_special_module_1_in_orbit
+			}
+			add_to_variable = { OW_current_sattelites = -1 }
+		}
+		set_country_flag = { flag = OW_sattelite_activation_cooldown value = 1 days = 20 }
 	}
 	option = { 
 		name = OW_events.3.b
-		trigger = { has_rocket_special_module_3_in_orbit = yes }
+		trigger = {
+			has_rocket_special_module_3_in_orbit = yes 
+			NOT = { has_idea = OW_decryption_sattelite }
+		}
 		add_timed_idea = { idea = OW_decryption_sattelite days = 90 }
+		add_to_variable = { OW_intel_interceptor_uses = -1 }
+		if = {
+			limit = { check_variable = {  OW_intel_interceptor_uses < 1 } }
+			custom_override_tooltip = {
+				tooltip = OW_sattelite_deactivated
+				clr_country_flag = has_rocket_special_module_3_in_orbit
+			}
+			add_to_variable = { OW_current_sattelites = -1 }
+		}
+		set_country_flag = { flag = OW_sattelite_activation_cooldown value = 1 days = 20 }
 	}
 	option = {
 		name = OW_events.3.c
 	}
 	after = { OW_update = yes }
 }
-country_event = { #Scorched Space activated
+country_event = { #Scorched Space receiver
 	id = OW_events.4
 	title = OW_events.4.t
 	desc = OW_events.4.d
@@ -104,17 +140,25 @@ country_event = { #Scorched Space activated
 	}
 	after = { OW_update = yes }
 }
-country_event = { #Scorched Space receiver
+country_event = { #Orbit Wars Opener - Epsilon 1 Launch
 	id = OW_events.5
 	title = OW_events.5.t
 	desc = OW_events.5.d
+	picture = GFX_report_OBW_Success1
 
 	is_triggered_only = yes
 
 	option = { 
 		name = OW_events.5.a
+		587 = {
+			add_building_construction = {
+				type = space_port
+				level = 1
+				province = 4563
+				instant_build = yes
+			}
+		}
 	}
-	after = { OW_update = yes }
 }
 country_event = { #Launch Success
 	id = OW_success_events.1
@@ -173,6 +217,7 @@ country_event = { #Launch Success
 			set_country_flag = launched_special_module_1_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
+			add_to_variable = { OW_comms_booster_uses = 3 }
 			if = {
 				limit = { NOT = { has_country_flag = unlocked_sattelite_abilities } }
 				set_country_flag = unlocked_sattelite_abilities
@@ -206,6 +251,7 @@ country_event = { #Launch Success
 			set_country_flag = launched_special_module_3_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
+			add_to_variable = { OW_intel_interceptor_uses = 3 }
 			if = {
 				limit = { NOT = { has_country_flag = unlocked_sattelite_abilities } }
 				set_country_flag = unlocked_sattelite_abilities
