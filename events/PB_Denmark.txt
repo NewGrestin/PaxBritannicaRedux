@@ -3,8 +3,11 @@
 ##################
 
 add_namespace = denmark
-
-
+add_namespace = denmark_britain
+add_namespace = denmark_russia
+add_namespace = denmark_germany
+add_namespace = denmark_sweden
+	
 	country_event = { #Danish Revolution
 		id = denmark.1
 		title = denmark.1.t
@@ -16,6 +19,22 @@ add_namespace = denmark
 		fire_only_once = yes
 		immediate = {
 			hidden_effect = {
+				set_variable = {
+					var = global.DEN_Coalition_Unity
+					value = 65
+					tooltip = DEN_coalition_unity_growth
+				}
+				DEN_concert_support_calculations = yes
+				clamp_variable = {
+					var = global.DEN_Coalition_Unity
+					min = 0
+					max = 100
+				}
+				set_variable = {
+					var = NOR.NOR_Influence
+					value = 50
+					tooltip = DEN_influence_growth
+				}
 				every_country = {
 					limit = { 
 						OR = { 
@@ -32,7 +51,11 @@ add_namespace = denmark
 		option = { #
 			name = denmark.1.a
 			news_event = PBNews.394
+			NOR = {
+				add_dynamic_modifier = { modifier = DEN_concert_support }
+			}
 			DEN = { 
+				load_oob = "DEN_revolution"
 				clear_spheres = yes
 				remove_ideas = PB_DEN_naive_arrogance
 				add_ideas = PB_DEN_jacobinism
@@ -115,6 +138,7 @@ add_namespace = denmark
 			
 			set_global_flag = DEN_revolution
 			country_event = { id = denmark.2 days = 3 }
+			set_global_flag = DANISH_BELTS_STRAIT_BLOCKED
 			ai_chance = {
 				base = 50
 			}
@@ -148,8 +172,6 @@ add_namespace = denmark
 
 		is_triggered_only = yes
 
-		fire_only_once = yes
-
 		option = { # ONWARDS!
 			name = denmark.3.a
 			
@@ -160,12 +182,47 @@ add_namespace = denmark
 				target = NOR
 				decision = DEN_send_equipment_NOR
 			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_promote_unity
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_undermine_unity
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_undermine_norwegian_influence
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_increase_influence
+			}
+			if = {
+				limit = {
+					tag = SWE
+				}
+				activate_targeted_decision = {
+					target = NOR
+					decision = SWE_force_open_copenhagen
+				}
+				activate_targeted_decision = {
+					target = DEN
+					decision = DEN_seize_bornholm
+				}
+			}
+			if = {
+				limit = { 
+					tag = ENG 
+				}
+				country_event = { id = denmark_britain.1 days = 14 }
+			}
 		}
 		option = { # We'd rather not.
 			name = denmark.3.b
 			
 			ai_chance = {
-				base = 50
+				base = 0
 			}
 			set_country_flag = DEN_revolution_opt_out
 		}
@@ -206,23 +263,22 @@ add_namespace = denmark
 			name = denmark.4.c
 		}
 	}
-	country_event = { #Attempt on the King!
-		id = denmark.4
-		title = denmark.4.t
-		desc = denmark.4.d
+	country_event = { #King is Killed!
+		id = denmark.5
+		title = denmark.5.t
+		desc = denmark.5.d
 		picture = GFX_report_PB_Paris_Event
 
 		is_triggered_only = yes
 
 		fire_only_once = yes
 
-		option = { #He Survives!
-			name = denmark.4.a
-			add_stability = -0.12
-		}
-
 		option = { #He dies!
-			name = denmark.4.b
+			name = denmark.5.b
+			add_stability = -0.2
+			NOR_wilhelm_i = {
+				kill_character = yes
+			}
 			
 			NOR_emergency_regency_committe = {
 				add_country_leader_role = {
@@ -267,8 +323,302 @@ add_namespace = denmark
 						ideology = SS_VARIANT_11
 					}
 				}
-				
+				add_to_variable = {
+					var = NOR.NOR_Influence
+					value = -50
+					tooltip = DEN_influence_decline
+				}
+				add_to_variable = {
+					var = global.DEN_Coalition_Unity
+					value = -30
+					tooltip = DEN_coalition_unity_decline
+				}
+				DEN_concert_support_calculations = yes
 			}
 		}
 		
+	}
+
+	country_event = {#Revolution Spreads to Norway
+		id = denmark.6
+		title = denmark.6.t
+		desc = denmark.6.d
+		picture = GFX_report_PB_Paris_Event
+
+		fire_only_once = yes
+		trigger = {
+			tag = NOR
+			has_global_flag = DEN_revolution
+			check_variable = { NOR.NOR_Influence < 20 }
+		}
+		option = { #
+			name = denmark.6.a
+			
+			ai_chance = {
+				base = 50
+			}
+			DEN = { load_oob = "DEN_revolution_north" }
+
+		}
+		after = {
+			country_event = { id = denmark.5 days = 3 }
+		}
+	}
+	
+	country_event = {#Sweden Seizes Bornholm
+		id = denmark.7
+		title = denmark.7.t
+		desc = denmark.7.d
+		picture = GFX_report_PB_Paris_Event
+		is_triggered_only = yes
+		option = { # Condemn the seizure!
+			name = denmark.7.a
+			
+			ai_chance = {
+				base = 50
+			}
+			FROM = { 
+				country_event = { id = denmark.8 hours 7 }
+			}
+			effect_tooltip = {
+				add_to_variable = {
+					var = global.DEN_Coalition_Unity
+					value = -3
+					tooltip = DEN_coalition_unity_decline
+				}
+			}
+		}
+		option = { # do nothing know nothing man
+			name = denmark.7.b
+
+			
+		}
+	}
+	
+	country_event = {#Opposition to bornholm seizure
+		id = denmark.8
+		title = denmark.8.t
+		desc = denmark.8.d
+		picture = GFX_report_PB_Paris_Event
+		is_triggered_only = yes
+		option = { # Yuh yoh!
+			name = denmark.8.a
+			
+			ai_chance = {
+				base = 50
+			}
+			add_to_variable = {
+				var = global.DEN_Coalition_Unity
+				value = -3
+				tooltip = DEN_coalition_unity_decline
+			}
+			DEN_concert_support_calculations = yes
+		}
+		option = { #back down!
+			ai_chance = {
+				base = 50
+			}
+			add_to_variable = {
+				var = global.DEN_Coalition_Unity
+				value = 3
+				tooltip = DEN_coalition_unity_growth
+			}
+			DEN_concert_support_calculations = yes
+			set_country_flag = DEN_cancel_bornholm
+		}
+	}
+
+	country_event = {
+		id = denmark_britain.1
+		title = denmark_britain.1.t
+		desc = denmark_britain.1.d
+		picture = GFX_report_event_generic
+		is_triggered_only = yes
+	
+		option = {
+			name = denmark_britain.1.a
+			activate_targeted_decision = {
+				target = DEN
+				decision = ENG_baltic_project
+			}
+		}
+		option = {
+			name = denmark_britain.1.b
+			add_to_variable = {
+				var = global.DEN_Coalition_Unity
+				value = 5
+				tooltip = DEN_coalition_unity_growth
+			}
+			DEN_concert_support_calculations = yes
+		}
+	}
+	
+	country_event = { #Russian sphere: Vladimir Kirillovich
+		id = denmark_russia.1
+		title = denmark_russia.1.t
+		desc = denmark_russia.1.d
+		picture = GFX_report_event_generic
+		is_triggered_only = yes
+
+		option = {
+			name = denmark_russia.1.a
+			set_autonomy = {
+				target = NOR
+				autonomous_state = autonomy_PB_Dependent_Kingdom
+				freedom_level = 0.50
+			}
+
+			NOR = {
+				set_cosmetic_tag = NOR_Romanov
+				set_country_flag = Tag_in_Russian_Sphere
+
+				set_politics = {
+					ruling_party = cn
+					elections_allowed = no
+				}
+
+				create_country_leader = {
+					name = "Vladimir I"
+					desc = "NOR_Vladimir_DESC"
+					picture = "Portrait_NOR_Vladimir.dds"
+					expire = "1965.1.1"
+					ideology = CN_VARIANT_07
+					traits = {
+					}
+				}
+
+				give_military_access = RUS
+				add_opinion_modifier = {
+					target = RUS
+					modifier = royal_ties
+				}
+			}
+		}
+	}
+	
+	country_event = { #British sphere: Queen Maud
+		id = denmark_britain.2
+		title = denmark_britain.2.t
+		desc = denmark_britain.2.d
+		picture = GFX_report_event_generic
+		is_triggered_only = yes
+
+		option = {
+			name = denmark_britain.2.a
+			set_autonomy = {
+				target = NOR
+				autonomous_state = autonomy_PB_Constituent_Kingdom
+				freedom_level = 0.50
+			}
+
+			NOR = {
+				set_cosmetic_tag = NOR_Maud
+				set_country_flag = Tag_in_British_Sphere
+
+				set_politics = {
+					ruling_party = cn
+					elections_allowed = no
+				}
+
+				create_country_leader = {
+					name = "Maud I"
+					desc = "NOR_Maud_DESC"
+					picture = "Portrait_NOR_Maud.dds"
+					expire = "1965.1.1"
+					ideology = CN_VARIANT_07
+					traits = {
+					}
+				}
+
+				give_military_access = ENG
+				add_opinion_modifier = {
+					target = ENG
+					modifier = royal_ties
+				}
+			}
+		}
+	}
+
+	country_event = { #German sphere: Friedrich Ferdinand
+		id = denmark_germany.1
+		title = denmark_germany.1.t
+		desc = denmark_germany.1.d
+		picture = GFX_report_event_generic
+		is_triggered_only = yes
+
+		option = {
+			name = denmark_germany.1.a
+			set_autonomy = {
+				target = NOR
+				autonomous_state = autonomy_PB_Constituent_Kingdom
+				freedom_level = 0.50
+			}
+			NOR = { 
+				set_cosmetic_tag = NOR_Glucksburg
+				set_country_flag = Tag_in_German_Sphere
+
+				set_politics = {
+					ruling_party = cn
+					elections_allowed = no
+				}
+
+				create_country_leader = {
+					name = "Friedrich I"
+					desc = "NOR_Friedrich_DESC"
+					picture = "Portrait_NOR_Friedrich.dds"
+					expire = "1965.1.1"
+					ideology = CN_VARIANT_07
+					traits = {
+					}
+				}
+
+				give_military_access = GER
+				add_opinion_modifier = {
+					target = GER
+					modifier = royal_ties
+				}
+			}
+		}
+	}
+
+	country_event = { #Swedish sphere: Robert Charles
+		id = denmark_sweden.1
+		title = denmark_sweden.1.t
+		desc = denmark_sweden.1.d
+		picture = GFX_report_event_generic
+		is_triggered_only = yes
+
+		option = {
+			name = denmark_sweden.1.a
+			set_autonomy = {
+				target = NOR
+				autonomous_state = autonomy_PB_Nominal_Puppet
+				freedom_level = 0.50
+			}
+			NOR = { 
+				set_cosmetic_tag = NOR_Roos
+				set_country_flag = Tag_in_Swedish_Sphere
+
+				set_politics = {
+					ruling_party = cn
+					elections_allowed = no
+				}
+
+				create_country_leader = {
+					name = "Robert I"
+					desc = "NOR_Robert_DESC"
+					picture = "Portrait_NOR_Robert.dds"
+					expire = "1965.1.1"
+					ideology = CN_VARIANT_07
+					traits = {
+					}
+				}
+
+				give_military_access = SWE
+				add_opinion_modifier = {
+					target = SWE
+					modifier = royal_ties
+				}
+			}
+		}
 	}

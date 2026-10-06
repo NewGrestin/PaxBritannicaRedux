@@ -1,0 +1,112 @@
+spawn_ENG_intervention_units = {
+    if = {
+        limit = { has_template = "Marine Brigade" }
+        delete_unit_template_and_units = { division_template = "Marine Brigade" disband = yes } #no cheating
+    }
+    division_template = {
+        name = "Marine Brigade"
+        regiments = {
+            marine = { x = 0 y = 0 }
+            marine = { x = 0 y = 1 }
+            marine = { x = 0 y = 2 }
+            marine = { x = 0 y = 3 }
+            marine = { x = 1 y = 0 }
+            marine = { x = 1 y = 1 }
+            marine = { x = 1 y = 2 }
+            marine = { x = 1 y = 3 }
+        }
+        support = {
+            artillery = { x = 0 y = 0 }
+        }
+        priority = 2
+    }
+    
+    37 = {
+        create_unit = {
+            division = "name = \"Marines\" division_template = \"Marine Brigade\" start_experience_factor = 0.3 start_equipment_factor = 1"
+            owner = ENG
+            prioritize_location = 6287 # Copenhagen
+            allow_spawning_on_enemy_provs = yes
+        }
+        create_unit = {
+            division = "name = \"Marines\" division_template = \"Marine Brigade\" start_experience_factor = 0.3 start_equipment_factor = 1"
+            owner = ENG 
+            prioritize_location = 15640 # Helsingfors
+            allow_spawning_on_enemy_provs = yes
+        }
+    }
+    974 = {
+        create_unit = {
+            division = "name = \"Marines\" division_template = \"Marine Brigade\" start_experience_factor = 0.3 start_equipment_factor = 1"
+            owner = ENG 
+            prioritize_location = 13370 # Heligoland
+            allow_spawning_on_enemy_provs = yes
+        }
+    }
+}
+DEN_concert_support_calculations = {
+	set_variable = { global.DEN_coalition_unity_local = global.DEN_Coalition_Unity }
+
+	set_temp_variable = { temp_offset = global.DEN_coalition_unity_local }
+	subtract_from_temp_variable = { temp_offset = 35 }
+
+	# Attack: offset / 500  (offset 65 -> 0.13)
+	set_variable = { global.DEN_concert_attack = temp_offset }
+	divide_variable = { global.DEN_concert_attack = 500 }
+	clamp_variable = { var = global.DEN_concert_attack min = -0.10 max = 0.15 }
+
+	# Defence: offset / 667  (offset 65 -> ~0.097)
+	set_variable = { global.DEN_concert_defence = temp_offset }
+	divide_variable = { global.DEN_concert_defence = 667 }
+	clamp_variable = { var = global.DEN_concert_defence min = -0.08 max = 0.12 }
+
+	# Organisation: offset / 1000  (offset 65 -> 0.065)
+	set_variable = { global.DEN_concert_org = temp_offset }
+	divide_variable = { global.DEN_concert_org = 1000 }
+	clamp_variable = { var = global.DEN_concert_org min = -0.05 max = 0.08 }
+
+	# Planning: offset / 1000
+	set_variable = { global.DEN_concert_planning = temp_offset }
+	divide_variable = { global.DEN_concert_planning = 1000 }
+	clamp_variable = { var = global.DEN_concert_planning min = -0.05 max = 0.08 }
+
+	log = "CONCERT unity=[?global.DEN_coalition_unity_local] offset=[?temp_offset] attack=[?global.DEN_concert_attack]"
+
+}
+DEN_open_motion_vote = {
+	set_global_flag = DEN_motion_active
+	set_variable = { var = global.DEN_motion_aye value = 1 } # proposer's aye
+	set_variable = { var = global.DEN_motion_nay value = 0 }
+
+	if = {
+		limit = {
+			NOT = { tag = RUS }
+			RUS = { NOT = { has_country_flag = DEN_revolution_opt_out } }
+		}
+		RUS = { country_event = { id = denmark_motion.1 hours = 6 } }
+	}
+	if = {
+		limit = {
+			NOT = { tag = GER }
+			GER = { NOT = { has_country_flag = DEN_revolution_opt_out } }
+		}
+		GER = { country_event = { id = denmark_motion.1 hours = 8 } }
+	}
+	if = {
+		limit = {
+			NOT = { tag = ENG }
+			ENG = { NOT = { has_country_flag = DEN_revolution_opt_out } }
+		}
+		ENG = { country_event = { id = denmark_motion.1 hours = 12 } }
+	}
+	if = {
+		limit = {
+			NOT = { tag = SWE }
+			NOT = { check_variable = { global.DEN_motion_type = 3 } } # Sweden is the target of motion 3
+			SWE = { NOT = { has_country_flag = DEN_revolution_opt_out } }
+		}
+		SWE = { country_event = { id = denmark_motion.1 hours = 16 } }
+	}
+
+	country_event = { id = denmark_motion.2 days = 3 } # tally, fires on the proposer
+}
