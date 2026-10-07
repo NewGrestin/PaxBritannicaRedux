@@ -1711,13 +1711,13 @@ PB_SWE_election_category = {
 			set_country_flag = SWE_bill_in_progress
 		}
 	}
-	SWE_kirunaavtalet = { 
+	SWE_kirunaavtalet = {
 		icon = GFX_decision_generic_scorched_earth
 		allowed = {
 			always = no #manual
 		}
 		available = {
-			hidden_trigger = { 
+			hidden_trigger = {
 				always = no
 			}
 		}
@@ -1725,17 +1725,16 @@ PB_SWE_election_category = {
 
 		is_good = no
 		fire_only_once = no
-				
+
 		days_mission_timeout = 90
 
 		timeout_effect = {
 			hidden_effect = {
-				if = { 
-					limit = { 
+				if = {
+					limit = {
 						OR = {
-							check_variable = { SWE_cabinet_policy_support < 0 }
+							check_variable = { SWE_cabinet_policy_support < 1 }
 							check_variable = { SWE_opposition_concessions > 3 }
-							
 						}
 						has_completed_focus = SWE_occupy_the_mines
 						has_completed_focus = SWE_prioritize_non_interference
@@ -1744,26 +1743,29 @@ PB_SWE_election_category = {
 					}
 					country_event = sweden.23 # LUDDITES
 				}
-				else_if = { 
-					limit = { 
-						OR = {
-							check_variable = { SWE_cabinet_policy_support < 0 }
-							check_variable = { SWE_opposition_concessions < 3 }
+				else_if = {
+					# Coalition holds (support above 0) AND the opposition is satisfied (support <= concessions)
+					limit = {
+						check_variable = { SWE_cabinet_policy_support > 0 }
+						check_variable = {
+							var = SWE_cabinet_policy_support
+							value = SWE_opposition_concessions
+							compare = less_than_or_equals
 						}
 					}
-					country_event = sweden.16 #coalition survives
 					set_country_flag = SWE_cc
+					country_event = sweden.16 # coalition survives
 				}
-				else_if = { 
-					limit = { 
-						check_variable = { SWE_economic_credits < 4}
+				else_if = {
+					limit = {
+						check_variable = { SWE_economic_credits < 4 }
 					}
-					country_event = sweden.15 #coalition dies
 					set_country_flag = SWE_nc
+					country_event = sweden.15 # coalition dies
 				}
-				else = { 
-					country_event = sweden.15 #coalition dies
-					country_event = { id = sweden.14 days = 30} #AFARS path
+				else = {
+					country_event = sweden.15 # coalition dies
+					country_event = { id = sweden.14 days = 30 } # AFARS path
 				}
 				country_event = sweden_bills.15
 				activate_mission = SWE_snap_elections
