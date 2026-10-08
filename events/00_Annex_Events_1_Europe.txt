@@ -4317,6 +4317,7 @@ country_event = { #Fate of France
 				remove_claim_by = FRA
 			}
 			FRA = { 
+				FRA_remove_all_modifiers_ideas = yes
 				load_focus_tree = generic_focus
 			}
 		}
@@ -4348,14 +4349,14 @@ country_event = { #Fate of France
 			custom_effect_tooltip = has_custom_puppet
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			FRA = { set_cosmetic_tag = FRA_Occupied_Monarchy }
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
-			FRA = { set_cosmetic_tag = FRA_Occupied_Republic }
+			FRA = { set_cosmetic_tag = FRA_Doriot_Left }
 		}
 	}
 
@@ -11912,6 +11913,7 @@ country_event = { #Fate of Austria
 	is_triggered_only = yes
 
 	immediate = {
+		1582 = { retain_state = yes}
 		39 = { retain_state = yes }
 		923 = { retain_state = yes }
 		153 = { retain_state = yes }
@@ -33133,18 +33135,37 @@ country_event = { #Fate of Germany (BLANKET DECISION)
 	immediate = {
 		hidden_effect = {
 			annexations_reset_german_tags = yes
-			every_state = {
-				if = {
-					limit = {
-						is_germany = yes 
-					}
-					add_core_of = GER
+			if = { 
+				limit = { 
+					GER  = { exists = no}
 				}
-				else = {
-					remove_core_of = GER
-					remove_claim_by = GER
+				every_state = {
+					if = {
+						limit = {
+							is_germany = yes 
+						}
+						add_core_of = GER
+					}
+					else = {
+						remove_core_of = GER
+						remove_claim_by = GER
+					}
+				}
+				GER = {
+					GER_remove_country_ideas_modifiers = yes
+					load_focus_tree = generic_focus
 				}
 			}
+			
+			if = { 
+				limit = { 
+					GER = { 
+						has_completed_focus = GER_europe_alliance_network
+					}
+				}
+				remove_hamburg_membership_all_countries = yes
+			}
+			
 			if = {
 				limit = {
 					OR = {
