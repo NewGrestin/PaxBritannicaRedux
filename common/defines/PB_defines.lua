@@ -123,3 +123,25 @@ NDefines.NAI.COMMUNISTS_ANTAGONIZE_DEMOCRACIES = 0							-- Vanilla is 10
 NDefines.NAI.COMMUNISTS_BEFRIEND_COMMUNISTS = 0								-- Vanilla is 25
 NDefines.NAI.COMMUNISTS_ALLY_COMMUNISTS = 0									-- Vanilla is 0
 NDefines.NAI.COMMUNISTS_ANTAGONIZE_COMMUNISTS = 0							-- Vanilla is -10
+
+-- Special Projects
+NDefines.NProject.SCIENTIST_SKILL_LEVEL_THRESHOLDS = {			-- Threshold for scientist to level up
+	100,		-- to go from level 0 to level 1
+	100,		-- to go from level 1 to level 2
+	300,		-- to go from level 2 to level 3
+	700,		-- to go from level 3 to level 4
+	1500,		-- to go from level 4 to level 5
+	3000,		-- to go from level 5 to level 6 -- New Pax
+}
+NDefines.NProject.SCIENTIST_SKILL_LEVEL_SPEED_MODIFIER = {		-- Bonus to apply to daily phase progress according to the skill level of the scientist
+    -1.0,    -- -1.0 means -100%         also name loc key is SCIENTIST_SKILL_LEVEL_NAME_0
+	-0.05,  -- -0.05 means -5%			also name loc key is SCIENTIST_SKILL_LEVEL_NAME_1
+	0.05,	-- 0 means no change		also name loc key is SCIENTIST_SKILL_LEVEL_NAME_2
+	0.1,   -- 0.15 means +15%			...
+	0.15,
+	0.25,	-- Size MUST be SCIENTIST_SKILL_LEVEL_THRESHOLDS's size + 1
+	0.4,	-- New Pax
+}
+NDefines.NProject.BREAKTHROUGH_DAILY_TECHNOLOGY_GAIN = 16  -- Vanilla is 12
+NDefines.NProject.BREAKTHROUGH_DAILY_SCIENTIST_SKILL_GAIN = 6.5 -- Vanilla i 5
+NDefines.NProject.BASIC_RESEARCH_TECHNOLOGY_BONUS_DIMINISHING_RETURN_FACTOR = 0.25 -- Vanilla is 0.5

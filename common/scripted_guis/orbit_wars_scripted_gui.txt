@@ -1,14 +1,49 @@
 scripted_gui = {
-	orbit_wars_scripted_gui = {
+	orbit_wars_decision_scripted_gui = {
 		context_type = decision_category
 		parent_window_token = decision_tab
-		window_name = "orbit_wars_window"
+		window_name = "orbit_wars_decision_window"
 		dirty = orbit_wars_dirty
 
 		properties = {
 			OW_ENG_flag = { image = [ENG.GetFlag] }
 			OW_RUS_flag = { image = [RUS.GetFlag] }
 
+		}
+
+	
+		triggers = {
+			OW_earth_icon_static_visible = { has_country_flag = globe_static }
+
+			OW_earth_icon_spinning_visible = { NOT = { has_country_flag = globe_static } }
+
+
+		}
+
+		effects = {
+			OW_earth_icon_spinning_click = { set_country_flag = globe_static OW_update = yes }
+
+			OW_earth_icon_static_click = { clr_country_flag = globe_static OW_update = yes }
+
+			OW_open_menu_button_click = {
+				if = { 
+					limit = { has_variable = OW_window_var }
+					clear_variable = OW_window_var
+				}
+				else = { set_variable = { OW_window_var = 1 } }
+			}
+		}
+	}
+	orbit_wars_scripted_gui = {
+		context_type = player_context
+		window_name = "orbit_wars_window"
+		dirty = orbit_wars_dirty
+
+		visible = {
+			has_variable = OW_window_var
+		}
+
+		properties = {
 			rocket_engine_type_option = {
     		    image = "GFX_rocket_engine_type_[?rocket_engine_type]"
     		    frame = rocket_engine_type_frame
@@ -19,10 +54,15 @@ scripted_gui = {
     		    frame = rocket_propulsion_frame
     		}
 		
-    		rocket_special_module_option = {
-    		    image = "GFX_rocket_special_module_[?rocket_special_module]"
-    		    frame = rocket_special_module_frame
-    		}
+    		rocket_utility_module_option = {
+			    image = "GFX_rocket_utility_module_[?rocket_utility_module]"
+			    frame = rocket_utility_module_frame
+			}
+
+			rocket_combat_module_option = {
+			    image = "GFX_rocket_combat_module_[?rocket_combat_module]"
+			    frame = rocket_combat_module_frame
+			}
 
 			OW_rocket_slot_1 = {
 				image = "[get_rocket_slot_1_icon]"
@@ -38,8 +78,10 @@ scripted_gui = {
 				image = "[get_rocket_slot_3_icon]"
 				frame = rocket_slot_3_frame
 			}
+			OW_space_agency_logo_icon = {
+				image = "[ROOT.get_country_space_agency_logo]"
+			}
 		}
-
 		dynamic_lists = {
 			rocket_engine_type_gridbox = {
 				array = rocket_engine_type_array
@@ -53,10 +95,16 @@ scripted_gui = {
 				entry_container = "rocket_propulsion_entry"
 			}
 
-			rocket_special_modules_gridbox = {
-				array = rocket_special_modules_array
-				index = rocket_special_module
-				entry_container = "rocket_special_module_entry"
+			rocket_utility_modules_gridbox = {
+				array = rocket_utility_modules_array
+				index = rocket_utility_module
+				entry_container = "rocket_utility_module_entry"
+			}
+
+			rocket_combat_modules_gridbox = {
+				array = rocket_combat_modules_array
+				index = rocket_combat_module
+				entry_container = "rocket_combat_module_entry"
 			}
 		}
 
@@ -70,6 +118,8 @@ scripted_gui = {
 			OW_rocket_slot_2_click_enabled = { NOT = { rocket_mission_ongoing = yes } }
 
 			OW_rocket_slot_3_click_enabled = { NOT = { rocket_mission_ongoing = yes } }
+
+			OW_reset_button_click_enabled = { NOT = { rocket_mission_ongoing = yes } }
 
 			rocket_engine_type_option_click_enabled = {
 				NOT = { rocket_mission_ongoing = yes }
@@ -119,63 +169,137 @@ scripted_gui = {
 				else = { set_temp_variable = { rocket_propulsion_frame = 1 } }
 			}
 
-			rocket_special_module_option_click_enabled = {
+			rocket_utility_module_option_click_enabled = {
 				NOT = { rocket_mission_ongoing = yes }
 				NOT = {
 					OR = {
 						AND = {
-							check_variable = { rocket_special_module = 1 }
-							has_rocket_special_module_1_in_orbit = yes
+							check_variable = { rocket_utility_module = 1 }
+							has_rocket_utility_module_1_in_orbit = yes
 						}
 						AND = {
-							check_variable = { rocket_special_module = 3 }
-							has_rocket_special_module_3_in_orbit = yes
+							check_variable = { rocket_utility_module = 3 }
+							has_rocket_utility_module_3_in_orbit = yes
 						}
 						AND = {
-							check_variable = { rocket_special_module = 5 }
-							has_rocket_special_module_5_in_orbit = yes
+							check_variable = { rocket_combat_module = 0 }
+							has_rocket_combat_module_0_in_orbit = yes
 						}
 						AND = {
-							check_variable = { rocket_special_module = 6 }
-							has_rocket_special_module_6_in_orbit = yes
+							check_variable = { rocket_combat_module = 1 }
+							has_rocket_combat_module_1_in_orbit = yes
 						}
 						AND = {
-							check_variable = { rocket_special_module = 7 }
-							has_rocket_special_module_7_in_orbit = yes
+							check_variable = { rocket_combat_module = 2 }
+							has_rocket_combat_module_2_in_orbit = yes
 						}
 						AND = {
-							check_variable = { rocket_special_module = 8 }
-							has_rocket_special_module_8_in_orbit = yes
+							check_variable = { rocket_combat_module = 3 }
+							has_rocket_combat_module_3_in_orbit = yes
+						}
+					}
+				}
+				NOT = {
+				    meta_trigger = {
+				        text = { has_idea = OW_rocket_utility_module_research_[CURRENT] }
+				        CURRENT = "[?rocket_utility_module]"
+				    }
+				}
+				OR = {
+					check_variable = { rocket_utility_modules_unlocked_array^rocket_utility_module = 1 }
+					meta_trigger = {
+						text = { can_research_rocket_utility_module_[CURRENT] = yes }
+						CURRENT = "[?rocket_utility_module]"
+					}
+				}
+				if = {
+					limit = {
+						check_variable = { rocket_special_module_selected = rocket_utility_module }
+						check_variable = { rocket_special_module_category = 0 } 
+					}
+					set_temp_variable = { rocket_utility_module_frame = 3 }
+				}
+				else_if = { limit = { check_variable = { rocket_utility_modules_unlocked_array^rocket_utility_module = 1 } }
+					set_temp_variable = { rocket_utility_module_frame = 2 }
+				}
+				else = { set_temp_variable = { rocket_utility_module_frame = 1 } }
+			}
+
+			rocket_combat_module_option_click_enabled = {
+				NOT = { rocket_mission_ongoing = yes }
+				NOT = {
+					OR = {
+						AND = {
+							check_variable = { rocket_utility_module = 1 }
+							has_rocket_utility_module_1_in_orbit = yes
+						}
+						AND = {
+							check_variable = { rocket_utility_module = 3 }
+							has_rocket_utility_module_3_in_orbit = yes
+						}
+						AND = {
+							check_variable = { rocket_combat_module = 0 }
+							has_rocket_combat_module_0_in_orbit = yes
+						}
+						AND = {
+							check_variable = { rocket_combat_module = 1 }
+							has_rocket_combat_module_1_in_orbit = yes
+						}
+						AND = {
+							check_variable = { rocket_combat_module = 2 }
+							has_rocket_combat_module_2_in_orbit = yes
+						}
+						AND = {
+							check_variable = { rocket_combat_module = 3 }
+							has_rocket_combat_module_3_in_orbit = yes
 						}
 					}
 				}
 				NOT = {
 					meta_trigger = {
-						text = { has_idea = OW_rocket_special_module_research_[CURRENT] }
-						CURRENT = "[?rocket_special_module]"
+						text = { has_idea = OW_rocket_combat_module_research_[CURRENT] }
+						CURRENT = "[?rocket_combat_module]"
 					}
 				}
 				OR = {
-					check_variable = { rocket_special_modules_unlocked_array^rocket_special_module = 1 }
+					check_variable = { rocket_combat_modules_unlocked_array^rocket_combat_module = 1 }
 					meta_trigger = {
-						text = { can_research_rocket_special_module_[CURRENT] = yes }
-						CURRENT = "[?rocket_special_module]"
+						text = { can_research_rocket_combat_module_[CURRENT] = yes }
+						CURRENT = "[?rocket_combat_module]"
 					}
 				}
-				if = { limit = { check_variable = { rocket_special_module_selected = rocket_special_module } }
-					set_temp_variable = { rocket_special_module_frame = 3 }
+				if = {
+					limit = {
+						check_variable = { rocket_special_module_selected = rocket_combat_module }
+						check_variable = { rocket_special_module_category = 1 } 
+					}
+					set_temp_variable = { rocket_combat_module_frame = 3 }
 				}
-				else_if = { limit = { check_variable = { rocket_special_modules_unlocked_array^rocket_special_module = 1 } }
-					set_temp_variable = { rocket_special_module_frame = 2 }
+				else_if = { limit = { check_variable = { rocket_combat_modules_unlocked_array^rocket_combat_module = 1 } }
+					set_temp_variable = { rocket_combat_module_frame = 2 }
 				}
-				else = { set_temp_variable = { rocket_special_module_frame = 1 } }
+				else = { set_temp_variable = { rocket_combat_module_frame = 1 } }
 			}
 		}
-
 		effects = {
+			orbit_wars_window_closebutton_click = {
+				clear_variable = OW_window_var
+				OW_update = yes
+			}
+			OW_auto_launch_button_click = {
+				if = {
+					limit = { has_variable = OW_auto_launch_enabled }
+					clear_variable = OW_auto_launch_enabled
+				}
+				else = { set_variable = { OW_auto_launch_enabled = 1 } }
+				OW_update = yes
+			}
 			OW_earth_icon_spinning_click = { set_country_flag = globe_static OW_update = yes }
 
 			OW_earth_icon_static_click = { clr_country_flag = globe_static OW_update = yes }
+
+			OW_planet_prev_button_click = { OW_solar_system_select_left = yes OW_update = yes }
+			OW_planet_next_button_click = { OW_solar_system_select_right = yes OW_update = yes }
 
 			OW_mission_stats_button_click = { OW_update = yes } #hidden option lol
 			OW_reset_button_click = {
@@ -198,10 +322,10 @@ scripted_gui = {
 			}
 
 			OW_rocket_slot_3_click = {
-				if = { limit = { check_variable = { rocket_special_module_frame = 3 } }
-					clear_rocket_slot_3 = yes
-				}
-				OW_update = yes
+			    if = { limit = { check_variable = { rocket_slot_3_frame = 3 } }
+			        clear_rocket_slot_3 = yes
+			    }
+			    OW_update = yes
 			}
 
 			rocket_engine_type_option_click = {
@@ -316,73 +440,125 @@ scripted_gui = {
 				OW_update = yes
 			}
 
-			rocket_special_module_option_click = {
-			    if = { limit = { check_variable = { rocket_special_module_selected = rocket_special_module } }
+			rocket_utility_module_option_click = {
+			    if = {
+    			    limit = {
+    			        check_variable = { rocket_special_module_selected = rocket_utility_module }
+    			        check_variable = { rocket_special_module_category = 0 }
+    			    }
+			
+    			    set_variable = { rocket_special_module_selected = -1 }
+    			    set_variable = { rocket_special_module_category = -1 }
+    			    set_variable = { rocket_utility_module_frame = 2 }
+					set_variable = { rocket_combat_module_frame = 2 }
+    			    set_variable = { rocket_slot_3_frame = 1 }
+				
+    			    set_variable = { rocket_special_module_failure_chance = 0 }
+    			    calculate_total_rocket_failure_chance = yes
+				
+    			    set_variable = { rocket_special_module_civ_cost = 0 }
+    			    calculate_total_OW_mission_civ_cost = yes
+    			}
+			    else_if = { limit = { check_variable = { rocket_utility_modules_unlocked_array^rocket_utility_module = 1 } }
+			        set_variable = { rocket_special_module_selected = rocket_utility_module }
+					set_variable = { rocket_special_module_category = 0 }
+			        set_variable = { rocket_utility_module_frame  = 3 }
+			        set_variable = { rocket_slot_3_frame = 3 }
+					meta_effect = {
+					    text = {
+					        set_rocket_utility_module_[CURRENT]_failure_chance = yes
+					    }
+					    CURRENT = "[?rocket_utility_module]"
+					}
+					calculate_total_rocket_failure_chance = yes
+
+					meta_effect = {
+					    text = {
+					        set_rocket_utility_module_[CURRENT]_civ_cost = yes
+					    }
+					    CURRENT = "[?rocket_utility_module]"
+					}
+					calculate_total_OW_mission_civ_cost = yes
+			    }
+			    else = {
+			        if = { limit = { can_research_rocket_utility_module_0 = yes }
+			            add_to_variable = { OW_research_current = 0 }
+			            add_timed_idea = { idea = OW_rocket_utility_module_research_0 days = 25 }
+			        }
+			        else_if = { limit = { can_research_rocket_utility_module_1 = yes }
+			            add_to_variable = { OW_research_current = -75 }
+			            add_timed_idea = { idea = OW_rocket_utility_module_research_1 days = 60 }
+			        }
+			        else_if = { limit = { can_research_rocket_utility_module_2 = yes }
+			            add_to_variable = { OW_research_current = -75 }
+			            add_timed_idea = { idea = OW_rocket_utility_module_research_2 days = 60 }
+			        }
+			        else_if = { limit = { can_research_rocket_utility_module_3 = yes }
+			            add_to_variable = { OW_research_current = -100 }
+			            add_timed_idea = { idea = OW_rocket_utility_module_research_3 days = 50 }
+			        }
+			        else_if = { limit = { can_research_rocket_utility_module_4 = yes }
+			            add_to_variable = { OW_research_current = -125 }
+			            add_timed_idea = { idea = OW_rocket_utility_module_research_4 days = 80 }
+			        }
+			    }
+				OW_update = yes
+			}
+			rocket_combat_module_option_click = {
+			    if = { 
+					limit = {
+    			        check_variable = { rocket_special_module_selected = rocket_combat_module }
+    			        check_variable = { rocket_special_module_category = 1 }
+    			    }
 			        set_variable = { rocket_special_module_selected = -1 }
-			        set_variable = { rocket_special_module_frame = 2 }
-			        set_variable = { rocket_slot_3_frame = 1 }
+    			    set_variable = { rocket_special_module_category = -1 }
+			        set_variable = { rocket_combat_module_frame = 2 }
+					set_variable = { rocket_utility_module_frame = 2 }
+    			    set_variable = { rocket_slot_3_frame = 1 }
+
 					set_variable = { rocket_special_module_failure_chance = 0 }
 					calculate_total_rocket_failure_chance = yes
 
 					set_variable = { rocket_special_module_civ_cost = 0 }
 					calculate_total_OW_mission_civ_cost = yes
 			    }
-			    else_if = { limit = { check_variable = { rocket_special_modules_unlocked_array^rocket_special_module = 1 } }
-			        set_variable = { rocket_special_module_selected = rocket_special_module }
-			        set_variable = { rocket_special_module_frame = 3 }
+			    else_if = { limit = { check_variable = { rocket_combat_modules_unlocked_array^rocket_combat_module = 1 } }
+			        set_variable = { rocket_special_module_selected = rocket_combat_module }
+					set_variable = { rocket_special_module_category = 1 }
+			        set_variable = { rocket_combat_module_frame  = 3 }
 			        set_variable = { rocket_slot_3_frame = 3 }
 					meta_effect = {
 					    text = {
-					        set_rocket_special_module_[CURRENT]_failure_chance = yes
+					        set_rocket_combat_module_[CURRENT]_failure_chance = yes
 					    }
-					    CURRENT = "[?rocket_special_module]"
+					    CURRENT = "[?rocket_combat_module]"
 					}
 					calculate_total_rocket_failure_chance = yes
 
 					meta_effect = {
 					    text = {
-					        set_rocket_special_module_[CURRENT]_civ_cost = yes
+					        set_rocket_combat_module_[CURRENT]_civ_cost = yes
 					    }
-					    CURRENT = "[?rocket_special_module]"
+					    CURRENT = "[?rocket_combat_module]"
 					}
 					calculate_total_OW_mission_civ_cost = yes
 			    }
 			    else = {
-			        if = { limit = { can_research_rocket_special_module_0 = yes }
-			            add_to_variable = { OW_research_current = 0 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_0 days = 25 }
-			        }
-			        else_if = { limit = { can_research_rocket_special_module_1 = yes }
-			            add_to_variable = { OW_research_current = -75 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_1 days = 60 }
-			        }
-			        else_if = { limit = { can_research_rocket_special_module_2 = yes }
-			            add_to_variable = { OW_research_current = -75 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_2 days = 60 }
-			        }
-			        else_if = { limit = { can_research_rocket_special_module_3 = yes }
+			        if = { limit = { can_research_rocket_combat_module_0 = yes }
 			            add_to_variable = { OW_research_current = -100 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_3 days = 50 }
+			            add_timed_idea = { idea = OW_rocket_combat_module_research_0 days = 70 }
 			        }
-			        else_if = { limit = { can_research_rocket_special_module_4 = yes }
-			            add_to_variable = { OW_research_current = -125 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_4 days = 80 }
-			        }
-			        else_if = { limit = { can_research_rocket_special_module_5 = yes }
-			            add_to_variable = { OW_research_current = -100 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_5 days = 70 }
-			        }
-			        else_if = { limit = { can_research_rocket_special_module_6 = yes }
+			        else_if = { limit = { can_research_rocket_combat_module_1 = yes }
 			            add_to_variable = { OW_research_current = -150 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_6 days = 80 }
+			            add_timed_idea = { idea = OW_rocket_combat_module_research_1 days = 80 }
 			        }
-			        else_if = { limit = { can_research_rocket_special_module_7 = yes }
+			        else_if = { limit = { can_research_rocket_combat_module_2 = yes }
 			            add_to_variable = { OW_research_current = -150 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_7 days = 100 }
+			            add_timed_idea = { idea = OW_rocket_combat_module_research_2 days = 100 }
 			        }
-			        else_if = { limit = { can_research_rocket_special_module_8 = yes }
+			        else_if = { limit = { can_research_rocket_combat_module_3 = yes }
 			            add_to_variable = { OW_research_current = -200 }
-			            add_timed_idea = { idea = OW_rocket_special_module_research_8 days = 150 }
+			            add_timed_idea = { idea = OW_rocket_combat_module_research_3 days = 150 }
 			        }
 			    }
 				OW_update = yes

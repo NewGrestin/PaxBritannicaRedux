@@ -44,11 +44,8 @@ country_event = { #Orbit Wars Opener - Epsilon 1 Launch
 			}
 			initialize_orbit_wars = yes
 		}
-		news_event = {
-			id = OW_news_events.1
-			days = 1
-		}
 		hidden_effect = {
+			news_events = { id = OW_news_events.1 days = 1 }
 			RUS = { country_event = { id = OW_events.5 days = 1 hours = 2 } }
 		}
 	}
@@ -90,16 +87,16 @@ country_event = { #Sattelite Abilities
 	option = { 
 		name = OW_events.3.a
 		trigger = {
-			has_rocket_special_module_1_in_orbit = yes 
+			has_rocket_utility_module_1_in_orbit = yes
 			NOT = { has_idea = OW_communications_sattelite }
 		}
 		add_timed_idea = { idea = OW_communications_sattelite days = 90 }
 		add_to_variable = { OW_comms_booster_uses = -1 }
 		if = {
-			limit = { check_variable = {  OW_comms_booster_uses < 1 } }
+			limit = { check_variable = {  OW_comms_booster_uses = 1 } }
 			custom_override_tooltip = {
 				tooltip = OW_sattelite_deactivated
-				clr_country_flag = has_rocket_special_module_1_in_orbit
+				clr_country_flag = has_rocket_utility_module_1_in_orbit
 			}
 			add_to_variable = { OW_current_sattelites = -1 }
 		}
@@ -108,16 +105,16 @@ country_event = { #Sattelite Abilities
 	option = { 
 		name = OW_events.3.b
 		trigger = {
-			has_rocket_special_module_3_in_orbit = yes 
+			has_rocket_utility_module_3_in_orbit = yes
 			NOT = { has_idea = OW_decryption_sattelite }
 		}
 		add_timed_idea = { idea = OW_decryption_sattelite days = 90 }
 		add_to_variable = { OW_intel_interceptor_uses = -1 }
 		if = {
-			limit = { check_variable = {  OW_intel_interceptor_uses < 1 } }
+			limit = { check_variable = {  OW_intel_interceptor_uses = 1 } }
 			custom_override_tooltip = {
 				tooltip = OW_sattelite_deactivated
-				clr_country_flag = has_rocket_special_module_3_in_orbit
+				clr_country_flag = has_rocket_utility_module_3_in_orbit
 			}
 			add_to_variable = { OW_current_sattelites = -1 }
 		}
@@ -140,7 +137,7 @@ country_event = { #Scorched Space receiver
 	}
 	after = { OW_update = yes }
 }
-country_event = { #Orbit Wars Opener - Epsilon 1 Launch
+country_event = { #Orbit Wars start, Russia Receive
 	id = OW_events.5
 	title = OW_events.5.t
 	desc = OW_events.5.d
@@ -158,6 +155,9 @@ country_event = { #Orbit Wars Opener - Epsilon 1 Launch
 				instant_build = yes
 			}
 		}
+		hidden_effect = {
+			news_events = { id = OW_news_events.6 days = 1 }
+		}
 	}
 }
 country_event = { #Launch Success
@@ -172,7 +172,10 @@ country_event = { #Launch Success
 		name = OW_success_events.1.a
 		
 		if = {
-		    limit = { check_variable = { rocket_special_module_selected = 0 } } #research module installed
+		    limit = {  #research module installed /cat 0 = utility
+				check_variable = { rocket_special_module_selected = 0 } 
+				check_variable = { rocket_special_module_category = 0 } 
+			}
 		    custom_override_tooltip = {
 				tooltip = {
 					localization_key = tooltip_add_orbit_research
@@ -184,7 +187,10 @@ country_event = { #Launch Success
 		}
 
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 2 } } # research dome installed
+			limit = {  #research dome installed /cat 0 = utility
+				check_variable = { rocket_special_module_selected = 2 } 
+				check_variable = { rocket_special_module_category = 0 } 
+			}
 			if = {
 				limit = { check_variable = { num_research_domes = 0 } }
 				custom_override_tooltip = {
@@ -212,8 +218,11 @@ country_event = { #Launch Success
 		}
 		
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 1 } } #communications booster
-			set_rocket_special_module_1_in_orbit = yes
+			limit = {  #communications booster installed /cat 0 = utility
+				check_variable = { rocket_special_module_selected = 1 } 
+				check_variable = { rocket_special_module_category = 0 } 
+			}
+			set_rocket_utility_module_1_in_orbit = yes
 			set_country_flag = launched_special_module_1_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
@@ -246,8 +255,11 @@ country_event = { #Launch Success
 		}
 
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 3 } } #intelligence interceptor installed
-			set_rocket_special_module_3_in_orbit = yes
+			limit = {  #intelligence interceptor installed /cat 0 = utility
+				check_variable = { rocket_special_module_selected = 3 } 
+				check_variable = { rocket_special_module_category = 0 } 
+			}
+			set_rocket_utility_module_3_in_orbit = yes
 			set_country_flag = launched_special_module_3_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
@@ -260,7 +272,10 @@ country_event = { #Launch Success
 			clear_rocket_slot_3 = yes
 		}
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 4 } } # crew quarters
+			limit = {  #crew quarters installed /cat 0 = utility
+				check_variable = { rocket_special_module_selected = 4 } 
+				check_variable = { rocket_special_module_category = 0 } 
+			}
 				
 			if = {
 				limit = {
@@ -284,32 +299,44 @@ country_event = { #Launch Success
 			clear_rocket_slot_3 = yes
 		}
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 5 } } #stellar troopers
-			set_rocket_special_module_5_in_orbit = yes
+			limit = {  #stellar troopers installed /cat 1 = combat
+				check_variable = { rocket_special_module_selected = 0 } 
+				check_variable = { rocket_special_module_category = 1 } 
+			}
+			set_rocket_combat_module_0_in_orbit = yes
 			set_country_flag = launched_special_module_5_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
 			clear_rocket_slot_3 = yes
 		}
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 6 } } #orbital strike
-			set_rocket_special_module_6_in_orbit = yes
+			limit = {  #orbital strike installed /cat 1 = combat
+				check_variable = { rocket_special_module_selected = 1 } 
+				check_variable = { rocket_special_module_category = 1 } 
+			}
+			set_rocket_combat_module_1_in_orbit = yes
 			set_country_flag = launched_special_module_6_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
 			clear_rocket_slot_3 = yes
 		}
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 7 } } #scorched space
-			set_rocket_special_module_7_in_orbit = yes
+			limit = {  #scorched space installed /cat 1 = combat
+				check_variable = { rocket_special_module_selected = 2 } 
+				check_variable = { rocket_special_module_category = 1 } 
+			}
+			set_rocket_combat_module_2_in_orbit = yes
 			set_country_flag = launched_special_module_7_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
 			clear_rocket_slot_3 = yes
 		}
 		if = {
-			limit = { check_variable = { rocket_special_module_selected = 8 } } #nuclear warheads
-			set_rocket_special_module_8_in_orbit = yes
+			limit = {  #nuclear warheads installed /cat 1 = combat
+				check_variable = { rocket_special_module_selected = 3 } 
+				check_variable = { rocket_special_module_category = 1 } 
+			}
+			set_rocket_combat_module_3_in_orbit = yes
 			set_country_flag = launched_special_module_8_once
 			add_to_variable = { OW_current_sattelites = 1 }
 			add_to_variable = { OW_total_sattelites = 1 }
@@ -1098,5 +1125,22 @@ news_event = {		# Russia first man in space success
 			set_temp_variable = { superevent_temp = token:russia_wins_orbit_war }
 			PB_Fire_Super_Event = yes
 		}
+	}
+}
+
+news_event = {		# Epsilon 1 Launch
+	id = OW_news_events.6
+	title = OW_news_events.6.t
+	desc = OW_news_events.6.d
+	picture = GFX_PB_news_event_PBNews_Epsilon_1_Launch
+
+    is_triggered_only = yes
+
+	#fire_only_once = yes
+	
+	major = yes
+
+	option = {
+		name = OW_news_events.6.a	
 	}
 }

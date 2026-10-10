@@ -37,6 +37,7 @@ PB_orbit_wars_category = {
 			set_country_flag = rocket_launched
 			add_dynamic_modifier = { modifier = OW_rocket_launch_cost }
 			OW_update = yes
+			set_country_flag = { flag = OW_autolaunch_check value = 1 days = 21 }
 		}
 		fixed_random_seed = no
 	}
@@ -97,8 +98,8 @@ PB_orbit_wars_category = {
 				}
 			}
 			OR = {
-				has_rocket_special_module_1_in_orbit = yes
-				has_rocket_special_module_3_in_orbit = yes
+				has_rocket_utility_module_1_in_orbit = yes
+				has_rocket_utility_module_3_in_orbit = yes
 			}
 		}
 
@@ -112,87 +113,163 @@ PB_orbit_wars_category = {
 	}
 
 	OW_activate_scorched_space = {
-	icon = GFX_decision_sattelite
+		icon = GFX_decision_sattelite
 
-	ai_will_do = { base = 25 }
+		ai_will_do = { base = 25 }
 
-	priority = 240
+		priority = 240
 
-	visible = { has_rocket_special_module_7_in_orbit = yes }
-	available = { has_rocket_special_module_7_in_orbit = yes }
+		visible = { has_rocket_combat_module_2_in_orbit = yes }
+		available = { has_rocket_combat_module_2_in_orbit = yes }
 
-	target_root_trigger = { has_rocket_special_module_7_in_orbit = yes }
+		target_root_trigger = { has_rocket_combat_module_2_in_orbit = yes }
 
-	target_trigger = {
-		is_in_array = {
-			array = global.conquesting_space
-			value = THIS
+		target_trigger = {
+			is_in_array = {
+				array = global.conquesting_space
+				value = THIS
+			}
+
+			orbital_actions_crippled = no
+			#has_war_with = ROOT
 		}
 
-		orbital_actions_crippled = no
-		#has_war_with = ROOT
+		target_array = global.conquesting_space
+
+		days_re_enable = 30
+		fire_only_once = no
+
+		complete_effect = {
+			log = "[ROOT.GetName]: Decision complete OW_activate_scorched_space"
+			custom_effect_tooltip = SSD_activation_tt
+			hidden_effect = {
+				if = {
+					limit = {
+						ROOT = { NOT = { has_war_with = FROM } }
+					}
+					add_named_threat = {
+						threat = 0.5
+						name = SSD_hit_peaceful_nation
+					}
+				}
+				FROM = {
+					country_event = OW_events.4
+					set_country_flag = {
+						flag = orbital_actions_crippled
+						value = 1
+						days = 100
+					}
+
+					## remove ideas ##
+					if = {
+						limit = { has_idea = OW_communications_sattelite }
+						remove_ideas = OW_communications_sattelite
+					}
+					if = {
+						limit = { has_idea = OW_decryption_sattelite }
+						remove_ideas = OW_decryption_sattelite
+					}
+					## remove 1 use from each enemy sattelite ##
+					if = {
+						limit = { check_variable = {  OW_comms_booster_uses < 1 } }
+						custom_override_tooltip = {
+							tooltip = OW_sattelite_deactivated
+							clr_country_flag = has_rocket_utility_module_1_in_orbit
+						}
+						add_to_variable = { OW_current_sattelites = -1 }
+					}
+					if = {
+						limit = { check_variable = {  OW_comms_booster_uses < 1 } }
+						custom_override_tooltip = {
+							tooltip = OW_sattelite_deactivated
+							clr_country_flag = has_rocket_utility_module_1_in_orbit
+						}
+						add_to_variable = { OW_current_sattelites = -1 }
+					}
+				}
+			}
+
+			OW_update = yes
+		}
+
+		fixed_random_seed = no
 	}
 
-	target_array = global.conquesting_space
-
-	days_re_enable = 30
-	fire_only_once = no
-
-	complete_effect = {
-		log = "[ROOT.GetName]: Decision complete OW_activate_scorched_space"
+	OW_infiltrate_orbital_infrastructure = {
+		icon = GFX_decision_sattelite
 		
-		hidden_effect = {
-			if = {
-				limit = {
-					ROOT = { NOT = { has_war_with = FROM } }
-				}
-				add_named_threat = {
-					threat = 0.5
-					name = SSD_hit_peaceful_nation
-				}
+		ai_will_do = { base = 25 }
+		
+		priority = 240
+		
+		visible = { has_rocket_combat_module_0_in_orbit = yes }
+		available = { has_rocket_combat_module_0_in_orbit = yes }
+		
+		target_root_trigger = { has_rocket_combat_module_0_in_orbit = yes }
+		
+		target_trigger = {
+			is_in_array = {
+				array = global.conquesting_space
+				value = THIS
 			}
-			FROM = {
-				country_event = OW_events.4
-				set_country_flag = {
-					flag = orbital_actions_crippled
-					value = 1
-					days = 100
-				}
-
-				## remove ideas ##
-				if = {
-					limit = { has_idea = OW_communications_sattelite }
-					remove_ideas = OW_communications_sattelite
-				}
-				if = {
-					limit = { has_idea = OW_decryption_sattelite }
-					remove_ideas = OW_decryption_sattelite
-				}
-				## remove 1 use from each enemy sattelite ##
-				if = {
-					limit = { check_variable = {  OW_comms_booster_uses < 1 } }
-					custom_override_tooltip = {
-						tooltip = OW_sattelite_deactivated
-						clr_country_flag = has_rocket_special_module_1_in_orbit
-					}
-					add_to_variable = { OW_current_sattelites = -1 }
-				}
-				if = {
-					limit = { check_variable = {  OW_comms_booster_uses < 1 } }
-					custom_override_tooltip = {
-						tooltip = OW_sattelite_deactivated
-						clr_country_flag = has_rocket_special_module_1_in_orbit
-					}
-					add_to_variable = { OW_current_sattelites = -1 }
-				}
-			}
+		
+			FROM = {check_variable = { num_research_domes > 0 }}
 		}
-
-		OW_update = yes
+	
+		target_array = global.conquesting_space
+	
+		days_re_enable = 30
+		fire_only_once = no
+	
+		complete_effect = {
+			log = "[ROOT.GetName]: Decision complete OW_infiltrate_orbital_infrastructure"
+			#custom_effect_tooltip = SSD_activation_tt
+			hidden_effect = {
+				if = {
+					limit = {
+						FROM = { check_variable = { OW_research_current > 14 } }
+					}
+					custom_override_tooltip = {
+						tooltip = {
+							localization_key = tooltip_add_orbit_research
+							NUM = 15
+						}
+						add_to_variable = { OW_research_current = 15 }
+					}
+				}
+				else_if = {
+					limit = {
+						FROM = { check_variable = { OW_research_current < 15 } }
+					}
+					FROM = { set_temp_variable = { research_stolen = OW_research_current } }
+					custom_override_tooltip = {
+						tooltip = {
+							localization_key = tooltip_add_orbit_research
+							NUM = research_stolen
+						}
+						add_to_variable = { OW_research_current = research_stolen }
+					}
+				}
+				FROM = {
+					add_to_variable = { num_research_domes = -1 }
+					add_to_variable = { OW_current_sattelites = -1 }
+					if = {  
+						limit = { check_variable = { num_research_domes > 1 } }
+						add_to_variable = { OW_research_monthly_dome = -5 }
+					}
+					if = {  
+						limit = { check_variable = { num_research_domes < 2 } }
+						add_to_variable = { OW_research_monthly_dome = -15 }
+					}
+					OW_calculate_monthly_research = yes
+				}
+			}
+		
+			OW_update = yes
+		}
+	
+		fixed_random_seed = no
 	}
-
-	fixed_random_seed = no
-}
 
 	PB_debug_orbit_wars_launch_rocket = {
 		visible = { is_debug = yes }
@@ -250,6 +327,25 @@ PB_orbit_wars_category = {
 		ai_will_do = { base = 0 }
 		
 		complete_effect = { clr_country_flag = rocket_launched  OW_update = yes }
+	}
+
+	PB_debug_orbit_wars_toggle_window = {
+		visible = { is_debug = yes }
+		
+		ai_will_do = { base = 0 }
+		
+		complete_effect = {
+			if = {
+				limit = { has_variable = OW_window_open }
+				clear_variable = OW_window_open
+			}
+			else = {
+				set_variable = {
+					OW_window_open = 1
+				}
+			}
+			OW_update = yes
+		}
 	}
 
 }
