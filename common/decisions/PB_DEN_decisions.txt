@@ -1,7 +1,7 @@
 
 
 DEN_danish_straights_crisis = { 
-	    DEN_promote_unity = {
+	DEN_promote_unity = {
         icon = ger_military_buildup
 
         allowed = {
@@ -348,7 +348,61 @@ DEN_danish_straights_crisis = {
 			}
 		}
 	}
-	
+	DEN_propose_expel_eng = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		visible = {
+			has_global_flag = DEN_revolution
+			DEN_is_concert_voter = yes
+			NOT = { tag = ENG }
+			ENG = {
+				DEN_is_concert_voter = yes
+				has_war_with = DEN
+			}
+			NOT = { has_global_flag = DEN_agenda_active }
+		}
+		available = {
+			NOT = { has_global_flag = DEN_agenda_active }
+		}
+		cost = 25
+		days_re_enable = 20
+		complete_effect = {
+			ENG = { set_country_flag = DEN_expel_target }
+			set_variable = { global.DEN_Agenda = 6 }
+			DEN_start_agenda = yes
+		}
+		ai_will_do = {
+			factor = 10
+		}
+	}
+
+	DEN_propose_expel_ger = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		visible = {
+			has_global_flag = DEN_revolution
+			DEN_is_concert_voter = yes
+			NOT = { tag = GER }
+			GER = {
+				DEN_is_concert_voter = yes
+				has_war_with = DEN
+			}
+			NOT = { has_global_flag = DEN_agenda_active }
+		}
+		available = {
+			NOT = { has_global_flag = DEN_agenda_active }
+		}
+		cost = 25
+		days_re_enable = 20
+		complete_effect = {
+			GER = { set_country_flag = DEN_expel_target }
+			set_variable = { global.DEN_Agenda = 6 }
+			DEN_start_agenda = yes
+		}
+		ai_will_do = {
+			factor = 10
+		}
+	}
 	ENG_baltic_project = {
 		icon = ger_military_buildup
 		fire_only_once = yes
@@ -384,6 +438,14 @@ DEN_danish_straights_crisis = {
 					size > 15
 				}
 			}
+			custom_trigger_tooltip = {
+				tooltip = DEN_baltic_invasion_exclusive_tt
+				NOT = { has_global_flag = DEN_invaded_by_foreign }
+			}
+			custom_trigger_tooltip = {
+				tooltip = DEN_coalition_unity_below_35_tt
+				check_variable = { global.DEN_Coalition_Unity > 35 }
+			}
 		}
 		custom_cost_trigger = {
 			command_power > 24
@@ -395,6 +457,7 @@ DEN_danish_straights_crisis = {
 		}
 		war_with_target_on_remove = yes
 		complete_effect = {
+			set_global_flag = DEN_invaded_by_foreign
 			declare_war_on = {
 				target = DEN
 				type = annex_everything
@@ -418,8 +481,8 @@ DEN_danish_straights_crisis = {
 			}
 			add_to_variable = {
 				var = NOR_Influence
-				value = 5
-				tooltip = DEN_influence_growth
+				value = -20
+				tooltip = DEN_influence_decline
 			}
 			add_to_variable = {
 				var = global.DEN_Coalition_Unity
@@ -429,10 +492,93 @@ DEN_danish_straights_crisis = {
 			DEN_concert_support_calculations = yes
 		}
 		remove_effect = {
+			clr_global_flag = DEN_invaded_by_foreign
 			hidden_effect = {
 				add_command_power = -25
 			}
 			navy_experience = 50
+			white_peace = DEN
+		}
+	}
+	GER_baltic_project = {
+		icon = ger_military_buildup
+		fire_only_once = yes
+		days_remove = 75
+		cost = 12
+		allowed = {
+			always = no
+		}
+
+		cancel_trigger = {
+			NOT = { has_war_with = DEN }
+		}
+
+		ai_will_do = {
+			factor = 1000
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = DEN_baltic_invasion_exclusive_tt
+				NOT = { has_global_flag = DEN_invaded_by_foreign }
+			}
+			custom_trigger_tooltip = {
+				tooltip = DEN_coalition_unity_above_35_tt
+				check_variable = { global.DEN_Coalition_Unity > 35 }
+			}
+		}
+
+		custom_cost_trigger = {
+			command_power > 24
+		}
+		custom_cost_text = decision_cost_CP_25
+
+		modifier = {
+			ai_join_ally_desire_factor = -5000
+			ai_call_ally_desire_factor = -5000
+		}
+
+		war_with_target_on_remove = yes
+
+		complete_effect = {
+			set_global_flag = DEN_invaded_by_foreign
+			declare_war_on = {
+				target = DEN
+				type = annex_everything
+			}
+			DEN = {
+				damage_units = {
+					region = 207
+					damage = 0.5
+					org_damage = 0.7
+					str_damage = 0.5
+					ratio = yes
+					army = yes
+					navy = yes
+				}
+			}
+			add_to_variable = {
+				var = NOR_Influence
+				value = -20
+				tooltip = DEN_influence_decline
+			}
+			add_to_variable = {
+				var = global.DEN_Coalition_Unity
+				value = -18
+				tooltip = DEN_coalition_unity_decline
+			}
+			DEN_concert_support_calculations = yes
+		}
+
+		remove_effect = {
+			hidden_effect = {
+				add_command_power = -25
+			}
+			navy_experience = 50
+			clr_global_flag = DEN_invaded_by_foreign
+
+			# Take whichever of the four states we hold, then make peace
+			DEN_ger_seize_states = yes
 			white_peace = DEN
 		}
 	}
@@ -485,7 +631,10 @@ DEN_danish_straights_crisis = {
                 area = 206
                 size > 15
             }
-            check_variable = { coalition_unity < 45 }
+            custom_trigger_tooltip = {
+				tooltip = DEN_coalition_unity_below_35_tt
+				check_variable = { global.DEN_Coalition_Unity < 35 }
+			}
         }
 
         days_remove = 30
@@ -563,4 +712,252 @@ DEN_danish_straights_crisis = {
             factor = 50
         }
     }
+	DEN_propose_agenda_1 = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		visible = {
+			has_global_flag = DEN_revolution
+			NOT = { has_global_flag = DEN_agenda_active }
+			NOT = { has_global_flag = DEN_norway_recognised }
+			DEN_is_concert_voter = yes
+			NOT = { has_global_flag = DEN_propose_agenda_1 }
+		}
+		available = {
+			NOT = { has_global_flag = DEN_agenda_active }
+		}
+		cost = 25
+		days_re_enable = 20
+		complete_effect = {
+			set_variable = { global.DEN_Agenda = 1 }
+			DEN_start_agenda = yes
+			set_global_flag = DEN_propose_agenda_1
+		}
+		ai_will_do = {
+			factor = 8
+		}
+	}
+
+	DEN_propose_agenda_2 = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		visible = {
+			has_global_flag = DEN_revolution
+			has_global_flag = DEN_norway_recognised
+			NOT = { has_global_flag = DEN_agenda_active }
+			NOT = { has_global_flag = DEN_volunteers_sent }
+			DEN = { has_war_with = NOR }
+			DEN_is_concert_voter = yes
+			NOT = { has_global_flag = DEN_propose_agenda_2 }
+		}
+		available = {
+			NOT = { has_global_flag = DEN_agenda_active }
+			has_global_flag = DEN_norway_recognised
+		}
+		cost = 25
+		days_re_enable = 20
+		complete_effect = {
+			set_variable = { global.DEN_Agenda = 2 }
+			DEN_start_agenda = yes
+			set_global_flag = DEN_propose_agenda_2
+		}
+		ai_will_do = {
+			factor = 6
+		}
+	}
+
+	DEN_propose_agenda_3 = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		available = {
+			NOT = { has_global_flag = DEN_agenda_active }
+		}
+		visible = {
+			has_global_flag = DEN_revolution
+			has_global_flag = DANISH_BELTS_STRAIT_BLOCKED
+			NOT = { has_global_flag = DEN_agenda_active }
+			DEN_is_concert_voter = yes
+			NOT = { has_global_flag = DEN_propose_agenda_3 }
+		}
+		cost = 25
+		days_re_enable = 20
+		complete_effect = {
+			set_variable = { global.DEN_Agenda = 3 }
+			DEN_start_agenda = yes
+			set_global_flag = DEN_propose_agenda_3
+		}
+		ai_will_do = {
+			factor = 10
+		}
+	}
+
+	DEN_propose_agenda_4 = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		available = {
+			NOT = { has_global_flag = DEN_agenda_active }
+		}
+		visible = {
+			has_global_flag = DEN_revolution
+			NOT = { has_global_flag = DEN_agenda_active }
+			DEN_is_concert_voter = yes
+			NOT = { has_global_flag = DEN_propose_agenda_4 }
+		}
+		cost = 25
+		days_re_enable = 20
+		complete_effect = {
+			set_variable = { global.DEN_Agenda = 4 }
+			DEN_start_agenda = yes
+			set_global_flag = DEN_propose_agenda_4
+		}
+		ai_will_do = {
+			factor = 6
+		}
+	}
+
+	DEN_propose_agenda_5 = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		visible = {
+			has_global_flag = DEN_revolution
+			NOT = { has_global_flag = DEN_agenda_active }
+			DEN_is_concert_voter = yes
+			DEN = { has_war_with = NOR }
+			NOT = { has_global_flag = DEN_propose_agenda_5 }
+		}
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = DEN_coalition_unity_above_70_tt
+				check_variable = { global.DEN_Coalition_Unity > 70 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = DEN_norway_influence_low_tt
+				check_variable = { NOR.NOR_Influence < 20 }
+			}
+			NOR = {
+				NOT = { surrender_progress > 0.2 }
+			}
+		}
+		cost = 25
+		days_re_enable = 20
+		complete_effect = {
+			set_variable = { global.DEN_Agenda = 5 }
+			DEN_start_agenda = yes
+			set_global_flag = DEN_propose_agenda_5
+		}
+		ai_will_do = {
+			factor = 4
+		}
+	}
+
+	DEN_agenda_vote_support = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		visible = {
+			has_global_flag = DEN_agenda_active
+			NOT = { has_country_flag = DEN_voted_yes }
+			NOT = { has_country_flag = DEN_voted_no }
+		}
+		cost = 0
+		complete_effect = {
+			set_country_flag = DEN_voted_yes
+			add_to_variable = { global.DEN_Agenda_Yes = 1 }
+			remove_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_support
+			}
+			remove_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_oppose
+			}
+			DEN_check_agenda = yes
+		}
+		ai_will_do = {
+			factor = 30
+			modifier = {
+				factor = 3
+				check_variable = { global.DEN_Agenda = 3 }
+			}
+			modifier = {
+				factor = 2
+				check_variable = { global.DEN_Agenda = 5 }
+			}
+			modifier = {
+				factor = 0.2
+				tag = ENG
+				check_variable = { global.DEN_Agenda = 4 }
+			}
+			modifier = {
+				factor = 4
+				check_variable = { global.DEN_Agenda = 6 }
+				has_opinion = {
+					target = event_target:DEN_agenda_proposer
+					value > 29
+				}
+			}
+			modifier = {
+				factor = 0.05
+				check_variable = { global.DEN_Agenda = 6 }
+				NOT = {
+					has_opinion = {
+						target = event_target:DEN_agenda_proposer
+						value > 29
+					}
+				}
+			}
+		}
+	}
+
+	DEN_agenda_vote_oppose = {
+		icon = ger_military_buildup
+		allowed = { always = no }
+		visible = {
+			has_global_flag = DEN_agenda_active
+			NOT = { has_country_flag = DEN_voted_yes }
+			NOT = { has_country_flag = DEN_voted_no }
+		}
+		cost = 0
+		complete_effect = {
+			set_country_flag = DEN_voted_no
+			add_to_variable = { global.DEN_Agenda_No = 1 }
+			remove_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_support
+			}
+			remove_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_oppose
+			}
+			DEN_check_agenda = yes
+		}
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				factor = 4
+				tag = ENG
+				check_variable = { global.DEN_Agenda = 4 }
+			}
+			modifier = {
+				factor = 0.3
+				check_variable = { global.DEN_Agenda = 5 }
+			}
+			modifier = {
+				factor = 0.05
+				check_variable = { global.DEN_Agenda = 6 }
+				has_opinion = {
+					target = event_target:DEN_agenda_proposer
+					value > 29
+				}
+			}
+			modifier = {
+				factor = 4
+				check_variable = { global.DEN_Agenda = 6 }
+				NOT = {
+					has_opinion = {
+						target = event_target:DEN_agenda_proposer
+						value > 29
+					}
+				}
+			}
+		}
+	}
 }

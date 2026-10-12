@@ -7,7 +7,37 @@ add_namespace = denmark_britain
 add_namespace = denmark_russia
 add_namespace = denmark_germany
 add_namespace = denmark_sweden
-	
+add_namespace = denmark_agenda
+
+	country_event = {
+		id = denmark_agenda.1
+		hidden = yes
+		is_triggered_only = yes
+
+		immediate = {
+			# Guard: the agenda may have ended, or this country already voted
+			if = {
+				limit = {
+					has_global_flag = DEN_agenda_active
+					NOT = { has_country_flag = DEN_voted_yes }
+					NOT = { has_country_flag = DEN_voted_no }
+				}
+				activate_targeted_decision = {
+					target = NOR
+					decision = DEN_agenda_vote_support
+				}
+				activate_targeted_decision = {
+					target = NOR
+					decision = DEN_agenda_vote_oppose
+				}
+			}
+		}
+
+		option = {
+			name = denmark_agenda.1.a
+		}
+	}
+
 	country_event = { #Danish Revolution
 		id = denmark.1
 		title = denmark.1.t
@@ -19,6 +49,11 @@ add_namespace = denmark_sweden
 		fire_only_once = yes
 		immediate = {
 			hidden_effect = {
+				set_variable = { global.DEN_Agenda = 0 }
+				set_variable = { global.DEN_Agenda_Yes = 0 }
+				set_variable = { global.DEN_Agenda_No = 0 }
+				set_variable = { global.DEN_Agenda_Eligible = 0 }
+				set_variable = { global.DEN_Agenda_Timer = 0 }
 				set_variable = {
 					var = global.DEN_Coalition_Unity
 					value = 65
@@ -131,7 +166,6 @@ add_namespace = denmark_sweden
 					set_province_controller = 6235
 					set_province_controller = 3206
 					set_province_controller = 3341
-					set_province_controller = 13370
 					load_oob = "NOR_reaction"
 				}
 			}
@@ -198,18 +232,44 @@ add_namespace = denmark_sweden
 				target = NOR
 				decision = DEN_increase_influence
 			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_propose_agenda_1
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_propose_agenda_2
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_propose_agenda_3
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_propose_agenda_4
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_propose_agenda_5
+			}
 			if = {
 				limit = {
-					tag = SWE
-				}
-				activate_targeted_decision = {
-					target = NOR
-					decision = SWE_force_open_copenhagen
+					OR = { 
+						tag = SWE
+						tag = GER
+						tag = SWE
+					}
 				}
 				activate_targeted_decision = {
 					target = DEN
 					decision = DEN_seize_bornholm
 				}
+			}
+			if = { 
+				limit = {
+					tag = GER
+				}
+				country_event = { id = denmark_germany.2 days = 23 }
 			}
 			if = {
 				limit = { 
@@ -279,7 +339,7 @@ add_namespace = denmark_sweden
 			NOR_wilhelm_i = {
 				kill_character = yes
 			}
-			
+			set_country_flag = NOR_regency
 			NOR_emergency_regency_committe = {
 				add_country_leader_role = {
 					promote_leader = yes
@@ -620,5 +680,29 @@ add_namespace = denmark_sweden
 					modifier = royal_ties
 				}
 			}
+		}
+	}
+	country_event = {
+		id = denmark_germany.2
+		title = denmark_germany.2.t
+		desc = denmark_germany.2.d
+		picture = GFX_report_event_generic
+		is_triggered_only = yes
+
+		option = {
+			name = denmark_germany.2.a
+			activate_targeted_decision = {
+				target = DEN
+				decision = GER_baltic_project
+			}
+		}
+		option = {
+			name = denmark_germany.2.b
+			add_to_variable = {
+				var = global.DEN_Coalition_Unity
+				value = 5
+				tooltip = DEN_coalition_unity_growth
+			}
+			DEN_concert_support_calculations = yes
 		}
 	}
