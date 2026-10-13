@@ -1,11 +1,14 @@
 on_actions = {
 	on_startup = {
 		effect = {
-			every_country = {
-				add_dynamic_modifier = {
-					modifier = PB_research_center_effects
-				}
+			### OPENING SCREEN ###
+			for_each_scope_loop = {
+				array = global.players
+				open_opening_screen = yes
 			}
+			every_country = { set_variable = { world_lore_page_var = 5 } }
+			# Research Centers bonuses #
+			every_country = { add_dynamic_modifier = { modifier = PB_research_center_effects } }
 			#Priority Zones - KR ambition areas
 			every_state = {
 				create_priority_zones = yes
@@ -34,9 +37,114 @@ on_actions = {
 				set_variable = { annexation_resistance_target_id = annexation_id_temp }
 				add_to_temp_variable = { annexation_id_temp = 1 }
 			}
-		}
-		### ADDING GREAT WALL OF CHINA ###
-		effect = {
+			### ADD MEGACITIES ###
+			16 = { set_state_flag = Megacity_Paris } #PARIS
+			126 = { set_state_flag = Megacity_London } #LONDON
+			1185 = { set_state_flag = Megacity_Frankfurt } #FRANKFURT
+			261 = { set_state_flag = Megacity_Melbourne } #MELBOURNE
+			195 = { set_state_flag = Megacity_Petrograd } #PETROGRAD
+			1462 = { set_state_flag = Megacity_Montreal } #MONTREAL
+			282 = { set_state_flag = Megacity_Tokyo } #TOKYO
+			### AGRICULTURE ###
+			every_country = {
+				limit = { grain < 1 }
+				random_owned_controlled_state = { add_resource = { type = grain amount = 1 } }
+			}	
+			every_country = {
+				PB_calculate_grain_fulfillment = yes
+				add_dynamic_modifier = { modifier = PB_agriculture_consumption }
+				set_country_flag = PB_agriculture_has_started_calculating_flag
+			}
+			### POLICIES ###
+			every_country = {
+				set_country_flag = {
+					flag = have_changed_civilian_policy_last_one_year
+					days = 365
+					value = 1
+				}
+				set_country_flag = {
+					flag = have_changed_economic_policy_last_one_year
+					days = 365
+					value = 1
+				}
+			}
+			### IDEOLOGY OPINION MODIFIERS ###
+			every_possible_country = {
+				limit = { NOT = { tag = event_target:system} }
+
+				#Opinion Modifiers Setup
+				every_possible_country = {
+					limit = { NOT = { tag = PREV } }
+					if = {
+						limit = { has_government = PREV }
+						add_opinion_modifier = {
+							target = PREV
+							modifier = PB_same_ideology
+						}
+					}
+					else_if = {
+						limit = {
+							OR = {
+								AND = {
+									has_authoritarian_ideology_group = yes
+									PREV = { has_authoritarian_ideology_group = yes }
+								}
+								AND = {
+									has_reformist_ideology_group = yes
+									PREV = { has_reformist_ideology_group = yes }
+								}
+								AND = {
+									has_revolutionary_ideology_group = yes
+									PREV = { has_revolutionary_ideology_group = yes }
+								}
+							}
+						}
+						add_opinion_modifier = { target = PREV modifier = PB_similar_ideology }
+					}
+					else_if = {
+						limit = {
+							OR = {
+								AND = {
+									has_authoritarian_ideology_group = yes
+									PREV = { has_revolutionary_ideology_group = yes }
+								}
+								AND = {
+									has_revolutionary_ideology_group = yes
+									PREV = { has_authoritarian_ideology_group = yes }
+								}
+							}
+						}
+						add_opinion_modifier = { target = PREV modifier = PB_enemy_ideology }
+					}
+					else = { add_opinion_modifier = { target = PREV modifier = PB_different_ideology } }
+				}
+			}
+			### RESOURCE RIGHTS ### - move to its own files later
+			if = {
+				limit = {
+					has_dlc = "Man the Guns"
+				}
+				CHI = {
+					give_resource_rights = { receiver = ENG state = 593 }
+					give_resource_rights = { receiver = ENG state = 592 }
+					give_resource_rights = { receiver = ENG state = 594 }
+					give_resource_rights = { receiver = ENG state = 613 }
+					give_resource_rights = { receiver = GER state = 597 }
+					give_resource_rights = { receiver = RUS state = 717 }
+					give_resource_rights = { receiver = RUS state = 714 }
+					give_resource_rights = { receiver = RUS state = 761 }
+					give_resource_rights = { receiver = RUS state = 321 }
+					give_resource_rights = { receiver = RUS state = 330 }
+					give_resource_rights = { receiver = RUS state = 618 }
+					give_resource_rights = { receiver = RUS state = 617 }
+					give_resource_rights = { receiver = RUS state = 619 }
+				}
+				PER = {
+					give_resource_rights = { receiver = ENG state = 412 }
+					give_resource_rights = { receiver = ENG state = 413 }
+				}
+			}
+			### ADDING GREAT WALL OF CHINA ### - move to china file later
 			IF = {
 				limit = { has_dlc = "No Compromise, No Surrender" }
 				328 = { # Jilin
@@ -58,7 +166,7 @@ on_actions = {
 							id = 3849
 							id = 11808
 							id = 846
-							id = 6951 #
+							id = 6951
 							id = 11815
 						}
 					}
@@ -384,12 +492,9 @@ on_actions = {
 	}
 	on_weekly = {
 		effect = {
-			if = {
-				limit = { NOT = { has_country_flag = open_annexation_event } }
-				recheck_annexations = yes
-			}
-		}
-		effect = {
+			### AGRICULTURE ###
+			PB_calculate_grain_fulfillment = yes
+			### ORBIT WARS ###
 			if = {
 				limit = {
 					has_variable = OW_auto_launch_enabled
@@ -404,71 +509,8 @@ on_actions = {
 			}
 		}
 	}
-
-	on_startup = {
-		effect = {
-			every_possible_country = {
-				limit = { NOT = { tag = event_target:system} }
-
-				#Opinion Modifiers Setup
-				every_possible_country = {
-					limit = { NOT = { tag = PREV } }
-					if = {
-						limit = { has_government = PREV }
-						add_opinion_modifier = {
-							target = PREV
-							modifier = PB_same_ideology
-						}
-					}
-					else_if = {
-						limit = {
-							OR = {
-								AND = {
-									has_authoritarian_ideology_group = yes
-									PREV = { has_authoritarian_ideology_group = yes }
-								}
-								AND = {
-									has_reformist_ideology_group = yes
-									PREV = { has_reformist_ideology_group = yes }
-								}
-								AND = {
-									has_revolutionary_ideology_group = yes
-									PREV = { has_revolutionary_ideology_group = yes }
-								}
-							}
-						}
-						add_opinion_modifier = {
-							target = PREV
-							modifier = PB_similar_ideology
-						}
-					}
-					else_if = {
-						limit = {
-							OR = {
-								AND = {
-									has_authoritarian_ideology_group = yes
-									PREV = { has_revolutionary_ideology_group = yes }
-								}
-								AND = {
-									has_revolutionary_ideology_group = yes
-									PREV = { has_authoritarian_ideology_group = yes }
-								}
-							}
-						}
-						add_opinion_modifier = {
-							target = PREV
-							modifier = PB_enemy_ideology
-						}
-					}
-					else = {
-						add_opinion_modifier = {
-							target = PREV
-							modifier = PB_different_ideology
-						}
-					}
-				}
-			}
-		}
+	on_daily = {
+		
 	}
 
 	on_ruling_party_change = {

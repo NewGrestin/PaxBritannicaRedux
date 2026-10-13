@@ -519,11 +519,114 @@ PB_ENG_Imperial_Management = {
 		}
 	}
 
+	ENG_imperial_investment = {
+		icon = GFX_decision_influence_cold_war
+		cost = FROM.imperial_decision_cost?100
+		ai_will_do = { base = 50 }
+		target_root_trigger = { original_tag = ENG }
+		visible = { original_tag = ENG }
+		available = {
+			FROM = {
+				exists = yes
+				OR = {
+					is_subject_of = ENG
+					is_in_faction_with = ROOT
+				}
+			}
+			custom_override_tooltip = {
+				tooltip = PB_Imp_90_Tension_Limit_Under
+				check_variable = { imperial_tension_var < 90 }
+			}
+			NOT = { ROOT = { has_country_flag = { flag = imperial_menagement_flag days < 100 } } }
+			NOT = { FROM = { has_country_flag = bounded_to_AME } }
+		}
+		target_array = global.imperial_alignment_array
+
+		cancel_trigger = {
+			custom_override_tooltip = {
+				tooltip = PB_Imp_90_Tension_Limit
+				check_variable = { imperial_tension_var > 90 }
+			}
+		}
+
+		days_remove = 25
+		days_re_enable = 180
+
+		complete_effect = {
+			increase_imperial_tension_5 = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_power_balance_value = {
+				id = ENG_AME_power_balance
+				value = -0.1
+			}
+			custom_effect_tooltip = tooltip_white_line
+			ROOT = { set_country_flag = imperial_menagement_flag }
+		}
+
+		remove_effect = {
+			FROM = {
+				move_imperial_alignment_ENG = yes
+				custom_effect_tooltip = tooltip_white_line
+				country_event = ImpCiv.4
+			}
+		}
+	}
+	AME_imperial_investment = {
+		icon = GFX_decision_influence_cold_war
+		cost = FROM.imperial_decision_cost?100
+		ai_will_do = { base = 50 }
+		target_root_trigger = { original_tag = AME }
+		visible = { original_tag = AME }
+		available = {
+			FROM = {
+				exists = yes
+				OR = {
+					is_subject_of = ENG
+					is_in_faction_with = ROOT
+				}
+			}
+			custom_override_tooltip = {
+				tooltip = PB_Imp_90_Tension_Limit_Under
+				check_variable = { imperial_tension_var < 90 }
+			}
+			NOT = { ROOT = { has_country_flag = { flag = imperial_menagement_flag days < 100 } } }
+		}
+		target_array = global.imperial_alignment_array
+
+		cancel_trigger = {
+			custom_override_tooltip = {
+				tooltip = PB_Imp_90_Tension_Limit
+				check_variable = { imperial_tension_var > 90 }
+			}
+		}
+
+		days_remove = 25
+		days_re_enable = 180
+
+		complete_effect = {
+			increase_imperial_tension_5 = yes
+			custom_effect_tooltip = tooltip_white_line
+			add_power_balance_value = {
+				id = ENG_AME_power_balance
+				value = -0.1
+			}
+			custom_effect_tooltip = tooltip_white_line
+			ROOT = { set_country_flag = imperial_menagement_flag }
+		}
+
+		remove_effect = {
+			FROM = {
+				move_imperial_alignment_AME = yes
+				custom_effect_tooltip = tooltip_white_line
+				country_event = ImpCiv.5
+			}
+		}
+	}
 	PM_AME_American_Irish_Investment = {
 
 		icon = GFX_decision_influence_cold_war
 		
-		cost = UC_first_ireland_cost
+		cost = FROM.cost?100
 
 		ai_will_do = {
 			factor = 0
@@ -543,19 +646,13 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
 			}
 		}
 
-		cancel_trigger = {
-			custom_trigger_tooltip = {
-				tooltip = PB_Imp_90_Tension_Limit
-				check_variable = { global.ENG_Empire_Tension > 90 }
-			}
-		}
 
 		targets = { 
 			IRE
@@ -566,16 +663,16 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			#custom_effect_tooltip = tooltip_white_line
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 	    	}
 
 		}
@@ -583,7 +680,7 @@ PB_ENG_Imperial_Management = {
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			IRE = {
-				PB_ImpMan_Increase_IRE_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.5
@@ -627,7 +724,7 @@ PB_ENG_Imperial_Management = {
 			#NOT = {
 			#	AME = {
 			#		has_country_flag = {
-			#			flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			#			flag = imperial_menagement_flag
 			#			days < 100
 			#		}
 			#	}
@@ -655,13 +752,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -672,7 +769,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_IRE_Blocked_tt
 			set_global_flag = ENG_IRE_Blocked_flag
 
-			PB_ImpMan_Increase_IRE_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 
 			#ACD = {
 			#	country_event = {
@@ -706,7 +803,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -746,13 +843,13 @@ PB_ENG_Imperial_Management = {
 		complete_effect = {
 
 			ENG = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+			set_country_flag = imperial_menagement_flag
 		    }
 
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -764,7 +861,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_IRE_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -792,7 +889,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 				    has_country_flag = {
-				    	flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				    	flag = imperial_menagement_flag
 						days < 100
 				    }
 		   		}
@@ -817,14 +914,14 @@ PB_ENG_Imperial_Management = {
 		complete_effect = {
 
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 	    	}
 
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 		}
@@ -832,7 +929,7 @@ PB_ENG_Imperial_Management = {
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			QUE = {
-				PB_ImpMan_Increase_QUE_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.1
@@ -847,7 +944,7 @@ PB_ENG_Imperial_Management = {
 
 		icon = GFX_decision_eng_puppet_usa
 		
-		cost = UC_first_Quebec_cost
+		cost = FROM.cost?100
 
 		ai_will_do = {
 			factor = 1
@@ -895,13 +992,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -912,7 +1009,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_QUE_Blocked_tt
 			set_global_flag = ENG_QUE_Blocked_flag
 
-			PB_ImpMan_Increase_QUE_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 
 		}
 	}
@@ -940,7 +1037,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -970,13 +1067,13 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 
-            set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+            set_country_flag = imperial_menagement_flag
 
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -988,7 +1085,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_QUE_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -1015,7 +1112,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1037,16 +1134,16 @@ PB_ENG_Imperial_Management = {
 		days_re_enable = 100
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 
 			AME = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -1055,7 +1152,7 @@ PB_ENG_Imperial_Management = {
 
 			BCL = {
 
-				PB_ImpMan_Increase_BCL_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				#custom_effect_tooltip = tooltip_white_line
 				country_event = {
@@ -1118,13 +1215,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -1135,7 +1232,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_BCL_Blocked_tt
 			set_global_flag = ENG_BCL_Blocked_flag
 
-			PB_ImpMan_Increase_BCL_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 		}
 	}
 
@@ -1169,7 +1266,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1198,13 +1295,13 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			ENG = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+				set_country_flag = imperial_menagement_flag
 			}
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -1216,7 +1313,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_BCL_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -1243,7 +1340,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1266,21 +1363,21 @@ PB_ENG_Imperial_Management = {
 		days_re_enable = 100
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 			AME = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				set_country_flag = imperial_menagement_flag
 				}
 		}
 
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			CRN = {
-				PB_ImpMan_Increase_CRN_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.2
@@ -1343,13 +1440,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -1360,7 +1457,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_CRN_Blocked_tt
 			set_global_flag = ENG_CRN_Blocked_flag
 
-			PB_ImpMan_Increase_CRN_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 		}
 	}
 
@@ -1387,7 +1484,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1416,12 +1513,12 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			ENG = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+				set_country_flag = imperial_menagement_flag
 				}
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -1432,7 +1529,7 @@ PB_ENG_Imperial_Management = {
 					id = ImpCiv.4
 					days = 5
 				}
-				PB_ImpMan_Increase_CRN_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -1459,7 +1556,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1481,21 +1578,21 @@ PB_ENG_Imperial_Management = {
 		days_re_enable = 100
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 			AME = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				set_country_flag = imperial_menagement_flag
 				}
 		}
 
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			AST = {
-				PB_ImpMan_Increase_AST_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.2
@@ -1557,13 +1654,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -1574,7 +1671,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_AST_Blocked_tt
 			set_global_flag = ENG_AST_Blocked_flag
 
-			PB_ImpMan_Increase_AST_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 		}
 	}
 
@@ -1601,7 +1698,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1631,12 +1728,12 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			ENG = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+				set_country_flag = imperial_menagement_flag
 			}
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -1648,7 +1745,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_AST_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -1675,7 +1772,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1697,21 +1794,21 @@ PB_ENG_Imperial_Management = {
 		days_re_enable = 100
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 			AME = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				set_country_flag = imperial_menagement_flag
 				}
 		}
 
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			HNK = {
-				PB_ImpMan_Increase_HNK_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.2
@@ -1774,13 +1871,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -1791,7 +1888,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_HNK_Blocked_tt
 			set_global_flag = ENG_HNK_Blocked_flag
 
-			PB_ImpMan_Increase_HNK_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 		}
 	}
 
@@ -1818,7 +1915,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1848,12 +1945,12 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			ENG = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+				set_country_flag = imperial_menagement_flag
 			}
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -1865,7 +1962,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_HNK_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -1892,7 +1989,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -1920,21 +2017,21 @@ PB_ENG_Imperial_Management = {
 		days_re_enable = 100
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 			AME = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				set_country_flag = imperial_menagement_flag
 			}
 		}
 
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			BAF = {
-				PB_ImpMan_Increase_BAF_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.2
@@ -1996,13 +2093,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -2013,7 +2110,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_BAF_Blocked_tt
 			set_global_flag = ENG_BAF_Blocked_flag
 
-			PB_ImpMan_Increase_BAF_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 		}
 	}
 
@@ -2040,7 +2137,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -2076,12 +2173,12 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			ENG = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+				set_country_flag = imperial_menagement_flag
 			}
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -2093,7 +2190,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_BAF_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -2120,7 +2217,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -2142,21 +2239,21 @@ PB_ENG_Imperial_Management = {
 		days_re_enable = 100
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 			AME = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				set_country_flag = imperial_menagement_flag
 			}
 		}
 
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			BEF = {
-				PB_ImpMan_Increase_BEF_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.2
@@ -2218,13 +2315,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -2235,7 +2332,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_BEF_Blocked_tt
 			set_global_flag = ENG_BEF_Blocked_flag
 
-			PB_ImpMan_Increase_BEF_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 		}
 	}
 
@@ -2262,7 +2359,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -2292,12 +2389,12 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			ENG = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+				set_country_flag = imperial_menagement_flag
 			}
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -2309,7 +2406,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_BEF_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -2336,7 +2433,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				AME = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_America
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -2358,21 +2455,21 @@ PB_ENG_Imperial_Management = {
 		days_re_enable = 100
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.1
 			}
 			AME = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+				set_country_flag = imperial_menagement_flag
 			}
 		}
 
 		remove_effect = {
 			custom_effect_tooltip = tooltip_white_line
 			ACD = {
-				PB_ImpMan_Increase_ACD_AME_Influence = yes
+				move_imperial_alignment_AME = yes
 				custom_effect_tooltip = tooltip_white_line
 				country_event = {
 					id = ImpCiv.2
@@ -2439,13 +2536,13 @@ PB_ENG_Imperial_Management = {
 		}
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.2
 			}
 			AME = {
-			set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			set_country_flag = imperial_menagement_flag
 			}
 		}
 
@@ -2456,7 +2553,7 @@ PB_ENG_Imperial_Management = {
 			custom_effect_tooltip = ENG_ACD_Blocked_tt
 			set_global_flag = ENG_ACD_Blocked_flag
 
-			PB_ImpMan_Increase_ACD_AME_Influence = yes
+			move_imperial_alignment_AME = yes
 
 			#ACD = {
 			#	country_event = {
@@ -2490,7 +2587,7 @@ PB_ENG_Imperial_Management = {
 			NOT = {
 				ENG = {
 					has_country_flag = {
-						flag = PAX_Confederation_Struggle_Decisions_Flag_England
+						flag = imperial_menagement_flag
 						days < 100
 					}
 				}
@@ -2519,12 +2616,12 @@ PB_ENG_Imperial_Management = {
 
 		complete_effect = {
 			ENG = {
-				set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_England
+				set_country_flag = imperial_menagement_flag
 			}
-			PB_ENG_Increase_Imperial_Tension_Small = yes
+			increase_imperial_tension_5 = yes
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = 0.1
 			}
 		}
@@ -2536,7 +2633,7 @@ PB_ENG_Imperial_Management = {
 					days = 5
 				}
 
-				PB_ImpMan_Increase_ACD_ENG_Influence = yes
+				move_imperial_alignment_ENG = yes
 			}
 		}
 	}
@@ -2574,7 +2671,7 @@ PB_ENG_Imperial_Management = {
 			#NOT = {
 			#	AME = {
 			#		has_country_flag = {
-			#			flag = PAX_Confederation_Struggle_Decisions_Flag_America
+			#			flag = imperial_menagement_flag
 			#			days < 100
 			#		}
 			#	}
@@ -2596,56 +2693,26 @@ PB_ENG_Imperial_Management = {
 		#days_re_enable = 180
 
 		complete_effect = {
-			PB_ENG_Increase_Imperial_Tension_Moderate = yes
+			increase_imperial_tension_10 = yes
 			custom_effect_tooltip = tooltip_white_line
 			custom_effect_tooltip = AME_Cost_Reduction_Ireland_Special
 			custom_effect_tooltip = tooltip_white_line
 			add_power_balance_value = {
-				id = EMG_AME_power_balance
+				id = ENG_AME_power_balance
 				value = -0.15
 			}
 			custom_effect_tooltip = tooltip_white_line
 			add_war_support = 0.05
 			custom_effect_tooltip = tooltip_white_line
-			add_to_variable = {
-				var = UC_first_ireland_cost
-				value = -50
-			}
-			add_to_variable = {
-				var = UC_first_Quebec_cost
-				value = -10
-			}	
-			add_to_variable = {
-				var = UC_first_Northwest_cost
-				value = -10
-			}
-			add_to_variable = {
-				var = UC_first_Sahara_cost
-				value = -10
-			}
-			add_to_variable = {
-				var = UC_first_New_Georgia_cost
-				value = -10
-			}
-			#add_to_variable = {
-			#	var = UC_first_HK_cost
-			#	value = -25
-			#}
-			#add_to_variable = {
-			#	var = UC_first_BAF_cost
-			#	value = -25
-			#}
-			add_to_variable = {
-				var = UC_first_BEF_cost
-				value = -10
-			}
-			add_to_variable = {
-				var = UC_first_Acadia_cost
-				value = -10
-			}
-			#AME = {
-			#	set_country_flag = PAX_Confederation_Struggle_Decisions_Flag_America
-			#	}
+			add_to_variable = { IRE.imperial_decision_cost = -50 }
+			add_to_variable = { HNK.imperial_decision_cost = -25 }
+			add_to_variable = { BAF.imperial_decision_cost = -25 }
+			add_to_variable = { QUE.imperial_decision_cost = -10 }
+			add_to_variable = { BCL.imperial_decision_cost = -10 }
+			add_to_variable = { CRN.imperial_decision_cost = -10 }
+			add_to_variable = { AST.imperial_decision_cost = -10 }
+			add_to_variable = { ACD.imperial_decision_cost = -10 }
+			add_to_variable = { BEF.imperial_decision_cost = -10 }
 		}
 
 		remove_effect = {
