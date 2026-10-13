@@ -4317,6 +4317,7 @@ country_event = { #Fate of France
 				remove_claim_by = FRA
 			}
 			FRA = { 
+				FRA_remove_all_modifiers_ideas = yes
 				load_focus_tree = generic_focus
 			}
 		}
@@ -4348,14 +4349,14 @@ country_event = { #Fate of France
 			custom_effect_tooltip = has_custom_puppet
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			FRA = { set_cosmetic_tag = FRA_Occupied_Monarchy }
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
-			FRA = { set_cosmetic_tag = FRA_Occupied_Republic }
+			FRA = { set_cosmetic_tag = FRA_Doriot_Left }
 		}
 	}
 
@@ -4545,6 +4546,11 @@ country_event = { #Fate of Occitania
 		every_state = {
 			limit = { is_occitania = yes }
 			remove_claim_and_add_core_of_target = yes
+		}
+		if = { 
+			limit = { has_custom_puppet_OCT = yes }
+			setup_custom_puppet_OCT = yes
+			custom_effect_tooltip = has_custom_puppet
 		}
 		release_targeted_tag = yes
 	}
@@ -4825,13 +4831,17 @@ country_event = { #Fate of Burgundy
 		set_temp_variable = { tag_to_release = BRG }
 		27 = { remove_claim_and_add_core_of_target = yes } #Bourgogne
 		release_targeted_tag = yes
-
-		if = {
+		if = { 
+			limit = { has_custom_puppet_BRG = yes }
+			setup_custom_puppet_BRG = yes
+			custom_effect_tooltip = has_custom_puppet
+		}
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			BRG = { set_cosmetic_tag = BRG_Occupied_Monarchy }
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			BRG = { set_cosmetic_tag = BRG_Occupied_Republic }
 		}
@@ -6832,12 +6842,12 @@ country_event = { #Fate of Netherlands
 			custom_effect_tooltip = has_custom_puppet
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			HOL = { set_cosmetic_tag = HOL_Occupied_Republic }
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			HOL = { set_cosmetic_tag = HOL_Occupied_Monarchy }
 		}
@@ -11908,6 +11918,7 @@ country_event = { #Fate of Austria
 	is_triggered_only = yes
 
 	immediate = {
+		1582 = { retain_state = yes}
 		39 = { retain_state = yes }
 		923 = { retain_state = yes }
 		153 = { retain_state = yes }
@@ -15822,15 +15833,19 @@ country_event = { #Fate of Ragusa
 
 		set_temp_variable = { tag_to_release = DAL }
 		release_targeted_tag = yes
-
-		if = {
+		if = { 
+			limit = { has_custom_puppet_DAL = yes }
+			setup_custom_puppet_DAL = yes
+			custom_effect_tooltip = has_custom_puppet
+		}	
+		else_if = {
 			limit = { ROOT = { has_monarchist_government = yes } }
 			DAL = {
 				set_cosmetic_tag = DAL_Occupied_Monarchy
 			}
 		}
 
-		if = {
+		else_if = {
 			limit = { ROOT = { has_republican_government = yes } }
 			DAL = {
 				drop_cosmetic_tag = yes
@@ -29555,8 +29570,8 @@ country_event = { #Fate of Kithira
 							tag = GRE
 							tag = ION
 							tag = ENG
+							NOT = { tag = event_target:corfu }
 						}
-						NOT = { tag = event_target:corfu }
 					}
 				}
 				var:186.owner = { save_event_target_as = peloponnese }
@@ -33125,18 +33140,37 @@ country_event = { #Fate of Germany (BLANKET DECISION)
 	immediate = {
 		hidden_effect = {
 			annexations_reset_german_tags = yes
-			every_state = {
-				if = {
-					limit = {
-						is_germany = yes 
-					}
-					add_core_of = GER
+			if = { 
+				limit = { 
+					GER  = { exists = no}
 				}
-				else = {
-					remove_core_of = GER
-					remove_claim_by = GER
+				every_state = {
+					if = {
+						limit = {
+							is_germany = yes 
+						}
+						add_core_of = GER
+					}
+					else = {
+						remove_core_of = GER
+						remove_claim_by = GER
+					}
+				}
+				GER = {
+					GER_remove_country_ideas_modifiers = yes
+					load_focus_tree = generic_focus
 				}
 			}
+			
+			if = { 
+				limit = { 
+					GER = { 
+						has_completed_focus = GER_europe_alliance_network
+					}
+				}
+				remove_hamburg_membership_all_countries = yes
+			}
+			
 			if = {
 				limit = {
 					OR = {

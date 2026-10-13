@@ -408,7 +408,7 @@ PB_SWE_support_finland_category = {
 			add_tech_bonus = {
 				bonus = 0.25
 				uses = 1
-				category = artillery
+				category = artillery_tech
 			}
 			delete_unit_template_and_units = {
 				division_template = "Experimental Rocket Truck Division"
@@ -422,17 +422,15 @@ PB_SWE_support_finland_category = {
 	}
 	
 	PB_SWE_experimental_raizormaidens = {
-		allowed = { always = no } #activated by effect
+		allowed = { always = no } #activated by effect 
 		icon = GFX_decision_ger_mefo_bills
 		available = { 
 			winter_war_active = yes
-			AND = {
-				FFI = {
-					custom_trigger_tooltip = {	
-						tooltip = ffi_control_kemi
-						controls_province = 11164
-					} 
-				}
+			FFI = {
+				custom_override_tooltip = {	
+					tooltip = ffi_control_kemi
+					controls_province = 11164
+				} 
 			}
 		}
 
@@ -443,8 +441,15 @@ PB_SWE_support_finland_category = {
 		
 
 		complete_effect = {
-			set_technology = {
-				razormaiden = 1
+			if = {
+				limit = { NOT = { has_tech = razormaiden } }
+				custom_override_tooltip = {
+					tooltip = {
+						localization_key = tooltip_add_tech
+						TECH = razormaiden
+					}
+					set_technology = { razormaiden = 1 }
+				}
 			}
 			division_template = {
 				name = "Experimental Razormaiden Division"
@@ -1711,13 +1716,13 @@ PB_SWE_election_category = {
 			set_country_flag = SWE_bill_in_progress
 		}
 	}
-	SWE_kirunaavtalet = { 
+	SWE_kirunaavtalet = {
 		icon = GFX_decision_generic_scorched_earth
 		allowed = {
 			always = no #manual
 		}
 		available = {
-			hidden_trigger = { 
+			hidden_trigger = {
 				always = no
 			}
 		}
@@ -1725,17 +1730,16 @@ PB_SWE_election_category = {
 
 		is_good = no
 		fire_only_once = no
-				
+
 		days_mission_timeout = 90
 
 		timeout_effect = {
 			hidden_effect = {
-				if = { 
-					limit = { 
+				if = {
+					limit = {
 						OR = {
-							check_variable = { SWE_cabinet_policy_support < 0 }
+							check_variable = { SWE_cabinet_policy_support < 1 }
 							check_variable = { SWE_opposition_concessions > 3 }
-							
 						}
 						has_completed_focus = SWE_occupy_the_mines
 						has_completed_focus = SWE_prioritize_non_interference
@@ -1744,26 +1748,29 @@ PB_SWE_election_category = {
 					}
 					country_event = sweden.23 # LUDDITES
 				}
-				else_if = { 
-					limit = { 
-						OR = {
-							check_variable = { SWE_cabinet_policy_support < 0 }
-							check_variable = { SWE_opposition_concessions < 3 }
+				else_if = {
+					# Coalition holds (support above 0) AND the opposition is satisfied (support <= concessions)
+					limit = {
+						check_variable = { SWE_cabinet_policy_support > 0 }
+						check_variable = {
+							var = SWE_cabinet_policy_support
+							value = SWE_opposition_concessions
+							compare = less_than_or_equals
 						}
 					}
-					country_event = sweden.16 #coalition survives
 					set_country_flag = SWE_cc
+					country_event = sweden.16 # coalition survives
 				}
-				else_if = { 
-					limit = { 
-						check_variable = { SWE_economic_credits < 4}
+				else_if = {
+					limit = {
+						check_variable = { SWE_economic_credits < 4 }
 					}
-					country_event = sweden.15 #coalition dies
 					set_country_flag = SWE_nc
+					country_event = sweden.15 # coalition dies
 				}
-				else = { 
-					country_event = sweden.15 #coalition dies
-					country_event = { id = sweden.14 days = 30} #AFARS path
+				else = {
+					country_event = sweden.15 # coalition dies
+					country_event = { id = sweden.14 days = 30 } # AFARS path
 				}
 				country_event = sweden_bills.15
 				activate_mission = SWE_snap_elections
@@ -3940,19 +3947,16 @@ SWE_automation_crisis = {
 
 	SWE_force_restraint_protestors = {
 		icon = GFX_decision_generic_scorched_earth
-		allowed = { always = yes }
+		allowed = { always = no }
 		cost = 50
 
 		available = {
-			check_variable = { SWE_restraint_crackdowns_used < 3 }
-		}
-
-		visible = {
-			always = yes
+			NOT = {
+				check_variable = { SWE_restraint_crackdowns_used < 3 }
+			}
 		}
 
 		days_remove = 10
-		days_mission_timeout = 15 # cooldown between uses
 
 		modifier = {
 			civilian_factory_use = 1
@@ -3977,7 +3981,7 @@ SWE_automation_crisis = {
 		remove_effect = {
 			add_to_variable = {
 				var = SWE_crime_violent_rate
-				value = 2
+				value = 4
 				tooltip = SWE_crime_violent_rate_sub_tt
 			}
 		}
@@ -3985,16 +3989,12 @@ SWE_automation_crisis = {
 
 	SWE_open_soup_kitchens = {
 		icon = GFX_decision_generic_scorched_earth
-		allowed = { always = yes }
+		allowed = { always = no }
 		cost = 20
 		fire_only_once = yes
 
 		available = {
 			num_of_civilian_factories_available_for_projects > 0
-		}
-
-		visible = {
-			always = yes
 		}
 
 		days_remove = 5
@@ -4966,11 +4966,13 @@ SWE_automation_crisis = {
 		icon = GFX_decision_generic_upgrade_colony
 
 		allowed = {
-			original_tag = SWE
+			tag = SWE
 		}
 
 		available = {
-			has_country_flag = SWE_solkusten_export
+			hidden_trigger = {
+				always = no
+			}
 		}
 
 		activation = {
@@ -4987,14 +4989,14 @@ SWE_automation_crisis = {
 
 		selectable_mission = no
 		days_mission_timeout = 30
-		is_good = no
+		is_good = yes
 
 		timeout_effect = {
 			add_to_variable = { var = SWE_solkusten_export_count value = 1 }
 
 			add_to_variable = {
 				var = SWE_unemployment_rate
-				value = -22000
+				value = -32000
 				tooltip = SWE_unemployment_rate_sub_tt
 			}
 			if = {
@@ -5003,18 +5005,13 @@ SWE_automation_crisis = {
 			}
 
 			random_owned_state = {
-				add_manpower = -22000
+				add_manpower = -32000
 			}
 
 			SLK = {
 				random_owned_state = {
-					add_manpower = 22000
+					add_manpower = 32000
 				}
-			}
-
-			if = {
-				limit = { check_variable = { SWE_solkusten_export_count > 6 } }
-				set_country_flag = SWE_solkusten_export_finished
 			}
 		}
 	}
@@ -5122,4 +5119,7 @@ SWE_balance_of_power_category = {
 			}
 		}
 	}
+}
+PB_SWE_civic_coalition = {
+
 }

@@ -444,11 +444,51 @@ country_event = { #Fate of Rio de la Plata
 			}
 		}
     }
+	option = { #Release Arroyo Whole
+		log = "[GetLogInfo]: event annex.3004 option annex.3004.a"
+		name = annex.3004.a
+		trigger = {
+			is_subject = no
+			is_spanish_american_tag = no
+			ARG = { 
+				exists = no
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+		set_temp_variable = { tag_to_release = ARG }
+		every_state = {
+			limit = { is_rio_de_la_plata = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			ARG = {
+				set_cosmetic_tag = ARG_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			ARG = {
+				set_cosmetic_tag = ARG_Occupied_Republic
+			}
+		}
+	}
+
 	option = { #Release Rio de la Plata Whole
 		log = "[GetLogInfo]: event annex.3003 option annex.3003.a"
 		name = annex.3003.a
 		trigger = {
 			is_subject = no
+			is_spanish_american_tag = yes
 		}
 		ai_chance = {
 			base = 60
@@ -460,7 +500,7 @@ country_event = { #Fate of Rio de la Plata
 
 		set_temp_variable = { tag_to_release = RLP }
 		every_state = {
-			limit = { is_core_of = RLP }
+			limit = { is_rio_de_la_plata = yes }
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
@@ -586,15 +626,18 @@ country_event = { #Fate of Arroyo
 		name = annex.3004.a
 		trigger = {
 			is_subject = no
-			NOT = {
-				ROOT = {
-					TAG = SPR
-				}
+			is_spanish_american_tag = no
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
 			}
 		}
 		set_temp_variable = { tag_to_release = ARG }
 		every_state = {
-			limit = { is_core_of = ARG }
+			limit = { is_rio_de_la_plata = yes }
 			remove_claim_and_add_core_of_target = yes
 		}
 		release_targeted_tag = yes
@@ -610,6 +653,46 @@ country_event = { #Fate of Arroyo
 			limit = { ROOT = { has_republican_government = yes } }
 			ARG = {
 				set_cosmetic_tag = ARG_Occupied_Republic
+			}
+		}
+	}
+
+	option = { #Release Rio de la Plata Whole
+		log = "[GetLogInfo]: event annex.3003 option annex.3003.a"
+		name = annex.3003.a
+		trigger = {
+			is_subject = no
+			is_spanish_american_tag = yes
+			RLP = { 
+				exists = no
+			}
+		}
+		ai_chance = {
+			base = 60
+			modifier = {
+				factor = 0
+				annexations_can_annex = yes
+			}
+		}
+
+		set_temp_variable = { tag_to_release = RLP }
+		every_state = {
+			limit = { is_rio_de_la_plata = yes }
+			remove_claim_and_add_core_of_target = yes
+		}
+		release_targeted_tag = yes
+
+		if = {
+			limit = { ROOT = { has_monarchist_government = yes } }
+			RLP = {
+				set_cosmetic_tag = RLP_Occupied_Monarchy
+			}
+		}
+
+		if = {
+			limit = { ROOT = { has_republican_government = yes } }
+			RLP = {
+				set_cosmetic_tag = RLP_Occupied_Republic
 			}
 		}
 	}
@@ -2703,7 +2786,7 @@ country_event = { # Fate of Western Hispaniola
 					OR = {
 						319 = { is_claim_or_core_of_ROOT = yes } # Santo Domingo
 						tag = CAY
-						tag = COL
+						is_spanish_american_tag = yes
 					}
 				}
 				save_event_target_as = can_annex
@@ -3746,6 +3829,15 @@ country_event = { #Fate of Dominica
 
 	immediate = {
 		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						318 = { is_claim_or_core_of_ROOT = yes } # Santo Domingo
+						is_spanish_american_tag = yes
+					}
+				}
+				save_event_target_as = can_annex
+			}
 			if = {
 				limit = { ATC = { ROOT_can_grant_land = yes } }
 				ATC = {

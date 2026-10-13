@@ -17,6 +17,7 @@ add_namespace = Unicom_Revolution
 add_namespace = Unicom_Independent
 add_namespace = Unicom_Research
 add_namespace = Unicom_Research_Air
+add_namespace = Unicom_arthur
 
 country_event = {# Automation Crisis hits UC
 	id = Unicom.1
@@ -1832,15 +1833,8 @@ country_event = {# Edward Crisis
 	title = Unicom.49.t
 	desc = Unicom.49.d
 	picture = GFX_report_event_PB_Edward_Fumblin
-
-	trigger = {
-		tag = AME
-		focus_progress = {
-			focus = AME_governor_edward_crisis
-			progress > 0.15
-		}
-	}
-
+	
+	is_triggered_only = yes
 	fire_only_once = yes
 
 	option = {
@@ -1995,55 +1989,11 @@ country_event = { # #EdwardImmunity
 	option = { # Lets remove the Immunity
 		name = Unicom.50.a
 		add_political_power = -10
-		if = {
-			limit = {
-				has_government = cn
-			}
-			add_popularity = {
-				ideology = cn
-				popularity = 0.025
-			}
-	    }
-
-		if = {
-			limit = {
-				has_government = ss
-			}
-			add_popularity = {
-				ideology = ss
-				popularity = 0.025
-			}
-	    }
-
-		if = {
-			limit = {
-				has_government = an
-			}
-			add_popularity = {
-				ideology = an
-				popularity = 0.025
-			}
-	    }
-
-		if = {
-			limit = {
-				has_government = lb
-			}
-			add_popularity = {
-				ideology = lb
-				popularity = 0.025
-			}
-	    }
-
-		if = {
-			limit = {
-				has_government = rc
-			}
-			add_popularity = {
-				ideology = rc
-				popularity = 0.025
-			}
-	    }
+		
+		add_popularity = {
+			ideology = ROOT
+			popularity = 0.025
+		}
 
 		hidden_effect = {
 			ENG = {
@@ -2244,28 +2194,24 @@ country_event = { # #Edward Trial
 	is_triggered_only = yes
 
 	fire_only_once = yes
-
-	option = { # Lenient Sentencing
-		name = Unicom.54.a
-		add_political_power = 50
-		hidden_effect = {
+	immediate = {
+		hidden_effect = { 
 			country_event = {
 				id = Unicom.55
 				days = 1
 			}
 		}
 	}
+
+	option = { # Lenient Sentencing
+		name = Unicom.54.a
+		add_political_power = 50
+	}
 	option = { # Harsh Sentencing
 		name = Unicom.54.b
 		add_political_power = 100
 		PB_ENG_Increase_Imperial_Tension_Small = yes
-
-		hidden_effect = {
-			country_event = {
-				id = Unicom.55
-				days = 1
-			}
-		}
+		set_country_flag = Arthur_Penalized_Heavy
 	}
 }
 
@@ -2299,7 +2245,15 @@ country_event = { # #A New Governor-General
 			remove_idea = CoF_Prince_Edward_Disgraced
 			add_idea = CoF_Prince_Arthur_Second
 		}
-		
+		if = { 
+			limit = { 
+				has_country_flag = Arthur_Penalized_Heavy
+			}
+		}
+		country_event = { 
+			id = Unicom_arthur.1
+			days = 3
+		}
 
 	}
 }
@@ -2581,7 +2535,23 @@ country_event = { # Banned Jacobin Party - United Republic Front
 	}
 }
 
+country_event = { # Hughes leaves Tejas
+	id = Unicom.62
+	title = Unicom.62.t
+	desc = Unicom.62.d
+	picture = GFX_report_PB_AME_Hughes
 
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { 
+		name = Unicom.62.a
+		STA = {
+			retire_ideology_leader = CN
+			}
+	}
+}
 
 
 country_event = {# Bonus Army Defeated by Force - Coolidge faces criticism
@@ -3105,7 +3075,385 @@ country_event = { # Second Elections
 		activate_advisor = AME_louis_even_iam
 	}
 }
+country_event = { # Third Elections
+	id = Unicom_Elections.5
+	title = Unicom_Elections.5.t
 
+	desc = {
+		text = Unicom_Elections.5.d.a
+	}
+
+	picture = GFX_report_event_PB_America_Second_Election
+
+	#is_triggered_only = yes
+
+	trigger = {
+		AND = {
+			tag = AME
+			date > 1940.11.10
+			#date < 1935.4.15
+
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 14
+	}
+
+	option = { #The Conservatives take power
+		name = Unicom_Elections.5.a
+
+		ai_chance = {
+			base = 35
+		}
+
+		add_popularity = {
+			ideology = cn
+			popularity = 0.05
+		}
+		
+		if = {
+			limit = {
+				AME = {
+					has_completed_focus = AME_discourage_eiec_expansion
+				}				
+			}
+			set_politics = {
+				ruling_party = an
+				elections_allowed = no
+			}		
+			promote_character = {
+				character = AME_howard_hughes
+				ideology = AN_VARIANT_06
+			}
+		}
+		else_if = {
+			limit ={
+				AME = {
+					NOT = {
+						has_completed_focus = AME_discourage_eiec_expansion
+					}
+				}
+			}
+				
+			set_politics = {
+				ruling_party = cn
+				elections_allowed = no
+			}				
+			promote_character = {
+				character = AME_john_diefenbaker
+				ideology = CN_VARIANT_02
+			}				
+		}			
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_richard_bennett_hog
+		activate_advisor = AME_william_king_ecm
+		activate_advisor = AME_charles_hughes_fam
+		activate_advisor = AME_ray_wilbur_iam		
+   }
+	option = { #The Liberals take power
+		name = Unicom_Elections.5.b
+
+		ai_chance = {
+			base = 15
+		}
+
+
+		set_politics = {
+			ruling_party = lb
+			elections_allowed = no
+		}
+
+		add_popularity = {
+			ideology = lb
+			popularity = 0.4
+		}
+
+		add_popularity = {
+			ideology = ss
+			popularity = 0.2
+		}
+
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_john_davis_hog
+		activate_advisor = AME_william_king_ecm
+		activate_advisor = AME_harry_hopkins_fam
+		activate_advisor = AME_joe_collings_iam
+		
+		if = {
+			limit = {
+				AME = {
+				has_completed_focus = AME_liberty_and_progress
+				}				
+			}
+			set_politics = {
+			ruling_party = lb
+			elections_allowed = no
+		}		
+                promote_character = {
+                    character = AME_henry_wallace
+                    ideology = LB_VARIANT_08
+				}
+
+			else_if = {
+				AME = {
+					NOT = {
+						has_completed_focus = AME_liberty_and_progress
+					}
+				}
+			set_politics = {
+			ruling_party = lb
+			elections_allowed = no
+		}				
+                promote_character = {
+                    character = AME_robert_moses
+                    ideology = LB_VARIANT_03
+				}				
+			}		
+		}					
+	}
+
+	option = { #The Socialists take power
+		name = Unicom_Elections.5.c
+
+		ai_chance = {
+			base = 25
+		}
+
+		set_politics = {
+			ruling_party = ss
+			elections_allowed = no
+		}
+
+		add_popularity = {
+			ideology = ss
+			popularity = 0.5
+		}
+
+		add_popularity = {
+			ideology = lb
+			popularity = 0.2
+		}
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_james_woodsworth_hog
+		activate_advisor = AME_jack_holloway_ecm
+		activate_advisor = AME_thomas_douglas_fam
+		activate_advisor = AME_joe_collings_iam			
+		if = {
+			limit = {
+				AME = {
+				has_completed_focus = AME_art_of_the_deal
+				}				
+			}		
+                promote_character = {
+                    character = AME_earl_browder
+                    ideology = SS_VARIANT_09
+				}
+
+			else_if = {
+				AME = {
+					has_completed_focus = AME_the_shelling_solution
+				}
+                promote_character = {
+                    character = AME_upton_sinclair
+                    ideology = SS_VARIANT_01
+				}				
+			}		
+		}	
+	}
+
+	option = { #The SoCreds take power
+		name = Unicom_Elections.5.e
+
+		ai_chance = {
+			base = 25
+		}
+
+
+		set_politics = {
+			ruling_party = rc
+			elections_allowed = no
+		}
+
+		add_popularity = {
+			ideology = rc
+			popularity = 0.4
+		}
+
+		add_popularity = {
+			ideology = lb
+			popularity = 0.2
+		}
+
+		add_popularity = {
+			ideology = ss
+			popularity = 0.2
+		}
+
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_john_blackmore_hog
+		activate_advisor = AME_william_king_ecm
+		activate_advisor = AME_william_bennett_fam
+		activate_advisor = AME_louis_even_iam
+                promote_character = {
+                    character = AME_joseph_unwin
+                    ideology = RC_VARIANT_05
+                }				
+	}
+}
+country_event = { # Fourth Elections
+	id = Unicom_Elections.6
+	title = Unicom_Elections.6.t
+
+	desc = {
+		text = Unicom_Elections.5.d.a
+	}
+
+	picture = GFX_report_event_PB_America_Second_Election
+
+	#is_triggered_only = yes
+
+	trigger = {
+		AND = {
+			tag = AME
+			date > 1944.11.10
+			#date < 1935.4.15
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 14
+	}
+
+	option = { #The Conservatives take power
+		name = Unicom_Elections.6.a
+
+		ai_chance = {
+			base = 35
+		}
+
+		add_popularity = {
+			ideology = cn
+			popularity = 0.05
+		}
+                promote_character = {
+                    character = AME_charles_edison
+                    ideology = AN_VARIANT_05
+                }
+		set_politics = {
+			ruling_party = an
+			elections_allowed = no
+		}
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_richard_bennett_hog
+		activate_advisor = AME_william_king_ecm
+		activate_advisor = AME_charles_hughes_fam
+		activate_advisor = AME_ray_wilbur_iam			
+	}
+
+	option = { #The Liberals take power
+		name = Unicom_Elections.6.b
+
+		ai_chance = {
+			base = 15
+		}
+
+		set_politics = {
+			ruling_party = lb
+			elections_allowed = no
+		}
+
+		add_popularity = {
+			ideology = lb
+			popularity = 0.4
+		}
+
+		add_popularity = {
+			ideology = ss
+			popularity = 0.2
+		}
+
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_john_curtin_hog
+		activate_advisor = AME_william_king_ecm
+		activate_advisor = AME_harry_hopkins_fam
+		activate_advisor = AME_joe_collings_iam
+                promote_character = {
+                    character = AME_estes_kefauver
+                    ideology = LB_VARIANT_06
+                }		
+	}
+
+	option = { #The Socialists take power
+		name = Unicom_Elections.6.c
+
+		ai_chance = {
+			base = 25
+		}
+
+		set_politics = {
+			ruling_party = ss
+			elections_allowed = no
+		}
+
+		add_popularity = {
+			ideology = ss
+			popularity = 0.5
+		}
+
+		add_popularity = {
+			ideology = lb
+			popularity = 0.2
+		}
+                promote_character = {
+                    character = AME_orson_welles
+                    ideology = SS_VARIANT_03
+                }
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_james_woodsworth_hog
+		activate_advisor = AME_jack_holloway_ecm
+		activate_advisor = AME_thomas_douglas_fam
+		activate_advisor = AME_joe_collings_iam						
+	}
+
+	option = { #The SoCreds take power
+		name = Unicom_Elections.6.e
+
+		ai_chance = {
+			base = 25
+		}
+
+		set_politics = {
+			ruling_party = rc
+			elections_allowed = no
+		}
+
+		add_popularity = {
+			ideology = rc
+			popularity = 0.4
+		}
+
+		add_popularity = {
+			ideology = lb
+			popularity = 0.2
+		}
+
+		add_popularity = {
+			ideology = ss
+			popularity = 0.2
+		}
+
+		remove_all_cabinet_roles = yes
+		activate_advisor = AME_john_blackmore_hog
+		activate_advisor = AME_william_king_ecm
+		activate_advisor = AME_william_bennett_fam
+		activate_advisor = AME_louis_even_iam
+                promote_character = {
+                    character = AME_joseph_unwin
+                    ideology = RC_VARIANT_05
+                }	
+	}		
+}
 country_event = {# Corps
 	id = Unicom_Liberals.1
 	title = Unicom_Liberals.1.t
@@ -3930,6 +4278,126 @@ country_event = {# Aftermath of the Elections - Deciding the future of the party
 	}
 }
 
+country_event = {# Picking up the Pieces (Diefenbaker Coalitions)
+	id = Unicom_Conservatives.7
+	title = Unicom_Conservatives.7.t
+	desc = Unicom_Conservatives.7.d
+	picture = GFX_report_PB_Gala_Dinner
+
+	is_triggered_only = yes
+
+	option = { #Soccred
+		name = Unicom_Conservatives.7.a
+
+		ai_chance = {
+			base = 50
+		}
+		trigger = {
+			NOT = {
+				has_completed_focus = AME_alternative_for_social_america
+			}
+		}
+		add_to_leading_coalition_cn = yes
+		add_to_leading_coalition_rc = yes
+		if = {
+			limit ={ 
+				has_completed_focus = AME_together_forever
+			}
+			set_party_name = {
+				ideology = cn
+				name = AME_cn_party_dief_anglophile
+				long_name = AME_cn_party_dief_anglophile_long
+			}
+			set_party_name = {
+				ideology = rc
+				name = AME_rc_party_dief_anglophile
+				long_name = AME_rc_party_dief_anglophile_long
+			}
+		}
+		else ={
+			set_party_name = {
+				ideology = cn
+				name = AME_cn_party_dief
+				long_name = AME_cn_party_dief_long
+			}
+			set_party_name = {
+				ideology = rc
+				name = AME_cn_party_dief
+				long_name = AME_rc_party_dief_long
+			}
+		}
+	}	
+
+	option = { #Liberals
+		name = Unicom_Conservatives.7.b
+
+		ai_chance = {
+			base = 50
+		}
+		trigger = {
+			NOT = {
+				has_completed_focus = AME_liberty_and_progress
+			}
+		}
+		add_to_leading_coalition_cn = yes
+		add_to_leading_coalition_lb = yes
+		set_party_name = {
+			ideology = cn
+			name = AME_cn_party_dief_lib
+			long_name = AME_cn_party_dief_lib_long
+		}
+		set_party_name = {
+			ideology = lb
+			name = AME_lb_party_dief_lib
+			long_name = AME_lb_party_dief_lib_long
+		}
+	}
+
+	option = { #ULTRA WHIG SUPREMACY
+		name = Unicom_Conservatives.7.c
+
+		ai_chance = {
+			base = 50
+		}
+		trigger = {
+			NOT = {
+				has_completed_focus = AME_alternative_for_social_america
+				has_completed_focus = AME_liberty_and_progress
+			}
+		}
+		add_to_leading_coalition_cn = yes
+		add_to_leading_coalition_lb = yes
+		add_to_leading_coalition_rc = yes
+		add_to_leading_coalition_ds = yes
+		add_to_leading_coalition_an = yes
+		set_party_name = {
+			ideology = cn
+			name = AME_cn_party_dief_whig
+			long_name = AME_cn_party_dief_whig_long
+		}
+		set_party_name = {
+			ideology = lb
+			name = AME_lb_party_dief_whig
+			long_name = AME_lb_party_dief_whig_long
+		}
+		set_party_name = {
+			ideology = rc
+			name = AME_rc_party_dief_whig
+			long_name = AME_rc_party_dief_whig_long
+		}
+		set_party_name = {
+			ideology = an
+			name = AME_an_party_dief_whig
+			long_name = AME_an_party_dief_whig_long
+		}
+		set_party_name = {
+			ideology = ds
+			name = AME_ds_party_dief_whig
+			long_name = AME_ds_party_dief_whig_long
+		}
+	}
+}
+
 country_event = {# Lang threatens the EIEC
 	id = Unicom_Socialists.1
 	title = Unicom_Socialists.1.t
@@ -4468,6 +4936,74 @@ country_event = {# Lang threatens to Nationalize the EIEC - Getting the Unions o
 	}
 }
 
+country_event = {# Sinclair Expands Parks Services
+	id = Unicom_Socialists.13
+	title = Unicom_Socialists.13.t
+	desc = Unicom_Socialists.13.d
+	picture = GFX_report_PB_Diplomatic_Agreement
+
+	is_triggered_only = yes
+
+	option = { #Not Applicable
+		name = Unicom_Socialists.13.a
+
+		ai_chance = {
+			base = 50
+		}
+	}
+}
+
+country_event = {# Sinclair Opens Arts Commission
+	id = Unicom_Socialists.14
+	title = Unicom_Socialists.14.t
+	desc = Unicom_Socialists.14.d
+	picture = GFX_report_PB_Diplomatic_Agreement
+
+	is_triggered_only = yes
+
+	option = { #Not Applicable
+		name = Unicom_Socialists.14.a
+
+		ai_chance = {
+			base = 50
+		}
+	}
+}
+country_event = {
+	id = Unicom_Socialists.15
+	title = Unicom_Socialists.15.t
+	desc = Unicom_Socialists.15.d
+	picture = GFX_report_PB_Diplomatic_Agreement
+	
+	is_triggered_only = yes
+	
+	option = {
+		name = Unicom_Socialists.15.a
+		
+		ai_chance = {
+			base = 50
+		}
+		KKK = {
+			transfer_state = 368
+			add_state_core = 368
+			transfer_state = 365
+			add_state_core = 365
+			transfer_state = 364
+			add_state_core = 364
+			transfer_state = 363
+			add_state_core = 363
+			hidden_effect = {
+				load_oob = "KKK_1933"
+			}
+		}
+		AME = {
+			declare_war_on = {
+				target = KKK
+				type = annex_everything
+			}
+		}		
+	}
+}
 country_event = {# Rectify the Party Divide - Technocrats Dominant
 	id = Unicom_SoCreds.1
 	title = Unicom_SoCreds.1.t
@@ -4529,6 +5065,14 @@ country_event = {# Situation Report - Opener
 
 		ai_chance = {
 			base = 50
+		}
+	}
+	after = {
+		hidden_effect = {
+			country_event = {
+			id = Unicom.62
+			days = 2
+			}
 		}
 	}
 }
@@ -5323,7 +5867,11 @@ country_event = {# Asking Britain to Takeover Nicaragua
 			base = 100
 		}
 		set_global_flag = NIC_passed_to_ENG
-		country_event = { id = Unicom_Nicaragua.22 days = 1 }
+		AME = { 
+			country_event = { id = Unicom_Nicaragua.22 days = 1 }
+		}
+		activate_mission = AME_Zeledonista_Rebel_Attack
+		activate_mission = AME_Federalista_Rebel_Attack
 	}
 	option = { #Are you Crazy?
 		name = Unicom_Nicaragua.21.b
@@ -5332,7 +5880,9 @@ country_event = {# Asking Britain to Takeover Nicaragua
 			base = 0
 		}
 		set_global_flag = NIC_passed_to_ENG_refused
-		country_event = { id = Unicom_Nicaragua.23 days = 1 }
+		AME = { 
+			country_event = { id = Unicom_Nicaragua.23 days = 1 }
+		}
 	}
 }
 
@@ -8041,7 +8591,7 @@ country_event = {# UC Hunting For An American Monarch
 
 	is_triggered_only = yes
 
-	option = { # Edward I
+	option = { # Arthur I
 		name = Unicom_Independent.3.a
 		drop_cosmetic_tag = yes
 		set_cosmetic_tag = AME_KNG_1
@@ -8059,12 +8609,12 @@ country_event = {# UC Hunting For An American Monarch
 		}
 		AME = {
 			retire_current_country_leader = yes
-			AME_albert_edward = {
+			AME_arthur_albert = {
 				custom_override_tooltip = {
 					tooltip = {
 						localization_key = tooltip_change_character_name
-						NAME = AME_albert_edward
-						NAME_NEW = AME_albert_edward_regnal
+						NAME = AME_arthur_albert
+						NAME_NEW = AME_arthur_albert_regnal
 					}
 					set_character_name = AME_albert_edward_regnal
 				}
@@ -8778,5 +9328,46 @@ country_event = {# debug
 			mission = AME_Melbourne_Acroplex_Overhaul_Project
 			days = -364
 		}
+	}
+}
+
+country_event = { # Edward Pleas for an audience with Arthur
+	id = Unicom_arthur.1
+	title = Unicom_arthur.1.t
+	desc = Unicom_arthur.1.d
+	picture = GFX_report_event_PB_Royal_Outfit
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { # And let him taint Arthur's Image too?
+		name = Unicom_arthur.1.a
+
+	}
+	option = { # Sure, Let's Entertain the Idea
+		name = Unicom_arthur.1.b
+
+		country_event = { 
+			id = Unicom_arthur.2
+			days = 3
+		}
+
+	}
+}
+
+country_event = { # Wake all Ye, Princes of Wales.
+	id = Unicom_arthur.2
+	title = Unicom_arthur.2.t
+	desc = Unicom_arthur.2.d
+	picture = GFX_report_event_PB_Royal_Outfit
+
+	is_triggered_only = yes
+
+	fire_only_once = yes
+
+	option = { # What
+		name = Unicom_arthur.2.a
+
 	}
 }

@@ -1,0 +1,340 @@
+spawn_ENG_intervention_units = {
+    if = {
+        limit = { has_template = "Marine Brigade" }
+        delete_unit_template_and_units = { division_template = "Marine Brigade" disband = yes } #no cheating
+    }
+    division_template = {
+        name = "Marine Brigade"
+        regiments = {
+            marine = { x = 0 y = 0 }
+            marine = { x = 0 y = 1 }
+            marine = { x = 0 y = 2 }
+            marine = { x = 0 y = 3 }
+            marine = { x = 1 y = 0 }
+            marine = { x = 1 y = 1 }
+            marine = { x = 1 y = 2 }
+            marine = { x = 1 y = 3 }
+        }
+        support = {
+            artillery = { x = 0 y = 0 }
+        }
+        priority = 2
+    }
+    
+    37 = {
+        create_unit = {
+            division = "name = \"Marines\" division_template = \"Marine Brigade\" start_experience_factor = 0.3 start_equipment_factor = 1"
+            owner = ENG
+            prioritize_location = 6287 # Copenhagen
+            allow_spawning_on_enemy_provs = yes
+        }
+        create_unit = {
+            division = "name = \"Marines\" division_template = \"Marine Brigade\" start_experience_factor = 0.3 start_equipment_factor = 1"
+            owner = ENG 
+            prioritize_location = 15640 # Helsingfors
+            allow_spawning_on_enemy_provs = yes
+        }
+    }
+    974 = {
+        create_unit = {
+            division = "name = \"Marines\" division_template = \"Marine Brigade\" start_experience_factor = 0.3 start_equipment_factor = 1"
+            owner = ENG 
+            prioritize_location = 13370 # Heligoland
+            allow_spawning_on_enemy_provs = yes
+        }
+    }
+}
+DEN_concert_support_calculations = {
+	set_variable = { global.DEN_coalition_unity_local = global.DEN_Coalition_Unity }
+
+	set_temp_variable = { temp_offset = global.DEN_coalition_unity_local }
+	subtract_from_temp_variable = { temp_offset = 35 }
+
+	# Attack: offset / 500  (offset 65 -> 0.13)
+	set_variable = { global.DEN_concert_attack = temp_offset }
+	divide_variable = { global.DEN_concert_attack = 500 }
+	clamp_variable = { var = global.DEN_concert_attack min = -0.10 max = 0.15 }
+
+	# Defence: offset / 667  (offset 65 -> ~0.097)
+	set_variable = { global.DEN_concert_defence = temp_offset }
+	divide_variable = { global.DEN_concert_defence = 667 }
+	clamp_variable = { var = global.DEN_concert_defence min = -0.08 max = 0.12 }
+
+	# Organisation: offset / 1000  (offset 65 -> 0.065)
+	set_variable = { global.DEN_concert_org = temp_offset }
+	divide_variable = { global.DEN_concert_org = 1000 }
+	clamp_variable = { var = global.DEN_concert_org min = -0.05 max = 0.08 }
+
+	# Planning: offset / 1000
+	set_variable = { global.DEN_concert_planning = temp_offset }
+	divide_variable = { global.DEN_concert_planning = 1000 }
+	clamp_variable = { var = global.DEN_concert_planning min = -0.05 max = 0.08 }
+
+	log = "CONCERT unity=[?global.DEN_coalition_unity_local] offset=[?temp_offset] attack=[?global.DEN_concert_attack]"
+
+}
+# ROOT = proposer country and global.DEN_Agenda must be set before so
+DEN_start_agenda = {
+	set_variable = { global.DEN_Agenda_Yes = 1 }
+	set_variable = { global.DEN_Agenda_No = 0 }
+	set_variable = { global.DEN_Agenda_Eligible = 1 }
+	set_variable = { global.DEN_Agenda_Timer = 90 }
+	set_global_flag = DEN_agenda_active
+	save_global_event_target_as = DEN_agenda_proposer
+	set_country_flag = DEN_voted_yes
+
+	every_country = {
+		limit = {
+			DEN_is_concert_voter = yes
+			NOT = { has_country_flag = DEN_voted_yes }
+			NOT = { has_country_flag = DEN_expel_target }
+		}
+		add_to_variable = { global.DEN_Agenda_Eligible = 1 }
+
+		if = {
+			limit = { is_ai = no }
+			# Human players get the vote immediately
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_support
+			}
+			activate_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_oppose
+			}
+		}
+		else = {
+			# AI countries
+			if = {
+				limit = { tag = SWE }
+				country_event = { id = denmark_agenda.1 days = 1 }
+			}
+			else_if = {
+				limit = { tag = RUS }
+				country_event = { id = denmark_agenda.1 days = 5 }
+			}
+			else_if = {
+				limit = { tag = GER }
+				country_event = { id = denmark_agenda.1 days = 9 }
+			}
+			else_if = {
+				limit = { tag = ENG }
+				country_event = { id = denmark_agenda.1 days = 14 }
+			}
+		}
+	}
+	DEN_check_agenda = yes
+}
+
+#only counts majority votes, if you have 3 votes it already passes or declines depending on what vote is the majority
+DEN_check_agenda = {
+	set_temp_variable = { yes2 = global.DEN_Agenda_Yes }
+	multiply_temp_variable = { yes2 = 2 }
+	set_temp_variable = { no2 = global.DEN_Agenda_No }
+	multiply_temp_variable = { no2 = 2 }
+	set_temp_variable = { elig = global.DEN_Agenda_Eligible }
+
+	if = {
+		limit = { check_variable = { yes2 > elig } }
+		DEN_pass_agenda = yes
+	}
+	else_if = {
+		limit = { NOT = { check_variable = { no2 < elig } } }
+		DEN_fail_agenda = yes
+	}
+}
+
+DEN_pass_agenda = {
+	if = { # 1: Recognise Norway
+		limit = { check_variable = { global.DEN_Agenda = 1 } }
+		set_global_flag = DEN_norway_recognised
+		event_target:DEN_agenda_proposer = {
+			add_to_variable = {
+				var = NOR_Influence
+				value = 10
+				tooltip = DEN_influence_growth
+			}
+		}
+		NOR = {
+			add_stability = 0.3
+			add_political_power = 60
+			add_war_support = 0.1
+		}
+	}
+	else_if = { # 2: Send volunteers
+		limit = { check_variable = { global.DEN_Agenda = 2 } }
+		set_global_flag = DEN_volunteers_sent
+		NOR = {
+			add_war_support = 0.2
+		}
+		event_target:DEN_agenda_proposer = {
+			add_to_variable = {
+				var = NOR_Influence
+				value = 5
+				tooltip = DEN_influence_growth
+			}
+		}
+	}
+	else_if = { # 3: Demand the Belts be reopened
+		limit = { check_variable = { global.DEN_Agenda = 3 } }
+		#clr_global_flag = DANISH_BELTS_STRAIT_BLOCKED
+	}
+	else_if = { # 4: Arms embargo on he fucken danes
+		limit = { check_variable = { global.DEN_Agenda = 4 } }
+		every_country = {
+			limit = {
+				DEN_is_concert_voter = yes
+				has_country_flag = DEN_voted_yes
+			}
+			send_embargo = DEN
+		}
+	}
+	else_if = { # 5: armistice
+		limit = { check_variable = { global.DEN_Agenda = 5 } }
+		add_to_variable = { global.DEN_Coalition_Unity = 10 }
+		DEN = { 
+			every_enemy_country = {
+				limit = { 
+					is_valid_peace_target = yes
+				}
+				white_peace_with_PREV = yes
+			}
+		}
+		DEN_peace_effect = yes
+		#WILL MAKE THIS MORE CONSENSUAL
+	}
+	else_if = { # 6: Expel Country
+		limit = { check_variable = { global.DEN_Agenda = 6 } }
+		every_country = {
+			limit = { has_country_flag = DEN_expel_target }
+			set_country_flag = DEN_revolution_opt_out
+			clr_country_flag = DEN_expel_target
+			remove_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_support
+			}
+			remove_targeted_decision = {
+				target = NOR
+				decision = DEN_agenda_vote_oppose
+			}
+		}
+		add_to_variable = { global.DEN_Coalition_Unity = 5 }
+	}
+	add_to_variable = {
+		var = global.DEN_Coalition_Unity
+		value = 3
+		tooltip = DEN_coalition_unity_growth
+	}
+	clamp_variable = {
+		var = global.DEN_Coalition_Unity
+		min = 0
+		max = 100
+	}
+	DEN_concert_support_calculations = yes
+	DEN_clear_agenda = yes
+}
+
+DEN_fail_agenda = {
+	add_to_variable = {
+		var = global.DEN_Coalition_Unity
+		value = -3
+		tooltip = DEN_coalition_unity_decline
+	}
+	clamp_variable = {
+		var = global.DEN_Coalition_Unity
+		min = 0
+		max = 100
+	}
+	DEN_concert_support_calculations = yes
+	DEN_clear_agenda = yes
+}
+
+DEN_clear_agenda = {
+	every_country = {
+		limit = { DEN_is_concert_voter = yes }
+		clr_country_flag = DEN_voted_yes
+		clr_country_flag = DEN_voted_no
+		remove_targeted_decision = {
+			target = NOR
+			decision = DEN_agenda_vote_support
+		}
+		remove_targeted_decision = {
+			target = NOR
+			decision = DEN_agenda_vote_oppose
+		}
+		clr_country_flag = DEN_expel_target
+	}
+	clr_global_flag = DEN_agenda_active
+	set_variable = { global.DEN_Agenda = 0 }
+	set_variable = { global.DEN_Agenda_Yes = 0 }
+	set_variable = { global.DEN_Agenda_No = 0 }
+	set_variable = { global.DEN_Agenda_Eligible = 0 }
+	set_variable = { global.DEN_Agenda_Timer = 0 }
+}
+
+DEN_peace_effect = {
+	NOR = { 
+		if = { 
+			limit = { 
+				has_country_flag = NOR_regency
+			}
+		}
+		DEN_fire_sphere_event = yes
+	}
+}
+DEN_fire_sphere_event = {
+	if = {
+		limit = { DEN_dominant_eng = yes }
+		ENG = { country_event = { id = denmark_britain.2 days = 1 } }
+	}
+	else_if = {
+		limit = { DEN_dominant_rus = yes }
+		RUS = { country_event = { id = denmark_russia.1 days = 1 } }
+	}
+	else_if = {
+		limit = { DEN_dominant_ger = yes }
+		GER = { country_event = { id = denmark_germany.1 days = 1 } }
+	}
+	else_if = {
+		limit = { DEN_dominant_swe = yes }
+		SWE = { country_event = { id = denmark_sweden.1 days = 1 } }
+	}
+}
+DEN_ger_seize_states = {
+	if = {
+		limit = {
+			58 = {
+				is_owned_by = DEN
+				controller = { tag = GER }
+			}
+		}
+		transfer_state = 58
+	}
+	if = {
+		limit = {
+			1467 = {
+				is_owned_by = DEN
+				controller = { tag = GER }
+			}
+		}
+		transfer_state = 1467
+	}
+	if = {
+		limit = {
+			795 = {
+				is_owned_by = DEN
+				controller = { tag = GER }
+			}
+		}
+		transfer_state = 795
+	}
+	if = {
+		limit = {
+			974 = {
+				is_owned_by = DEN
+				controller = { tag = GER }
+			}
+		}
+		transfer_state = 974
+	}
+}
