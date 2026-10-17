@@ -1429,16 +1429,10 @@ economy_decisions = {
 					is_owned_by = ROOT
 					owner = { is_subject_of = ROOT }
 				}
-			}
-			hidden_trigger = {
-				1011 = {
-					has_state_flag = { 
-						flag = SWE_norne_oil_wells
-						value = 2
-					}
-				}
+				NOT = { has_state_flag = { flag = SWE_norne_oil_wells value = 2 } }
 			}
 		}
+
 
 		cost = 25
 		days_remove = 40
@@ -1455,9 +1449,12 @@ economy_decisions = {
 		remove_effect = {
 			SD_IND_growth_progress_small = yes
 			1011 = {
-				set_state_flag = {
-					flag = SWE_norne_oil_wells
-					value = 1
+				if = {
+					limit = { has_state_flag = { flag = SWE_norne_oil_wells value = 1 } }
+					set_state_flag = { flag = SWE_norne_oil_wells value = 2 }
+				}
+				else = {
+					set_state_flag = { flag = SWE_norne_oil_wells value = 1 }
 				}
 				add_extra_state_shared_building_slots = 2
 				add_building_construction = {
@@ -1465,10 +1462,7 @@ economy_decisions = {
 					level = 2
 					instant_build = yes
 				}
-				add_resource = {
-					type = oil
-					amount = 10
-				}
+				add_resource = { type = oil amount = 10 }
 			}
 		}
 
@@ -1532,14 +1526,7 @@ economy_decisions = {
 					is_owned_by = ROOT
 					owner = { is_subject_of = ROOT }
 				}
-			}
-			hidden_trigger = {
-				144 = {
-					has_state_flag = { 
-						flag = SWE_finmark_oil_wells
-						value = 3
-					}
-				}
+				NOT = { has_state_flag = { flag = SWE_finmark_oil_wells value = 3 } }
 			}
 		}
 
@@ -1558,9 +1545,16 @@ economy_decisions = {
 		remove_effect = {
 			SD_IND_growth_progress_small = yes
 			144 = {
-				set_state_flag = {
-					flag = SWE_finmark_oil_wells
-					value = 1
+				if = {
+					limit = { has_state_flag = { flag = SWE_finmark_oil_wells value = 2 } }
+					set_state_flag = { flag = SWE_finmark_oil_wells value = 3 }
+				}
+				else_if = {
+					limit = { has_state_flag = { flag = SWE_finmark_oil_wells value = 1 } }
+					set_state_flag = { flag = SWE_finmark_oil_wells value = 2 }
+				}
+				else = {
+					set_state_flag = { flag = SWE_finmark_oil_wells value = 1 }
 				}
 				add_extra_state_shared_building_slots = 2
 				add_building_construction = {
@@ -1568,10 +1562,7 @@ economy_decisions = {
 					level = 2
 					instant_build = yes
 				}
-				add_resource = {
-					type = oil
-					amount = 10
-				}
+				add_resource = { type = oil amount = 10 }
 			}
 		}
 
@@ -1731,7 +1722,7 @@ PB_SWE_election_category = {
 		is_good = no
 		fire_only_once = no
 
-		days_mission_timeout = 90
+		days_mission_timeout = 40
 
 		timeout_effect = {
 			hidden_effect = {
@@ -1751,11 +1742,11 @@ PB_SWE_election_category = {
 				else_if = {
 					# Coalition holds (support above 0) AND the opposition is satisfied (support <= concessions)
 					limit = {
-						check_variable = { SWE_cabinet_policy_support > 0 }
+						check_variable = { SWE_opposition_concessions > 0 }
 						check_variable = {
 							var = SWE_cabinet_policy_support
 							value = SWE_opposition_concessions
-							compare = less_than_or_equals
+							compare = greater_than_or_equals
 						}
 					}
 					set_country_flag = SWE_cc
@@ -1792,7 +1783,7 @@ PB_SWE_election_category = {
 		is_good = no
 		fire_only_once = no
 				
-		days_mission_timeout = 90
+		days_mission_timeout = 50
 
 		timeout_effect = {
 			hidden_effect = { 
@@ -3554,10 +3545,10 @@ SWE_paskkravallerna = {
 			custom_trigger_tooltip = {
 				tooltip = SWE_revolt_escalation_above_70_tt
 				ROOT = {
-					check_variable = { AME_Union_Support < 30 }
+					check_variable = { SWE_revolt_escalation > 69 }
 				}
 			}   
-			check_variable = { SWE_revolt_escalation > 69 }
+			
 		}
 		visible = { 
 			has_active_mission = SWE_debug_trigger_state_mission
@@ -3804,6 +3795,7 @@ SWE_automation_crisis = {
 		ai_will_do = {
 			factor = 0
 		}
+		days_remove = 30
 
 		fire_only_once = yes
 		modifier = { 
@@ -3837,7 +3829,7 @@ SWE_automation_crisis = {
 		ai_will_do = {
 			factor = 0
 		}
-
+		days_remove = 30
 		fire_only_once = yes
 		modifier = { 
 			civilian_factory_use = 4
@@ -3871,7 +3863,7 @@ SWE_automation_crisis = {
 		ai_will_do = {
 			factor = 0
 		}
-
+		days_remove = 30
 		fire_only_once = yes
 		modifier = { 
 			civilian_factory_use = 5
@@ -3905,7 +3897,7 @@ SWE_automation_crisis = {
 		ai_will_do = {
 			factor = 0
 		}
-
+		days_remove = 30
 		fire_only_once = yes
 		modifier = { 
 			civilian_factory_use = 7
@@ -3934,7 +3926,7 @@ SWE_automation_crisis = {
 		}
 		
 		days_remove = 356
-
+		
 		modifier = { 
 			civilian_factory_use = 12
 		}
@@ -3951,13 +3943,12 @@ SWE_automation_crisis = {
 		cost = 50
 
 		available = {
-			NOT = {
-				check_variable = { SWE_restraint_crackdowns_used < 3 }
-			}
+
 		}
 
 		days_remove = 10
 
+		days_re_enable = 50
 		modifier = {
 			civilian_factory_use = 1
 			political_power_cost = 0.1
@@ -3976,9 +3967,19 @@ SWE_automation_crisis = {
 			add_stability = -0.03
 			add_war_support = -0.02
 			SWE_automation_crisis_calculations = yes
+			add_days_mission_timeout = {
+				mission = SWE_rights_league_agitation
+				days = 50
+			}
 		}
 
 		remove_effect = {
+			if = { 
+				limit = { 
+					NOT = { check_variable = { SWE_restraint_crackdowns_used < 3 } }
+				}
+				activate_targeted_decision = { target = THIS decision = SWE_force_restraint_protestors }
+			}
 			add_to_variable = {
 				var = SWE_crime_violent_rate
 				value = 4
@@ -4425,6 +4426,10 @@ SWE_automation_crisis = {
 				tooltip = stability_factor_tt
 			}
 			add_to_variable = {
+				SWE_flk_research_speed_factor = -0.02
+				tooltip = stability_factor_tt
+			}
+			add_to_variable = {
 				var = SWE_automation_level
 				value = -18
 				tooltip = SWE_crime_violent_rate_sub_tt
@@ -4534,6 +4539,10 @@ SWE_automation_crisis = {
 			}
 			add_to_variable = {
 				SWE_flk_stability_factor = -0.05
+				tooltip = stability_factor_tt
+			}
+			add_to_variable = {
+				SWE_flk_research_speed_factor = -0.02
 				tooltip = stability_factor_tt
 			}
 			SWE_automation_crisis_calculations = yes
@@ -5038,9 +5047,18 @@ SWE_balance_of_power_category = {
 		days_re_enable = 100
 		fire_only_once = no
 		complete_effect = {
+			if = { 
+				limit = { 
+					has_completed_focus = SWE_victory_of_the_rights_league
+				}
+				add_popularity = { ideology = ss popularity = -0.05 }
+			}
+			else = { 
+				add_popularity = { ideology = ROOT popularity = -0.05 }
+			}
 			add_power_balance_value = {
 				id = SWE_hedin_power_balance
-				value = 0.05
+				value = 0.08
 			}
 		}
 	}
@@ -5053,9 +5071,18 @@ SWE_balance_of_power_category = {
 		days_re_enable = 100
 		fire_only_once = no
 		complete_effect = {
+			if = { 
+				limit = { 
+					has_completed_focus = SWE_victory_of_the_rights_league
+				}
+				add_popularity = { ideology = ss popularity = -0.04 }
+			}
+			else = { 
+				add_popularity = { ideology = ROOT popularity = -0.04 }
+			}
 			add_power_balance_value = {
 				id = SWE_hedin_power_balance
-				value = 0.05
+				value = 0.07
 			}
 		}
 	}
@@ -5068,6 +5095,15 @@ SWE_balance_of_power_category = {
 		days_re_enable = 100
 		fire_only_once = no
 		complete_effect = {
+			if = { 
+				limit = { 
+					has_completed_focus = SWE_victory_of_the_rights_league
+				}
+				add_popularity = { ideology = ss popularity = -0.02 }
+			}
+			else = { 
+				add_popularity = { ideology = ROOT popularity = -0.02 }
+			}
 			add_power_balance_value = {
 				id = SWE_hedin_power_balance
 				value = 0.1
@@ -5083,6 +5119,15 @@ SWE_balance_of_power_category = {
 		days_re_enable = 100
 		fire_only_once = no
 		complete_effect = {
+			if = { 
+				limit = { 
+					has_completed_focus = SWE_victory_of_the_rights_league
+				}
+				add_popularity = { ideology = ss popularity = 0.02 }
+			}
+			else = { 
+				add_popularity = { ideology = ROOT popularity = 0.02 }
+			}
 			add_power_balance_value = {
 				id = SWE_hedin_power_balance
 				value = -0.05
@@ -5098,9 +5143,18 @@ SWE_balance_of_power_category = {
 		days_re_enable = 100
 		fire_only_once = no
 		complete_effect = {
+			if = { 
+				limit = { 
+					has_completed_focus = SWE_victory_of_the_rights_league
+				}
+				add_popularity = { ideology = ss popularity = 0.03 }
+			}
+			else = { 
+				add_popularity = { ideology = ROOT popularity = 0.03 }
+			}
 			add_power_balance_value = {
 				id = SWE_hedin_power_balance
-				value = -0.05
+				value = -0.07
 			}
 		}
 	}
@@ -5113,13 +5167,101 @@ SWE_balance_of_power_category = {
 		days_re_enable = 100
 		fire_only_once = no
 		complete_effect = {
+			if = { 
+				limit = { 
+					has_completed_focus = SWE_victory_of_the_rights_league
+				}
+				add_popularity = { ideology = ss popularity = 0.04 }
+			}
+			else = { 
+				add_popularity = { ideology = ROOT popularity = 0.04 }
+			}
+			
 			add_power_balance_value = {
 				id = SWE_hedin_power_balance
 				value = -0.1
 			}
 		}
 	}
+	SWE_rights_league_agitation = {
+		icon = GFX_decision_eng_trade_unions_demand
+
+		allowed = { always = no }
+		available = {
+			hidden_trigger = { always = no }
+		}
+
+		selectable_mission = no
+		is_good = no
+		days_mission_timeout = 50
+
+		timeout_effect = {
+			add_popularity = { ideology = ss popularity = 0.07 }
+			add_stability = -0.05
+			add_political_power = -15
+			activate_mission = SWE_rights_league_agitation
+			add_power_balance_value = {
+				id = SWE_hedin_power_balance
+				value = -0.05
+			}
+		}
+		fixed_random_seed = no
+	}
 }
 PB_SWE_civic_coalition = {
 
+}
+PB_SWE_circular_society = {
+	SWE_conduct_preperatory_kretts_pilots = {
+		icon = GFX_decision_generic_scorched_earth
+		allowed = { always = no }
+		cost = 20
+		fire_only_once = yes
+
+		available = {
+			num_of_civilian_factories_available_for_projects > 0
+		}
+
+		days_remove = 20
+
+		modifier = {
+			civilian_factory_use = 1
+			consumer_goods_factor = 0.02
+		}
+
+		complete_effect = {
+			
+			random_list = {
+				50 = {
+					add_stability = 0.05
+					add_political_power = 20
+					add_popularity = { ideology = ss popularity = 0.03 }
+				}
+				30 = {
+					add_stability = 0.07
+					add_political_power = 40
+					add_popularity = { ideology = ss popularity = 0.08 }
+					SD_POV_growth_progress_small = yes
+					SD_LIT_growth_progress_small = yes
+				}
+				20 = {
+					add_stability = 0.12
+					add_political_power = 70
+					add_popularity = { ideology = ss popularity = 0.12 }
+					SD_POV_growth_progress_moderate = yes
+					SD_LIT_growth_progress_moderate = yes
+				}
+			}
+			add_to_variable = {
+				var = SWE_conduct_preperatory_kretts_pilots_uses
+				value = 1
+			}
+			if = { 
+				limit = { 
+					NOT = { check_variable = { SWE_conduct_preperatory_kretts_pilots_uses < 5 } }
+				}
+				activate_targeted_decision = { target = THIS decision = SWE_conduct_preperatory_kretts_pilots }
+			}
+		}
+	}
 }
