@@ -84,39 +84,63 @@ PB_POL_Hunt = {
 		icon = generic_decision
 
 		cost = 5
+
 		ai_will_do = {
 			factor = 10
-			
 		}
 
 		available = {
-			NOT = {
-				has_country_flag = POL_ongoing_investigation
-			}
+			NOT = { has_country_flag = POL_ongoing_investigation }
 			has_country_flag = POL_evidences_collected
 			has_country_flag = POL_witnesses_examined
 		}
 
-		complete_effect = {
-			hidden_effect = {
-				POL = {
-					set_country_flag = POL_ongoing_investigation
-				}
-			}
-		}
-
 		fire_only_once = yes
-
 		days_remove = 5
 
+		complete_effect = {
+			set_country_flag = POL_ongoing_investigation
+		}
+
 		remove_effect = {
-			country_event = {
-				id = pol.10
+			clr_country_flag = POL_ongoing_investigation
+			set_country_flag = POL_materials_analysed
+			country_event = { id = pol.10 }
+
+			# Moscicki
+			if = {
+				limit = {
+					NOT = { has_country_flag = POL_moscicki_captured }
+					NOT = { has_country_flag = POL_moscicki_killed }
+				}
+				if = {
+					limit = { date > 1933.07.01 }
+					# escape date already passed: fire the event directly, no mission
+					country_event = { id = pol.20 }
+					set_country_flag = POL_moscicki_escaped
+					set_country_flag = POL_moscicki_end
+					clr_country_flag = POL_focus_on_moscicki
+				}
+				else = {
+					activate_mission = POL_Moscicki_Escapes
+				}
 			}
-			hidden_effect = {
-				clr_country_flag = POL_ongoing_investigation
-				POL = {
-					set_country_flag = POL_materials_analysed
+
+			# Niewiadomski
+			if = {
+				limit = {
+					NOT = { has_country_flag = POL_niewiadomski_captured }
+					NOT = { has_country_flag = POL_niewiadomski_killed }
+				}
+				if = {
+					limit = { date > 1933.06.01 }
+					country_event = { id = pol.21 }
+					set_country_flag = POL_niewiadomski_escaped
+					set_country_flag = POL_niewiadomski_end
+					clr_country_flag = POL_focus_on_niewiadomski
+				}
+				else = {
+					activate_mission = POL_Niewiadomski_Escapes
 				}
 			}
 		}
@@ -1116,375 +1140,280 @@ PB_POL_Hunt = {
 		}
 	}
 
-PB_POL_Make_A_Show_Trial = {
+	PB_POL_Make_A_Show_Trial = {
 		icon = generic_decision
 
 		cost = 20
+
 		ai_will_do = {
 			factor = 10
-			
 		}
 
 		visible = {
-			NOT = {
-				has_country_flag = POL_quick_trail
-			}
+			NOT = { has_country_flag = POL_quick_trail }
 			has_country_flag = POL_materials_analysed
 		}
 
 		available = {
-			NOT = {
-				has_country_flag = POL_ongoing_investigation
-			}
-			AND = {
-				has_country_flag = POL_moscicki_end
-				has_country_flag = POL_niewiadomski_end
-			}
-		}
-
-		complete_effect = {
-			hidden_effect = {
-				POL = {
-					set_country_flag = POL_show_trail
-				}
-			}
+			NOT = { has_country_flag = POL_ongoing_investigation }
+			has_country_flag = POL_moscicki_end
+			has_country_flag = POL_niewiadomski_end
 		}
 
 		fire_only_once = yes
-
 		days_remove = 70
+
+		complete_effect = {
+			set_country_flag = POL_show_trail
+		}
 
 		remove_effect = {
 			add_manpower = -20
 			add_political_power = 100
-			hidden_effect = {
-				set_country_flag = POL_Hunt_After_Trial_Flag
-			}
+			set_country_flag = POL_Hunt_After_Trial_Flag
+
 			if = {
 				limit = {
-						AND = {
-							has_country_flag = POL_moscicki_captured
-							has_country_flag = POL_niewiadomski_captured
-						}
+					has_country_flag = POL_moscicki_captured
+					has_country_flag = POL_niewiadomski_captured
 				}
-				country_event = {
-					id = pol.26
-				}
-				else = {
-					if = {
-						limit = {
-								OR = {
-									AND = {
-										has_country_flag = POL_moscicki_captured
-										has_country_flag = POL_niewiadomski_killed
-									}
-									AND = {
-										has_country_flag = POL_moscicki_killed
-										has_country_flag = POL_niewiadomski_killed
-									}
-									AND = {
-										has_country_flag = POL_moscicki_killed
-										has_country_flag = POL_niewiadomski_captured
-									}
-								}
-						}
-						country_event = {
-							id = pol.27
-						}
-						else = {
-							if = {
-							limit = {
-									OR = {
-										AND = {
-											has_country_flag = POL_moscicki_captured
-											has_country_flag = POL_niewiadomski_escaped
-										}
-										AND = {
-											has_country_flag = POL_moscicki_escaped
-											has_country_flag = POL_niewiadomski_captured
-										}
-									}
+				country_event = { id = pol.26 }
+
+				else_if = {
+					limit = {
+						OR = {
+							AND = {
+								has_country_flag = POL_moscicki_captured
+								has_country_flag = POL_niewiadomski_killed
 							}
-							country_event = {
-								id = pol.28
+							AND = {
+								has_country_flag = POL_moscicki_killed
+								has_country_flag = POL_niewiadomski_killed
 							}
-							else = {
-								if = {
-									limit = {
-											OR = {
-												AND = {
-													has_country_flag = POL_moscicki_killed
-													has_country_flag = POL_niewiadomski_escaped
-												}
-												AND = {
-													has_country_flag = POL_moscicki_escaped
-													has_country_flag = POL_niewiadomski_killed
-												}
-											}
-									}
-									country_event = {
-										id = pol.29
-									}
-									else = {
-										country_event = {
-											id = pol.30
-										}
-									}
-								}
+							AND = {
+								has_country_flag = POL_moscicki_killed
+								has_country_flag = POL_niewiadomski_captured
 							}
 						}
 					}
-				}	
+					country_event = { id = pol.27 }
+				}
+
+				else_if = {
+					limit = {
+						OR = {
+							AND = {
+								has_country_flag = POL_moscicki_captured
+								has_country_flag = POL_niewiadomski_escaped
+							}
+							AND = {
+								has_country_flag = POL_moscicki_escaped
+								has_country_flag = POL_niewiadomski_captured
+							}
+						}
+					}
+					country_event = { id = pol.28 }
+				}
+
+				else_if = {
+					limit = {
+						OR = {
+							AND = {
+								has_country_flag = POL_moscicki_killed
+								has_country_flag = POL_niewiadomski_escaped
+							}
+							AND = {
+								has_country_flag = POL_moscicki_escaped
+								has_country_flag = POL_niewiadomski_killed
+							}
+						}
+					}
+					country_event = { id = pol.29 }
+				}
+
+				else = {
+					country_event = { id = pol.30 }
+				}
 			}
 		}
 	}
-}
-
 	PB_POL_Make_A_Quick_Trial = {
 		icon = generic_decision
 
 		cost = 10
+
 		ai_will_do = {
 			factor = 10
-			
 		}
 
 		visible = {
-			NOT = {
-				has_country_flag = POL_show_trail
-			}
+			NOT = { has_country_flag = POL_show_trail }
 			has_country_flag = POL_materials_analysed
 		}
 
 		available = {
-			NOT = {
-				has_country_flag = POL_ongoing_investigation
-			}
-			AND = {
-				has_country_flag = POL_moscicki_end
-				has_country_flag = POL_niewiadomski_end
-			}
-		}
-
-		complete_effect = {
-			hidden_effect = {
-				POL = {
-					set_country_flag = POL_quick_trail
-				}
-			}
+			NOT = { has_country_flag = POL_ongoing_investigation }
+			has_country_flag = POL_moscicki_end
+			has_country_flag = POL_niewiadomski_end
 		}
 
 		fire_only_once = yes
-
 		days_remove = 30
 
+		complete_effect = {
+			set_country_flag = POL_quick_trail
+		}
+
 		remove_effect = {
-			hidden_effect = {
-				set_country_flag = POL_Hunt_After_Trial_Flag
-			}
+			set_country_flag = POL_Hunt_After_Trial_Flag
+
 			if = {
 				limit = {
-						AND = {
-							has_country_flag = POL_moscicki_captured
-							has_country_flag = POL_niewiadomski_captured
-						}
+					has_country_flag = POL_moscicki_captured
+					has_country_flag = POL_niewiadomski_captured
 				}
-				country_event = {
-					id = pol.26
-				}
-				else = {
-					if = {
-						limit = {
-								OR = {
-									AND = {
-										has_country_flag = POL_moscicki_captured
-										has_country_flag = POL_niewiadomski_killed
-									}
-									AND = {
-										has_country_flag = POL_moscicki_killed
-										has_country_flag = POL_niewiadomski_killed
-									}
-									AND = {
-										has_country_flag = POL_moscicki_killed
-										has_country_flag = POL_niewiadomski_captured
-									}
-								}
-						}
-						country_event = {
-							id = pol.27
-						}
-						else = {
-							if = {
-							limit = {
-									OR = {
-										AND = {
-											has_country_flag = POL_moscicki_captured
-											has_country_flag = POL_niewiadomski_escaped
-										}
-										AND = {
-											has_country_flag = POL_moscicki_escaped
-											has_country_flag = POL_niewiadomski_captured
-										}
-									}
+				country_event = { id = pol.26 }
+
+				else_if = {
+					limit = {
+						OR = {
+							AND = {
+								has_country_flag = POL_moscicki_captured
+								has_country_flag = POL_niewiadomski_killed
 							}
-							country_event = {
-								id = pol.28
+							AND = {
+								has_country_flag = POL_moscicki_killed
+								has_country_flag = POL_niewiadomski_killed
 							}
-							else = {
-								if = {
-									limit = {
-											OR = {
-												AND = {
-													has_country_flag = POL_moscicki_killed
-													has_country_flag = POL_niewiadomski_escaped
-												}
-												AND = {
-													has_country_flag = POL_moscicki_escaped
-													has_country_flag = POL_niewiadomski_killed
-												}
-											}
-									}
-									country_event = {
-										id = pol.29
-									}
-									else = {
-										country_event = {
-											id = pol.30
-										}
-									}
-								}
+							AND = {
+								has_country_flag = POL_moscicki_killed
+								has_country_flag = POL_niewiadomski_captured
 							}
 						}
 					}
-				}	
+					country_event = { id = pol.27 }
+				}
+
+				else_if = {
+					limit = {
+						OR = {
+							AND = {
+								has_country_flag = POL_moscicki_captured
+								has_country_flag = POL_niewiadomski_escaped
+							}
+							AND = {
+								has_country_flag = POL_moscicki_escaped
+								has_country_flag = POL_niewiadomski_captured
+							}
+						}
+					}
+					country_event = { id = pol.28 }
+				}
+
+				else_if = {
+					limit = {
+						OR = {
+							AND = {
+								has_country_flag = POL_moscicki_killed
+								has_country_flag = POL_niewiadomski_escaped
+							}
+							AND = {
+								has_country_flag = POL_moscicki_escaped
+								has_country_flag = POL_niewiadomski_killed
+							}
+						}
+					}
+					country_event = { id = pol.29 }
+				}
+
+				else = {
+					country_event = { id = pol.30 }
+				}
 			}
 		}
 	}
-}
 	POL_Moscicki_Escapes = {
 
 		icon = GFX_decision_generic_civil_support
-		
-		activation = { 
+
+		activation = {
 			original_tag = POL
-			has_country_flag = POL_materials_analysed            
+			has_country_flag = POL_materials_analysed
 		}
 
 		available = {
-
 			OR = {
 				date > 1933.07.01
 				has_country_flag = POL_moscicki_captured
 				has_country_flag = POL_moscicki_killed
 			}
-		}  
+		}
 
 		selectable_mission = no
-
 		is_good = no
 		fire_only_once = yes
-				
 		days_mission_timeout = 30
 
 		complete_effect = {
-
 			if = {
 				limit = {
-					NOT = {
-						OR = {
-							has_country_flag = POL_moscicki_captured
-							has_country_flag = POL_moscicki_killed
-						}
-					}
+					NOT = { has_country_flag = POL_moscicki_captured }
+					NOT = { has_country_flag = POL_moscicki_killed }
 				}
-				country_event = {
-					id = pol.20
-				}
-				hidden_effect = {
-					POL = {
-						set_country_flag = POL_moscicki_escaped
-						set_country_flag = POL_moscicki_end
-						clr_country_flag = POL_focus_on_moscicki
-					}
-				}
+				country_event = { id = pol.20 }
+				set_country_flag = POL_moscicki_escaped
+				set_country_flag = POL_moscicki_end
+				clr_country_flag = POL_focus_on_moscicki
 			}
 		}
 
 		timeout_effect = {
-			country_event = {
-				id = pol.20
-			}
-			hidden_effect = {
-				POL = {
-					set_country_flag = POL_moscicki_escaped
-					set_country_flag = POL_moscicki_end
-					clr_country_flag = POL_focus_on_moscicki
-				}
-			}
+			country_event = { id = pol.20 }
+			set_country_flag = POL_moscicki_escaped
+			set_country_flag = POL_moscicki_end
+			clr_country_flag = POL_focus_on_moscicki
 		}
 	}
-
 	POL_Niewiadomski_Escapes = {
 
 		icon = GFX_decision_generic_civil_support
-		
-		activation = { 
+
+		activation = {
 			original_tag = POL
-			has_country_flag = POL_materials_analysed            
+			has_country_flag = POL_materials_analysed
 		}
 
 		available = {
-
 			OR = {
 				date > 1933.06.01
 				has_country_flag = POL_niewiadomski_captured
 				has_country_flag = POL_niewiadomski_killed
 			}
-		}  
+		}
 
 		selectable_mission = no
-
 		is_good = no
 		fire_only_once = yes
-				
 		days_mission_timeout = 20
 
 		complete_effect = {
-
 			if = {
 				limit = {
-					NOT = {
-						OR = {
-							has_country_flag = POL_niewiadomski_captured
-							has_country_flag = POL_niewiadomski_killed
-						}
-					}
+					NOT = { has_country_flag = POL_niewiadomski_captured }
+					NOT = { has_country_flag = POL_niewiadomski_killed }
 				}
-				country_event = {
-					id = pol.21
-				}
-				hidden_effect = {
-					POL = {
-						set_country_flag = POL_niewiadomski_escaped
-						set_country_flag = POL_niewiadomski_end
-						clr_country_flag = POL_focus_on_niewiadomski
-					}
-				}
+				country_event = { id = pol.21 }
+				set_country_flag = POL_niewiadomski_escaped
+				set_country_flag = POL_niewiadomski_end
+				clr_country_flag = POL_focus_on_niewiadomski
 			}
 		}
 
 		timeout_effect = {
-			country_event = {
-				id = pol.21
-			}
-			hidden_effect = {
-				POL = {
-					set_country_flag = POL_niewiadomski_escaped
-					set_country_flag = POL_niewiadomski_end
-					clr_country_flag = POL_focus_on_niewiadomski
-				}
-			}
+			country_event = { id = pol.21 }
+			set_country_flag = POL_niewiadomski_escaped
+			set_country_flag = POL_niewiadomski_end
+			clr_country_flag = POL_focus_on_niewiadomski
 		}
 	}
-
 }
