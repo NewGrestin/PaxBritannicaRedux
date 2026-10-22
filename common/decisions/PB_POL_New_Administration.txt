@@ -1,0 +1,465 @@
+PB_POL_New_Administration = {
+
+	PB_POL_Operation_Casimir = {
+		icon = generic_decision
+
+		cost = 100
+		ai_will_do = {
+			
+		}
+
+		visible = {
+			has_global_flag = PB_POL_Joint_Military_Occupation
+			PGA = {
+				exists = yes
+			}
+		}
+
+		available = {
+			divisions_in_state = {
+				state = 88
+				size > 3
+			}
+			divisions_in_state = {
+				state = 91
+				size > 1
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_More_29_tt
+				check_variable = { POL_Namiestniks_Support>29 }
+			}
+		}
+
+		remove_trigger = {
+			divisions_in_state = {
+				state = 88
+				size < 4
+			}
+			divisions_in_state = {
+				state = 91
+				size < 2
+			}
+		}
+
+		complete_effect = {
+			
+		}
+
+		fire_only_once = yes
+
+		days_remove = 10
+
+		remove_effect = {
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = PGA
+						is_claimed_by = POL
+					}
+					set_state_flag = POL_Former_PGA_state_flag
+				}
+			}
+			annex_country = {
+				target = PGA
+				transfer_troops = yes
+			}
+			PB_POL_Decrease_Namiestnik_Support = yes
+			add_popularity = {
+				ideology = jc
+				popularity = 0.15
+			}
+			add_popularity = {
+				ideology = ss
+				popularity = 0.1
+			}
+			hidden_effect = {
+				PB_POL_Increse_Moderates_Support = yes
+				PB_POL_Increse_Industralists_Support = yes
+				PB_POL_Increse_Radicals_Support = yes
+				if = {
+					limit = {
+						NOT = {
+							has_country_flag = PB_POL_Red_Book
+						}
+					}
+					every_controlled_state = {
+						limit = {
+							has_state_flag = POL_Former_PGA_state_flag
+						}
+						set_compliance = 15
+						set_resistance = 25
+						add_resistance_target = 25
+						
+					}
+					else = {
+						every_controlled_state = {
+							limit = {
+								has_state_flag = POL_Former_PGA_state_flag
+							}
+							set_compliance = 20
+							set_resistance = 10
+							add_resistance_target = 10
+						}
+					}
+				}
+			}
+		}
+			
+	}
+
+	PB_POL_Peace_In_Galicia = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 35
+
+		cost = 25
+
+		available = {
+			if = {
+				limit = {
+					has_country_flag = PB_POL_Beaucracy_Integration
+				}
+				FROM = {
+					compliance > 50
+					resistance < 30
+				}
+				
+				else = {
+					FROM = {
+						compliance > 60
+						resistance < 20
+					}	
+				}
+			}	
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_completed_focus = PB_POL_Reunited_At_Last
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				NOT = {
+					is_core_of = POL
+				}
+				is_claimed_by = POL
+				has_state_flag = POL_Former_PGA_state_flag
+			}
+		}
+
+		complete_effect = {
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+		}
+
+		remove_effect = {
+			add_popularity = {
+				ideology = jc
+				popularity = -0.02
+			}
+			add_popularity = {
+				ideology = ss
+				popularity = -0.01
+			}
+
+			FROM = {
+				add_core_of = POL
+				remove_core_of = PGA
+				hidden_effect = {
+					clr_state_flag = POL_Former_PGA_state_flag
+					set_state_flag = POL_Resistance_State_Flag
+					set_variable = { var = id.Resistance_Number value = 70 }
+				}
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+	PB_Fight_Bandits = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 35
+
+		cost = 25
+
+		days_re_enable = 50
+
+		available = {
+			divisions_in_state = {
+				state = FROM
+				size > 2
+			}
+		}
+
+		visible = {
+			has_completed_focus = PB_POL_Reunited_At_Last
+		}
+
+		remove_trigger = {
+			divisions_in_state = {
+				state = FROM
+				size < 3
+			}
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				is_claimed_by = POL
+				has_state_flag = POL_Former_PGA_state_flag
+				NOT = {
+					is_core_of = POL
+				}
+			}
+		}
+
+		complete_effect = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.5
+		}
+
+		remove_effect = {
+
+			FROM = {
+				add_compliance = 10
+				add_resistance = -5
+			}
+			add_manpower = -20
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -50
+				producer = POL
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+	PB_Fight_Bandits_Lithuania = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 35
+
+		cost = 25
+
+		days_re_enable = 50
+
+		available = {
+			divisions_in_state = {
+				state = FROM
+				size > 2
+			}
+		}
+
+		visible = {
+			has_country_flag = POL_LIT_Promises_Broken
+		}
+
+		remove_trigger = {
+			divisions_in_state = {
+				state = FROM
+				size < 3
+			}
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				OR = {
+					is_claimed_by = LIT
+					is_core_of = LIT
+				}
+				NOT = {
+					is_core_of = POL
+				}
+			}
+		}
+
+		complete_effect = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.5
+		}
+
+		remove_effect = {
+
+			FROM = {
+				add_compliance = -5
+				add_resistance = -15
+			}
+			add_manpower = -20
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -50
+				producer = POL
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+	PB_POL_Peace_In_Lithuania = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 35
+
+		cost = 25
+
+		available = {
+			if = {
+				limit = {
+					has_country_flag = POL_LIT_Promises_Kept
+				}
+				FROM = {
+					compliance > 50
+					resistance < 30
+				}
+				
+				else = {
+					FROM = {
+						compliance > 80
+						resistance < 10
+					}	
+				}
+			}	
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_global_flag = PB_POL_Lithuania_Russians_Agree_Annexation
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				NOT = {
+					is_core_of = POL
+				}
+				OR = {
+					is_claimed_by = LIT
+					is_core_of = LIT
+				}
+			}
+		}
+
+		complete_effect = {
+
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+		}
+
+		remove_effect = {
+
+			FROM = {
+				add_core_of = POL
+				hidden_effect = {
+					set_state_flag = POL_Resistance_State_Flag
+					set_variable = { var = id.Resistance_Number value = 40 }
+				}
+				IF = {
+					LIMIT = {
+						has_dynamic_modifier = {
+							modifier = baltic_brothers_state_war
+						}
+					}
+					remove_dynamic_modifier = { modifier = baltic_brothers_state_war }
+				}
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+	PB_POL_Into_The_East_Decisions = {
+
+		icon = GFX_decision_move_city
+
+		days_remove = 150
+
+		cost = 25
+
+		available = {
+			FROM = {
+				compliance > 20
+				resistance < 80
+			}
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_country_flag = PB_POL_Into_The_East_Flag
+		}
+
+		state_target = yes
+
+		target_array = ROOT.owned_states
+
+		target_trigger = {
+			FROM = {
+				has_state_flag = PB_POL_Aquired_Russian_Territory
+			}
+		}
+
+		complete_effect = {
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+		}
+
+		remove_effect = {
+			FROM = {
+				add_compliance = 10
+				add_resistance = -5
+				increase_state_category = yes
+				add_extra_state_shared_building_slots = 1
+				add_dynamic_modifier = {
+					modifier = colonization_effort
+				}
+				add_manpower = 10000
+			}
+		}
+
+		ai_will_do = {
+			base = 0
+		}
+	}
+
+}

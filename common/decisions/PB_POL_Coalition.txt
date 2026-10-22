@@ -1,0 +1,1851 @@
+PB_POL_Coalition = {
+
+	PB_POL_Put_Everyone_In_Their_Places = {
+		icon = GFX_decision_eng_trade_unions_demand
+
+		cost = 15
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+		}
+
+		fire_only_once = no
+
+		days_remove = 15
+
+		days_re_enable = 70
+
+		remove_effect = {
+			IF = {
+				LIMIT = {
+					NOT = {
+						has_government = ni
+					}
+				}
+				PB_POL_Decrease_Radicals_Influence = yes
+			}
+			ELSE = {
+				PB_POL_Increse_Radicals_Influence = yes
+			}
+			IF = {
+				LIMIT = {
+					NOT = {
+						has_government = rc
+					}
+				}
+				PB_POL_Decrease_Namiestnik_Influence = yes
+			}
+			ELSE = {
+				PB_POL_Increse_Namiestnik_Influence = yes
+			}
+			IF = {
+				LIMIT = {
+					NOT = {
+						has_government = ds
+					}
+				}
+				PB_POL_Decrease_Moderates_Influence = yes
+			}
+			ELSE = {
+				PB_POL_Increse_Moderates_Influence = yes
+			}
+			IF = {
+				LIMIT = {
+					NOT = {
+						has_government = cn
+					}
+				}
+				PB_POL_Decrease_Conservatives_Influence = yes
+			}
+			ELSE = {
+				PB_POL_Increse_Conservatives_Influence = yes
+			}
+			IF = {
+				LIMIT = {
+					NOT = {
+						has_government = an
+					}
+				}
+				PB_POL_Decrease_Industrialists_Influence = yes
+			}
+			ELSE = {
+				PB_POL_Increse_Industralists_Influence = yes
+			}
+		}
+	}
+
+	PB_POL_Publicly_Slander = {
+		icon = generic_propaganda
+
+		cost = 10
+		ai_will_do = {
+			factor = 10
+		}
+
+		fire_only_once = no
+
+		days_re_enable = 7
+
+		complete_effect = {
+			country_event = { id = pol_coalition.1 }
+		}
+	}
+
+	PB_POL_Publicly_Promote = {
+		icon = generic_propaganda
+
+		cost = 10
+		ai_will_do = {
+			factor = 10
+		}
+
+		modifier = {
+			political_power_cost = 0.05
+		}
+
+		fire_only_once = no
+
+		days_re_enable = 7
+
+		complete_effect = {
+			country_event = { id = pol_coalition.2 }
+		}
+	}
+
+	PB_POL_The_Flood = {
+		icon = oppression
+
+		cost = 20
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+			check_variable = { POL_Namiestniks_Influence > 29 }
+			has_government = rc
+		}
+
+		available = {
+			has_completed_focus = PB_POL_Enlarge_Modlin_Garrison
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Influence_More_29_tt
+				check_variable = { POL_Namiestniks_Influence > 29 }
+			}
+			NOT = {
+				has_country_flag = POL_coalition_takeover
+			}
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = PB_POL_Industralist_Influence_More_49_tt
+					check_variable = { POL_Industralist_Influence > 49 }
+				}
+				custom_trigger_tooltip = {
+					tooltip = PB_POL_Modarates_Influence_More_49_tt
+					check_variable = { POL_Modarates_Influence > 49 }
+				}
+				custom_trigger_tooltip = {
+					tooltip = PB_POL_Conservatives_Influence_More_49_tt
+					check_variable = { POL_Conservatives_Influence > 49 }
+				}
+				custom_trigger_tooltip = {
+					tooltip = PB_POL_Radicals_Influence_More_49_tt
+					check_variable = { POL_Radicals_Influence > 49 }
+				}
+			}
+		}
+
+		days_re_enable = 50
+
+		days_remove = 5
+
+		remove_effect = {
+			PB_POL_Decrease_Radicals_Influence = yes
+			PB_POL_Decrease_Moderates_Influence = yes
+			PB_POL_Decrease_Industrialists_Influence = yes
+
+			add_manpower = -50
+			10 = {
+				damage_building = {
+					type = infrastructure
+					damage = 0.5
+				}
+			}
+			if = {
+				limit = {
+					has_country_flag = POL_conservatives_in_coalition
+				}
+				PB_POL_Decrease_Conservatives_Influence = yes
+			}
+
+			IF = {
+				LIMIT = {
+					NOT = {
+						has_global_flag = PB_Second_National_Awakening_Started
+					}
+					10 = {
+						has_state_flag = POL_Resistance_State_Flag
+					}
+				}
+				custom_effect_tooltip = POL_10_Decrease_Local_Resistance_Large_tt
+				10 = {
+					hidden_effect = {
+						add_to_variable = {
+							var = 10.Resistance_Number
+							value = -15
+						}
+						clamp_variable = {
+							var = 10.Resistance_Number
+							min = 0
+							max = 100
+						}
+					}
+				}
+			}
+
+			hidden_effect = {
+				POL_inf_calculations = yes
+			}
+		}
+	}
+
+	PB_POL_Polish_Legion_In_Finland = {
+		icon = generic_military
+
+		cost = 35
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+			has_war_with = FFI
+		}
+
+		available = {
+		}
+
+		fire_only_once = yes
+
+		days_remove = 20
+
+		remove_effect = {
+			PB_POL_Increse_Namiestnik_Support = yes
+			RUS = {
+				add_opinion_modifier = {
+					target = POL
+					modifier = POL_RUS_positive_action
+				}
+			}
+			add_timed_idea = {
+				idea = PB_POL_Polish_Legion_In_Finland
+				days = 180
+			}
+		}
+	}
+
+	PB_POL_Polish_International_Corp = {
+		icon = generic_military
+
+		cost = 35
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+			has_completed_focus = PB_POL_New_Polish_Army
+		}
+
+		fire_only_once = yes
+
+		days_remove = 20
+
+		remove_effect = {
+			PB_POL_Increse_Namiestnik_Support = yes
+			RUS = {
+				add_opinion_modifier = {
+					target = POL
+					modifier = POL_RUS_positive_action
+				}
+			}
+			add_timed_idea = {
+				idea = PB_POL_Polish_International_Corp
+				days = 720
+			}
+		}
+	}
+
+	PB_POL_Temporary_Tax_Cuts_For_Big_Business = {
+		icon = GFX_decision_gre_investment_decisions
+
+		cost = 35
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			consumer_goods_factor = 0.1
+		}
+
+		fire_only_once = no
+
+		days_remove = 50
+
+		days_re_enable = 180
+
+		remove_effect = {
+			PB_POL_Increse_Namiestnik_Support = yes
+			PB_POL_Increse_Industralists_Support = yes
+		}
+	}
+
+	PB_POL_Rent_Prisoners_To_Factories = {
+		icon = generic_industry
+
+		cost = 20
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			production_speed_buildings_factor = 0.05
+		}
+
+		fire_only_once = no
+
+		days_remove = 80
+
+		days_re_enable = 180
+
+		remove_effect = {
+			PB_POL_Increse_Industralists_Support = yes
+		}
+	}
+
+	PB_POL_Turn_Blind_Eye_To_Magnate_Lobbying = {
+		icon = GFX_decision_hol_attract_foreign_investors
+
+		cost = 20
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+			NOT = {
+				has_government = ds
+			}
+		}
+
+		modifier = {
+			political_power_cost = 0.05
+		}
+
+		fire_only_once = no
+
+		days_remove = 50
+
+		days_re_enable = 180
+
+		remove_effect = {
+			PB_POL_Increse_Industralists_Support = yes
+			PB_POL_Increse_Industralists_Influence = yes
+			PB_POL_Decrease_Moderates_Support = yes
+		}
+	}
+
+	PB_POL_Pro_Russian_Speach = {
+		icon = generic_propaganda
+
+		cost = 35
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			political_power_cost = 0.15
+		}
+
+		fire_only_once = no
+
+		days_remove = 15
+
+		days_re_enable = 240
+
+		remove_effect = {
+			PB_POL_Decrease_Radicals_Support = yes
+			PB_POL_Decrease_Radicals_Influence = yes
+			PB_POL_Decrease_Moderates_Support = yes
+			PB_POL_Decrease_Moderates_Influence = yes
+			PB_POL_Increse_Namiestnik_Support = yes
+			PB_POL_Increse_Namiestnik_Influence = yes
+		}
+	}
+
+	PB_POL_New_Orthodox_Church = {
+		icon = generic_nationalism
+
+		cost = 15
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.1
+		}
+
+		fire_only_once = no
+
+		days_remove = 15
+
+		days_re_enable = 240
+
+		remove_effect = {
+			PB_POL_Increse_Namiestnik_Support = yes
+			PB_POL_Decrease_Conservatives_Support = yes
+			PB_POL_Decrease_Conservatives_Influence = yes
+		}
+	}
+
+	PB_POL_Conduct_Sanctioned_Pogrom = {
+		icon = oppression
+
+		cost = 35
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+			has_completed_focus = PB_POL_Scum_Of_The_Earth
+		}
+
+		available = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.1
+		}
+
+		fire_only_once = no
+
+		days_remove = 15
+
+		days_re_enable = 180
+
+		remove_effect = {
+			add_stability = -0.02
+			PB_POL_Increse_Radicals_Support = yes
+			PB_POL_Increse_Radicals_Influence = yes
+			PB_POL_Increse_Namiestnik_Support = yes
+			PB_POL_Increse_Namiestnik_Influence = yes
+			PB_POL_Decrease_Conservatives_Support = yes
+		}
+	}
+
+	PB_POL_Conscription_Sweep = {
+		icon = generic_military
+
+		cost = 20
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.1
+		}
+
+		fire_only_once = no
+
+		days_remove = 25
+
+		days_re_enable = 240
+
+		remove_effect = {
+			add_war_support = -0.02
+			add_manpower = 500
+			PB_POL_Increse_Radicals_Support = yes
+		}
+	}
+
+	PB_POL_Hunt_Down_Deserters = {
+		icon = generic_military
+
+		cost = 20
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			political_power_cost = 0.05
+		}
+
+		fire_only_once = no
+
+		days_remove = 30
+
+		days_re_enable = 240
+
+		remove_effect = {
+			add_manpower = 200
+			PB_POL_Increse_Radicals_Support = yes
+		}
+	}
+
+	PB_POL_Financial_Support_For_The_Army = {
+		icon = generic_military
+
+		cost = 20
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+			has_completed_focus = PB_POL_New_Polish_Army
+		}
+
+		modifier = {
+			#political_power_cost = 0.1
+			civilian_factory_use = 2
+		}
+
+		fire_only_once = no
+
+		days_remove = 50
+
+		days_re_enable = 240
+
+		remove_effect = {
+			army_experience = 10
+			PB_POL_Increse_Radicals_Support = yes
+			PB_POL_Increse_Moderates_Support = yes
+		}
+	}
+
+	PB_POL_Issue_State_Monopolies = {
+		icon = generic_industry
+
+		cost = 35
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+			NOT = {
+				has_government = an
+			}
+		}
+
+		available = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.1
+			consumer_goods_factor = 0.1
+		}
+
+		fire_only_once = no
+
+		days_remove = 80
+
+		days_re_enable = 240
+
+		remove_effect = {
+			PB_POL_Decrease_Industrialists_Support = yes
+			PB_POL_Decrease_Industrialists_Influence = yes
+			PB_POL_Increse_Moderates_Support = yes
+			random_owned_controlled_state = {
+				limit = {
+					free_building_slots = {
+						building = industrial_complex
+						size > 1
+						include_locked = yes
+					}
+					is_core_of = ROOT
+				}
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
+	}
+
+	PB_POL_Reduce_Inflation = {
+		icon = GFX_decision_gre_paying_ifc_debt
+
+		cost = 100
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.1
+			consumer_goods_factor = 0.15
+		}
+
+		fire_only_once = no
+
+		days_remove = 100
+
+		days_re_enable = 240
+
+		remove_effect = {
+			add_stability = 0.05
+			PB_POL_Increse_Moderates_Support = yes
+			PB_POL_Increse_Industralists_Support = yes
+			PB_POL_Increse_Namiestnik_Support = yes
+			PB_POL_Increse_Radicals_Support = yes
+			if = {
+				limit = {
+					has_country_flag = POL_conservatives_in_coalition
+				}
+				PB_POL_Increse_Conservatives_Support = yes
+			}
+			add_popularity = {
+				ideology = ROOT
+				popularity = 0.03
+			}
+		}
+	}
+
+	PB_POL_Temporary_Tariffs_Decrease = {
+		icon = GFX_decision_generic_consumer_goods
+
+		cost = 25
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			#political_power_cost = 0.1
+			consumer_goods_factor = 0.05
+		}
+
+		fire_only_once = no
+
+		days_remove = 80
+
+		days_re_enable = 240
+
+		remove_effect = {
+			PB_POL_Increse_Moderates_Support = yes
+			PB_POL_Increse_Industralists_Support = yes
+		}
+	}
+
+	PB_POL_New_Catholic_Church = {
+		icon = generic_nationalism
+
+		cost = 10
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+			#consumer_goods_factor = 0.15
+		}
+
+		fire_only_once = no
+
+		days_remove = 15
+
+		days_re_enable = 240
+
+		remove_effect = {
+			PB_POL_Decrease_Namiestnik_Support = yes
+			PB_POL_Increse_Conservatives_Support = yes
+			PB_POL_Increse_Radicals_Support = yes
+			PB_POL_Increse_Conservatives_Influence = yes
+		}
+	}
+
+	PB_POL_Expand_Local_Government = {
+		icon = GFX_decision_SWI_dismiss_council
+
+		cost = 50
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+			has_country_flag = POL_conservatives_in_coalition
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+			#consumer_goods_factor = 0.15
+		}
+
+		fire_only_once = no
+
+		days_remove = 50
+
+		days_re_enable = 240
+
+		remove_effect = {
+			add_political_power = 20
+			PB_POL_Decrease_Namiestnik_Support = yes
+			PB_POL_Increse_Conservatives_Support = yes
+			PB_POL_Increse_Conservatives_Influence = yes
+		}
+	}
+
+	PB_POL_Grant_Land_To_Catholic_Church = {
+		icon = generic_nationalism
+
+		cost = 25
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		modifier = {
+			political_power_cost = 0.1
+			#consumer_goods_factor = 0.15
+		}
+
+		fire_only_once = no
+
+		days_remove = 50
+
+		days_re_enable = 240
+
+		remove_effect = {
+			PB_POL_Decrease_Namiestnik_Support = yes
+			PB_POL_Decrease_Moderates_Support = yes
+			PB_POL_Increse_Conservatives_Support = yes
+			PB_POL_Increse_Conservatives_Influence = yes
+		}
+	}
+
+	PB_POL_Give_Concessions_To_Russian_Companies = {
+		icon = GFX_decision_hol_exchange_intelligence_data
+
+		cost = 25
+		ai_will_do = {
+		}
+
+		visible = {
+			NOT = {
+				has_government = ds
+			}
+		}
+
+		available = {
+		}
+
+		complete_effect = {
+		}
+
+		days_re_enable = 150
+
+		days_remove = 10
+
+		remove_effect = {
+			PB_POL_Increse_Namiestnik_Support = yes
+			PB_POL_Decrease_Moderates_Support = yes
+			PB_POL_Increse_Industralists_Influence = yes
+		}
+	}
+
+	PB_POL_Warsaw_Subway_Construction = {
+		icon = generic_construction
+
+		cost = 25
+		ai_will_do = {
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_completed_focus = PB_POL_1933_Budget
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Industralist_Support_More_49_tt
+				check_variable = { POL_Industralist_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_More_49_tt
+				check_variable = { POL_Namiestniks_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Radicals_Support_More_49_tt
+				check_variable = { POL_Radicals_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Moderates_Support_More_49_tt
+				check_variable = { POL_Modarates_Support>49 }
+			}
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				set_country_flag = POL_Start_Subway_Construction
+			}
+			activate_mission = PB_POL_Warsaw_Subway_Under_Construction
+		}
+
+		days_remove = 10
+
+		remove_effect = {
+			country_event = {
+				id = pol.71
+			}
+		}
+	}
+
+	PB_POL_Second_Warsaw_Subway_Construction = {
+		icon = generic_construction
+
+		cost = 25
+		ai_will_do = {
+		}
+
+		fire_only_once = yes
+
+		visible = {
+			has_country_flag = POL_Warsaw_Subway_Opened
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Industralist_Support_More_49_tt
+				check_variable = { POL_Industralist_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_More_49_tt
+				check_variable = { POL_Namiestniks_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Radicals_Support_More_49_tt
+				check_variable = { POL_Radicals_Support>49 }
+			}
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Moderates_Support_More_49_tt
+				check_variable = { POL_Modarates_Support>49 }
+			}
+		}
+
+		complete_effect = {
+		}
+
+		days_remove = 5
+
+		remove_effect = {
+			activate_mission = PB_POL_Second_Warsaw_Subway_Under_Construction
+		}
+	}
+
+	PB_POL_Add_Conservatives_To_Coalition = {
+		icon = GFX_decision_hol_exchange_intelligence_data
+
+		cost = 70
+		ai_will_do = {
+			factor = 10
+		}
+
+		visible = {
+			check_variable = { POL_Namiestniks_Influence > 59 }
+			NOT = {
+				has_government = rc
+			}
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Add_Conservatives_Requirement_tt
+				check_variable = { POL_Namiestniks_Influence > 79 }
+			}
+			has_stability > 0.15
+			NOT = {
+				has_country_flag = POL_coalition_takeover
+				has_country_flag = POL_conservatives_in_coalition
+			}
+		}
+
+		fire_only_once = yes
+
+		days_remove = 14
+
+		remove_effect = {
+			custom_effect_tooltip = PB_POL_Add_Conservatives_To_Coalition_tt
+			hidden_effect = {
+				PB_POL_Decrease_Namiestnik_Influence = yes
+				PB_POL_Decrease_Radicals_Influence = yes
+				PB_POL_Decrease_Moderates_Influence = yes
+				PB_POL_Decrease_Industrialists_Influence = yes
+				add_to_right_coalition_cn = yes
+				if = {
+					limit = {
+						has_government = rc
+					}
+					PB_POL_Decrease_Moderates_Support = yes
+					PB_POL_Decrease_Radicals_Support = yes
+					hidden_effect = {
+						POL_inf_calculations = yes
+					}
+				}
+				if = {
+					limit = {
+						has_government = ni
+					}
+					PB_POL_Decrease_Moderates_Support = yes
+					PB_POL_Decrease_Namiestnik_Support = yes
+					hidden_effect = {
+						POL_inf_calculations = yes
+					}
+				}
+				if = {
+					limit = {
+						has_government = ds
+					}
+					PB_POL_Decrease_Namiestnik_Support = yes
+					PB_POL_Decrease_Radicals_Support = yes
+					hidden_effect = {
+						POL_inf_calculations = yes
+					}
+				}
+				PB_POL_Decrease_Industrialists_Support = yes
+				PB_POL_Decrease_Namiestnik_Influence = yes
+				PB_POL_Decrease_Namiestnik_Influence = yes
+				set_variable = { var = POL_Conservatives_Influence value = 30 }
+				set_variable = { var = POL_Conservatives_Support value = 50 }
+				set_country_flag = POL_conservatives_in_coalition
+				POL_conservatives_calculations = yes
+			}
+		}
+	}
+
+	PB_POL_Namiestniks_Takeover = {
+		icon = GFX_decision_SWI_elect_confederation_president
+
+		cost = 15
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				OR = {
+					has_government = cn
+					has_government = rc
+					has_government = ni
+					has_government = ds
+				}
+				factor = 100
+			}
+		}
+
+		visible = {
+			check_variable = { POL_Namiestniks_Influence > 59 }
+			NOT = {
+				has_government = rc
+			}
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Takeover_Requirement_tt
+				check_variable = { POL_Namiestniks_Influence > 89 }
+			}
+			NOT = {
+				has_country_flag = POL_coalition_takeover
+			}
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				POL = {
+					set_country_flag = POL_coalition_takeover
+				}
+			}
+		}
+
+		days_re_enable = 50
+
+		days_remove = 7
+
+		remove_effect = {
+			custom_effect_tooltip = PB_POL_Namiestniks_Takeover_tt
+			PB_clear_all_ministers = yes
+			set_politics = {
+				ruling_party = rc
+				elections_allowed = no
+			}
+			add_popularity = {
+				ideology = rc
+				popularity = 0.1
+			}
+			add_stability = -0.05
+			hidden_effect = {
+				clr_country_flag = POL_coalition_takeover
+				clr_country_flag = leading_coalition_ds
+				clr_country_flag = leading_coalition_ni
+				clr_country_flag = leading_coalition_cn
+				add_to_leading_coalition_rc = yes
+				set_variable = { var = POL_Namiestniks_Influence value = 80 }
+				set_variable = { var = POL_Radicals_Influence value = 60 }
+				set_variable = { var = POL_Modarates_Influence value = 60 }
+				set_variable = { var = POL_Industralist_Influence value = 30 }
+				set_variable = { var = POL_Namiestniks_Support value = 100 }
+				set_variable = { var = POL_Radicals_Support value = 40 }
+				set_variable = { var = POL_Modarates_Support value = 40 }
+				set_variable = { var = POL_Industralist_Support value = 60 }
+
+				activate_advisor = PB_Wiktor_Jaronski_hog
+
+				activate_advisor = PB_Wladyslaw_Grabski_ecm
+				if = {
+					limit = {
+						has_global_flag = PB_POL_Death_Of_Ivanov
+					}
+					activate_advisor = PB_Nikolai_Ivanov_iam
+				}
+				else_if = {
+					limit = {
+						has_country_flag = POL_Beria
+					}
+					activate_advisor = PB_Lavrentiy_Beria_iam
+				}
+				else = {
+					if = {
+						limit = {
+							has_country_flag = POL_bulak_balachowicz_option
+						}
+						activate_advisor = PB_Stanislaw_Bulak-Balachowicz_iam
+					}
+				}
+
+				if = {
+					limit = {
+						has_country_flag = POL_conservatives_in_coalition
+					}
+					set_variable = { var = POL_Conservatives_Influence value = 60 }
+					set_variable = { var = POL_Conservatives_Support value = 40 }
+					activate_advisor = PB_Eustachy_Sapieha_fam
+				}
+				else = {
+					set_variable = { var = POL_Conservatives_Influence value = 0 }
+					set_variable = { var = POL_Conservatives_Support value = 0 }
+					activate_advisor = PB_Jedrzej_Giertych_fam
+				}
+				POL_namiestnik_calculations = yes
+				POL_radicals_calculations = yes
+				POL_moderates_calculations = yes
+				POL_conservatives_calculations = yes
+				POL_industrialists_calculations = yes
+
+				POL_inf_calculations = yes
+			}
+		}
+	}
+
+	PB_POL_Radicals_Takeover = {
+		icon = GFX_decision_SWI_elect_confederation_president
+
+		cost = 15
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				OR = {
+					has_government = cn
+					has_government = rc
+					has_government = ni
+					has_government = ds
+				}
+				factor = 100
+			}
+		}
+
+		visible = {
+			check_variable = { POL_Radicals_Influence > 59 }
+			NOT = {
+				has_government = ni
+			}
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Radicals_Takeover_Requirement_tt
+				check_variable = { POL_Radicals_Influence > 89 }
+			}
+			NOT = {
+				has_country_flag = POL_coalition_takeover
+			}
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				POL = {
+					set_country_flag = POL_coalition_takeover
+				}
+			}
+		}
+
+		days_re_enable = 50
+
+		days_remove = 7
+
+		remove_effect = {
+			custom_effect_tooltip = PB_POL_Radicals_Takeover_tt
+			PB_clear_all_ministers = yes
+			set_politics = {
+				ruling_party = ni
+				elections_allowed = no
+			}
+			add_popularity = {
+				ideology = ni
+				popularity = 0.1
+			}
+			add_stability = -0.05
+			hidden_effect = {
+				clr_country_flag = POL_coalition_takeover
+				clr_country_flag = leading_coalition_ds
+				clr_country_flag = leading_coalition_rc
+				clr_country_flag = leading_coalition_cn
+				add_to_leading_coalition_ni = yes
+				set_variable = { var = POL_Namiestniks_Influence value = 70 }
+				set_variable = { var = POL_Radicals_Influence value = 70 }
+				set_variable = { var = POL_Modarates_Influence value = 60 }
+				set_variable = { var = POL_Industralist_Influence value = 40 }
+				set_variable = { var = POL_Namiestniks_Support value = 30 }
+				set_variable = { var = POL_Radicals_Support value = 100 }
+				set_variable = { var = POL_Modarates_Support value = 50 }
+				set_variable = { var = POL_Industralist_Support value = 40 }
+
+				activate_advisor = PB_Jedrzej_Giertych_hog
+				activate_advisor = PB_Wladyslaw_Grabski_ecm
+
+				if = {
+					limit = {
+						has_country_flag = POL_conservatives_in_coalition
+					}
+					set_variable = { var = POL_Conservatives_Influence value = 60 }
+					set_variable = { var = POL_Conservatives_Support value = 50 }
+				}
+				else = {
+					set_variable = { var = POL_Conservatives_Influence value = 0 }
+					set_variable = { var = POL_Conservatives_Support value = 0 }
+				}
+
+				if = {
+					limit = {
+						has_country_flag = POL_sacha_ousted
+					}
+					activate_advisor = PB_Marian_Seyda_fam
+				}
+				else = {
+					activate_advisor = PB_Stefan_Sacha_fam
+				}
+
+				if = {
+					limit = {
+						has_global_flag = PB_POL_Death_Of_Ivanov
+					}
+					activate_advisor = PB_Nikolai_Ivanov_iam
+				}
+				else_if = {
+					limit = {
+						has_country_flag = POL_Beria
+					}
+					activate_advisor = PB_Lavrentiy_Beria_iam
+				}
+				else = {
+					activate_advisor = PB_Stanislaw_Bulak-Balachowicz_iam
+				}
+
+				POL_namiestnik_calculations = yes
+				POL_radicals_calculations = yes
+				POL_moderates_calculations = yes
+				POL_conservatives_calculations = yes
+				POL_industrialists_calculations = yes
+
+				POL_inf_calculations = yes
+			}
+		}
+	}
+
+	PB_POL_Moderate_Takeover = {
+		icon = generic_ignite_civil_war
+
+		cost = 15
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				OR = {
+					has_government = cn
+					has_government = rc
+					has_government = ni
+					has_government = ds
+				}
+				factor = 100
+			}
+		}
+
+		visible = {
+			check_variable = { POL_Modarates_Influence > 59 }
+			NOT = {
+				has_government = ds
+			}
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Moderate_Takeover_Requirement_tt
+				check_variable = { POL_Modarates_Influence > 89 }
+			}
+			NOT = {
+				has_country_flag = POL_coalition_takeover
+			}
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				POL = {
+					set_country_flag = POL_coalition_takeover
+				}
+			}
+		}
+
+		days_re_enable = 50
+
+		days_remove = 7
+
+		remove_effect = {
+			custom_effect_tooltip = PB_POL_Moderates_Takeover_tt
+			PB_clear_all_ministers = yes
+			set_politics = {
+				ruling_party = ds
+				elections_allowed = no
+			}
+			add_popularity = {
+				ideology = ds
+				popularity = 0.1
+			}
+			add_stability = -0.05
+			hidden_effect = {
+				clr_country_flag = POL_coalition_takeover
+				clr_country_flag = leading_coalition_rc
+				clr_country_flag = leading_coalition_ni
+				clr_country_flag = leading_coalition_cn
+				add_to_leading_coalition_ds = yes
+
+				if = {
+					limit = {
+						check_variable = { POL_Radicals_Influence > 50 }
+					}
+					activate_advisor = PB_Jedrzej_Giertych_fam
+				}
+				else = {
+					activate_advisor = PB_Marian_Seyda_fam
+				}
+
+				set_variable = { var = POL_Namiestniks_Influence value = 70 }
+				set_variable = { var = POL_Radicals_Influence value = 60 }
+				set_variable = { var = POL_Modarates_Influence value = 70 }
+				set_variable = { var = POL_Industralist_Influence value = 40 }
+				set_variable = { var = POL_Namiestniks_Support value = 30 }
+				set_variable = { var = POL_Radicals_Support value = 50 }
+				set_variable = { var = POL_Modarates_Support value = 100 }
+				set_variable = { var = POL_Industralist_Support value = 40 }
+
+				activate_advisor = PB_Wladyslaw_Grabski_hog
+
+				activate_advisor = PB_Jozef_Kiedron_ecm
+				if = {
+					limit = {
+						has_country_flag = POL_conservatives_in_coalition
+					}
+					set_variable = { var = POL_Conservatives_Influence value = 60 }
+					set_variable = { var = POL_Conservatives_Support value = 50 }
+				}
+				else = {
+					set_variable = { var = POL_Conservatives_Influence value = 0 }
+					set_variable = { var = POL_Conservatives_Support value = 0 }
+				}
+
+				if = {
+					limit = {
+						has_global_flag = PB_POL_Death_Of_Ivanov
+					}
+					activate_advisor = PB_Nikolai_Ivanov_iam
+				}
+				else_if = {
+					limit = {
+						has_country_flag = POL_Beria
+					}
+					activate_advisor = PB_Lavrentiy_Beria_iam
+				}
+				else = {
+					activate_advisor = PB_Stanislaw_Bulak-Balachowicz_iam
+				}
+				POL_namiestnik_calculations = yes
+				POL_radicals_calculations = yes
+				POL_moderates_calculations = yes
+				POL_conservatives_calculations = yes
+				POL_industrialists_calculations = yes
+
+				POL_inf_calculations = yes
+			}
+		}
+	}
+
+	PB_POL_Conservative_Takeover = {
+		icon = generic_ignite_civil_war
+
+		cost = 15
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				OR = {
+					has_government = cn
+					has_government = rc
+					has_government = ni
+					has_government = ds
+				}
+				factor = 100
+			}
+		}
+
+		visible = {
+			check_variable = { POL_Conservatives_Influence > 59 }
+			has_country_flag = POL_conservatives_in_coalition
+			NOT = {
+				has_government = cn
+			}
+		}
+
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Conservative_Takeover_Requirement_tt
+				check_variable = { POL_Conservatives_Influence > 89 }
+			}
+			NOT = {
+				has_country_flag = POL_coalition_takeover
+			}
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				POL = {
+					set_country_flag = POL_coalition_takeover
+				}
+			}
+		}
+
+		days_re_enable = 50
+
+		days_remove = 7
+
+		remove_effect = {
+			custom_effect_tooltip = PB_POL_Conservatives_Takeover_tt
+			PB_clear_all_ministers = yes
+			set_politics = {
+				ruling_party = cn
+				elections_allowed = no
+			}
+			add_popularity = {
+				ideology = cn
+				popularity = 0.1
+			}
+			add_stability = -0.05
+			hidden_effect = {
+				clr_country_flag = POL_coalition_takeover
+				clr_country_flag = leading_coalition_rc
+				clr_country_flag = leading_coalition_ni
+				clr_country_flag = leading_coalition_ds
+				add_to_leading_coalition_cn = yes
+
+				if = {
+					limit = {
+						check_variable = { POL_Radicals_Influence > 50 }
+					}
+					activate_advisor = PB_Marian_Seyda_fam
+				}
+				else = {
+					activate_advisor = PB_Eustachy_Sapieha_fam
+				}
+
+				set_variable = { var = POL_Namiestniks_Influence value = 70 }
+				set_variable = { var = POL_Radicals_Influence value = 60 }
+				set_variable = { var = POL_Modarates_Influence value = 60 }
+				set_variable = { var = POL_Industralist_Influence value = 40 }
+				set_variable = { var = POL_Namiestniks_Support value = 30 }
+				set_variable = { var = POL_Radicals_Support value = 50 }
+				set_variable = { var = POL_Modarates_Support value = 50 }
+				set_variable = { var = POL_Industralist_Support value = 40 }
+
+				add_ideas = POL_PB_Janusz_Radziwill_HOG
+
+				add_ideas = POL_PB_Wladyslaw_Grabski_ECM
+				if = {
+					limit = {
+						has_country_flag = POL_conservatives_in_coalition
+					}
+					set_variable = { var = POL_Conservatives_Influence value = 70 }
+					set_variable = { var = POL_Conservatives_Support value = 100 }
+				}
+				else = {
+					set_variable = { var = POL_Conservatives_Influence value = 0 }
+					set_variable = { var = POL_Conservatives_Support value = 0 }
+				}
+
+				if = {
+					limit = {
+						has_global_flag = PB_POL_Death_Of_Ivanov
+					}
+					activate_advisor = PB_Nikolai_Ivanov_iam
+				}
+				else_if = {
+					limit = {
+						has_country_flag = POL_Beria
+					}
+					activate_advisor = PB_Lavrentiy_Beria_iam
+				}
+				else = {
+					activate_advisor = PB_Stanislaw_Bulak-Balachowicz_iam
+				}
+				POL_namiestnik_calculations = yes
+				POL_radicals_calculations = yes
+				POL_moderates_calculations = yes
+				POL_conservatives_calculations = yes
+				POL_industrialists_calculations = yes
+
+				POL_inf_calculations = yes
+			}
+		}
+	}
+
+	PB_POL_Magic = {
+		icon = generic_decision
+
+		cost = 100
+		ai_will_do = {
+		}
+
+		visible = {
+		}
+
+		available = {
+		}
+
+		complete_effect = {
+		}
+
+		days_re_enable = 0
+
+		days_remove = 3
+
+		remove_effect = {
+			set_variable = { var = POL_Namiestniks_Support value = 100 }
+			set_variable = { var = POL_Radicals_Support value = 100 }
+			set_variable = { var = POL_Modarates_Support value = 100 }
+			set_variable = { var = POL_Industralist_Support value = 100 }
+		}
+	}
+
+	PB_POL_Warsaw_Subway_Under_Construction = {
+
+		icon = GFX_decision_generic_civil_support
+
+		activation = {
+			original_tag = POL
+			has_country_flag = POL_Start_Subway_Construction
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+		}
+
+		available = {
+			has_country_flag = POL_Warsaw_Subway_Opened
+		}
+
+		selectable_mission = no
+
+		is_good = yes
+		fire_only_once = yes
+
+		days_mission_timeout = 100
+
+		timeout_effect = {
+			add_political_power = 50
+			random_owned_controlled_state = {
+				prioritize = { 10 }
+				limit = {
+					infrastructure < 5
+				}
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = infrastructure
+					level = 1
+					instant_build = yes
+				}
+			}
+			PB_POL_Increse_Moderates_Support = yes
+			PB_POL_Increse_Radicals_Support = yes
+			hidden_effect = {
+				set_country_flag = POL_Warsaw_Subway_Opened
+			}
+		}
+	}
+
+	PB_POL_Second_Warsaw_Subway_Under_Construction = {
+
+		icon = GFX_decision_generic_civil_support
+
+		activation = {
+			original_tag = POL
+			has_country_flag = POL_Start_Second_Subway_Construction
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+		}
+
+		available = {
+			has_country_flag = POL_Second_Warsaw_Subway_Opened
+		}
+
+		selectable_mission = no
+
+		is_good = yes
+		fire_only_once = yes
+
+		days_mission_timeout = 120
+
+		timeout_effect = {
+			add_political_power = 50
+			reduce_focus_completion_cost = {
+				focus = { PB_POL_Introduction_Of_The_Autonomy_Rubble
+					PB_POL_Abandon_Decaying_Corpse
+					PB_POL_Industrial_Region_Galicia
+					PB_POL_Central_Industrial_Region
+					PB_POL_Industrial_Region_Silesia
+					PB_POL_Aviation_Valley
+					PB_POL_Lilpop_Rau_Lowenstein
+					PB_POL_FSO
+					PB_POL_H_Cegielski_And_Co
+					PB_POL_Invest_In_Krakow
+					PB_POL_Invest_In_Warsaw
+					PB_POL_Invest_In_Gliwice
+					PB_POL_Alexander_II_Steelworks
+					PB_POL_Fourth_City
+					PB_POL_Lwow_School_Of_Mathematics
+					PB_POL_Jewel_Of_The_Crown
+					PB_POL_One_Last_Chance
+					PB_POL_Cooperation_Of_State_And_Ivestors
+					PB_POL_Let_Do
+					PB_POL_Open_Soup_Kitchens
+					PB_POL_Bureau_Of_Urbanization
+					PB_POL_Nationalization_Of_Metropolitan_Transport_Company
+					PB_POL_Foreign_Specialists
+					PB_POL_All_Hail_Lodzermensch
+					PB_POL_Encourage_Flow_Of_Knowledge
+					PB_POL_Subsidize_Textile_Barons
+					PB_POL_Poznanski_Grohman
+					PB_POL_Heinzel
+					PB_POL_Schreibler_Herbst
+					PB_POL_Domestic_Cotton_Farming
+					PB_POL_Import_Cotton
+					PB_POL_Promised_Land
+					PB_POL_Second_Lodz_Golden_Age
+					PB_POL_Bring_Free_Market_To_The_South
+					PB_POL_Bring_Free_Market_To_The_East
+					PB_POL_National_Development_Bank
+					PB_POL_Wirelessification_Of_The_Grid
+					PB_POL_House_Factories
+					PB_POL_New_Towns_Program
+					PB_POL_Into_The_East
+					PB_POL_Warsaw_University_Of_Technology
+					PB_POL_The_Dream_Team
+					PB_POL_Uranium_Fever
+					PB_POL_Construct_Nuclear_Cities
+					PB_POL_Construct_Nuclear_Cities
+					PB_POL_Dr_Strangelove_Reference
+					PB_POL_Militarization_Of_Industry
+					PB_POL_Starachowice_Works
+					PB_POL_Reorganization_Of_Plane_Industry
+					PB_POL_Stalowa_Wola_Steelworks
+					PB_POL_PGZ
+					PB_POL_Last_Phase_Of_Experiments
+					PB_POL_Expanding_Anters_Program
+					PB_POL_Hive_Mapping_And_Hierarchy_Study
+					PB_POL_Specialisation_Efforts
+					PB_POL_Big_Brains_Initiative
+					PB_POL_Bury_Those_Unholy_Creatures
+					PB_POL_Investment_In_Silesia
+					PB_POL_Underground_Highway
+					PB_POL_Expand_AGH_Uni
+					PB_POL_Black_Blood
+					PB_POL_Oil_Industry_Tax_Deduction
+					PB_POL_Lukasiewicz_Shareholders_Meeting
+					PB_POL_MacGarvey_Bail-Out
+					PB_POL_Cooperate_Or_Die
+					PB_POL_Keep_It_All
+					PB_POL_One_Step_Back_Two_Steps_Forward
+					PB_POL_We_Are_So_Back
+					PB_POL_Oil_Must_Flow
+					PB_POL_Challange_Baku_Giants
+					PB_POL_Invisible_Hand
+					PB_POL_New_Polish_Army
+					PB_POL_Support_Maczeks_Group
+					PB_POL_Assault_Tactics
+					PB_POL_Rush_Motorization_Effort
+					PB_POL_Moderate_Offensive
+					PB_POL_Whatever_It_Costs
+					PB_POL_Oil_Is_Cheap
+					PB_POL_Give_In_To_Lafontaine_Society
+					PB_POL_Steel_Is_Weak
+					PB_POL_Militarize_Anters
+					PB_POL_Let_Them_Fight
+					PB_POL_Modern_Hussars
+					PB_POL_Imperial_Engineers_Corps
+					PB_POL_Always_On_Time
+					PB_POL_Order_And_First_Aid
+					PB_POL_Tip_Of_The_Spear
+				}
+
+				cost = 3
+			}
+			hidden_effect = {
+				set_country_flag = POL_Second_Warsaw_Subway_Opened
+			}
+		}
+	}
+
+	POL_Russian_Intervention = {
+
+		icon = GFX_decision_gre_faction_management
+
+		activation = {
+			original_tag = POL
+			has_country_flag = POL_Emergency_Cabinet
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Namiestniks_Support_Less_30_tt
+				check_variable = { POL_Namiestniks_Support < 30 }
+			}
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+		}
+
+		available = {
+			OR = {
+				has_country_flag = POL_Full_Power
+				custom_trigger_tooltip = {
+					tooltip = PB_POL_Namiestniks_Support_More_39_tt
+					check_variable = { POL_Namiestniks_Support > 39 }
+				}
+			}
+		}
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = no
+
+		days_mission_timeout = 100
+
+		timeout_effect = {
+			country_event = {
+				id = pol.70
+			}
+		}
+	}
+
+	POL_Everybody_Gains_Influence = {
+
+		icon = GFX_decision_generic_political_rally
+
+		activation = {
+			original_tag = POL
+			has_country_flag = POL_Emergency_Cabinet
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+		}
+
+		available = {
+			has_country_flag = POL_Full_Power
+		}
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = no
+
+		days_mission_timeout = 150
+
+		timeout_effect = {
+			activate_mission = POL_Everybody_Gains_Influence
+			if = {
+				limit = {
+					NOT = {
+						has_government = rc
+					}
+				}
+				PB_POL_Increse_Namiestnik_Influence = yes
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_government = an
+					}
+				}
+				PB_POL_Increse_Industralists_Influence = yes
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_government = cn
+						has_country_flag = POL_conservatives_in_coalition
+					}
+				}
+				PB_POL_Increse_Conservatives_Influence = yes
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_government = ni
+					}
+				}
+				PB_POL_Increse_Radicals_Influence = yes
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_government = ds
+					}
+				}
+				PB_POL_Increse_Moderates_Influence = yes
+			}
+		}
+	}
+
+	PB_POL_Pressing_Minorities_Question = {
+
+		icon = GFX_decision_generic_civil_support
+
+		activation = {
+			original_tag = POL
+			has_completed_focus = POL_Emergency_Cabinet_Meeting
+			NOT = {
+				has_country_flag = POL_Full_Power
+			}
+			NOT = {
+				OR = {
+					has_completed_focus = PB_POL_Protectors_Of_Lesser_Slavs
+					has_completed_focus = PB_POL_Assure_Russian_Neutrality
+				}
+				OR = {
+					has_completed_focus = PB_POL_Freedom_Of_Religion_Act
+					has_completed_focus = PB_POL_Seize_Jewish_Assets
+				}
+			}
+		}
+
+		available = {
+			OR = {
+				has_completed_focus = PB_POL_Protectors_Of_Lesser_Slavs
+				has_completed_focus = PB_POL_Assure_Russian_Neutrality
+			}
+			OR = {
+				has_completed_focus = PB_POL_Freedom_Of_Religion_Act
+				has_completed_focus = PB_POL_Seize_Jewish_Assets
+			}
+		}
+
+		selectable_mission = no
+
+		is_good = no
+		fire_only_once = no
+
+		days_mission_timeout = 700
+
+		timeout_effect = {
+			add_political_power = -300
+			add_stability = -0.2
+			add_war_support = -0.15
+			activate_mission = PB_POL_Pressing_Minorities_Question
+		}
+	}
+
+}
