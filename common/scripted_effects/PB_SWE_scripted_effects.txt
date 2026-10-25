@@ -1,3 +1,115 @@
+
+SWE_reform_start = {
+	set_country_flag = SWE_reform_active
+	clr_country_flag = SWE_movement_split
+	clr_country_flag = SWE_bill_bold
+	clr_country_flag = SWE_amendment_accepted
+	clr_country_flag = SWE_reform_finished
+	set_variable = { SWE_Momentum = 0 }
+	set_variable = { SWE_Unity = 60 }
+	set_variable = { SWE_Trust = 60 }
+	set_variable = { SWE_Resistance = 50 }
+	set_variable = { SWE_Checkpoint = 1 }
+	country_event = { id = sweden_reform.1 days = 30 }
+	country_event = { id = sweden_reform.9 days = 8 random_days = 14 }
+    activate_mission = SWE_150_day_timer_reform
+}
+ 
+SWE_reform_clamp = {
+	clamp_variable = { var = SWE_Momentum min = 0 max = 100 }
+	clamp_variable = { var = SWE_Unity min = 0 max = 100 }
+	clamp_variable = { var = SWE_Trust min = 0 max = 100 }
+	clamp_variable = { var = SWE_Resistance min = 0 max = 100 }
+	if = {
+		limit = { has_country_flag = SWE_movement_split }
+		clamp_variable = { var = SWE_Momentum min = 0 max = 60 }
+	}
+}
+ 
+SWE_reform_check = {
+	if = {
+		limit = { has_country_flag = SWE_reform_active }
+		if = {
+			limit = { check_variable = { SWE_Resistance > 99 } }
+			country_event = { id = sweden_reform.92 }
+		}
+		else_if = {
+			limit = { check_variable = { SWE_Unity < 1 } }
+			country_event = { id = sweden_reform.90 }
+		}
+		else_if = {
+			limit = {
+				check_variable = { SWE_Trust < 1 }
+				NOT = { has_country_flag = SWE_movement_split }
+			}
+			country_event = { id = sweden_reform.91 }
+		}
+	}
+}
+ 
+SWE_reform_clamp_and_check = {
+	SWE_reform_clamp = yes
+	SWE_reform_check = yes
+}
+ 
+SWE_reform_advance = {
+	add_to_variable = { SWE_Checkpoint = 1 }
+	SWE_reform_clamp_and_check = yes
+    #random events blah blah
+	country_event = { id = sweden_reform.9 days = 8 random_days = 14 }
+}
+
+ 
+#endings
+SWE_reform_end_common = {
+	clr_country_flag = SWE_reform_active
+	set_country_flag = SWE_reform_finished
+}
+ 
+SWE_reform_end_full = {
+	SWE_reform_end_common = yes
+	set_country_flag = SWE_reform_full
+	add_stability = 0.10
+	add_political_power = 100
+	complete_national_focus = SWE_final_settlement_swedens_law
+}
+ 
+SWE_reform_end_compromise = {
+	SWE_reform_end_common = yes
+	set_country_flag = SWE_reform_compromise
+	add_stability = 0.05
+	add_political_power = 50
+    complete_national_focus = SWE_final_settlement_swedens_law
+}
+ 
+SWE_reform_end_stalemate = {
+	SWE_reform_end_common = yes
+	set_country_flag = SWE_reform_stalemate
+	add_stability = -0.05
+    complete_national_focus = SWE_final_settlement_swedens_law
+}
+ 
+SWE_reform_end_pyrrhic = {
+	SWE_reform_end_common = yes
+	set_country_flag = SWE_reform_pyrrhic
+	add_stability = -0.10
+	add_political_power = -50
+    
+    complete_national_focus = SWE_final_settlement_swedens_law
+}
+ 
+SWE_reform_end_court_victory = {
+	SWE_reform_end_common = yes
+	set_country_flag = SWE_reform_court_victory
+	add_stability = -0.10
+	add_political_power = -75
+    set_politics = {
+        ruling_party = cn
+        elections_allowed = no
+    }
+    remove_from_leading_coalition_ss = yes
+}
+
 finland_ceasefire = { 
 	clr_global_flag = winter_war_active
 	FIN = { 
@@ -27,7 +139,6 @@ SWE_remove_ideas = {
         modifier = SWE_courtyard_camarilla_modifier
     }
 	remove_ideas = {
-        SWE_hedin_institute_idea
 		PB_SWE_Gustavian_Legacy
 		PB_SWE_Gustavian_Legacy_2
 		PB_SWE_Riket_Two

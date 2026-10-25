@@ -16,6 +16,300 @@ add_namespace = sweden_debug
 add_namespace = sweden_autocrisis
 add_namespace = sweden_finland
 add_namespace = sweden_krueger
+add_namespace = sweden_reform
+
+country_event = {
+	id = sweden_reform.0
+	title = sweden_reform.0.t
+	desc = sweden_reform.0.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	fire_only_once = yes
+ 
+	option = {
+		name = sweden_reform.0.a
+		SWE_reform_start = yes
+	}
+}
+ 
+country_event = {
+	id = sweden_reform.1
+	title = sweden_reform.1.t
+	desc = sweden_reform.1.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Moderate
+		name = sweden_reform.1.a
+		add_to_variable = { var = SWE_Unity value = 10 tooltip = SWE_unity_up }
+		add_to_variable = { var = SWE_Momentum value = 5 tooltip = SWE_momentum_up }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.2 days = 30 }
+		ai_chance = { base = 50 }
+	}
+	option = { # Bold
+		name = sweden_reform.1.b
+		set_country_flag = SWE_bill_bold
+		add_to_variable = { var = SWE_Momentum value = 15 tooltip = SWE_momentum_up }
+		add_to_variable = { var = SWE_Unity value = -10 tooltip = SWE_unity_down }
+		add_to_variable = { var = SWE_Resistance value = 10 tooltip = SWE_resistance_up }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.2 days = 30 }
+		ai_chance = { base = 50 }
+	}
+}
+ 
+country_event = {
+	id = sweden_reform.2
+	title = sweden_reform.2.t
+	desc = sweden_reform.2.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Pay a tariff concession for free
+		name = sweden_reform.2.a
+		add_to_variable = { var = SWE_Momentum value = 5 tooltip = SWE_momentum_up }
+		add_to_variable = { var = SWE_Unity value = 15 tooltip = SWE_unity_up }
+		add_to_variable = { var = SWE_Trust value = -10 tooltip = SWE_trust_down }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.3 days = 30 }
+		ai_chance = { base = 60 }
+	}
+	option = { # Accept the amendment
+		name = sweden_reform.2.b
+		set_country_flag = SWE_amendment_accepted
+		add_to_variable = { var = SWE_Trust value = -10 tooltip = SWE_trust_down }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.3 days = 30 }
+		ai_chance = { base = 40 }
+	}
+}
+ 
+country_event = {
+	id = sweden_reform.3
+	title = sweden_reform.3.t
+	desc = sweden_reform.3.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Passes
+		name = sweden_reform.3.a
+		trigger = {
+			check_variable = { SWE_Momentum > 39 }
+			check_variable = { SWE_Unity > 29 }
+		}
+		add_to_variable = { var = SWE_Trust value = 5 tooltip = SWE_trust_up }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.4 days = 30 }
+	}
+	option = { # Fails
+		name = sweden_reform.3.b
+		trigger = {
+			OR = {
+				check_variable = { SWE_Momentum < 40 }
+				check_variable = { SWE_Unity < 30 }
+			}
+		}
+		add_to_variable = { var = SWE_Momentum value = -20 tooltip = SWE_momentum_down }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.4 days = 30 }
+	}
+}
+ 
+country_event = {
+	id = sweden_reform.4
+	title = sweden_reform.4.t
+	desc = sweden_reform.4.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Passes
+		name = sweden_reform.4.a
+		trigger = { check_variable = { SWE_Unity > 49 } }
+		add_to_variable = { var = SWE_Momentum value = 5 tooltip = SWE_momentum_up }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.5 days = 30 }
+	}
+	option = { # Fails
+		name = sweden_reform.4.b
+		trigger = { check_variable = { SWE_Unity < 50 } }
+		add_to_variable = { var = SWE_Momentum value = -25 tooltip = SWE_momentum_down }
+		SWE_reform_advance = yes
+		country_event = { id = sweden_reform.5 days = 30 }
+	}
+}
+ 
+country_event = {
+	id = sweden_reform.5
+	title = sweden_reform.5.t
+	desc = sweden_reform.5.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Full Reform
+		name = sweden_reform.5.a
+		trigger = {
+			check_variable = { SWE_Momentum > 99 }
+			check_variable = { SWE_Resistance < 40 }
+		}
+		SWE_reform_end_full = yes
+	}
+	option = { # Compromise Reform
+		name = sweden_reform.5.b
+		trigger = {
+			check_variable = { SWE_Momentum > 69 }
+			OR = {
+				check_variable = { SWE_Momentum < 100 }
+				check_variable = { SWE_Resistance > 39 }
+			}
+		}
+		SWE_reform_end_compromise = yes
+	}
+	option = { # Stalemate
+		name = sweden_reform.5.c
+		trigger = { check_variable = { SWE_Momentum < 70 } }
+		SWE_reform_end_stalemate = yes
+	}
+}
+ 
+# random events
+country_event = {
+	id = sweden_reform.9
+	hidden = yes
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+	hidden = yes
+	immediate = {
+		random_list = {
+			40 = { country_event = { id = sweden_reform.10 } }
+			40 = { country_event = { id = sweden_reform.11 } }
+			20 = { country_event = { id = sweden_reform.12 } }
+		}
+	}
+	option = { name = sweden_reform.9.a }
+}
+ 
+country_event = {
+	id = sweden_reform.10
+	title = sweden_reform.10.t
+	desc = sweden_reform.10.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Stand firm
+		name = sweden_reform.10.a
+		add_to_variable = { var = SWE_Resistance value = 8 tooltip = SWE_resistance_up }
+		add_to_variable = { var = SWE_Trust value = 5 tooltip = SWE_trust_up }
+		SWE_reform_clamp_and_check = yes
+	}
+	option = { # Reassure her
+		name = sweden_reform.10.b
+		add_to_variable = { var = SWE_Resistance value = -6 tooltip = SWE_resistance_down }
+		add_to_variable = { var = SWE_Trust value = -4 tooltip = SWE_trust_down }
+		SWE_reform_clamp_and_check = yes
+	}
+}
+ 
+country_event = {
+	id = sweden_reform.11
+	title = sweden_reform.11.t
+	desc = sweden_reform.11.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Expose the leakers
+		name = sweden_reform.11.a
+		add_to_variable = { var = SWE_Trust value = 5 tooltip = SWE_trust_up }
+		add_to_variable = { var = SWE_Unity value = -8 tooltip = SWE_unity_down }
+		SWE_reform_clamp_and_check = yes
+	}
+	option = { # Quietly contain it
+		name = sweden_reform.11.b
+		add_political_power = -20
+		add_to_variable = { var = SWE_Unity value = -3 tooltip = SWE_unity_down }
+		SWE_reform_clamp_and_check = yes
+	}
+}
+
+country_event = {
+	id = sweden_reform.12
+	title = sweden_reform.12.t
+	desc = sweden_reform.12.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = { # Let it spread
+		name = sweden_reform.12.a
+		add_to_variable = { var = SWE_Momentum value = 5 tooltip = SWE_momentum_up }
+		SWE_reform_clamp_and_check = yes
+	}
+	option = { # Press the advantage
+		name = sweden_reform.12.b
+		add_to_variable = { var = SWE_Momentum value = 8 tooltip = SWE_momentum_up }
+		add_to_variable = { var = SWE_Resistance value = 4 tooltip = SWE_resistance_up }
+		add_to_variable = { var = SWE_Unity value = -4 tooltip = SWE_unity_down }
+		SWE_reform_clamp_and_check = yes
+	}
+}
+ 
+# ---------- FAILURE: COALITION COLLAPSE ----------
+country_event = {
+	id = sweden_reform.90
+	title = sweden_reform.90.t
+	desc = sweden_reform.90.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = {
+		name = sweden_reform.90.a
+		SWE_reform_end_pyrrhic = yes
+	}
+}
+ 
+# ---------- FAILURE: MOVEMENT SPLIT (mechanic continues) ----------
+country_event = {
+	id = sweden_reform.91
+	title = sweden_reform.91.t
+	desc = sweden_reform.91.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = SWE_reform_active
+		NOT = { has_country_flag = SWE_movement_split }
+	}
+ 
+	option = {
+		name = sweden_reform.91.a
+		set_country_flag = SWE_movement_split
+		set_variable = { SWE_Trust = 20 }
+		SWE_reform_clamp = yes
+	}
+}
+ 
+# ---------- FAILURE: DISMISSAL ----------
+country_event = {
+	id = sweden_reform.92
+	title = sweden_reform.92.t
+	desc = sweden_reform.92.d
+	picture = GFX_report_event_generic
+	is_triggered_only = yes
+	trigger = { has_country_flag = SWE_reform_active }
+ 
+	option = {
+		name = sweden_reform.92.a
+		SWE_reform_end_court_victory = yes
+	}
+}
+
 country_event = { #Whispers in the Industry
 	id = sweden_krueger.1
 	title =  sweden_krueger.1.t
@@ -337,7 +631,7 @@ country_event = { #The Protektionists Break Ranks
 
 	option = { #
 		name =  sweden_ss.11.a
-		remove_from_leading_coalition_cn = yes 
+		
 	}
 }
 
