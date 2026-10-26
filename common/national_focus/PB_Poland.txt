@@ -5737,6 +5737,9 @@ focus_tree = {
 		completion_reward = {
 			add_political_power = 50
 			PB_POL_Increse_Conservatives_Influence = yes
+			hidden_effect = {
+				set_country_flag = POL_Conservatives_Reform_Flag
+			}
 		}
 	}
 
@@ -5878,9 +5881,10 @@ focus_tree = {
 		
 		completion_reward = {
 			PB_POL_Increse_Conservatives_Influence = yes
-			every_core_state = {
+			every_owned_state = {
 				limit = {
 					infrastructure < 2
+					is_owned_by = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -6491,8 +6495,12 @@ focus_tree = {
 
 		available = {
 			has_government = cn
-			has_country_flag = PB_POL_March_Of_Three_Millions
-			cn > 0.356 
+			has_global_flag = POL_Russians_Agree_Democratization_Flag
+			cn > 0.35
+			custom_trigger_tooltip = {
+				tooltip = PB_POL_Conservatives_Influence_More_69_tt
+				check_variable = { POL_Conservatives_Influence>69 }
+			}
 		}
 
 
@@ -11095,8 +11103,9 @@ focus_tree = {
 			custom_effect_tooltip = POL_Oil_speed_buildings_20
 			set_variable = { var = POL_oil_construction_speed value = 0.2 }
 			set_variable = { var = POL_oil_consumer_goods value = -0.3 }
-			
+
 			TRS = {
+				custom_effect_tooltip = PB_POL_Orlen_TRS_tt
 				clr_country_flag = Megacorp_Tesla_Dominant
 				set_country_flag = Megacorp_Orlen
 			}
@@ -11143,6 +11152,7 @@ focus_tree = {
 			set_variable = { var = POL_oil_construction_speed value = 0.1 }
 			set_variable = { var = POL_oil_consumer_goods value = -0.2 }
 			TRS = {
+				custom_effect_tooltip = PB_POL_SKN_TRS_tt
 				clr_country_flag = Megacorp_Tesla_Dominant
 				set_country_flag = Megacorp_SKN
 			}	
@@ -13953,7 +13963,18 @@ focus_tree = {
 		cost = 35
 
 		available = {
-
+			OR = {
+				617 = {
+					controller = {
+						has_country_flag = Tag_in_Russian_Sphere
+					}
+				}
+				921 = {
+					controller = {
+						has_country_flag = Tag_in_Russian_Sphere
+					}
+				}
+			}
 		}
 
 
@@ -13973,16 +13994,60 @@ focus_tree = {
 				limit = {
 					free_building_slots = {
 						building = industrial_complex
-						size > 0
+						size > 1
 					}
 				}
 				add_extra_state_shared_building_slots = 2
 				add_building_construction = {
-					type = farm
+					type = agroponics_complex
 					level = 2
 					instant_build = yes
 				}
 			}
+			if = {
+				limit = {
+					617 = {
+						is_controlled_by = SIK
+					}
+					SIK = {
+						has_country_flag = Tag_in_Russian_Sphere
+					}
+				}
+				617 = {
+					controller = {
+						add_opinion_modifier = {
+							target = ROOT
+							modifier = cotton_diplomacy_trade
+						}
+						add_opinion_modifier = {
+							target = ROOT
+							modifier = cotton_diplomacy
+						}
+						every_owned_state = {
+							random_select_amount = 3
+							add_extra_state_shared_building_slots = 2
+							add_building_construction = {
+								type = agroponics_complex
+								level = 2
+								instant_build = yes
+							}
+						}
+						hidden_effect = {
+							set_country_flag = POL_ZZW_Flag
+						}
+					}
+				}
+			}
+
+			921 = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = {
+					type = agroponics_complex
+					level = 2
+					instant_build = yes
+				}
+			}
+			
 			custom_effect_tooltip = POL_Textile_Barons_speed_farm_30
 			custom_effect_tooltip = POL_Textile_Barons_industrial_complex_cost_10
 			custom_effect_tooltip = POL_Increase_Consumer
@@ -14049,7 +14114,71 @@ focus_tree = {
 				var = POL_Textile_Barons_speed_industrial_complex
 				value = 0.15
 			}
-			
+			if = {
+				limit = {
+					GUJ = {
+						exists = yes
+					}
+				}
+				GUJ = {
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = cotton_diplomacy_trade
+					}
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = cotton_diplomacy
+					}
+					hidden_effect = {
+						set_country_flag = POL_ZZW_Flag
+					}
+				}
+			}
+			if = {
+				limit = {
+					BRA = {
+						exists = yes
+					}
+				}
+				BRA = {
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = cotton_diplomacy_trade
+					}
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = cotton_diplomacy
+					}
+					hidden_effect = {
+						
+					}
+				}
+			}
+			if = {
+				limit = {
+					EGY = {
+						exists = yes
+					}
+				}
+				EGY = {
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = cotton_diplomacy_trade
+					}
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = cotton_diplomacy
+					}
+					hidden_effect = {
+						if = {
+							limit = {
+								has_country_flag = Megacorp_Tesla_Dominant
+							}
+							set_country_flag = POL_ZZW_Flag
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -14083,6 +14212,7 @@ focus_tree = {
 		cancel_if_invalid = yes
 		
 		completion_reward = {
+			custom_effect_tooltip = PB_POL_ZZW_ROOT_tt
 			custom_effect_tooltip = POL_Lodz_Building_Slots_10
 			custom_effect_tooltip = POL_Lodz_Infrastructure_10
 			custom_effect_tooltip = POL_Lodz_Arms_Factory_10
@@ -14112,11 +14242,21 @@ focus_tree = {
 				value = 15
 			}
 			SD_IND_growth_progress_high = yes
-			POL = {
-				clr_country_flag = Megacorp_Tesla_Dominant
-				set_country_flag = Megacorp_ZZW
+
+			every_country = {
+				limit = {
+					has_country_flag = POL_ZZW_Flag
+				}
+				country_event = {
+					id = pol.156
+				}
 			}
+			
 			hidden_effect = {
+				POL = {
+					clr_country_flag = Megacorp_Tesla_Dominant
+					set_country_flag = Megacorp_ZZW
+				}
 				add_to_variable = {
 					var = 87.POL_Lodz_industrial_complex
 					value = 0.05
