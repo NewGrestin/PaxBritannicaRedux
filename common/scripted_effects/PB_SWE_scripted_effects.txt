@@ -5,10 +5,10 @@ SWE_reform_start = {
 	clr_country_flag = SWE_bill_bold
 	clr_country_flag = SWE_amendment_accepted
 	clr_country_flag = SWE_reform_finished
-	set_variable = { SWE_Momentum = 0 }
+	set_variable = { SWE_Momentum = 5 }
 	set_variable = { SWE_Unity = 60 }
 	set_variable = { SWE_Trust = 60 }
-	set_variable = { SWE_Resistance = 50 }
+	set_variable = { SWE_Resistance = 70 }
 	set_variable = { SWE_Checkpoint = 1 }
 	country_event = { id = sweden_reform.1 days = 30 }
 	country_event = { id = sweden_reform.9 days = 8 random_days = 14 }
@@ -34,8 +34,31 @@ SWE_reform_check = {
 			country_event = { id = sweden_reform.92 }
 		}
 		else_if = {
-			limit = { check_variable = { SWE_Unity < 1 } }
-			country_event = { id = sweden_reform.90 }
+			limit = {
+				check_variable = { SWE_Unity < 1 }
+				NOT = { has_country_flag = SWE_coalition_broken }
+			}
+			if = {
+				limit = {
+					check_variable = { SWE_Momentum > 59 }
+					check_variable = { var = party_popularity@ss value = party_popularity@lb compare = greater_than }
+					check_variable = { var = party_popularity@ss value = party_popularity@cn compare = greater_than }
+				}
+				country_event = { id = sweden_reform.93 }   # etc etc
+			}
+			else = {
+				country_event = { id = sweden_reform.90 }   # collapse
+			}
+		}
+		else_if = {
+			limit = {
+				has_country_flag = SWE_coalition_broken
+				OR = {
+					check_variable = { var = party_popularity@lb value = party_popularity@ss compare = greater_than }
+					check_variable = { var = party_popularity@cn value = party_popularity@ss compare = greater_than }
+				}
+			}
+			country_event = { id = sweden_reform.90 }   # if you lose radeg
 		}
 		else_if = {
 			limit = {
@@ -269,12 +292,21 @@ SWE_hedin_loyalists_calculations = {   # - ppgain - stability
         set_variable = { hedin_stab_variable = 0 }
     }
     else = {
+        # Influence multiplier
+        set_temp_variable = {
+            hedin_influence_temp = {
+                value = SWE_HedinLoyalists_Influence
+                divide = 50
+            }
+        }
+
         # Political Power
         set_temp_variable = {
             hedin_political_variable_temp = {
                 value = SWE_HedinLoyalists_Support
                 add = -50
                 divide = 250
+                multiply = hedin_influence_temp
             }
         }
         set_variable = { hedin_political_variable = hedin_political_variable_temp }
@@ -285,6 +317,7 @@ SWE_hedin_loyalists_calculations = {   # - ppgain - stability
                 value = SWE_HedinLoyalists_Support
                 add = -50
                 divide = 250
+                multiply = hedin_influence_temp
             }
         }
         set_variable = { hedin_stab_variable = hedin_stab_variable_temp }
@@ -301,12 +334,21 @@ SWE_lund_conservatives_calculations = {   # - drift - warsupport
         set_variable = { lund_warsupport_variable = 0 }
     }
     else = {
+        # Influence multiplier
+        set_temp_variable = {
+            lund_influence_temp = {
+                value = SWE_LundConservatives_Influence
+                divide = 50
+            }
+        }
+
         # Drift Defence
         set_temp_variable = {
             lund_drift_variable_temp = {
                 value = SWE_LundConservatives_Support
                 add = -50
                 divide = 250
+                multiply = lund_influence_temp
             }
         }
         set_variable = { lund_drift_variable = lund_drift_variable_temp }
@@ -317,6 +359,7 @@ SWE_lund_conservatives_calculations = {   # - drift - warsupport
                 value = SWE_LundConservatives_Support
                 add = -50
                 divide = 250
+                multiply = lund_influence_temp
             }
         }
         set_variable = { lund_warsupport_variable = lund_warsupport_variable_temp }
@@ -331,12 +374,21 @@ SWE_kronparteit_calculations = {   # - stability - polpower
         set_variable = { kron_political_variable = 0 }
     }
     else = {
+        # Influence multiplier
+        set_temp_variable = {
+            kron_influence_temp = {
+                value = SWE_Kronparteit_Influence
+                divide = 50
+            }
+        }
+
         # Stability
         set_temp_variable = {
             kron_stability_variable_temp = {
                 value = SWE_Kronparteit_Support
                 add = -50
                 divide = 250
+                multiply = kron_influence_temp
             }
         }
         set_variable = { kron_stability_variable = kron_stability_variable_temp }
@@ -347,6 +399,7 @@ SWE_kronparteit_calculations = {   # - stability - polpower
                 value = SWE_Kronparteit_Support
                 add = -50
                 divide = 250
+                multiply = kron_influence_temp
             }
         }
         set_variable = { kron_political_variable = kron_political_variable_temp }
@@ -363,12 +416,21 @@ SWE_nobility_calculations = {   # - polpower - export
         set_variable = { nobility_export_variable = 0 }
     }
     else = {
+        # Influence multiplier
+        set_temp_variable = {
+            nobility_influence_temp = {
+                value = SWE_Nobility_Influence
+                divide = 50
+            }
+        }
+
         # Political Power
         set_temp_variable = {
             nobility_political_variable_temp = {
                 value = SWE_Nobility_Support
                 add = -50
                 divide = 250
+                multiply = nobility_influence_temp
             }
         }
         set_variable = { nobility_political_variable = nobility_political_variable_temp }
@@ -379,6 +441,7 @@ SWE_nobility_calculations = {   # - polpower - export
                 value = SWE_Nobility_Support
                 add = -50
                 divide = 250
+                multiply = nobility_influence_temp
             }
         }
         set_variable = { nobility_export_variable = nobility_export_variable_temp }
@@ -393,12 +456,21 @@ SWE_luddites_calculations = {   # - construction - factory
         set_variable = { ludd_factory_variable = 0 }
     }
     else = {
+        # Influence multiplier
+        set_temp_variable = {
+            ludd_influence_temp = {
+                value = SWE_Luddites_Influence
+                divide = 50
+            }
+        }
+
         # Construction Speed
         set_temp_variable = {
             ludd_construction_variable_temp = {
                 value = SWE_Luddites_Support
                 add = -50
                 divide = 250
+                multiply = ludd_influence_temp
             }
         }
         set_variable = { ludd_construction_variable = ludd_construction_variable_temp }
@@ -409,6 +481,7 @@ SWE_luddites_calculations = {   # - construction - factory
                 value = SWE_Luddites_Support
                 add = -50
                 divide = 250
+                multiply = ludd_influence_temp
             }
         }
         set_variable = { ludd_factory_variable = ludd_factory_variable_temp }
@@ -423,12 +496,21 @@ SWE_transcendentalists_calculations = {   # research - armyexp
         set_variable = { trans_exp_variable = 0 }
     }
     else = {
+        # Influence multiplier
+        set_temp_variable = {
+            trans_influence_temp = {
+                value = SWE_Transcendentalists_Influence
+                divide = 50
+            }
+        }
+
         # Research Speed
         set_temp_variable = {
             trans_research_variable_temp = {
                 value = SWE_Transcendentalists_Support
                 add = -50
                 divide = 250
+                multiply = trans_influence_temp
             }
         }
         set_variable = { trans_research_variable = trans_research_variable_temp }
@@ -439,11 +521,13 @@ SWE_transcendentalists_calculations = {   # research - armyexp
                 value = SWE_Transcendentalists_Support
                 add = -50
                 divide = 250
+                multiply = trans_influence_temp
             }
         }
         set_variable = { trans_exp_variable = trans_exp_variable_temp }
     }
 }
+
 SWE_automation_crisis_calculations = {
 
 	#Political Power Gain
@@ -962,6 +1046,198 @@ custom_effect_tooltip = SWE_Decrease_Transcendentalists_Support_tt
 		SWE_transcendentalists_calculations = yes
 	}
 }
+SWE_Increase_HedinLoyalists_Influence = {
+custom_effect_tooltip = SWE_Increase_HedinLoyalists_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_HedinLoyalists_Influence
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_HedinLoyalists_Influence
+            min = 0
+            max = 100
+        }
+		SWE_hedin_loyalists_calculations = yes
+	}
+}
+
+SWE_Decrease_HedinLoyalists_Influence = {
+custom_effect_tooltip = SWE_Decrease_HedinLoyalists_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_HedinLoyalists_Influence
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_HedinLoyalists_Influence
+            min = 0
+            max = 100
+        }
+		SWE_hedin_loyalists_calculations = yes
+	}
+}
+
+SWE_Increase_LundConservatives_Influence = {
+custom_effect_tooltip = SWE_Increase_LundConservatives_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_LundConservatives_Influence
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_LundConservatives_Influence
+            min = 0
+            max = 100
+        }
+		SWE_lund_conservatives_calculations = yes
+	}
+}
+
+SWE_Decrease_LundConservatives_Influence = {
+custom_effect_tooltip = SWE_Decrease_LundConservatives_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_LundConservatives_Influence
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_LundConservatives_Influence
+            min = 0
+            max = 100
+        }
+		SWE_lund_conservatives_calculations = yes
+	}
+}
+
+SWE_Increase_Kronparteit_Influence = {
+custom_effect_tooltip = SWE_Increase_Kronparteit_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Kronparteit_Influence
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Kronparteit_Influence
+            min = 0
+            max = 100
+        }
+		SWE_kronparteit_calculations = yes
+	}
+}
+
+SWE_Decrease_Kronparteit_Influence = {
+custom_effect_tooltip = SWE_Decrease_Kronparteit_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Kronparteit_Influence
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Kronparteit_Influence
+            min = 0
+            max = 100
+        }
+		SWE_kronparteit_calculations = yes
+	}
+}
+
+SWE_Increase_Nobility_Influence = {
+custom_effect_tooltip = SWE_Increase_Nobility_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Nobility_Influence
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Nobility_Influence
+            min = 0
+            max = 100
+        }
+		SWE_nobility_calculations = yes
+	}
+}
+
+SWE_Decrease_Nobility_Influence = {
+custom_effect_tooltip = SWE_Decrease_Nobility_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Nobility_Influence
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Nobility_Influence
+            min = 0
+            max = 100
+        }
+		SWE_nobility_calculations = yes
+	}
+}
+
+SWE_Increase_Luddites_Influence = {
+custom_effect_tooltip = SWE_Increase_Luddites_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Luddites_Influence
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Luddites_Influence
+            min = 0
+            max = 100
+        }
+		SWE_luddites_calculations = yes
+	}
+}
+
+SWE_Decrease_Luddites_Influence = {
+custom_effect_tooltip = SWE_Decrease_Luddites_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Luddites_Influence
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Luddites_Influence
+            min = 0
+            max = 100
+        }
+		SWE_luddites_calculations = yes
+	}
+}
+
+SWE_Increase_Transcendentalists_Influence = {
+custom_effect_tooltip = SWE_Increase_Transcendentalists_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Transcendentalists_Influence
+            value = 10
+        }
+        clamp_variable = {
+            var = SWE_Transcendentalists_Influence
+            min = 0
+            max = 100
+        }
+		SWE_transcendentalists_calculations = yes
+	}
+}
+
+SWE_Decrease_Transcendentalists_Influence = {
+custom_effect_tooltip = SWE_Decrease_Transcendentalists_Influence_tt
+	hidden_effect = {
+        add_to_variable = {
+            var = SWE_Transcendentalists_Influence
+            value = -10
+        }
+        clamp_variable = {
+            var = SWE_Transcendentalists_Influence
+            min = 0
+            max = 100
+        }
+		SWE_transcendentalists_calculations = yes
+	}
+}
+
 SWE_Ban_HedinLoyalists_Support = {
     custom_effect_tooltip = SWE_Ban_HedinLoyalists_Support_tt
     hidden_effect = {
@@ -1061,5 +1337,14 @@ SWE_Unban_Transcendentalists_Support = {
         set_variable = { SWE_Transcendentalists_Banned = 0 }
         set_variable = { SWE_Transcendentalists_Support = 50 }
         SWE_transcendentalists_calculations = yes
+    }
+}
+SWE_Change_Faction_Influence = {
+    custom_effect_tooltip = $TT$
+    hidden_effect = {
+        add_to_variable = { var = $FACTION$_Influence value = $AMOUNT$ }
+        clamp_variable = { var = $FACTION$_Influence min = 0 max = 100 }
+        $CALC$ = yes
+        force_update_dynamic_modifier = yes
     }
 }
