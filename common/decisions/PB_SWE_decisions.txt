@@ -2372,6 +2372,13 @@ PB_Diplomacy_Decisions = {
 			ROOT = { 
 				surrender_progress > 0.35
 			}
+			NOR = {
+				exists = no
+				has_capitulated = yes
+				NOT = {
+					has_war_with = SWE
+				}
+			}
 		}
 		cancel_effect = {
 			news_event = PBNews.392
@@ -4113,7 +4120,80 @@ SWE_automation_crisis = {
 			SWE_automation_crisis_calculations = yes
 		}
 	}
+	SWE_land_reform_decision = {
+		icon = GFX_decision_growth
 
+		allowed = { always = no } #activated by effect
+
+		available = {
+			FROM = {
+				OR = {
+					is_owned_by = ROOT
+					owner = { is_subject_of = ROOT }
+				}
+				NOT = { has_state_flag = SWE_land_reformed }
+			}
+			num_of_civilian_factories_available_for_projects > 1
+		}
+
+		state_target = yes
+		cost = 25
+		days_remove = 60
+
+		modifier = {
+			civilian_factory_use = 3
+		}
+
+		ai_will_do = {
+			factor = 50
+		}
+
+		remove_effect = {
+			SD_POV_growth_progress_small = yes
+			FROM = {
+				add_extra_state_shared_building_slots = 2
+				set_state_flag = SWE_land_reformed
+				add_dynamic_modifier = {
+					modifier = SWE_land_reform_disruption
+					days = 180
+				}
+			}
+			add_to_variable = { SWE_land_reforms_done = 1 }
+			if = {
+				limit = { check_variable = { SWE_land_reforms_done < 3 } }
+				add_to_variable = {
+					var = SWE_unemployment_rate
+					value = -20000
+					tooltip = SWE_unemployment_rate_sub_tt
+				}
+			}
+			else_if = {
+				limit = { check_variable = { SWE_land_reforms_done < 6 } }
+				add_to_variable = {
+					var = SWE_unemployment_rate
+					value = -12000
+					tooltip = SWE_unemployment_rate_sub_tt
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = SWE_unemployment_rate
+					value = -6000
+					tooltip = SWE_unemployment_rate_sub_tt
+				}
+			}
+
+			SWE_automation_crisis_calculations = yes
+		}
+
+		highlight_states = {
+			highlight_state_targets = {
+				state = 138
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
 	SWE_farming_subsidy = {
 		icon = GFX_decision_growth
 
@@ -4174,7 +4254,7 @@ SWE_automation_crisis = {
 
 		highlight_states = {
 			highlight_state_targets = {
-				state = 138
+				state = FROM
 			}
 			highlight_color_while_active = 3
 			highlight_color_before_active = 2
