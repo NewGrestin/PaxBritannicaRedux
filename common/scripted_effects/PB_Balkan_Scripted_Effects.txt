@@ -1,5 +1,6 @@
 
 GBW_Danubian_Coalition_Victory = {
+	news_event = balkwar_news_events.1
 	set_global_flag = gbw_concluded
 	set_global_flag = gbw_coalition_victory
 	BUL = {
@@ -163,12 +164,62 @@ GBW_Danubian_Coalition_Victory = {
 		}
 	}
 }
+GBW_Tisza_League_Victory = {
+	set_global_flag = gbw_grand_coalition_concluded
+	set_global_flag = gbw_tisza_league_victory
+	MOL = {
+		GBW_exit_faction = yes
+		annex_country = { 
+			target = ROM
+			transfer_troops = no
+		}
+		if = {
+			limit = { any_enemy_country = { 77 = { is_owned_and_controlled_by = PREV} } }
+			77 = {
+				transfer_state_to = MOL
+				add_core_of = MOL
+			}
+		}
+	}
+	SER = { 
+		GBW_exit_faction = yes
+		every_enemy_country = {
+			limit = {
+				is_valid_peace_target = yes
+			}
+			white_peace_with_PREV = yes
+		}
+		country_event = { id = balkwar.35 days = 50 } 
+		every_owned_state = { 
+			limit = {
+				OR = { 
+					region = 24
+				}
+			}
+			transfer_state_to = var:109.owner
+			add_core_of = var:109.owner
+		}
+	}
+	ALB = { 
+		GBW_exit_faction = yes
+		every_enemy_country = { 
+			every_owned_state = { 
+				limit = { is_claim_or_core_of_PREVPREV = yes }
+				transfer_state_to = ALB
+			}
+			white_peace_with_PREV = yes
+			
+		}
+	}
+	
+}
 GBW_Danubian_Entente_Victory = { 
 	set_global_flag = gbw_concluded
 	set_global_flag = gbw_danubian_victory
-	
+
 	var:43.owner = { 
-		leave_faction = yes
+		GBW_exit_faction = yes
+		
 	}
 	if = { 
 		limit = { 
@@ -227,7 +278,8 @@ GBW_Danubian_Entente_Victory = {
 	}
 	
 	SER = { 
-		leave_faction = yes
+		country_event = { id = balkwar.35 days = 50 } 
+		GBW_exit_faction = yes
 		every_enemy_country = {
 			limit = {
 				is_valid_peace_target = yes
@@ -276,7 +328,7 @@ GBW_Danubian_Entente_Victory = {
 		}
 	}
 	MOL = {
-		leave_faction = yes
+		GBW_exit_faction = yes
 		every_enemy_country = {
 			limit = {
 				is_valid_peace_target = yes
@@ -309,9 +361,7 @@ GBW_Danubian_Entente_Victory = {
 					has_global_flag = PB_GBW_Bulgaria_Defeated
 				}
 			}
-			every_owned_state = {
-				set_demilitarized_zone = yes
-			}
+			
 		}
 	}
 	ALB = { 
@@ -334,6 +384,7 @@ GBW_HWA_victory = {
 	BUL = { 
 		country_event = { id = balkwar.29 days = 15 }
 	}
+	set_global_flag = Hungary_is_white
 	HWA = {
 		set_country_flag = HNG_true_hungary
 		add_timed_idea = { 
@@ -398,6 +449,94 @@ GBW_HUN_victory = {
 				}
 			}
 			add_claim_by = CRO
+		}
+	}
+}
+
+GBW_exit_faction = { #I WAS TOO LAZY TO FIND WHICH SCRIPTED EFFECT DID THIS TO BEGIN WITH
+	if = {
+		limit = { is_faction_leader = yes }
+		dismantle_faction = yes
+	}
+	else_if = {
+		limit = { is_in_faction = yes }
+		leave_faction = yes
+	}
+}
+
+GBW_cede_region_24_to_SER = {
+	every_owned_state = {
+		limit = { region = 24 }
+		if = {
+			limit = { NOT = { is_core_of = SER } }
+			add_claim_by = SER
+		}
+		transfer_state_to = SER
+	}
+}
+
+GBW_transfer_minor_hungarian_states = {
+	if = { # Burgenland
+		limit = { owns_state = 1190 }
+		1190 = {
+			transfer_state_to = var:4.owner
+			add_core_of = var:4.owner
+		}
+	}
+	if = { # The other tiny thing
+		limit = { owns_state = 1241 }
+		1241 = {
+			transfer_state_to = var:102.owner
+			add_core_of = var:102.owner
+		}
+	}
+}
+
+GBW_moldova_invades_bulgaria_and_romania = {
+	ROM = {
+		transfer_units_fraction = {
+			target = MOL
+			size = 0.2
+			stockpile_ratio = 0.5
+		}
+	}
+	MOL = {
+		if = { # avoid duplicate template
+			limit = { NOT = { has_template = "Miliția Insurecțională" } }
+			division_template = {
+				name = "Miliția Insurecțională"
+				is_locked = yes
+				regiments = {
+					militia = { x = 0 y = 0 }
+					militia = { x = 0 y = 1 }
+					militia = { x = 0 y = 2 }
+					militia = { x = 0 y = 3 }
+					militia = { x = 1 y = 0 }
+					militia = { x = 1 y = 1 }
+					militia = { x = 1 y = 2 }
+					militia = { x = 1 y = 3 }
+				}
+				support = {
+					artillery = { x = 0 y = 0 }
+				}
+			}
+		}
+		declare_war_on = {
+			target = BUL
+			type = annex_everything
+		}
+		declare_war_on = {
+			target = ROM
+			type = annex_everything
+		}
+	}
+	46 = {
+		create_unit = { # WIP NAME
+			division = "name = \"Revolutionarii Valahi\" division_template = \"Miliția Insuranceară\" start_experience_factor = 0.5 start_equipment_factor = 1.0"
+			owner = MOL
+			count = 2
+			prioritize_location = 9617
+			allow_spawning_on_enemy_provs = yes
 		}
 	}
 }
