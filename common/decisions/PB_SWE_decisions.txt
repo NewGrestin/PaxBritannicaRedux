@@ -3075,16 +3075,16 @@ SWE_folkgemenskap_category = {
 		}
 	}
 }
-SWE_paskkravallerna = { 
+SWE_paskkravallerna = {
 	SWE_debug_trigger_state_mission = {
 		icon = GFX_decision_generic_civil_support
-		
+
 		selectable_mission = no
 		allowed = {
 			always = no #manual
 		}
-		available = { 
-			hidden_trigger = { 
+		available = {
+			hidden_trigger = {
 				always = no
 			}
 		}
@@ -3096,33 +3096,29 @@ SWE_paskkravallerna = {
 		days_mission_timeout = 10
 		visible = { always = yes }
 		timeout_effect = {
-			SWE_revolt_check_path = yes
-			activate_mission = SWE_debug_trigger_state_mission
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = 5
 				tooltip = SWE_revolt_resources_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = 5
 				tooltip = SWE_revolt_escalation_add_tt
 			}
 			random_state = {
-				limit = { 
-					is_in_home_area = yes 
+				limit = {
+					is_in_home_area = yes
 					is_core_of = SWE
-					owner = {
-						tag = SWE
-					}
-					OR = { 
+					owner = { tag = SWE }
+					OR = {
 						arms_factory > 0
 						industrial_complex > 0
 						infrastructure > 0
 					}
 					NOT = { state = 141 }
 				}
-				ROOT = { 
+				ROOT = {
 					activate_targeted_decision = {
 						target = PREV
 						decision = SWE_crackdown_strikes
@@ -3130,20 +3126,18 @@ SWE_paskkravallerna = {
 				}
 			}
 			random_state = {
-				limit = { 
-					is_in_home_area = yes 
+				limit = {
+					is_in_home_area = yes
 					is_core_of = SWE
-					owner = {
-						tag = SWE
-					}
-					OR = { 
+					owner = { tag = SWE }
+					OR = {
 						arms_factory > 0
 						industrial_complex > 0
 						infrastructure > 0
 					}
 					NOT = { state = 141 }
 				}
-				ROOT = { 
+				ROOT = {
 					activate_targeted_decision = {
 						target = PREV
 						decision = SWE_crackdown_strikes
@@ -3151,114 +3145,120 @@ SWE_paskkravallerna = {
 				}
 			}
 			random_state = {
-				limit = { 
-					is_in_home_area = yes 
+				limit = {
+					is_in_home_area = yes
 					is_core_of = SWE
-					owner = {
-						tag = SWE
-					}
-					OR = { 
+					owner = { tag = SWE }
+					OR = {
 						arms_factory > 0
 						industrial_complex > 0
 						infrastructure > 0
 					}
 					NOT = { state = 141 }
 				}
-				ROOT = { 
+				ROOT = {
 					activate_targeted_decision = {
 						target = PREV
 						decision = SWE_crackdown_strikes
 					}
 				}
+			}
+
+			# Check last so this tick's gains count
+			SWE_revolt_check_path = yes
+
+			# Only re-arm if the revolt is still going
+			if = {
+				limit = { NOT = { has_country_flag = SWE_revolt_resolved } }
+				activate_mission = SWE_debug_trigger_state_mission
 			}
 		}
-		ai_will_do = { factor = 0 } 
+		ai_will_do = { factor = 0 }
 		fixed_random_seed = no
 	}
-	SWE_crackdown_strikes = {
-        icon = GFX_decision_generic_political_rally
-        allowed = { always = no } #Manual
 
-        available = { 
-            FROM = { 
-                is_core_of = SWE
-                owner = {
-                    tag = SWE
-                }
-            }
-            divisions_in_state = {
-                size > 3
-                state = FROM
-            }
-        }
+	SWE_crackdown_strikes = {
+		icon = GFX_decision_generic_political_rally
+		allowed = { always = no } #Manual
+
+		available = {
+			FROM = {
+				is_core_of = SWE
+				owner = { tag = SWE }
+			}
+			divisions_in_state = {
+				size > 3
+				state = FROM
+			}
+		}
 		cancel_trigger = {
 			has_country_flag = SWE_revolt_resolved
 		}
 		ai_will_do = { factor = 50 }
 		selectable_mission = yes
-        state_target = yes
-        is_good = no
+		state_target = yes
+		is_good = no
 		fire_only_once = yes
-        on_map_mode = map_and_decisions_view
-        days_mission_timeout = 15
-        timeout_effect = { 
-			add_to_variable = { 
+		on_map_mode = map_and_decisions_view
+		days_mission_timeout = 15
+		timeout_effect = {
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = 5
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = 4
 				tooltip = SWE_revolt_resources_add_tt
 			}
-            FROM = { 
-                damage_building = {
-                    type = infrastructure
-                    damage = 0.2
-                }
-                damage_building = {
-                    type = arms_factory
-                    damage = 0.35 # was 0.6 - reduced so a failed crackdown is a real risk without being an auto-avoid outlier vs other building damage in this file
-                }
-                damage_building = {
-                    type = industrial_complex
-                    damage = 0.2
-                }
-            }
-            add_stability = -0.02
-        }
-        complete_effect = {
-            add_political_power = 1
-			add_to_variable = { 
+			FROM = {
+				damage_building = {
+					type = infrastructure
+					damage = 0.2
+				}
+				damage_building = {
+					type = arms_factory
+					damage = 0.35
+				}
+				damage_building = {
+					type = industrial_complex
+					damage = 0.2
+				}
+			}
+			add_stability = -0.02
+		}
+		complete_effect = {
+			add_political_power = 1
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = -6
 				tooltip = SWE_revolt_resources_reduce_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = 5
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			FROM = { 
+			FROM = {
 				remove_mission = SWE_crackdown_strikes
 			}
-        }
-        highlight_states = {
-            highlight_state_targets = {
-                state = FROM
-            }
-            highlight_color_while_active = 3
-            highlight_color_before_active = 2
-        }
-    }
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = FROM
+			}
+			highlight_color_while_active = 3
+			highlight_color_before_active = 2
+		}
+	}
 
 	SWE_sweden_stockade = {
 		icon = GFX_decision_generic_political_rally
 		allowed = { always = no } #manual
 		selectable_mission = no
 
-		available = { 
+		available = {
 			hidden_trigger = { always = no }
 		}
 		cancel_trigger = {
@@ -3269,7 +3269,7 @@ SWE_paskkravallerna = {
 		is_good = yes
 		on_map_mode = map_and_decisions_view
 		days_mission_timeout = 150
-		timeout_effect = { 
+		timeout_effect = {
 			141 = { set_demilitarized_zone = no }
 		}
 		complete_effect = {
@@ -3284,7 +3284,7 @@ SWE_paskkravallerna = {
 		}
 	}
 
-	SWE_conduct_joint_condemnation= {
+	SWE_conduct_joint_condemnation = {
 		icon = GFX_decision_generic_political_address
 
 		allowed = { always = no } #activated by effect
@@ -3292,16 +3292,16 @@ SWE_paskkravallerna = {
 		fire_only_once = yes
 		cost = 45
 
-		visible = { 
+		visible = {
 			has_active_mission = SWE_debug_trigger_state_mission
 		}
 
-		cancel_trigger = { 
-			NOT = { 
+		cancel_trigger = {
+			NOT = {
 				has_active_mission = SWE_debug_trigger_state_mission
 			}
 		}
-		
+
 		ai_will_do = {
 			factor = 100
 			modifier = {
@@ -3310,7 +3310,7 @@ SWE_paskkravallerna = {
 		}
 
 		complete_effect = {
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
 				value = -20
 				tooltip = SWE_revolt_legitimacy_reduce_tt
@@ -3318,6 +3318,7 @@ SWE_paskkravallerna = {
 		}
 		fixed_random_seed = no
 	}
+
 	SWE_offer_paid_holiday = {
 		icon = GFX_decision_SWE_paid_holidays_policy
 
@@ -3325,14 +3326,14 @@ SWE_paskkravallerna = {
 
 		fire_only_once = yes
 		days_remove = 35
-		cost = 15 # was 20 - cheaper so it isn't dominated by press censorship's cost-to-effect ratio
+		cost = 15
 
-		visible = { 
+		visible = {
 			has_active_mission = SWE_debug_trigger_state_mission
 		}
 
-		cancel_trigger = { 
-			NOT = { 
+		cancel_trigger = {
+			NOT = {
 				has_active_mission = SWE_debug_trigger_state_mission
 			}
 		}
@@ -3340,7 +3341,7 @@ SWE_paskkravallerna = {
 		modifier = {
 			consumer_goods_factor = 0.15
 		}
-		
+
 		ai_will_do = {
 			factor = 100
 			modifier = {
@@ -3353,14 +3354,15 @@ SWE_paskkravallerna = {
 				mission = SWE_debug_trigger_state_mission
 				days = 25
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
-				value = -8 
+				value = -8
 				tooltip = SWE_revolt_legitimacy_reduce_tt
 			}
 		}
 		fixed_random_seed = no
 	}
+
 	SWE_cutoff_radio_to_stockholm = {
 		icon = GFX_decision_generic_electricity
 
@@ -3369,20 +3371,22 @@ SWE_paskkravallerna = {
 		fire_only_once = yes
 		days_remove = 10
 
-		visible = { 
+		visible = {
 			has_country_flag = SWE_stockholm_revolt
+			NOT = { has_country_flag = SWE_revolt_resolved }
 		}
 
-		cancel_trigger = { 
-			NOT = { 
-				has_country_flag = SWE_stockholm_revolt
+		cancel_trigger = {
+			OR = {
+				NOT = { has_country_flag = SWE_stockholm_revolt }
+				has_country_flag = SWE_revolt_resolved
 			}
 		}
 
 		modifier = {
 			political_power_factor = -0.1
 		}
-		
+
 		ai_will_do = {
 			factor = 100
 			modifier = {
@@ -3391,19 +3395,20 @@ SWE_paskkravallerna = {
 		}
 
 		remove_effect = {
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = 5
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
-				value = -12 
+				value = -12
 				tooltip = SWE_revolt_resources_reduce_tt
 			}
 		}
 		fixed_random_seed = no
 	}
+
 	SWE_blockade_stockholm = {
 		icon = GFX_decision_generic_electricity
 
@@ -3412,20 +3417,22 @@ SWE_paskkravallerna = {
 		fire_only_once = yes
 		days_remove = 12
 
-		visible = { 
+		visible = {
 			has_country_flag = SWE_stockholm_revolt
+			NOT = { has_country_flag = SWE_revolt_resolved }
 		}
-		
-		cancel_trigger = { 
-			NOT = { 
-				has_country_flag = SWE_stockholm_revolt
+
+		cancel_trigger = {
+			OR = {
+				NOT = { has_country_flag = SWE_stockholm_revolt }
+				has_country_flag = SWE_revolt_resolved
 			}
 		}
 
 		modifier = {
 			political_power_factor = -0.1
 		}
-		
+
 		ai_will_do = {
 			factor = 100
 			modifier = {
@@ -3434,17 +3441,17 @@ SWE_paskkravallerna = {
 		}
 
 		remove_effect = {
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = 10
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
 				value = 10
 				tooltip = SWE_revolt_legitimacy_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = -15
 				tooltip = SWE_revolt_resources_reduce_tt
@@ -3452,6 +3459,7 @@ SWE_paskkravallerna = {
 		}
 		fixed_random_seed = no
 	}
+
 	SWE_form_self_defense_leagues = {
 		icon = GFX_decision_generic_disband_irregulars
 
@@ -3460,12 +3468,12 @@ SWE_paskkravallerna = {
 		fire_only_once = yes
 		cost = 25
 
-		visible = { 
+		visible = {
 			has_active_mission = SWE_debug_trigger_state_mission
 		}
 
-		cancel_trigger = { 
-			NOT = { 
+		cancel_trigger = {
+			NOT = {
 				has_active_mission = SWE_debug_trigger_state_mission
 			}
 		}
@@ -3480,17 +3488,17 @@ SWE_paskkravallerna = {
 		complete_effect = {
 			activate_targeted_decision = { target = THIS decision = SWE_disband_paramilitary_units }
 			set_country_flag = SWE_deployed_param
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = 5
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = -10
 				tooltip = SWE_revolt_resources_reduce_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
 				value = 5
 				tooltip = SWE_revolt_legitimacy_add_tt
@@ -3507,12 +3515,12 @@ SWE_paskkravallerna = {
 		fire_only_once = yes
 		cost = 25
 
-		visible = { 
+		visible = {
 			has_active_mission = SWE_debug_trigger_state_mission
 		}
 
-		cancel_trigger = { 
-			NOT = { 
+		cancel_trigger = {
+			NOT = {
 				has_active_mission = SWE_debug_trigger_state_mission
 			}
 		}
@@ -3525,12 +3533,12 @@ SWE_paskkravallerna = {
 		}
 
 		complete_effect = {
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = 10
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = -15
 				tooltip = SWE_revolt_resources_reduce_tt
@@ -3547,22 +3555,21 @@ SWE_paskkravallerna = {
 		fire_only_once = yes
 		cost = 90
 		days_remove = 20
-		available = { 
+		available = {
 			has_stability < 0.5
 			custom_trigger_tooltip = {
 				tooltip = SWE_revolt_escalation_above_70_tt
 				ROOT = {
 					check_variable = { SWE_revolt_escalation > 69 }
 				}
-			}   
-			
+			}
 		}
-		visible = { 
+		visible = {
 			has_active_mission = SWE_debug_trigger_state_mission
 		}
 
-		cancel_trigger = { 
-			NOT = { 
+		cancel_trigger = {
+			NOT = {
 				has_active_mission = SWE_debug_trigger_state_mission
 			}
 		}
@@ -3580,12 +3587,14 @@ SWE_paskkravallerna = {
 		}
 
 		complete_effect = {
-			add_to_variable = { 
+			# Set here so it exists even if the revolt resolves before remove_effect
+			set_country_flag = SWE_martial_law
+			add_to_variable = {
 				var = SWE_revolt_escalation
-				value = 25 
+				value = 15 # was 25
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
 				value = 10
 				tooltip = SWE_revolt_legitimacy_add_tt
@@ -3595,18 +3604,17 @@ SWE_paskkravallerna = {
 		remove_effect = {
 			add_stability = 0.2
 			activate_targeted_decision = { target = THIS decision = SWE_enter_stockholm }
-			set_country_flag = SWE_martial_law
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
-				value = -20 
+				value = -20
 				tooltip = SWE_revolt_escalation_reduce_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
 				value = -10
 				tooltip = SWE_revolt_legitimacy_reduce_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = -20
 				tooltip = SWE_revolt_resources_reduce_tt
@@ -3624,35 +3632,38 @@ SWE_paskkravallerna = {
 		cost = 30
 		days_remove = 15
 
-		available = { 
-            141 = { 
-                is_core_of = SWE
-                owner = {
-                    tag = SWE
-                }
-            }
-            divisions_in_state = {
-                size > 12
-                state = 141
-            }
-        }
+		available = {
+			141 = {
+				is_core_of = SWE
+				owner = { tag = SWE }
+			}
+			divisions_in_state = {
+				size > 12
+				state = 141
+			}
+		}
 
-		cancel_trigger = { 
-			NOT = { 
-				has_active_mission = SWE_sweden_stockade
-				141 = {
-					is_core_of = SWE
-					owner = { original_tag = SWE }
+		# Fixed: was a NOR, now cancels if ANY condition fails
+		cancel_trigger = {
+			OR = {
+				NOT = { has_active_mission = SWE_sweden_stockade }
+				NOT = {
+					141 = {
+						is_core_of = SWE
+						owner = { original_tag = SWE }
+					}
 				}
-				divisions_in_state = {
-					size > 12
-					state = 141
+				NOT = {
+					divisions_in_state = {
+						size > 12
+						state = 141
+					}
 				}
 			}
 		}
 
 		modifier = {
-			stability_factor = -0.05 
+			stability_factor = -0.05
 		}
 
 		ai_will_do = {
@@ -3666,17 +3677,17 @@ SWE_paskkravallerna = {
 		}
 		remove_effect = {
 			141 = { set_demilitarized_zone = no }
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
-				value = 15 
+				value = 15
 				tooltip = SWE_revolt_escalation_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
-				value = 10 
+				value = 10
 				tooltip = SWE_revolt_legitimacy_add_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = -35
 				tooltip = SWE_revolt_resources_reduce_tt
@@ -3694,18 +3705,18 @@ SWE_paskkravallerna = {
 		cost = 30
 		days_remove = 20
 
-		visible = { 
+		visible = {
 			has_active_mission = SWE_debug_trigger_state_mission
 		}
 
-		cancel_trigger = { 
-			NOT = { 
+		cancel_trigger = {
+			NOT = {
 				has_active_mission = SWE_debug_trigger_state_mission
 			}
 		}
 
 		modifier = {
-			stability_factor = -0.05 # added - censorship needed a drawback; previously it was a free double-negative to the revolt (escalation + legitimacy) for less PP than comparable options
+			stability_factor = -0.05
 		}
 
 		ai_will_do = {
@@ -3716,14 +3727,14 @@ SWE_paskkravallerna = {
 		}
 
 		remove_effect = {
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
-				value = -3 # was -5 - trimmed alongside the new drawback so this stays useful but no longer strictly better than every other option per PP spent
+				value = -3
 				tooltip = SWE_revolt_escalation_reduce_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
-				value = -3 # was -5, see above
+				value = -3
 				tooltip = SWE_revolt_legitimacy_reduce_tt
 			}
 		}
@@ -3738,19 +3749,19 @@ SWE_paskkravallerna = {
 		fire_only_once = yes
 		cost = 15
 
-		available = { 
+		available = {
 			has_country_flag = {
 				flag = SWE_deployed_param
 				days > 90
 			}
 		}
 
-		visible = { 
+		visible = {
 			has_country_flag = SWE_deployed_param
 		}
 
-		cancel_trigger = { 
-			NOT = { 
+		cancel_trigger = {
+			NOT = {
 				has_active_mission = SWE_debug_trigger_state_mission
 			}
 		}
@@ -3764,17 +3775,17 @@ SWE_paskkravallerna = {
 
 		complete_effect = {
 			clr_country_flag = SWE_deployed_param
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_escalation
 				value = -20
 				tooltip = SWE_revolt_escalation_reduce_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_legitimacy
 				value = -15
 				tooltip = SWE_revolt_legitimacy_reduce_tt
 			}
-			add_to_variable = { 
+			add_to_variable = {
 				var = SWE_revolt_resources
 				value = 5
 				tooltip = SWE_revolt_resources_add_tt
