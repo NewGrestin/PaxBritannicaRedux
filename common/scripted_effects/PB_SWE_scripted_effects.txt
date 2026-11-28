@@ -6,7 +6,7 @@ SWE_reform_start = {
 	clr_country_flag = SWE_amendment_accepted
 	clr_country_flag = SWE_reform_finished
 	set_variable = { SWE_Momentum = 5 }
-	set_variable = { SWE_Unity = 60 }
+	set_variable = { SWE_Unity = 40 }
 	set_variable = { SWE_Trust = 60 }
 	set_variable = { SWE_Resistance = 70 }
 	set_variable = { SWE_Checkpoint = 1 }
@@ -35,7 +35,7 @@ SWE_reform_check = {
 		}
 		else_if = {
 			limit = {
-				check_variable = { SWE_Unity < 1 }
+				check_variable = { SWE_Unity < 29 }
 				NOT = { has_country_flag = SWE_coalition_broken }
 			}
 			if = {
@@ -44,7 +44,7 @@ SWE_reform_check = {
 					check_variable = { var = party_popularity@ss value = party_popularity@lb compare = greater_than }
 					check_variable = { var = party_popularity@ss value = party_popularity@cn compare = greater_than }
 				}
-				country_event = { id = sweden_reform.93 }   # etc etc
+				country_event = { id = sweden_reform.93 }   # etc etc if you outgrow the coalition
 			}
 			else = {
 				country_event = { id = sweden_reform.90 }   # collapse
@@ -62,7 +62,7 @@ SWE_reform_check = {
 		}
 		else_if = {
 			limit = {
-				check_variable = { SWE_Trust < 1 }
+				check_variable = { SWE_Trust < 29 }
 				NOT = { has_country_flag = SWE_movement_split }
 			}
 			country_event = { id = sweden_reform.91 }
@@ -171,52 +171,93 @@ SWE_remove_ideas = {
 		PB_SWE_Riket_Two5
 	}
 }
-SWE_revolt_check_path = { 
-    if = { 
-        limit = { 
+
+SWE_revolt_legitimacy_tick = {
+
+    clamp_variable = {
+        var = SWE_revolt_legitimacy
+        min = 0
+        max = 100
+    }
+    set_temp_variable = { SWE_legit_resource_bonus = SWE_revolt_legitimacy }
+    multiply_temp_variable = { SWE_legit_resource_bonus = 0.05 }
+    add_to_variable = {
+        var = SWE_revolt_resources
+        value = SWE_legit_resource_bonus
+        tooltip = SWE_revolt_resources_add_tt
+    }
+
+    set_variable = { SWE_revolt_discontent_scale = SWE_revolt_legitimacy }
+    divide_variable = { SWE_revolt_discontent_scale = 100 }
+
+    set_variable = { SWE_revolt_discontent_stab = SWE_revolt_discontent_scale }
+    multiply_variable = { SWE_revolt_discontent_stab = -0.15 }   # up to -15% stability
+    set_variable = { SWE_revolt_discontent_pp = SWE_revolt_discontent_scale }
+    multiply_variable = { SWE_revolt_discontent_pp = -0.10 }     # up to -10% PP gain
+    set_variable = { SWE_revolt_discontent_cg = SWE_revolt_discontent_scale }
+    multiply_variable = { SWE_revolt_discontent_cg = 0.10 }      # up to +10% consumer goods
+    force_update_dynamic_modifier = yes
+}
+
+SWE_revolt_check_path = {
+    SWE_revolt_legitimacy_tick = yes
+
+    if = {
+        limit = {
             NOT = { has_country_flag = SWE_revolt_resolved }
-            check_variable = { SWE_revolt_escalation > 99 }
-            check_variable = { SWE_revolt_resources > 25 } 
+            check_variable = { SWE_revolt_escalation > 89 }
+            check_variable = { SWE_revolt_resources > 29.99 }   # 30 or more: revolution wins
         }
         set_country_flag = SWE_revolt_resolved
+        SWE_revolt_cleanup = yes
         SWE_revolt_republic_path = yes
         remove_mission = SWE_debug_trigger_state_mission
     }
-    else_if = { 
-        limit = { 
+    else_if = {
+        limit = {
             NOT = { has_country_flag = SWE_revolt_resolved }
-            check_variable = { SWE_revolt_escalation > 99 }
-            check_variable = { SWE_revolt_resources < 25 }
+            check_variable = { SWE_revolt_escalation > 89 }
+            check_variable = { SWE_revolt_resources < 30 }      # below 30: properly ended
         }
         set_country_flag = SWE_revolt_resolved
+        SWE_revolt_cleanup = yes
         SWE_revolt_victory_path = yes
         remove_mission = SWE_debug_trigger_state_mission
     }
-    else_if = { 
-        limit = { 
+    else_if = {
+        limit = {
             NOT = { has_country_flag = SWE_revolt_resolved }
             check_variable = { SWE_revolt_escalation < 5 }
         }
         set_country_flag = SWE_revolt_resolved
+        SWE_revolt_cleanup = yes
         SWE_revolt_victory_path = yes
         remove_mission = SWE_debug_trigger_state_mission
     }
 }
-SWE_revolt_republic_path = { 
+
+SWE_revolt_cleanup = {
+    if = {
+        limit = { has_dynamic_modifier = { modifier = SWE_baricaden } }
+        remove_dynamic_modifier = { modifier = SWE_baricaden }
+    }
+}
+
+SWE_revolt_republic_path = {
     clear_all_relations = yes
     set_country_flag = SWE_jc_revolution
-    set_politics = { #
+    set_politics = {
         ruling_party = jc
         elections_allowed = no
     }
-    
+
     ban_party_cn = yes
     ban_party_rc = yes
     ban_party_ni = yes
     ban_party_an = yes
     ban_party_ds = yes
     set_cosmetic_tag = SWE_jacobin
-    hidden_effect = { 
+    hidden_effect = {
         news_event = PBNews.386
         mark_focus_tree_layout_dirty = yes
         #complete_national_focus = SWE_sweden_stockades
@@ -227,19 +268,20 @@ SWE_revolt_republic_path = {
             PB_biased_universal_voting
             PB_minority_neutral_stance
             PB_public_meetings_monitored
-
         }
     }
 }
-SWE_revolt_victory_path = { 
-    141 = { 
+
+SWE_revolt_victory_path = {
+    141 = {
         set_demilitarized_zone = no
     }
-	news_event = PBNews.387
+    news_event = PBNews.387
     country_event = { id = sweden_national.2 days = 3 }
     country_event = { id = sweden_national.13 days = 1 }
     country_event = { id = sweden_national.14 days = 12 }
 }
+
 SWE_mannerheim_coup_effect = { 
     hidden_effect = { 
         remove_ideas = { 
@@ -1342,11 +1384,15 @@ SWE_Unban_Transcendentalists_Support = {
         SWE_transcendentalists_calculations = yes
     }
 }
-SWE_Change_Faction_Influence = {
-    custom_effect_tooltip = $TT$
+
+SWE_Change_Faction = {
+    custom_effect_tooltip = {
+        localization_key = SWE_Change_$FACTION$_$STAT$_tt
+        AMOUNT = $AMOUNT$
+    }
     hidden_effect = {
-        add_to_variable = { var = $FACTION$_Influence value = $AMOUNT$ }
-        clamp_variable = { var = $FACTION$_Influence min = 0 max = 100 }
+        add_to_variable = { var = SWE_$FACTION$_$STAT$ value = $AMOUNT$ }
+        clamp_variable = { var = SWE_$FACTION$_$STAT$ min = 0 max = 100 }
         $CALC$ = yes
         force_update_dynamic_modifier = yes
     }

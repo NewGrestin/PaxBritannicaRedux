@@ -2211,13 +2211,31 @@ shared_focus = {
 	prerequisite = {
 		focus = SCA_establish_the_comittee_for_state_security
 	}
+
 	available = { 
 		AND = {
-			custom_trigger_tooltip = {
-				tooltip = SCA_Reveal_Ourselves_tt
-				PB_Wild_West_Unification_States = yes
-				SCA = {
-					is_neighbor_of = AME
+			if = {
+				limit = {
+					AME = { exists = yes }
+				}
+				custom_trigger_tooltip = {
+					tooltip = SCA_Reveal_Ourselves_tt
+					PB_Wild_West_Unification_States = yes
+					SCA = {
+						is_neighbor_of = AME
+					}
+				}
+			}
+			else = {
+				custom_trigger_tooltip = {
+					tooltip = SCA_Reveal_Ourselves_alt_tt
+					PB_Wild_West_Unification_States = yes
+					any_country = {
+						limit = { is_rival_american_government = yes }
+						SCA = {
+							is_neighbor_of = PREV
+						}	
+					}
 				}
 			}
 			custom_trigger_tooltip = {
@@ -2247,6 +2265,7 @@ shared_focus = {
 			}
 		}
 	}
+	
 
     search_filters = {FOCUS_FILTER_ANNEXATION}
 	search_filters = {FOCUS_FILTER_ARMY}
@@ -2254,7 +2273,21 @@ shared_focus = {
 	
 	x = 24
 	y = 2
-
+	on_select = {
+		country_event = { 
+			id = SCA.23
+			days = 1
+		} 
+		if = {
+			limit = { 
+				AME = { exists = yes }
+			}
+			AME = {
+				country_event = { id = SCA.22 days = 1 }
+			}
+		}
+		
+	}
 	completion_reward = {
 		add_ideas = PB_SCA_Sic_Semper_Tyrannis
 		custom_effect_tooltip = SCA_Semper_Tyrannis_tt
@@ -2265,14 +2298,12 @@ shared_focus = {
 				decision = SCA_Reveal_Ourselves
 			}
 		}
-		unlock_decision_tooltip = SCA_Reveal_Ourselves
 		custom_effect_tooltip = tooltip_white_line
 		add_manpower = 100000
-		custom_effect_tooltip = SCA_Semper_Tyrannis_2_tt
 		custom_effect_tooltip = tooltip_white_line
 		every_state = { 
 			limit = {
-				is_core_of = AME
+				is_america = yes
 			}
 			add_claim_by = SCA
 		}
@@ -2284,10 +2315,7 @@ shared_focus = {
 			add_attack = 1
 		} 
 		custom_effect_tooltip = tooltip_white_line
-		country_event = { 
-			id = SCA.23
-			days = 1
-		} 
+		
 		set_variable = { SCA_order_manpower = 2500 }
 		set_variable = { SCA_order_guns = 499 }
 		set_variable = { SCA_bring_order_cost = 25 }
@@ -2296,6 +2324,86 @@ shared_focus = {
 		multiply_variable = { SCA_order_manpower_neg = -1 }
 		set_variable = { SCA_order_guns_neg = SCA_order_guns }
 		multiply_variable = { SCA_order_guns_neg = -1 }
+
+		set_country_flag = SCA_Disable_Sleeping_Giant
+		custom_effect_tooltip = SCA_Reveal_Ourselves_3_tt
+		add_political_power = 100
+
+		# Declare war based on whoever actually owns state 360
+		if = {
+			limit = {
+				AME = { exists = yes }
+			}
+			declare_war_on = {
+				target = AME
+				type = annex_everything
+			}
+			if = {
+				limit = {
+					imperial_civil_war_ongoing = yes
+				}
+				declare_war_on = {
+					target = ENG
+					type = annex_everything
+				}
+			}
+
+			add_ideas = PB_SCA_Second_American_Revolution
+
+			AME = {
+				add_ideas = PB_SCA_Second_American_Revolution
+			}
+			
+
+			if = {
+				limit = {
+					AME = { is_subject_of = ENG }
+				}
+				ENG = {
+					add_ideas = PB_SCA_Second_American_Revolution_for_Britian
+				}
+			}
+			hidden_effect = {
+				news_event = { id = PBNews.230 days = 1 }
+			}
+			every_country = {
+				limit ={
+					is_rival_american_government = yes
+				}
+				add_ideas = PB_SCA_Second_American_Revolution
+				SCA = {	
+					activate_targeted_decision = {
+						decision = SCA_destroy_rivals
+						target = PREV.PREV
+					}
+				}
+			}
+		}
+		else = {
+			every_country = {
+				limit ={
+					is_rival_american_government = yes
+				}
+				add_ideas = PB_SCA_Second_American_Revolution
+				SCA = {	
+					activate_targeted_decision = {
+						decision = SCA_destroy_rivals
+						target = PREV.PREV
+					}
+				}
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					is_ai = yes
+				}
+				add_equipment_to_stockpile = {
+					type = infantry_equipment
+					amount = 100000
+				}
+			}
+		}
 	}
 }
 
@@ -2638,6 +2746,11 @@ shared_focus = {
 		owns_state = 361
 		AME = { exists = no }
 		has_war = no
+		NOT = { 
+			any_country = {
+				is_rival_american_government = yes 
+			}
+		}
 	}
 
 	search_filters = {FOCUS_FILTER_POLITICAL}
